@@ -12,7 +12,7 @@ single Dart API.
 
 - A single API across multiple platforms.
 - Modular, federated-plugin architecture.
-- Works on mobile, desktop, and console.
+- Works on mobile, desktop, and [console?](https://fluorite.game/).
 - Easy integration for Dart developers.
 - Extensible to new providers without touching the core.
 
@@ -32,6 +32,7 @@ single Dart API.
 | Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
 | Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
+| PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
 | Google Play Games | ⏸️ Deferred (no pure-Dart path) |
 | Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
 | Xbox Live | 📋 Research |
@@ -72,6 +73,7 @@ The same call will work over:
 - Steam
 - Epic Games Store
 - GameJolt
+- PlayFab (Microsoft's cross-platform backend; distinct from native Xbox Live)
 - Xbox Live
 - Other future or custom providers
 
@@ -95,6 +97,7 @@ unified_game_services
 │   ├── game_center
 │   ├── steam
 │   ├── epic
+│   ├── playfab
 │   ├── xbox
 │   ├── gamejolt
 │   └── huawei
@@ -116,6 +119,7 @@ packages/
 ├── unified_game_services_steam
 ├── unified_game_services_epic
 ├── unified_game_services_gamejolt
+├── unified_game_services_playfab
 ├── unified_game_services_xbox
 └── examples/
 ```

@@ -28,7 +28,7 @@ redistribute. In particular:
 - **Game Jolt** is a trademark of **Game Jolt Inc.**
 - **Epic Online Services** and **Epic Games** are trademarks of
   **Epic Games, Inc.**
-- **Xbox** is a trademark of **Microsoft Corporation**.
+- **Xbox** and **PlayFab** are trademarks of **Microsoft Corporation**.
 - **Google Play** and **Google Play Games** are trademarks of **Google LLC**.
 - **Game Center** and **Apple** are trademarks of **Apple Inc.**
 
