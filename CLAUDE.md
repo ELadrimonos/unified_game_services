@@ -102,6 +102,11 @@ Rule of thumb: prefer unifying, but never shoehorn. Example: GameJolt
 behind `GameCapability.presence`. A dev using the facade gets portability; a dev
 holding a `GameJoltProvider` gets everything GameJolt offers.
 
+Reach provider-specific members without keeping the registered reference via the
+typed accessor:
+`UnifiedGameServicesPlatform.getInstance<GameJoltProvider>().openSession()`
+(throwing) or `tryGetInstance<T>()` (nullable).
+
 ## Provider scope (MVP)
 
 Pure-Dart-reachable providers ship first:

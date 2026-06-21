@@ -34,4 +34,11 @@ Future<void> main() async {
     final save = await services.loadData('profile');
     print('Loaded ${save?.bytes.length} bytes');
   }
+
+  // Provider-specific extras: reach GameJolt's session API (online presence)
+  // through the typed accessor, without holding the instance you registered.
+  final gameJolt = UnifiedGameServicesPlatform.getInstance<GameJoltProvider>();
+  await gameJolt.startSessionHeartbeat();
+  // … play …
+  await gameJolt.stopSessionHeartbeat();
 }

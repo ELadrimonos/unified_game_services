@@ -29,6 +29,30 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// Returns the active provider cast to the concrete type [T].
+  ///
+  /// Use this to reach a provider's provider-specific API (e.g.
+  /// `UnifiedGameServicesPlatform.getInstance<GameJoltProvider>().openSession()`)
+  /// without holding a reference to the instance you registered.
+  ///
+  /// Throws [StateError] if the active provider is not a [T] — typically
+  /// because that provider was never registered.
+  static T getInstance<T extends UnifiedGameServicesPlatform>() {
+    final current = _instance;
+    if (current is T) return current;
+    throw StateError(
+      'Active game services provider is ${current.runtimeType}, not $T. '
+      'Register $T (via its registerWith()) before calling getInstance<$T>().',
+    );
+  }
+
+  /// Like [getInstance], but returns `null` instead of throwing when the active
+  /// provider is not a [T].
+  static T? tryGetInstance<T extends UnifiedGameServicesPlatform>() {
+    final current = _instance;
+    return current is T ? current : null;
+  }
+
   // ─── Capabilities ────────────────────────────────────────────────────────
 
   /// The set of capabilities this provider supports.

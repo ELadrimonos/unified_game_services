@@ -1,5 +1,12 @@
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:test/test.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
+
+class _FakeProviderA extends UnifiedGameServicesPlatform
+    with MockPlatformInterfaceMixin {}
+
+class _FakeProviderB extends UnifiedGameServicesPlatform
+    with MockPlatformInterfaceMixin {}
 
 void main() {
   group('Achievement', () {
@@ -62,6 +69,29 @@ void main() {
       final platform = UnifiedGameServicesPlatform.instance;
       expect(platform.supports(GameCapability.achievements), isFalse);
       expect(platform.signIn, throwsUnimplementedError);
+    });
+
+    test('getInstance returns the active provider cast to its type', () {
+      final provider = _FakeProviderA();
+      UnifiedGameServicesPlatform.instance = provider;
+      expect(UnifiedGameServicesPlatform.getInstance<_FakeProviderA>(),
+          same(provider));
+    });
+
+    test('getInstance throws when the active provider is a different type', () {
+      UnifiedGameServicesPlatform.instance = _FakeProviderA();
+      expect(
+        UnifiedGameServicesPlatform.getInstance<_FakeProviderB>,
+        throwsStateError,
+      );
+    });
+
+    test('tryGetInstance returns null for a mismatched type', () {
+      UnifiedGameServicesPlatform.instance = _FakeProviderA();
+      expect(UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderB>(),
+          isNull);
+      expect(UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderA>(),
+          isNotNull);
     });
   });
 }
