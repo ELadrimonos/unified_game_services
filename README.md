@@ -33,7 +33,7 @@ single Dart API.
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
 | Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
 | PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
-| Google Play Games | ⏸️ Deferred (no pure-Dart path) |
+| Google Play Games | 📋 Research (pure Dart via REST Games API v1 + OAuth) |
 | Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
 | Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |
@@ -41,7 +41,9 @@ single Dart API.
 > **Core constraint:** no package depends on Flutter. That is why
 > [`games_services`](https://pub.dev/packages/games_services) is not used (it
 > requires Flutter + platform channels). The MVP covers the providers reachable
-> from pure Dart; Google Play and Game Center are deferred.
+> from pure Dart. Google Play Games is reachable via its REST Games API v1
+> (`games.googleapis.com`) + OAuth 2.0 — no native SDK needed — so it is back on
+> the roadmap as research. Game Center stays deferred (no pure-Dart path yet).
 
 ---
 

@@ -114,14 +114,23 @@ Pure-Dart-reachable providers ship first:
 - **Steam** — Steamworks C API via `dart:ffi`.
 - **GameJolt** — REST API.
 - **Epic** — EOS REST / C SDK.
+- **Google Play Games** — REST Games API v1 (`games.googleapis.com/games/v1`) +
+  OAuth 2.0. Research stage. The REST surface covers the unified API
+  (`achievements.unlock/increment/reveal`, `scores.submit`, `snapshots` for
+  cloud save, `players.get`, `stats.get`, `events.record`) over `package:http`.
+  The *native* Android SDK (`.aar` + platform channels via `games_services`)
+  remains banned — it needs Flutter. Only the REST + OAuth path is allowed. The
+  open challenge is the player OAuth flow with scope
+  `https://www.googleapis.com/auth/games`: an authorization-code + loopback
+  flow works in pure Dart on desktop/CLI/server; Android's native auto-sign-in
+  UX is not available without Flutter (acceptable — the constraint is no
+  Flutter, not no Android).
 
-**Deferred: Google Play Games & Game Center.** These are mobile-native SDKs
-(Android `.aar`, Obj-C GameKit) with no clean pure-Dart path: Android Play Games
-is callable only from a running app runtime, and the popular wrapper
-[`games_services`](https://pub.dev/packages/games_services) depends on Flutter +
-platform channels — which violates the no-Flutter constraint. Do **not** add them
-back by depending on `games_services`. Revisit later via FFI (GameKit through
-`package:objective_c`) or a deliberately-scoped optional-Flutter adapter.
+**Deferred: Game Center.** Obj-C GameKit, no clean pure-Dart path (no public
+REST equivalent). Do **not** pull it in via `games_services` (Flutter +
+platform channels — violates the no-Flutter constraint). Revisit later via FFI
+(GameKit through `package:objective_c`) or a deliberately-scoped optional-Flutter
+adapter.
 
 ## When adding a provider
 

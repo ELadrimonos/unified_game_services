@@ -3,10 +3,15 @@
 Google Play Games provider for
 [`unified_game_services`](https://pub.dev/packages/unified_game_services).
 
-> **Status: deferred (not yet implemented).** Google Play Games is an
-> Android-native SDK with no clean pure-Dart path (it is callable only from a
-> running Android app runtime), which conflicts with this project's no-Flutter
-> constraint. This package is a placeholder pending a viable approach.
+> **Status: research (not yet implemented).** Google Play Games exposes a REST
+> Games API v1 (`games.googleapis.com/games/v1`) reachable from pure Dart over
+> `package:http` — it covers achievements, scores/leaderboards, snapshots
+> (cloud save), players and stats for the signed-in player. That is the planned
+> path here. The *native* Android SDK (and `games_services`, which depends on
+> Flutter + platform channels) stays out — it violates the no-Flutter
+> constraint. Open work: the player OAuth 2.0 flow (scope
+> `.../auth/games`); an authorization-code + loopback flow works in pure Dart on
+> desktop/CLI/server. This package is a placeholder pending that implementation.
 
 For the available providers today, see
 [`unified_game_services`](https://pub.dev/packages/unified_game_services),
