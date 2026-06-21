@@ -205,6 +205,36 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     // Steam reveals hidden achievements automatically on unlock; no-op.
   }
 
+  // ─── GameJolt-style? No — Steam-specific helpers (not in the unified API) ───
+  //
+  // Clearing achievements / resetting stats is invaluable when iterating
+  // against the Spacewar (appId 480) test app, but it has no portable
+  // equivalent across providers, so it lives on the concrete provider.
+
+  /// Clears a single unlocked achievement (Steam `ClearAchievement`). Useful
+  /// for re-testing. Reach it via
+  /// `UnifiedGameServicesPlatform.getInstance<SteamProvider>()`.
+  Future<void> clearAchievement(String achievementId) async {
+    final stats = _ensureInit().steamUserStats;
+    _withUtf8(achievementId, (namePtr) {
+      stats.clearAchievement(namePtr);
+      return null;
+    });
+    if (!stats.storeStats()) {
+      throw PlatformOperationException(
+          'Failed to clear achievement "$achievementId".');
+    }
+  }
+
+  /// Resets all stats, and optionally all achievements
+  /// ([includeAchievements]). Steam `ResetAllStats`.
+  Future<void> resetAllStats({bool includeAchievements = false}) async {
+    final stats = _ensureInit().steamUserStats;
+    if (!stats.resetAllStats(includeAchievements)) {
+      throw const PlatformOperationException('Failed to reset stats.');
+    }
+  }
+
   // ─── Stats ───────────────────────────────────────────────────────────────
 
   @override
