@@ -1,13 +1,13 @@
 # Unified Game Services for Flutter
 
-Una capa de abstracción multiplataforma para servicios de videojuegos que unifica logros, clasificaciones, estadísticas, guardado en la nube, perfiles de usuario y presencia online mediante una única API Flutter.
+Una capa de abstracción multiplataforma para servicios de videojuegos que unifica logros, clasificaciones, estadísticas, guardado en la nube, perfiles de usuario y presencia online mediante una única API Dart.
 
 ## Objetivos
 
 - Una única API para múltiples plataformas.
 - Arquitectura modular basada en plugins.
 - Compatibilidad con móvil, escritorio y consola.
-- Integración sencilla para desarrolladores Flutter.
+- Integración sencilla para desarrolladores Dart.
 - Extensible para nuevos proveedores sin modificar el núcleo.
 
 ---
@@ -40,7 +40,7 @@ Una capa de abstracción multiplataforma para servicios de videojuegos que unifi
 
 ## Visión
 
-Actualmente Flutter dispone de soluciones independientes para algunas plataformas, pero no existe una interfaz unificada que permita escribir una única implementación y desplegarla en múltiples ecosistemas.
+Actualmente Dart/Flutter dispone de soluciones independientes para algunas plataformas, pero no existe una interfaz unificada que permita escribir una única implementación y desplegarla en múltiples ecosistemas.
 
 Este proyecto busca resolver ese problema.
 
@@ -65,7 +65,7 @@ La misma llamada funcionará sobre:
 - Epic Games Store
 - GameJolt
 - Xbox Live
-- Otros proveedores futuros
+- Otros proveedores futuros o personalizados
 
 ---
 

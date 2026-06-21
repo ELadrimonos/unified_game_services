@@ -77,10 +77,20 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     return client;
   }
 
-  /// Stops the callback pump and releases the events stream.
+  /// Stops the callback pump, shuts the Steam API down and releases the events
+  /// stream.
+  ///
+  /// Calling [sw.SteamApi.shutdown] (`SteamAPI_Shutdown`) is what frees Steam's
+  /// internal resources; skipping it makes Steam log teardown warnings such as
+  /// "Trying to close low level socket support, but we still have sockets
+  /// open!" when the process exits.
   Future<void> dispose() async {
     _pump?.cancel();
     _pump = null;
+    if (_client != null) {
+      sw.SteamApi.shutdown();
+      _client = null;
+    }
     await _events.close();
   }
 

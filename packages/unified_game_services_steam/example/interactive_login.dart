@@ -40,8 +40,16 @@ Future<void> main() async {
     player = await steam.signIn();
   } on GameServiceException catch (e) {
     stdout.writeln('FAILED\n$e');
-    stdout.writeln('\nIs the Steam client running, the native lib present, and '
-        'steam_appid.txt set to 480?');
+    stdout.writeln('''
+
+Checklist:
+  1. Steam client running and logged in.
+  2. steam_appid.txt containing 480 in the working directory.
+  3. The native lib reachable by the dynamic loader. On macOS the loader does
+     NOT search the working directory — point it at the lib's folder:
+       DYLD_LIBRARY_PATH="\$PWD" dart run example/interactive_login.dart
+     (or copy libsteam_api.dylib into /usr/local/lib). In an IDE, set the run
+     config's working directory and add DYLD_LIBRARY_PATH to its environment.''');
     exit(1);
   }
   stdout.writeln('OK');
