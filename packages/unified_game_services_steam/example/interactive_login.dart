@@ -14,7 +14,9 @@
 // Steam has no username/password login: the identity is whoever is signed into
 // the Steam client. signIn() warms the player's stats and returns that profile.
 
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 import 'package:unified_game_services_steam/unified_game_services_steam.dart';
@@ -76,6 +78,10 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
   5) View a leaderboard
   6) List friends
   7) Reset all stats (+achievements) (Steam-specific)
+  8) Write a cloud save
+  9) Read a cloud save
+ 10) List cloud saves
+ 11) Delete a cloud save
   0) Quit''');
     stdout.write('> ');
     final choice = stdin.readLineSync()?.trim();
@@ -122,6 +128,29 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
         case '7':
           await steam.resetAllStats(includeAchievements: true);
           stdout.writeln('Reset done.');
+        case '8':
+          final slot = _prompt('Slot (filename, e.g. save.txt)');
+          final text = _prompt('Contents');
+          await steam.saveData(slot, Uint8List.fromList(utf8.encode(text)));
+          stdout.writeln('Wrote ${text.length} chars to "$slot".');
+        case '9':
+          final slot = _prompt('Slot (filename)');
+          final save = await steam.loadData(slot);
+          if (save == null) {
+            stdout.writeln('No save at "$slot".');
+          } else {
+            stdout.writeln('${save.bytes.length} bytes:');
+            stdout.writeln(utf8.decode(save.bytes, allowMalformed: true));
+          }
+        case '10':
+          final saves = await steam.listSaves();
+          stdout.writeln('${saves.length} saves:');
+          for (final s in saves) {
+            stdout.writeln('  ${s.slot}  (${s.sizeBytes} bytes)');
+          }
+        case '11':
+          await steam.deleteSave(_prompt('Slot (filename)'));
+          stdout.writeln('Deleted.');
         case '0':
         case null:
           return;
