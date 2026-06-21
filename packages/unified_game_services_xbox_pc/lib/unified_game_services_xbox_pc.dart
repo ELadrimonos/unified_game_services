@@ -3,6 +3,6 @@
 /// More dartdocs go here.
 library;
 
-export 'src/unified_game_services_xbox_base.dart';
+export 'src/unified_game_services_xbox_pc_base.dart';
 
 // TODO: Export any libraries intended for clients of this package.

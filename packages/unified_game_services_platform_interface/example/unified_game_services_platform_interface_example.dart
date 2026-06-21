@@ -3,7 +3,7 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 /// Demonstrates the unified models and capability gating.
 ///
 /// Apps and federated providers depend on this package only for the shared
-/// API; concrete providers (Google Play, Game Center, Steam, Epic, Xbox,
+/// API; concrete providers (Google Play, Game Center, Steam, Epic, Xbox PC,
 /// GameJolt) implement [UnifiedGameServicesPlatform].
 void main() {
   final platform = UnifiedGameServicesPlatform.instance;

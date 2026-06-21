@@ -1,6 +1,6 @@
-name: unified_game_services_xbox
+name: unified_game_services_xbox_pc
 resolution: workspace
-description: Xbox Live provider for unified_game_services. Research — not yet implemented.
+description: Xbox on PC (GDK) provider for unified_game_services. Research — not yet implemented.
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 

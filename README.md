@@ -23,19 +23,19 @@ single Dart API.
 | Module | Status |
 |---------|---------|
 | Core API | ✅ Implemented (interface + multi-provider facade) |
-| Achievements | 🚧 Design |
-| Leaderboards | 🚧 Design |
-| Stats | 🚧 Design |
-| Cloud Save | 📋 Planned |
-| User Profiles | 📋 Planned |
-| Rich Presence | 📋 Planned |
+| Achievements | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| Leaderboards | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| Stats | ✅ Implemented (Steam, PlayFab) |
+| Cloud Save | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| User Profiles | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| Rich Presence | ✅ Implemented (Steam) |
 | Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
 | Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
 | PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
 | Google Play Games | ⏸️ Deferred (no pure-Dart path) |
 | Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
-| Xbox Live | 📋 Research |
+| Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |
 
 > **Core constraint:** no package depends on Flutter. That is why
@@ -74,7 +74,7 @@ The same call will work over:
 - Epic Games Store
 - GameJolt
 - PlayFab (Microsoft's cross-platform backend; distinct from native Xbox Live)
-- Xbox Live
+- Xbox on PC (Microsoft GDK; console variant TBD)
 - Other future or custom providers
 
 ---
@@ -98,7 +98,7 @@ unified_game_services
 │   ├── steam
 │   ├── epic
 │   ├── playfab
-│   ├── xbox
+│   ├── xbox_pc
 │   ├── gamejolt
 │   └── huawei
 │
@@ -120,7 +120,7 @@ packages/
 ├── unified_game_services_epic
 ├── unified_game_services_gamejolt
 ├── unified_game_services_playfab
-├── unified_game_services_xbox
+├── unified_game_services_xbox_pc
 └── examples/
 ```
 

@@ -33,7 +33,7 @@ packages/
   unified_game_services_game_center
   unified_game_services_steam
   unified_game_services_epic
-  unified_game_services_xbox
+  unified_game_services_xbox_pc              # Xbox on PC (GDK); console TBD
   unified_game_services_gamejolt
 ```
 

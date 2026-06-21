@@ -1,10 +1,15 @@
-# unified_game_services_xbox
+# unified_game_services_xbox_pc
 
-Xbox Live provider for
+Xbox on PC (Microsoft GDK) provider for
 [`unified_game_services`](https://pub.dev/packages/unified_game_services).
 
-> **Status: research (not yet implemented).** A pure-Dart path to Xbox Live
-> (XSAPI) is still being investigated. This package is currently a placeholder.
+> **Scope: PC, not console.** The Microsoft Game Development Kit (GDK) differs
+> between the PC and console variants. This package targets the **PC** path
+> (Xbox services on Windows). A separate console provider may follow later.
+
+> **Status: research (not yet implemented).** A pure-Dart path to Xbox services
+> (XSAPI / GDK) is still being investigated. This package is currently a
+> placeholder.
 
 When ready it will implement `UnifiedGameServicesPlatform` and plug into the
 unified API alongside the other providers.

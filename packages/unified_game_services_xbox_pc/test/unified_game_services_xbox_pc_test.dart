@@ -1,4 +1,4 @@
-import 'package:unified_game_services_xbox/unified_game_services_xbox.dart';
+import 'package:unified_game_services_xbox_pc/unified_game_services_xbox_pc.dart';
 import 'package:test/test.dart';
 
 void main() {

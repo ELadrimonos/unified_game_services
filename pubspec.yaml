@@ -13,7 +13,7 @@ workspace:
   - packages/unified_game_services_steam
   - packages/unified_game_services_epic
   - packages/unified_game_services_gamejolt
-  - packages/unified_game_services_xbox
+  - packages/unified_game_services_xbox_pc
   - packages/unified_game_services_playfab
 
 dev_dependencies:

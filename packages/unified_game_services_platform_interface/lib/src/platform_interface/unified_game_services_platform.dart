@@ -2,7 +2,7 @@ part of 'platform_interface.dart';
 
 /// The interface every game service provider implements.
 ///
-/// Concrete providers (Google Play Games, Game Center, Steam, Epic, Xbox,
+/// Concrete providers (Google Play Games, Game Center, Steam, Epic, Xbox PC,
 /// GameJolt, …) extend this class and register themselves via [instance].
 ///
 /// Methods are grouped by [GameCapability]. The base class provides default
