@@ -103,4 +103,16 @@ Beyond the unified API (reach via
 
 ## License
 
-See the repository for license details.
+MIT — see the [LICENSE](LICENSE) file.
+
+This is an independent, unofficial library, not affiliated with or endorsed by
+Valve. **Steam** and **Steamworks** are trademarks of Valve Corporation.
+
+This provider is a thin wrapper over the BSD-3-Clause
+[`steamworks`](https://github.com/aeb-dev/steamworks) FFI bindings (© 2022 Ahmet
+Enes Bayraktar). It bundles **no** Valve SDK or native binary: Valve's license
+forbids redistributing the Steamworks SDK, so the native library is copied out
+of your local pub cache at setup time and you must ship it under your own
+Steamworks agreement. Full third-party credits and trademark notices are in the
+repository's `NOTICE.md`.
+

@@ -377,3 +377,25 @@ await services.trackEvent(
 ## Objetivo final
 
 Convertirse en la solución estándar de Flutter para servicios de videojuegos, permitiendo escribir una única integración y desplegarla sobre cualquier ecosistema de distribución de juegos.
+
+---
+
+## Licencia y créditos
+
+Licencia **MIT** — ver el archivo [`LICENSE`](LICENSE).
+
+Esta es una biblioteca **independiente y no oficial**. No está afiliada ni
+respaldada por ningún proveedor de plataforma (Valve, Game Jolt, Epic Games,
+Microsoft, Google, Apple). Todas las marcas pertenecen a sus respectivos
+dueños y se usan únicamente para identificar el servicio que integra cada
+proveedor.
+
+El repositorio **no incluye ningún SDK ni binario nativo** de un proveedor que
+no tenga permiso para redistribuir. En particular, el SDK de Steamworks **no**
+se redistribuye: el proveedor de Steam es un envoltorio sobre las _bindings_
+FFI de [`steamworks`](https://github.com/aeb-dev/steamworks) (BSD-3-Clause), y
+la librería nativa de Valve se copia desde tu propia caché de `pub` al
+configurar el proyecto.
+
+Créditos de terceros, avisos de marcas registradas y términos de
+redistribución del SDK de Steamworks: ver [`NOTICE.md`](NOTICE.md).

@@ -14,4 +14,9 @@ For the available providers today, see
 
 ## License
 
-See the repository for license details.
+MIT — see the [LICENSE](LICENSE) file.
+
+This is an independent, unofficial library, not affiliated with or endorsed by
+any platform vendor. Third-party credits, trademark notices, and the Steamworks
+SDK redistribution terms are in the repository's `NOTICE.md`.
+
