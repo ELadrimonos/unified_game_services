@@ -1,0 +1,21 @@
+# Dart / pub — https://dart.dev/tools/private-files
+.dart_tool/
+.packages
+.pub/
+.pub-cache/
+build/
+
+# Test & coverage output
+coverage/
+.test_coverage.dart
+test/.test_coverage.dart
+
+# Generated API docs
+doc/api/
+
+# Logs & OS cruft
+*.log
+.DS_Store
+
+# Generated dart_mappable code is committed on purpose (consumers should not
+# need build_runner). Do NOT ignore *.mapper.dart.

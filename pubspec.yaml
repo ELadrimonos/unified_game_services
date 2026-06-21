@@ -1,0 +1,45 @@
+name: unified_game_services_monorepo
+
+environment:
+  sdk: ^3.12.0
+
+workspace:
+  - packages/unified_game_services
+  - packages/unified_game_services_platform_interface
+  - packages/unified_game_services_google_play
+  - packages/unified_game_services_game_center
+  - packages/unified_game_services_steam
+  - packages/unified_game_services_epic
+  - packages/unified_game_services_gamejolt
+  - packages/unified_game_services_xbox
+
+dev_dependencies:
+  melos: ^7.5.1
+
+melos:
+  name: unified_game_services
+
+  command:
+    bootstrap:
+      runPubGetInParallel: true
+    version:
+      workspaceChangelog: true
+
+  scripts:
+    analyze:
+      description: Run dart analyze in all packages.
+      run: dart analyze --fatal-infos
+
+    format:
+      description: Format all packages.
+      run: dart format .
+
+    format-check:
+      description: Check formatting in all packages.
+      run: dart format --set-exit-if-changed .
+
+    test:
+      description: Run tests in packages that have them.
+      run: dart test
+      packageFilters:
+        dirExists: test

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services/melos_unified_game_services.iml" filepath="$PROJECT_DIR$/packages/unified_game_services/melos_unified_game_services.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_epic/melos_unified_game_services_epic.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_epic/melos_unified_game_services_epic.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_game_center/melos_unified_game_services_game_center.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_game_center/melos_unified_game_services_game_center.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_gamejolt/melos_unified_game_services_gamejolt.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_gamejolt/melos_unified_game_services_gamejolt.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_google_play/melos_unified_game_services_google_play.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_google_play/melos_unified_game_services_google_play.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_platform_interface/melos_unified_game_services_platform_interface.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_platform_interface/melos_unified_game_services_platform_interface.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_steam/melos_unified_game_services_steam.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_steam/melos_unified_game_services_steam.iml"/>
+<module fileurl="file://$PROJECT_DIR$/packages/unified_game_services_xbox/melos_unified_game_services_xbox.iml" filepath="$PROJECT_DIR$/packages/unified_game_services_xbox/melos_unified_game_services_xbox.iml"/>
+<module fileurl="file://$PROJECT_DIR$/melos_unified_game_services_monorepo.iml" filepath="$PROJECT_DIR$/melos_unified_game_services_monorepo.iml"/>
+<module fileurl="file://$PROJECT_DIR$/unified_game_services_monorepo.iml" filepath="$PROJECT_DIR$/unified_game_services_monorepo.iml"/>
+    </modules>
+  </component>
+</project>
