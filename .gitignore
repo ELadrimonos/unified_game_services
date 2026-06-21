@@ -17,6 +17,12 @@ doc/api/
 *.log
 .DS_Store
 
+# Local credentials — keep the templates, never the filled-in files
+.env
+.env.local
+*.env
+!.env.template
+
 # Steamworks dev tooling output (SDK extract, generated bindings, native libs)
 .steamworks/
 steam_appid.txt
