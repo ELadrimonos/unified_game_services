@@ -128,5 +128,13 @@ back by depending on `games_services`. Revisit later via FFI (GameKit through
 1. Implement the subset of `UnifiedGameServicesPlatform` the provider supports.
 2. Declare accurate `capabilities`.
 3. Map native/SDK errors to `GameServiceException` subtypes.
-4. Register via `UnifiedGameServicesPlatform.instance = ...`.
+4. Register via `UnifiedGameServicesPlatform.instance = ...`, or just pass an
+   instance to `UnifiedGameServices(providers: [...])`.
 5. Keep it pure Dart (see constraint above).
+
+This is also the extension point for **custom providers** outside this repo —
+e.g. backing achievements/scores/players with your own Supabase (or any) DB.
+Subclass `UnifiedGameServicesPlatform`, call `super()`, override what you
+support, and pass it to the facade next to Steam/GameJolt; the facade fans out
+writes to every capable provider. Runnable template:
+`packages/unified_game_services/example/custom_provider.dart`.
