@@ -1,48 +1,56 @@
-# Unified Game Services for Flutter
+# Unified Game Services
 
-Una capa de abstracción multiplataforma para servicios de videojuegos que unifica logros, clasificaciones, estadísticas, guardado en la nube, perfiles de usuario y presencia online mediante una única API Dart.
+A multi-platform abstraction layer for game services that unifies achievements,
+leaderboards, stats, cloud save, user profiles, and rich presence behind a
+single Dart API.
 
-## Objetivos
+> **Pure Dart, no Flutter.** Every package targets the Dart SDK, so the library
+> runs in plain Dart apps, CLIs, servers, and any Dart framework — Flutter
+> included, but not required.
 
-- Una única API para múltiples plataformas.
-- Arquitectura modular basada en plugins.
-- Compatibilidad con móvil, escritorio y consola.
-- Integración sencilla para desarrolladores Dart.
-- Extensible para nuevos proveedores sin modificar el núcleo.
+## Goals
+
+- A single API across multiple platforms.
+- Modular, federated-plugin architecture.
+- Works on mobile, desktop, and console.
+- Easy integration for Dart developers.
+- Extensible to new providers without touching the core.
 
 ---
 
-## Estado del proyecto
+## Project status
 
-| Módulo | Estado |
+| Module | Status |
 |---------|---------|
-| Core API | ✅ Implementado (interface + facade multi-provider) |
-| Achievements | 🚧 Diseño |
-| Leaderboards | 🚧 Diseño |
-| Stats | 🚧 Diseño |
-| Cloud Save | 📋 Planificado |
-| User Profiles | 📋 Planificado |
-| Rich Presence | 📋 Planificado |
-| Steam | ✅ Implementado (Dart puro, FFI `steamworks`) — pendiente verificación en runtime Windows |
-| GameJolt | ✅ Implementado (Dart puro, REST Game API v1.2) — verificado con tests (MockClient) |
-| Epic Online Services | 🚧 MVP (Dart puro, EOS REST/C) |
-| Google Play Games | ⏸️ Aplazado (sin vía Dart puro) |
-| Apple Game Center | ⏸️ Aplazado (posible vía FFI/GameKit) |
-| Xbox Live | 📋 Investigación |
-| Huawei Game Service | 📋 Investigación |
+| Core API | ✅ Implemented (interface + multi-provider facade) |
+| Achievements | 🚧 Design |
+| Leaderboards | 🚧 Design |
+| Stats | 🚧 Design |
+| Cloud Save | 📋 Planned |
+| User Profiles | 📋 Planned |
+| Rich Presence | 📋 Planned |
+| Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
+| GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
+| Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
+| Google Play Games | ⏸️ Deferred (no pure-Dart path) |
+| Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
+| Xbox Live | 📋 Research |
+| Huawei Game Service | 📋 Research |
 
-> **Restricción núcleo:** ningún paquete depende de Flutter. Por eso no se usa
-> [`games_services`](https://pub.dev/packages/games_services) (requiere Flutter +
-> platform channels). El MVP cubre los proveedores accesibles desde Dart puro;
-> Google Play y Game Center quedan aplazados.
+> **Core constraint:** no package depends on Flutter. That is why
+> [`games_services`](https://pub.dev/packages/games_services) is not used (it
+> requires Flutter + platform channels). The MVP covers the providers reachable
+> from pure Dart; Google Play and Game Center are deferred.
 
 ---
 
-## Visión
+## Vision
 
-Actualmente Dart/Flutter dispone de soluciones independientes para algunas plataformas, pero no existe una interfaz unificada que permita escribir una única implementación y desplegarla en múltiples ecosistemas.
+Today Dart/Flutter has standalone solutions for some platforms, but there is no
+unified interface that lets you write a single implementation and ship it across
+multiple ecosystems.
 
-Este proyecto busca resolver ese problema.
+This project sets out to solve that.
 
 ```dart
 final gameServices = UnifiedGameServices();
@@ -57,7 +65,7 @@ await gameServices.submitScore(
 );
 ```
 
-La misma llamada funcionará sobre:
+The same call will work over:
 
 - Google Play Games
 - Apple Game Center
@@ -65,11 +73,11 @@ La misma llamada funcionará sobre:
 - Epic Games Store
 - GameJolt
 - Xbox Live
-- Otros proveedores futuros o personalizados
+- Other future or custom providers
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```text
 unified_game_services
@@ -96,7 +104,7 @@ unified_game_services
 
 ---
 
-## Monorepo recomendado
+## Recommended monorepo
 
 ```text
 packages/
@@ -116,27 +124,27 @@ packages/
 
 ## Roadmap
 
-### Fase 1 — Core
+### Phase 1 — Core
 
-**Objetivo**
+**Goal**
 
-Construir la API base sin depender de ninguna plataforma.
+Build the base API without depending on any platform.
 
-**Tareas**
+**Tasks**
 
-- Definir `GameProvider`.
-- Definir `Achievement`.
-- Definir `Leaderboard`.
-- Definir `PlayerProfile`.
-- Definir `Stat`.
-- Definir `CloudSave`.
-- Definir `RichPresence`.
-- Definir excepciones comunes.
-- Definir sistema de capacidades.
+- Define `GameProvider`.
+- Define `Achievement`.
+- Define `Leaderboard`.
+- Define `PlayerProfile`.
+- Define `Stat`.
+- Define `CloudSave`.
+- Define `RichPresence`.
+- Define common exceptions.
+- Define the capabilities system.
 
-### Fase 2 — Achievements
+### Phase 2 — Achievements
 
-**API inicial**
+**Initial API**
 
 ```dart
 await services.unlockAchievement(
@@ -144,17 +152,17 @@ await services.unlockAchievement(
 );
 ```
 
-**Funcionalidades**
+**Features**
 
-- Desbloquear logro.
-- Logros incrementales.
-- Obtener progreso.
-- Obtener listado completo.
-- Eventos de cambio.
+- Unlock achievement.
+- Incremental achievements.
+- Get progress.
+- Get full listing.
+- Change events.
 
-### Fase 3 — Leaderboards
+### Phase 3 — Leaderboards
 
-**API inicial**
+**Initial API**
 
 ```dart
 await services.submitScore(
@@ -163,17 +171,17 @@ await services.submitScore(
 );
 ```
 
-**Funcionalidades**
+**Features**
 
-- Enviar puntuación.
-- Obtener top global.
-- Obtener puntuación personal.
-- Obtener ranking.
-- Obtener puntuaciones de amigos.
+- Submit score.
+- Get global top.
+- Get personal score.
+- Get ranking.
+- Get friends' scores.
 
-### Fase 4 — Stats
+### Phase 4 — Stats
 
-**API inicial**
+**Initial API**
 
 ```dart
 await services.setStat(
@@ -182,32 +190,32 @@ await services.setStat(
 );
 ```
 
-**Funcionalidades**
+**Features**
 
-- Leer estadísticas.
-- Actualizar estadísticas.
-- Incrementar estadísticas.
-- Sincronización automática.
+- Read stats.
+- Update stats.
+- Increment stats.
+- Automatic sync.
 
-### Fase 5 — Profiles
+### Phase 5 — Profiles
 
-**API inicial**
+**Initial API**
 
 ```dart
 final player = await services.getCurrentPlayer();
 ```
 
-**Funcionalidades**
+**Features**
 
-- ID usuario.
-- Nombre visible.
+- User ID.
+- Display name.
 - Avatar.
-- Estado online.
-- Amigos.
+- Online status.
+- Friends.
 
-### Fase 6 — Rich Presence
+### Phase 6 — Rich Presence
 
-**API inicial**
+**Initial API**
 
 ```dart
 await services.setPresence(
@@ -215,16 +223,16 @@ await services.setPresence(
 );
 ```
 
-**Funcionalidades**
+**Features**
 
-- Estado personalizado.
-- Tiempo de sesión.
-- Actividad actual.
-- Invitaciones.
+- Custom state.
+- Session time.
+- Current activity.
+- Invitations.
 
-### Fase 7 — Cloud Save
+### Phase 7 — Cloud Save
 
-**API inicial**
+**Initial API**
 
 ```dart
 await services.saveData(
@@ -233,18 +241,18 @@ await services.saveData(
 );
 ```
 
-**Funcionalidades**
+**Features**
 
-- Guardado remoto.
-- Versionado.
-- Resolución de conflictos.
-- Sincronización offline.
+- Remote save.
+- Versioning.
+- Conflict resolution.
+- Offline sync.
 
 ---
 
-## Sistema de capacidades
+## Capabilities system
 
-Cada plataforma soporta características diferentes.
+Each platform supports different features.
 
 ```dart
 if (services.supports(
@@ -254,7 +262,7 @@ if (services.supports(
 }
 ```
 
-Capacidades previstas:
+Planned capabilities:
 
 ```dart
 enum GameCapability {
@@ -270,9 +278,9 @@ enum GameCapability {
 
 ---
 
-## Multi Provider
+## Multi-provider
 
-Permite publicar simultáneamente en varias plataformas.
+Lets you publish to several platforms at once.
 
 ```dart
 final services = UnifiedGameServices(
@@ -284,11 +292,11 @@ final services = UnifiedGameServices(
 );
 ```
 
-Las operaciones se ejecutan sobre todos los proveedores compatibles.
+Operations fan out to every capable provider.
 
 ---
 
-## Eventos
+## Events
 
 ```dart
 services.events.listen(
@@ -298,7 +306,7 @@ services.events.listen(
 );
 ```
 
-Eventos previstos:
+Planned events:
 
 - AchievementUnlocked
 - ScoreSubmitted
@@ -319,11 +327,11 @@ Eventos previstos:
 
 - Integration tests
 - Fake SDKs
-- CI multiplataforma
+- Cross-platform CI
 
 ---
 
-## Futuras expansiones
+## Future expansions
 
 ### Multiplayer
 
@@ -337,9 +345,9 @@ await services.inviteFriend();
 await services.findMatch();
 ```
 
-### Anti-Cheat
+### Anti-cheat
 
-Sistema opcional para proveedores compatibles.
+Optional system for compatible providers.
 
 ### Analytics
 
@@ -351,51 +359,51 @@ await services.trackEvent(
 
 ---
 
-## MVP recomendado
+## Recommended MVP
 
 ### Core
 
-- Arquitectura base.
+- Base architecture.
 - Achievements.
 - Leaderboards.
 
-### Proveedores
+### Providers
 
 - Google Play Games.
 - Apple Game Center.
 - Steam.
 
-### Publicación
+### Publishing
 
-- Documentación.
-- Ejemplo completo.
+- Documentation.
+- Full example.
 - Tests.
 - CI.
 
 ---
 
-## Objetivo final
+## End goal
 
-Convertirse en la solución estándar de Flutter para servicios de videojuegos, permitiendo escribir una única integración y desplegarla sobre cualquier ecosistema de distribución de juegos.
+Become the standard Dart/Flutter solution for game services — write a single
+integration and deploy it over any game-distribution ecosystem.
 
 ---
 
-## Licencia y créditos
+## License & credits
 
-Licencia **MIT** — ver el archivo [`LICENSE`](LICENSE).
+**MIT** — see the [`LICENSE`](LICENSE) file.
 
-Esta es una biblioteca **independiente y no oficial**. No está afiliada ni
-respaldada por ningún proveedor de plataforma (Valve, Game Jolt, Epic Games,
-Microsoft, Google, Apple). Todas las marcas pertenecen a sus respectivos
-dueños y se usan únicamente para identificar el servicio que integra cada
-proveedor.
+This is an **independent, unofficial** library. It is not affiliated with or
+endorsed by any platform vendor (Valve, Game Jolt, Epic Games, Microsoft,
+Google, Apple). All trademarks belong to their respective owners and are used
+only to identify the service each provider integrates with.
 
-El repositorio **no incluye ningún SDK ni binario nativo** de un proveedor que
-no tenga permiso para redistribuir. En particular, el SDK de Steamworks **no**
-se redistribuye: el proveedor de Steam es un envoltorio sobre las _bindings_
-FFI de [`steamworks`](https://github.com/aeb-dev/steamworks) (BSD-3-Clause), y
-la librería nativa de Valve se copia desde tu propia caché de `pub` al
-configurar el proyecto.
+The repository bundles **no vendor SDK or native binary** that it lacks
+permission to redistribute. In particular, the Steamworks SDK is **not**
+redistributed: the Steam provider is a wrapper over the
+[`steamworks`](https://github.com/aeb-dev/steamworks) FFI bindings
+(BSD-3-Clause), and Valve's native library is copied out of your own `pub`
+cache when you set up the project.
 
-Créditos de terceros, avisos de marcas registradas y términos de
-redistribución del SDK de Steamworks: ver [`NOTICE.md`](NOTICE.md).
+Third-party credits, trademark notices, and the Steamworks SDK redistribution
+terms: see [`NOTICE.md`](NOTICE.md).

@@ -2,7 +2,7 @@ name: unified_game_services_xbox
 resolution: workspace
 description: Xbox Live provider for unified_game_services. Research — not yet implemented.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
   sdk: ^3.12.0

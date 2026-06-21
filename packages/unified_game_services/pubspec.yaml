@@ -2,7 +2,7 @@ name: unified_game_services
 resolution: workspace
 description: Unified, multi-platform game services API for Dart (achievements, leaderboards, cloud save and more).
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
   sdk: ^3.12.0
