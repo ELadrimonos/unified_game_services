@@ -34,10 +34,15 @@ class GameJoltClient {
   /// Performs a signed GET against [endpoint] (e.g. `/users/`) with [params].
   ///
   /// Null-valued params are dropped. Returns the unwrapped `response` object.
+  ///
+  /// When [throwOnFailure] is `false`, a `success != "true"` envelope is
+  /// returned instead of throwing — useful for endpoints where failure is a
+  /// meaningful answer (e.g. `/sessions/check/`). Inspect `response['success']`.
   Future<Map<String, dynamic>> get(
     String endpoint,
-    Map<String, String?> params,
-  ) async {
+    Map<String, String?> params, {
+    bool throwOnFailure = true,
+  }) async {
     final uri = signedUri(endpoint, params);
     final http.Response res;
     try {
@@ -45,7 +50,7 @@ class GameJoltClient {
     } catch (e) {
       throw NetworkException('GameJolt request failed: $endpoint', e);
     }
-    return _unwrap(res, endpoint);
+    return _unwrap(res, endpoint, throwOnFailure: throwOnFailure);
   }
 
   /// Builds the fully-signed [Uri] for [endpoint] + [params]. Exposed for
@@ -66,7 +71,11 @@ class GameJoltClient {
     return Uri.parse('$base&signature=$signature');
   }
 
-  Map<String, dynamic> _unwrap(http.Response res, String endpoint) {
+  Map<String, dynamic> _unwrap(
+    http.Response res,
+    String endpoint, {
+    required bool throwOnFailure,
+  }) {
     if (res.statusCode != 200) {
       throw NetworkException(
           'GameJolt $endpoint returned HTTP ${res.statusCode}.');
@@ -77,13 +86,18 @@ class GameJoltClient {
           'Unexpected GameJolt response for $endpoint.');
     }
     final response = (body['response'] as Map).cast<String, dynamic>();
-    if (response['success'] != 'true' && response['success'] != true) {
+    final ok = response['success'] == 'true' || response['success'] == true;
+    if (!ok && throwOnFailure) {
       throw PlatformOperationException(
         (response['message'] as String?) ?? 'GameJolt $endpoint failed.',
       );
     }
     return response;
   }
+
+  /// Whether a `response` map reports success.
+  static bool isSuccess(Map<String, dynamic> response) =>
+      response['success'] == 'true' || response['success'] == true;
 
   /// Closes the underlying HTTP client.
   void close() => _http.close();

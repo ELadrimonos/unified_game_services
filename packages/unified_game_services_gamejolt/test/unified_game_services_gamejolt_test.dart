@@ -234,4 +234,39 @@ void main() {
       );
     });
   });
+
+  group('GameJoltProvider sessions (provider-specific)', () {
+    test('open/ping/close hit the session endpoints', () async {
+      final m = mock({
+        '/api/game/v1_2/sessions/open/': _ok,
+        '/api/game/v1_2/sessions/ping/': _ok,
+        '/api/game/v1_2/sessions/close/': _ok,
+      });
+      final p = providerWith(m.client);
+      await p.openSession();
+      await p.pingSession(idle: true);
+      await p.closeSession();
+      expect(m.calls.map((u) => u.path), [
+        '/api/game/v1_2/sessions/open/',
+        '/api/game/v1_2/sessions/ping/',
+        '/api/game/v1_2/sessions/close/',
+      ]);
+      expect(m.calls[1].queryParameters['status'], 'idle');
+    });
+
+    test('isSessionOpen returns false on success:false without throwing',
+        () async {
+      final m = mock({
+        '/api/game/v1_2/sessions/check/': {
+          'response': {'success': 'false'}
+        },
+      });
+      expect(await providerWith(m.client).isSessionOpen(), isFalse);
+    });
+
+    test('isSessionOpen returns true when a session is open', () async {
+      final m = mock({'/api/game/v1_2/sessions/check/': _ok});
+      expect(await providerWith(m.client).isSessionOpen(), isTrue);
+    });
+  });
 }

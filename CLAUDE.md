@@ -82,6 +82,26 @@ melos run test               # dart test in packages that have a test/ dir
 
 Single package: `cd packages/<name> && dart test`.
 
+## Two layers: unified + provider-specific
+
+The package deliberately exposes two tiers, and providers must respect the line:
+
+1. **Unified API** — `UnifiedGameServicesPlatform`. Portable across every
+   provider. Only model concepts that map cleanly to *most* providers, and
+   capability-gate them. If a feature can't be expressed without losing meaning
+   on a given provider, it does **not** belong here.
+2. **Provider-specific extras** — extra public members on a concrete provider
+   (e.g. `GameJoltProvider.openSession`/`startSessionHeartbeat`) for apps that
+   target one provider and want its full feature set. Mark them clearly as
+   not part of the unified interface, and keep them off
+   `UnifiedGameServicesPlatform`.
+
+Rule of thumb: prefer unifying, but never shoehorn. Example: GameJolt
+*sessions* are online presence (playing + active/idle), not the free-text
+[RichPresence] the unified API models — so they live on `GameJoltProvider`, not
+behind `GameCapability.presence`. A dev using the facade gets portability; a dev
+holding a `GameJoltProvider` gets everything GameJolt offers.
+
 ## Provider scope (MVP)
 
 Pure-Dart-reachable providers ship first:

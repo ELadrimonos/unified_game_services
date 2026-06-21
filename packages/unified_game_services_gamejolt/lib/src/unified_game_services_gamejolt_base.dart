@@ -301,10 +301,61 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
         .toList();
   }
 
+  // ─── GameJolt-specific: sessions ────────────────────────────────────────────
+  //
+  // Not part of the unified interface. GameJolt sessions track "playing now"
+  // (online + active/idle), which is online presence rather than the rich,
+  // free-text presence modeled by [RichPresence] — hence exposed here, on the
+  // concrete provider, for apps that target GameJolt directly. Sessions close
+  // server-side after ~120s without a ping; use [startSessionHeartbeat] to keep
+  // one alive automatically.
+
+  Timer? _heartbeat;
+
+  /// Opens a play session for the signed-in player.
+  Future<void> openSession() => _client.get('/sessions/open/', _auth);
+
+  /// Pings the open session to keep it alive. Set [idle] when the player is
+  /// present but not actively playing.
+  Future<void> pingSession({bool idle = false}) => _client.get(
+        '/sessions/ping/',
+        {..._auth, 'status': idle ? 'idle' : 'active'},
+      );
+
+  /// Whether the player currently has an open session.
+  Future<bool> isSessionOpen() async {
+    final response =
+        await _client.get('/sessions/check/', _auth, throwOnFailure: false);
+    return GameJoltClient.isSuccess(response);
+  }
+
+  /// Closes the open session.
+  Future<void> closeSession() => _client.get('/sessions/close/', _auth);
+
+  /// Opens a session and pings it every [interval] (default 60s, safely under
+  /// GameJolt's ~120s timeout). Call [stopSessionHeartbeat] to end it.
+  Future<void> startSessionHeartbeat({
+    Duration interval = const Duration(seconds: 60),
+  }) async {
+    await openSession();
+    _heartbeat?.cancel();
+    _heartbeat = Timer.periodic(interval, (_) => pingSession());
+  }
+
+  /// Stops the heartbeat started by [startSessionHeartbeat] and closes the
+  /// session.
+  Future<void> stopSessionHeartbeat() async {
+    _heartbeat?.cancel();
+    _heartbeat = null;
+    await closeSession();
+  }
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
-  /// Closes the HTTP client and events stream.
+  /// Closes the HTTP client and events stream, stopping any session heartbeat.
   Future<void> dispose() async {
+    _heartbeat?.cancel();
+    _heartbeat = null;
     _client.close();
     await _events.close();
   }
