@@ -23,13 +23,18 @@ Una capa de abstracción multiplataforma para servicios de videojuegos que unifi
 | Cloud Save | 📋 Planificado |
 | User Profiles | 📋 Planificado |
 | Rich Presence | 📋 Planificado |
-| Google Play Games | 📋 Planificado |
-| Apple Game Center | 📋 Planificado |
-| Steam | 📋 Planificado |
-| Epic Online Services | 📋 Planificado |
-| GameJolt | 📋 Planificado |
+| Steam | ✅ Implementado (Dart puro, FFI `steamworks`) — pendiente verificación en runtime Windows |
+| GameJolt | 🚧 MVP (Dart puro, REST) |
+| Epic Online Services | 🚧 MVP (Dart puro, EOS REST/C) |
+| Google Play Games | ⏸️ Aplazado (sin vía Dart puro) |
+| Apple Game Center | ⏸️ Aplazado (posible vía FFI/GameKit) |
 | Xbox Live | 📋 Investigación |
 | Huawei Game Service | 📋 Investigación |
+
+> **Restricción núcleo:** ningún paquete depende de Flutter. Por eso no se usa
+> [`games_services`](https://pub.dev/packages/games_services) (requiere Flutter +
+> platform channels). El MVP cubre los proveedores accesibles desde Dart puro;
+> Google Play y Game Center quedan aplazados.
 
 ---
 

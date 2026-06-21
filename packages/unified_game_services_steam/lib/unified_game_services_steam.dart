@@ -1,8 +1,5 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Steam provider for `unified_game_services`, backed by the pure-Dart
+/// `steamworks` FFI bindings.
 library;
 
 export 'src/unified_game_services_steam_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.

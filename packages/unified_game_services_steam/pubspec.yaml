@@ -1,6 +1,6 @@
 name: unified_game_services_steam
 resolution: workspace
-description: A starting point for Dart libraries or applications.
+description: Steam provider for unified_game_services, backed by the pure-Dart steamworks FFI bindings.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
@@ -9,8 +9,14 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  ffi: ^2.1.4
+  steamworks: ^0.4.8
+  unified_game_services_platform_interface: ^1.0.0
 
 dev_dependencies:
+  archive: ^4.0.0
+  args: ^2.6.0
   lints: ^6.0.0
+  path: ^1.9.0
+  steamworks_gen: ^0.4.5
   test: ^1.25.6

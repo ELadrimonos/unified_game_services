@@ -17,5 +17,12 @@ doc/api/
 *.log
 .DS_Store
 
+# Steamworks dev tooling output (SDK extract, generated bindings, native libs)
+.steamworks/
+steam_appid.txt
+*.dll
+*.dylib
+*.so
+
 # Generated dart_mappable code is committed on purpose (consumers should not
 # need build_runner). Do NOT ignore *.mapper.dart.

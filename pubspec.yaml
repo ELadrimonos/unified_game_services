@@ -43,3 +43,12 @@ melos:
       run: dart test
       packageFilters:
         dirExists: test
+
+    steam:gen:
+      description: >
+        Generate Steamworks bindings for the Steam provider. Pass SDK location
+        via --sdk/--zip/--url or STEAMWORKS_SDK[_ZIP|_URL]. Forward args after
+        `--`, e.g. `melos run steam:gen -- --sdk /path/to/sdk -t linux`.
+      run: dart run tool/generate_steamworks.dart
+      packageFilters:
+        scope: unified_game_services_steam

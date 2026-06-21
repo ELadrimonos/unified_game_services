@@ -82,6 +82,22 @@ melos run test               # dart test in packages that have a test/ dir
 
 Single package: `cd packages/<name> && dart test`.
 
+## Provider scope (MVP)
+
+Pure-Dart-reachable providers ship first:
+
+- **Steam** — Steamworks C API via `dart:ffi`.
+- **GameJolt** — REST API.
+- **Epic** — EOS REST / C SDK.
+
+**Deferred: Google Play Games & Game Center.** These are mobile-native SDKs
+(Android `.aar`, Obj-C GameKit) with no clean pure-Dart path: Android Play Games
+is callable only from a running app runtime, and the popular wrapper
+[`games_services`](https://pub.dev/packages/games_services) depends on Flutter +
+platform channels — which violates the no-Flutter constraint. Do **not** add them
+back by depending on `games_services`. Revisit later via FFI (GameKit through
+`package:objective_c`) or a deliberately-scoped optional-Flutter adapter.
+
 ## When adding a provider
 
 1. Implement the subset of `UnifiedGameServicesPlatform` the provider supports.
