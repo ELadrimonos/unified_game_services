@@ -45,7 +45,8 @@ Future<void> main() async {
     }
     stdout.writeln('OK');
     stdout.writeln('Logged in as: ${player?.displayName} (id ${player?.id})');
-    if (player?.avatarUrl != null) stdout.writeln('Avatar: ${player!.avatarUrl}');
+    if (player?.avatarUrl != null)
+      stdout.writeln('Avatar: ${player!.avatarUrl}');
 
     await _menu(provider);
   } finally {
@@ -76,7 +77,8 @@ What do you want to test?
           stdout.writeln('${list.length} trophies:');
           for (final a in list) {
             stdout.writeln(
-                '  [${a.isUnlocked ? 'x' : ' '}] ${a.id}  ${a.title}');
+              '  [${a.isUnlocked ? 'x' : ' '}] ${a.id}  ${a.title}',
+            );
           }
         case '2':
           final id = _prompt('Trophy id');
@@ -97,16 +99,20 @@ What do you want to test?
           stdout.writeln('Top ${board.entries.length}:');
           for (final e in board.entries) {
             stdout.writeln(
-                '  #${e.rank} ${e.player.displayName}: ${e.displayScore}');
+              '  #${e.rank} ${e.player.displayName}: ${e.displayScore}',
+            );
           }
         case '5':
           final payload = Uint8List.fromList(
-              'hello-${DateTime.now().toIso8601String()}'.codeUnits);
+            'hello-${DateTime.now().toIso8601String()}'.codeUnits,
+          );
           await provider.saveData('ugs_demo', payload);
           final loaded = await provider.loadData('ugs_demo');
-          stdout.writeln('Saved ${payload.length} bytes, read back '
-              '${loaded?.bytes.length} bytes: '
-              '${String.fromCharCodes(loaded?.bytes ?? [])}');
+          stdout.writeln(
+            'Saved ${payload.length} bytes, read back '
+            '${loaded?.bytes.length} bytes: '
+            '${String.fromCharCodes(loaded?.bytes ?? [])}',
+          );
           await provider.deleteSave('ugs_demo');
           stdout.writeln('Deleted test key.');
         case '6':

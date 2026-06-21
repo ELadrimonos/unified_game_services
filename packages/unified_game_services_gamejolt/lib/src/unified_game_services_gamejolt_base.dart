@@ -24,12 +24,14 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required this.userToken,
     http.Client? httpClient,
     String? baseUrl,
+    super.leaderboardIds,
+    super.achievementIds,
   }) : _client = GameJoltClient(
-          gameId: gameId,
-          privateKey: privateKey,
-          httpClient: httpClient,
-          baseUrl: baseUrl ?? 'https://api.gamejolt.com/api/game/v1_2',
-        );
+         gameId: gameId,
+         privateKey: privateKey,
+         httpClient: httpClient,
+         baseUrl: baseUrl ?? 'https://api.gamejolt.com/api/game/v1_2',
+       );
 
   /// Creates a provider around an existing [GameJoltClient] (useful for tests).
   ///
@@ -38,6 +40,8 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required GameJoltClient client,
     required this.username,
     required this.userToken,
+    super.leaderboardIds,
+    super.achievementIds,
     // ignore: prefer_initializing_formals
   }) : _client = client;
 
@@ -59,6 +63,8 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required String username,
     required String userToken,
     http.Client? httpClient,
+    Map<String, String>? leaderboardIds,
+    Map<String, String>? achievementIds,
   }) {
     UnifiedGameServicesPlatform.instance = GameJoltProvider(
       gameId: gameId,
@@ -66,20 +72,24 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
       username: username,
       userToken: userToken,
       httpClient: httpClient,
+      leaderboardIds: leaderboardIds,
+      achievementIds: achievementIds,
     );
   }
 
   /// Credentials shared by user-scoped requests.
-  Map<String, String?> get _auth =>
-      {'username': username, 'user_token': userToken};
+  Map<String, String?> get _auth => {
+    'username': username,
+    'user_token': userToken,
+  };
 
   @override
   Set<GameCapability> get capabilities => const {
-        GameCapability.achievements,
-        GameCapability.leaderboards,
-        GameCapability.cloudSave,
-        GameCapability.friends,
-      };
+    GameCapability.achievements,
+    GameCapability.leaderboards,
+    GameCapability.cloudSave,
+    GameCapability.friends,
+  };
 
   @override
   Stream<GameServiceEvent> get events => _events.stream;
@@ -151,15 +161,14 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
 
   @override
   Future<void> unlockAchievement(String achievementId) async {
-    await _client.get('/trophies/add-achieved/', {
-      ..._auth,
-      'trophy_id': achievementId,
-    });
-    _emit(AchievementUnlockedEvent(
-      achievement: Achievement(
-          id: achievementId, title: achievementId, isUnlocked: true),
-      timestamp: DateTime.now(),
-    ));
+    final id = resolveAchievementId(achievementId);
+    await _client.get('/trophies/add-achieved/', {..._auth, 'trophy_id': id});
+    _emit(
+      AchievementUnlockedEvent(
+        achievement: Achievement(id: id, title: id, isUnlocked: true),
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -180,17 +189,20 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required String leaderboardId,
     required int score,
   }) async {
+    final id = resolveLeaderboardId(leaderboardId);
     await _client.get('/scores/add/', {
       ..._auth,
-      'table_id': leaderboardId,
+      'table_id': id,
       'score': '$score',
       'sort': '$score',
     });
-    _emit(ScoreSubmittedEvent(
-      leaderboardId: leaderboardId,
-      score: score,
-      timestamp: DateTime.now(),
-    ));
+    _emit(
+      ScoreSubmittedEvent(
+        leaderboardId: id,
+        score: score,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -201,7 +213,7 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     int maxResults = 25,
   }) async {
     final response = await _client.get('/scores/', {
-      'table_id': leaderboardId,
+      'table_id': resolveLeaderboardId(leaderboardId),
       'limit': '$maxResults',
     });
     final scores = _mapList(response['scores']);
@@ -209,15 +221,17 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     for (var i = 0; i < scores.length; i++) {
       final s = scores[i];
       final isGuest = s['user_id'] == null || '${s['user_id']}' == '0';
-      entries.add(LeaderboardEntry(
-        rank: i + 1,
-        score: int.tryParse('${s['sort']}') ?? 0,
-        formattedScore: s['score'] as String?,
-        player: PlayerProfile(
-          id: isGuest ? 'guest' : '${s['user_id']}',
-          displayName: isGuest ? '${s['guest']}' : '${s['user']}',
+      entries.add(
+        LeaderboardEntry(
+          rank: i + 1,
+          score: int.tryParse('${s['sort']}') ?? 0,
+          formattedScore: s['score'] as String?,
+          player: PlayerProfile(
+            id: isGuest ? 'guest' : '${s['user_id']}',
+            displayName: isGuest ? '${s['guest']}' : '${s['user']}',
+          ),
         ),
-      ));
+      );
     }
     return Leaderboard(
       id: leaderboardId,
@@ -311,14 +325,17 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   /// Pings the open session to keep it alive. Set [idle] when the player is
   /// present but not actively playing.
   Future<void> pingSession({bool idle = false}) => _client.get(
-        '/sessions/ping/',
-        {..._auth, 'status': idle ? 'idle' : 'active'},
-      );
+    '/sessions/ping/',
+    {..._auth, 'status': idle ? 'idle' : 'active'},
+  );
 
   /// Whether the player currently has an open session.
   Future<bool> isSessionOpen() async {
-    final response =
-        await _client.get('/sessions/check/', _auth, throwOnFailure: false);
+    final response = await _client.get(
+      '/sessions/check/',
+      _auth,
+      throwOnFailure: false,
+    );
     return GameJoltClient.isSuccess(response);
   }
 

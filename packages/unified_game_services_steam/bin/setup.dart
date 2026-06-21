@@ -32,8 +32,10 @@ void main(List<String> argv) {
       case '--output' || '-o':
         output = argv[++i];
       case '-h' || '--help':
-        stdout.writeln('Usage: dart run unified_game_services_steam:setup '
-            '[--app-id <id>] [--output <dir>]');
+        stdout.writeln(
+          'Usage: dart run unified_game_services_steam:setup '
+          '[--app-id <id>] [--output <dir>]',
+        );
         return;
     }
   }
@@ -57,8 +59,10 @@ void main(List<String> argv) {
     File('$output/steam_appid.txt').writeAsStringSync('$appId\n');
     stdout.writeln('Wrote $output/steam_appid.txt ($appId)');
   } else {
-    stdout.writeln('No --app-id given; create steam_appid.txt yourself for '
-        'running outside Steam during development.');
+    stdout.writeln(
+      'No --app-id given; create steam_appid.txt yourself for '
+      'running outside Steam during development.',
+    );
   }
 
   _printRunHint(os, libName, output);
@@ -68,18 +72,24 @@ void main(List<String> argv) {
 String _findSteamworks() {
   final config = File('.dart_tool/package_config.json');
   if (!config.existsSync()) {
-    _fail('.dart_tool/package_config.json not found. Run this from your '
-        'project root after `dart pub get`.');
+    _fail(
+      '.dart_tool/package_config.json not found. Run this from your '
+      'project root after `dart pub get`.',
+    );
   }
   final json = jsonDecode(config.readAsStringSync()) as Map<String, dynamic>;
   final packages = (json['packages'] as List).cast<Map<String, dynamic>>();
   final sw = packages.where((p) => p['name'] == 'steamworks').toList();
   if (sw.isEmpty) {
-    _fail('The `steamworks` package is not resolved. Add '
-        'unified_game_services_steam to your pubspec and run `dart pub get`.');
+    _fail(
+      'The `steamworks` package is not resolved. Add '
+      'unified_game_services_steam to your pubspec and run `dart pub get`.',
+    );
   }
   // rootUri is resolved relative to the .dart_tool/ directory.
-  final rootUri = config.parent.uri.resolveUri(Uri.parse(sw.first['rootUri'] as String));
+  final rootUri = config.parent.uri.resolveUri(
+    Uri.parse(sw.first['rootUri'] as String),
+  );
   return rootUri.toFilePath().replaceAll(RegExp(r'[/\\]$'), '');
 }
 
@@ -87,14 +97,20 @@ void _printRunHint(String os, String libName, String output) {
   stdout.writeln('\nThe dynamic loader must find $libName at runtime:');
   switch (os) {
     case 'windows':
-      stdout.writeln('  Windows searches the executable directory and the '
-          'working directory — keep $libName next to your app / run dir.');
+      stdout.writeln(
+        '  Windows searches the executable directory and the '
+        'working directory — keep $libName next to your app / run dir.',
+      );
     case 'linux':
-      stdout.writeln('  Linux does not search the working directory. Run with:');
+      stdout.writeln(
+        '  Linux does not search the working directory. Run with:',
+      );
       stdout.writeln('    LD_LIBRARY_PATH="$output" dart run …');
       stdout.writeln('  or copy it to /usr/local/lib, or set an rpath.');
     case 'macos':
-      stdout.writeln('  macOS does not search the working directory. Run with:');
+      stdout.writeln(
+        '  macOS does not search the working directory. Run with:',
+      );
       stdout.writeln('    DYLD_LIBRARY_PATH="$output" dart run …');
       stdout.writeln('  or copy it to /usr/local/lib.');
   }

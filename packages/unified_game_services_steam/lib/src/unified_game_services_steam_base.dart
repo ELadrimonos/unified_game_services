@@ -25,7 +25,7 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 /// Steam delivers async results through a callback pump; this provider drives
 /// it with a periodic [Timer] calling `runFrame`.
 class SteamProvider extends UnifiedGameServicesPlatform {
-  SteamProvider({this.appId});
+  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds});
 
   /// Optional Steam application id. If omitted, a `steam_appid.txt` file must
   /// be present.
@@ -40,19 +40,27 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       StreamController<GameServiceEvent>.broadcast();
 
   /// Registers a [SteamProvider] as the active platform implementation.
-  static void registerWith({int? appId}) {
-    UnifiedGameServicesPlatform.instance = SteamProvider(appId: appId);
+  static void registerWith({
+    int? appId,
+    Map<String, String>? leaderboardIds,
+    Map<String, String>? achievementIds,
+  }) {
+    UnifiedGameServicesPlatform.instance = SteamProvider(
+      appId: appId,
+      leaderboardIds: leaderboardIds,
+      achievementIds: achievementIds,
+    );
   }
 
   @override
   Set<GameCapability> get capabilities => const {
-        GameCapability.achievements,
-        GameCapability.leaderboards,
-        GameCapability.stats,
-        GameCapability.cloudSave,
-        GameCapability.friends,
-        GameCapability.presence,
-      };
+    GameCapability.achievements,
+    GameCapability.leaderboards,
+    GameCapability.stats,
+    GameCapability.cloudSave,
+    GameCapability.friends,
+    GameCapability.presence,
+  };
 
   @override
   Stream<GameServiceEvent> get events => _events.stream;
@@ -151,12 +159,13 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       final pAchieved = calloc<Bool>();
       final pTime = calloc<UnsignedInt>();
       try {
-        final ok =
-            stats.getAchievementAndUnlockTime(namePtr, pAchieved, pTime);
+        final ok = stats.getAchievementAndUnlockTime(namePtr, pAchieved, pTime);
         final unlocked = ok && pAchieved.value;
         final unlockedAt = unlocked && pTime.value > 0
-            ? DateTime.fromMillisecondsSinceEpoch(pTime.value * 1000,
-                isUtc: true)
+            ? DateTime.fromMillisecondsSinceEpoch(
+                pTime.value * 1000,
+                isUtc: true,
+              )
             : null;
         return Achievement(
           id: id,
@@ -179,27 +188,30 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     String key,
   ) {
     return _withUtf8(key, (keyPtr) {
-      final value =
-          stats.getAchievementDisplayAttribute(namePtr, keyPtr).toDartString();
+      final value = stats
+          .getAchievementDisplayAttribute(namePtr, keyPtr)
+          .toDartString();
       return value.isEmpty ? null : value;
     });
   }
 
   @override
   Future<void> unlockAchievement(String achievementId) async {
+    final id = resolveAchievementId(achievementId);
     final stats = _ensureInit().steamUserStats;
-    _withUtf8(achievementId, (namePtr) {
+    _withUtf8(id, (namePtr) {
       stats.setAchievement(namePtr);
       return null;
     });
     if (!stats.storeStats()) {
-      throw PlatformOperationException(
-          'Failed to store achievement "$achievementId".');
+      throw PlatformOperationException('Failed to store achievement "$id".');
     }
-    _emit(AchievementUnlockedEvent(
-      achievement: _readAchievement(stats, achievementId),
-      timestamp: DateTime.now(),
-    ));
+    _emit(
+      AchievementUnlockedEvent(
+        achievement: _readAchievement(stats, id),
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -225,14 +237,16 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// for re-testing. Reach it via
   /// `UnifiedGameServicesPlatform.getInstance<SteamProvider>()`.
   Future<void> clearAchievement(String achievementId) async {
+    final id = resolveAchievementId(achievementId);
     final stats = _ensureInit().steamUserStats;
-    _withUtf8(achievementId, (namePtr) {
+    _withUtf8(id, (namePtr) {
       stats.clearAchievement(namePtr);
       return null;
     });
     if (!stats.storeStats()) {
       throw PlatformOperationException(
-          'Failed to clear achievement "$achievementId".');
+        'Failed to clear achievement "$achievementId".',
+      );
     }
   }
 
@@ -271,10 +285,12 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     if (!stats.storeStats()) {
       throw PlatformOperationException('Failed to store stat "$key".');
     }
-    _emit(StatUpdatedEvent(
-      stat: Stat(key: key, value: value),
-      timestamp: DateTime.now(),
-    ));
+    _emit(
+      StatUpdatedEvent(
+        stat: Stat(key: key, value: value),
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -290,8 +306,9 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     required String leaderboardId,
     required int score,
   }) async {
+    final id = resolveLeaderboardId(leaderboardId);
     final stats = _ensureInit().steamUserStats;
-    final handle = await _findLeaderboard(stats, leaderboardId);
+    final handle = await _findLeaderboard(stats, id);
     final callId = stats.uploadLeaderboardScore(
       handle,
       sw.ELeaderboardUploadScoreMethod.keepBest,
@@ -301,15 +318,16 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     );
     await _awaitCall<sw.LeaderboardScoreUploaded, void>(callId, (ptr) {
       if (ptr.ref.success == 0) {
-        throw PlatformOperationException(
-            'Failed to upload score to "$leaderboardId".');
+        throw PlatformOperationException('Failed to upload score to "$id".');
       }
     });
-    _emit(ScoreSubmittedEvent(
-      leaderboardId: leaderboardId,
-      score: score,
-      timestamp: DateTime.now(),
-    ));
+    _emit(
+      ScoreSubmittedEvent(
+        leaderboardId: id,
+        score: score,
+        timestamp: DateTime.now(),
+      ),
+    );
   }
 
   @override
@@ -321,18 +339,31 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   }) async {
     final client = _ensureInit();
     final stats = client.steamUserStats;
-    final handle = await _findLeaderboard(stats, leaderboardId);
+    final handle = await _findLeaderboard(
+      stats,
+      resolveLeaderboardId(leaderboardId),
+    );
     final request = collection == LeaderboardCollection.friends
         ? sw.ELeaderboardDataRequest.friends
         : sw.ELeaderboardDataRequest.global;
-    final callId =
-        stats.downloadLeaderboardEntries(handle, request, 1, maxResults);
-    final entries = await _awaitCall<sw.LeaderboardScoresDownloaded,
-        List<LeaderboardEntry>>(callId, (ptr) {
-      final downloaded = ptr.ref;
-      return _readEntries(
-          client, downloaded.steamLeaderboardEntries, downloaded.entryCount);
-    });
+    final callId = stats.downloadLeaderboardEntries(
+      handle,
+      request,
+      1,
+      maxResults,
+    );
+    final entries =
+        await _awaitCall<
+          sw.LeaderboardScoresDownloaded,
+          List<LeaderboardEntry>
+        >(callId, (ptr) {
+          final downloaded = ptr.ref;
+          return _readEntries(
+            client,
+            downloaded.steamLeaderboardEntries,
+            downloaded.entryCount,
+          );
+        });
     return Leaderboard(
       id: leaderboardId,
       timeScope: timeScope,
@@ -352,15 +383,22 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       final result = <LeaderboardEntry>[];
       for (var i = 0; i < count; i++) {
         if (!stats.getDownloadedLeaderboardEntry(
-            entriesHandle, i, pEntry, nullptr, 0)) {
+          entriesHandle,
+          i,
+          pEntry,
+          nullptr,
+          0,
+        )) {
           continue;
         }
         final e = pEntry.ref;
-        result.add(LeaderboardEntry(
-          rank: e.globalRank,
-          score: e.score,
-          player: _profileForId(client, e.steamIdUser),
-        ));
+        result.add(
+          LeaderboardEntry(
+            rank: e.globalRank,
+            score: e.score,
+            player: _profileForId(client, e.steamIdUser),
+          ),
+        );
       }
       return result;
     } finally {
@@ -368,10 +406,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     }
   }
 
-  Future<int> _findLeaderboard(
-    Pointer<sw.ISteamUserStats> stats,
-    String name,
-  ) {
+  Future<int> _findLeaderboard(Pointer<sw.ISteamUserStats> stats, String name) {
     final callId = _withUtf8(name, stats.findLeaderboard);
     return _awaitCall<sw.LeaderboardFindResult, int>(callId, (ptr) {
       final found = ptr.ref;
@@ -528,7 +563,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
         if (completer.isCompleted) return;
         if (hasFailed) {
           completer.completeError(
-              const PlatformOperationException('Steam async call failed.'));
+            const PlatformOperationException('Steam async call failed.'),
+          );
           return;
         }
         try {

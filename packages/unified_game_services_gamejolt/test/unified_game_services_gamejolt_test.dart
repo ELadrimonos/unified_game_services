@@ -9,17 +9,18 @@ import 'package:unified_game_services_gamejolt/unified_game_services_gamejolt.da
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 /// Wraps a path->json handler in a [MockClient] and records the URIs hit.
-({MockClient client, List<Uri> calls}) mock(
-  Map<String, Object> byPath,
-) {
+({MockClient client, List<Uri> calls}) mock(Map<String, Object> byPath) {
   final calls = <Uri>[];
   final client = MockClient((req) async {
     calls.add(req.url);
     final body = byPath[req.url.path];
     if (body == null) {
       return http.Response(
-          jsonEncode({'response': {'success': 'false', 'message': 'no stub'}}),
-          200);
+        jsonEncode({
+          'response': {'success': 'false', 'message': 'no stub'},
+        }),
+        200,
+      );
     }
     return http.Response(jsonEncode(body), 200);
   });
@@ -27,13 +28,14 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 }
 
 GameJoltProvider providerWith(MockClient client) => GameJoltProvider.withClient(
-      client: GameJoltClient(
-          gameId: '1', privateKey: 'secret', httpClient: client),
-      username: 'ada',
-      userToken: 'tok',
-    );
+  client: GameJoltClient(gameId: '1', privateKey: 'secret', httpClient: client),
+  username: 'ada',
+  userToken: 'tok',
+);
 
-const _ok = {'response': {'success': 'true'}};
+const _ok = {
+  'response': {'success': 'true'},
+};
 
 void main() {
   group('GameJoltClient.signedUri', () {
@@ -61,11 +63,14 @@ void main() {
     test('throws on success:false with the API message', () async {
       final m = mock({
         '/api/game/v1_2/users/auth/': {
-          'response': {'success': 'false', 'message': 'bad token'}
+          'response': {'success': 'false', 'message': 'bad token'},
         },
       });
-      final client =
-          GameJoltClient(gameId: '1', privateKey: 's', httpClient: m.client);
+      final client = GameJoltClient(
+        gameId: '1',
+        privateKey: 's',
+        httpClient: m.client,
+      );
       expect(
         () => client.get('/users/auth/', {}),
         throwsA(isA<PlatformOperationException>()),
@@ -78,8 +83,7 @@ void main() {
         privateKey: 's',
         httpClient: MockClient((_) async => http.Response('nope', 500)),
       );
-      expect(() => client.get('/users/', {}),
-          throwsA(isA<NetworkException>()));
+      expect(() => client.get('/users/', {}), throwsA(isA<NetworkException>()));
     });
   });
 
@@ -103,9 +107,9 @@ void main() {
           'response': {
             'success': 'true',
             'users': [
-              {'id': 7, 'username': 'ada', 'avatar_url': 'http://a/x.png'}
+              {'id': 7, 'username': 'ada', 'avatar_url': 'http://a/x.png'},
             ],
-          }
+          },
         },
       });
       final p = providerWith(m.client);
@@ -122,10 +126,15 @@ void main() {
           'response': {
             'success': 'true',
             'trophies': [
-              {'id': 1, 'title': 'First', 'description': 'd', 'achieved': false},
+              {
+                'id': 1,
+                'title': 'First',
+                'description': 'd',
+                'achieved': false,
+              },
               {'id': 2, 'title': 'Won', 'achieved': '2 days ago'},
             ],
-          }
+          },
         },
       });
       final list = await providerWith(m.client).getAchievements();
@@ -137,8 +146,9 @@ void main() {
 
     test('submitScore sends table_id, score and sort', () async {
       final m = mock({'/api/game/v1_2/scores/add/': _ok});
-      await providerWith(m.client)
-          .submitScore(leaderboardId: 'tbl', score: 1500);
+      await providerWith(
+        m.client,
+      ).submitScore(leaderboardId: 'tbl', score: 1500);
       final q = m.calls.single.queryParameters;
       expect(q['table_id'], 'tbl');
       expect(q['score'], '1500');
@@ -146,16 +156,68 @@ void main() {
       expect(q['username'], 'ada');
     });
 
+    test(
+      'submitScore translates a unified leaderboard id to the native one',
+      () async {
+        final m = mock({'/api/game/v1_2/scores/add/': _ok});
+        final provider = GameJoltProvider.withClient(
+          client: GameJoltClient(
+            gameId: '1',
+            privateKey: 'secret',
+            httpClient: m.client,
+          ),
+          username: 'ada',
+          userToken: 'tok',
+          leaderboardIds: const {'global': '12345'},
+        );
+        await provider.submitScore(leaderboardId: 'global', score: 10);
+        // The unified key 'global' is mapped to GameJolt's native table_id.
+        expect(m.calls.single.queryParameters['table_id'], '12345');
+      },
+    );
+
+    test(
+      'unlockAchievement translates a unified id; unmapped ids pass through',
+      () async {
+        final m = mock({'/api/game/v1_2/trophies/add-achieved/': _ok});
+        final provider = GameJoltProvider.withClient(
+          client: GameJoltClient(
+            gameId: '1',
+            privateKey: 'secret',
+            httpClient: m.client,
+          ),
+          username: 'ada',
+          userToken: 'tok',
+          achievementIds: const {'first_win': '999'},
+        );
+        await provider.unlockAchievement('first_win');
+        expect(m.calls.single.queryParameters['trophy_id'], '999');
+
+        await provider.unlockAchievement('unmapped');
+        expect(m.calls.last.queryParameters['trophy_id'], 'unmapped');
+      },
+    );
+
     test('getLeaderboard ranks entries and distinguishes guests', () async {
       final m = mock({
         '/api/game/v1_2/scores/': {
           'response': {
             'success': 'true',
             'scores': [
-              {'score': '1,500 pts', 'sort': '1500', 'user': 'ada', 'user_id': 7},
-              {'score': '900 pts', 'sort': '900', 'guest': 'Anon', 'user_id': 0},
+              {
+                'score': '1,500 pts',
+                'sort': '1500',
+                'user': 'ada',
+                'user_id': 7,
+              },
+              {
+                'score': '900 pts',
+                'sort': '900',
+                'guest': 'Anon',
+                'user_id': 0,
+              },
             ],
-          }
+          },
         },
       });
       final board = await providerWith(m.client).getLeaderboard('tbl');
@@ -176,10 +238,11 @@ void main() {
         }
         if (req.url.path.endsWith('/data-store/')) {
           return http.Response(
-              jsonEncode({
-                'response': {'success': 'true', 'data': base64Encode(stored!)}
-              }),
-              200);
+            jsonEncode({
+              'response': {'success': 'true', 'data': base64Encode(stored!)},
+            }),
+            200,
+          );
         }
         return http.Response(jsonEncode(_ok), 200);
       });
@@ -193,7 +256,7 @@ void main() {
     test('loadData returns null for a missing key', () async {
       final m = mock({
         '/api/game/v1_2/data-store/': {
-          'response': {'success': 'false', 'message': 'No item with that key.'}
+          'response': {'success': 'false', 'message': 'No item with that key.'},
         },
       });
       expect(await providerWith(m.client).loadData('missing'), isNull);
@@ -208,7 +271,7 @@ void main() {
               {'friend_id': 11},
               {'friend_id': 22},
             ],
-          }
+          },
         },
         '/api/game/v1_2/users/': {
           'response': {
@@ -217,7 +280,7 @@ void main() {
               {'id': 11, 'username': 'bob'},
               {'id': 22, 'username': 'cy'},
             ],
-          }
+          },
         },
       });
       final friends = await providerWith(m.client).getFriends();
@@ -254,15 +317,17 @@ void main() {
       expect(m.calls[1].queryParameters['status'], 'idle');
     });
 
-    test('isSessionOpen returns false on success:false without throwing',
-        () async {
-      final m = mock({
-        '/api/game/v1_2/sessions/check/': {
-          'response': {'success': 'false'}
-        },
-      });
-      expect(await providerWith(m.client).isSessionOpen(), isFalse);
-    });
+    test(
+      'isSessionOpen returns false on success:false without throwing',
+      () async {
+        final m = mock({
+          '/api/game/v1_2/sessions/check/': {
+            'response': {'success': 'false'},
+          },
+        });
+        expect(await providerWith(m.client).isSessionOpen(), isFalse);
+      },
+    );
 
     test('isSessionOpen returns true when a session is open', () async {
       final m = mock({'/api/game/v1_2/sessions/check/': _ok});

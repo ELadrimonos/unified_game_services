@@ -35,13 +35,20 @@ Future<void> main(List<String> argv) async {
   final parser = ArgParser()
     ..addOption('leaderboard', help: 'Leaderboard table id to fetch.')
     ..addOption('unlock', help: 'Trophy id to unlock (WRITE).')
-    ..addMultiOption('score',
-        help: 'Submit a score: --score <tableId> <value> (WRITE).')
-    ..addFlag('cloud',
-        help: 'Run a data-store round-trip on a test key (WRITE).',
-        negatable: false)
-    ..addFlag('session',
-        help: 'Open/ping/check/close a session.', negatable: false)
+    ..addMultiOption(
+      'score',
+      help: 'Submit a score: --score <tableId> <value> (WRITE).',
+    )
+    ..addFlag(
+      'cloud',
+      help: 'Run a data-store round-trip on a test key (WRITE).',
+      negatable: false,
+    )
+    ..addFlag(
+      'session',
+      help: 'Open/ping/check/close a session.',
+      negatable: false,
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
 
   final ArgResults args;
@@ -101,8 +108,10 @@ Future<void> main(List<String> argv) async {
 
     final unlock = args['unlock'] as String?;
     if (unlock != null) {
-      await _step('unlockAchievement($unlock)',
-          () => provider.unlockAchievement(unlock));
+      await _step(
+        'unlockAchievement($unlock)',
+        () => provider.unlockAchievement(unlock),
+      );
     }
 
     final score = args['score'] as List<String>;
@@ -110,16 +119,21 @@ Future<void> main(List<String> argv) async {
       if (score.length != 2 || int.tryParse(score[1]) == null) {
         _fail('--score expects <tableId> <intValue>');
       } else {
-        await _step('submitScore(${score[0]}, ${score[1]})',
-            () => provider.submitScore(
-                leaderboardId: score[0], score: int.parse(score[1])));
+        await _step(
+          'submitScore(${score[0]}, ${score[1]})',
+          () => provider.submitScore(
+            leaderboardId: score[0],
+            score: int.parse(score[1]),
+          ),
+        );
       }
     }
 
     if (args['cloud'] as bool) {
       await _step('cloud round-trip', () async {
-        final payload =
-            Uint8List.fromList(List.generate(16, (i) => (i * 17) & 0xff));
+        final payload = Uint8List.fromList(
+          List.generate(16, (i) => (i * 17) & 0xff),
+        );
         await provider.saveData(_testCloudKey, payload);
         final loaded = await provider.loadData(_testCloudKey);
         if (loaded == null || !_bytesEqual(loaded.bytes, payload)) {
@@ -145,18 +159,21 @@ Future<void> main(List<String> argv) async {
   }
 
   stdout.writeln(
-      _failures == 0 ? '\nAll steps passed.' : '\n$_failures step(s) FAILED.');
+    _failures == 0 ? '\nAll steps passed.' : '\n$_failures step(s) FAILED.',
+  );
   exit(_failures == 0 ? 0 : 1);
 }
 
 ({String gameId, String privateKey, String username, String userToken})
-    _readCreds() {
+_readCreds() {
   final env = Platform.environment;
   String require(String key) {
     final v = env[key];
     if (v == null || v.isEmpty) {
-      _fail('Missing env var $key. Set GAMEJOLT_GAME_ID, GAMEJOLT_PRIVATE_KEY, '
-          'GAMEJOLT_USERNAME and GAMEJOLT_USER_TOKEN.');
+      _fail(
+        'Missing env var $key. Set GAMEJOLT_GAME_ID, GAMEJOLT_PRIVATE_KEY, '
+        'GAMEJOLT_USERNAME and GAMEJOLT_USER_TOKEN.',
+      );
     }
     return v;
   }

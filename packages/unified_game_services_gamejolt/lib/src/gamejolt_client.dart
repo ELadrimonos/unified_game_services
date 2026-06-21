@@ -63,8 +63,10 @@ class GameJoltClient {
       'format': 'json',
     };
     final query = merged.entries
-        .map((e) =>
-            '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value)}')
+        .map(
+          (e) =>
+              '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value)}',
+        )
         .join('&');
     final base = '$baseUrl$endpoint?$query';
     final signature = md5.convert(utf8.encode('$base$privateKey')).toString();
@@ -78,12 +80,14 @@ class GameJoltClient {
   }) {
     if (res.statusCode != 200) {
       throw NetworkException(
-          'GameJolt $endpoint returned HTTP ${res.statusCode}.');
+        'GameJolt $endpoint returned HTTP ${res.statusCode}.',
+      );
     }
     final body = jsonDecode(res.body);
     if (body is! Map || body['response'] is! Map) {
       throw PlatformOperationException(
-          'Unexpected GameJolt response for $endpoint.');
+        'Unexpected GameJolt response for $endpoint.',
+      );
     }
     final response = (body['response'] as Map).cast<String, dynamic>();
     final ok = response['success'] == 'true' || response['success'] == true;

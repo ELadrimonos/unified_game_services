@@ -11,7 +11,48 @@ part of 'platform_interface.dart';
 /// capability is unsupported should throw [CapabilityNotSupportedException];
 /// declare support through [capabilities].
 abstract class UnifiedGameServicesPlatform extends PlatformInterface {
-  UnifiedGameServicesPlatform() : super(token: _token);
+  /// Creates the platform interface.
+  ///
+  /// A leaderboard or achievement almost always has a *different* native id on
+  /// each platform (Steam uses a string name, GameJolt a numeric `table_id`,
+  /// etc.). When you fan out a single call through [UnifiedGameServices], you
+  /// pass one *unified* key and each provider translates it to its own native
+  /// id using these maps:
+  ///
+  /// ```dart
+  /// SteamProvider(leaderboardIds: {'global': 'WeeklyHigh'});
+  /// GameJoltProvider(leaderboardIds: {'global': '12345'});
+  /// // services.submitScore(leaderboardId: 'global', score: 1500)
+  /// //   → Steam submits to "WeeklyHigh", GameJolt to table 12345
+  /// ```
+  ///
+  /// A key with no entry passes through unchanged, so providers that share the
+  /// caller's ids need no map. Providers must resolve ids through
+  /// [resolveLeaderboardId] / [resolveAchievementId] for this to take effect.
+  UnifiedGameServicesPlatform({
+    Map<String, String>? leaderboardIds,
+    Map<String, String>? achievementIds,
+  }) : _leaderboardIds = leaderboardIds ?? const {},
+       _achievementIds = achievementIds ?? const {},
+       super(token: _token);
+
+  final Map<String, String> _leaderboardIds;
+  final Map<String, String> _achievementIds;
+
+  /// Maps a unified leaderboard key to this provider's native id.
+  ///
+  /// Returns [unifiedId] unchanged when no alias was registered. Provider
+  /// subclasses should call this on every leaderboard id they receive
+  /// (`submitScore`, `getLeaderboard`, …). Not part of the public API surface
+  /// — intended for subclasses only.
+  String resolveLeaderboardId(String unifiedId) =>
+      _leaderboardIds[unifiedId] ?? unifiedId;
+
+  /// Maps a unified achievement key to this provider's native id.
+  ///
+  /// See [resolveLeaderboardId]. Intended for subclasses only.
+  String resolveAchievementId(String unifiedId) =>
+      _achievementIds[unifiedId] ?? unifiedId;
 
   static final Object _token = Object();
 
@@ -61,8 +102,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   Set<GameCapability> get capabilities => const {};
 
   /// Whether this provider supports [capability].
-  bool supports(GameCapability capability) =>
-      capabilities.contains(capability);
+  bool supports(GameCapability capability) => capabilities.contains(capability);
 
   // ─── Events ──────────────────────────────────────────────────────────────
 
@@ -104,7 +144,8 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Adds [steps] of progress to an incremental achievement.
   Future<void> incrementAchievement(String achievementId, int steps) =>
       throw UnimplementedError(
-          'incrementAchievement() has not been implemented.');
+        'incrementAchievement() has not been implemented.',
+      );
 
   /// Reveals a hidden achievement without unlocking it.
   Future<void> revealAchievement(String achievementId) =>
@@ -116,8 +157,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   Future<void> submitScore({
     required String leaderboardId,
     required int score,
-  }) =>
-      throw UnimplementedError('submitScore() has not been implemented.');
+  }) => throw UnimplementedError('submitScore() has not been implemented.');
 
   /// Fetches a page of [leaderboardId], scoped by [timeScope] and
   /// [collection], up to [maxResults] entries.
@@ -126,15 +166,13 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
     LeaderboardCollection collection = LeaderboardCollection.global,
     int maxResults = 25,
-  }) =>
-      throw UnimplementedError('getLeaderboard() has not been implemented.');
+  }) => throw UnimplementedError('getLeaderboard() has not been implemented.');
 
   /// Returns the signed-in player's own entry on [leaderboardId], or `null`.
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-  }) =>
-      throw UnimplementedError('getPlayerScore() has not been implemented.');
+  }) => throw UnimplementedError('getPlayerScore() has not been implemented.');
 
   // ─── Stats ───────────────────────────────────────────────────────────────
 

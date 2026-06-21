@@ -19,7 +19,8 @@ sealed class GameServiceEvent with GameServiceEventMappable {
 
 /// Emitted after a player successfully signs in.
 @MappableClass(discriminatorValue: 'userSignedIn')
-class UserSignedInEvent extends GameServiceEvent with UserSignedInEventMappable {
+class UserSignedInEvent extends GameServiceEvent
+    with UserSignedInEventMappable {
   /// The player who signed in.
   final PlayerProfile player;
 

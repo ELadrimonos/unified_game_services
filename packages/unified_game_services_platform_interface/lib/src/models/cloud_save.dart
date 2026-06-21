@@ -46,7 +46,7 @@ class CloudSave with CloudSaveMappable {
 
   /// Builds a save from raw [bytes].
   CloudSave.fromBytes({required this.metadata, required Uint8List bytes})
-      : data = bytes;
+    : data = bytes;
 
   /// Convenience accessor for the slot name.
   String get slot => metadata.slot;

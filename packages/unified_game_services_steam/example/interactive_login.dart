@@ -42,7 +42,8 @@ Future<void> main() async {
     player = await steam.signIn();
   } on GameServiceException catch (e) {
     stdout.writeln('FAILED\n$e');
-    stdout.writeln('''
+    stdout.writeln(
+      '''
 
 Checklist:
   1. Steam client running and logged in.
@@ -51,7 +52,8 @@ Checklist:
      NOT search the working directory — point it at the lib's folder:
        DYLD_LIBRARY_PATH="\$PWD" dart run example/interactive_login.dart
      (or copy libsteam_api.dylib into /usr/local/lib). In an IDE, set the run
-     config's working directory and add DYLD_LIBRARY_PATH to its environment.''');
+     config's working directory and add DYLD_LIBRARY_PATH to its environment.''',
+    );
     exit(1);
   }
   stdout.writeln('OK');
@@ -93,7 +95,8 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
           stdout.writeln('${list.length} achievements:');
           for (final a in list) {
             stdout.writeln(
-                '  [${a.isUnlocked ? 'x' : ' '}] ${a.id}  ${a.title}');
+              '  [${a.isUnlocked ? 'x' : ' '}] ${a.id}  ${a.title}',
+            );
           }
         case '2':
           await steam.unlockAchievement(_prompt('Achievement id'));
@@ -111,19 +114,21 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
           await steam.submitScore(leaderboardId: id, score: value);
           stdout.writeln('Submitted.');
         case '5':
-          final board =
-              await steam.getLeaderboard(_prompt('Leaderboard name'));
+          final board = await steam.getLeaderboard(_prompt('Leaderboard name'));
           stdout.writeln('Top ${board.entries.length}:');
           for (final e in board.entries) {
             stdout.writeln(
-                '  #${e.rank} ${e.player.displayName}: ${e.displayScore}');
+              '  #${e.rank} ${e.player.displayName}: ${e.displayScore}',
+            );
           }
         case '6':
           final friends = await steam.getFriends();
           stdout.writeln('${friends.length} friends:');
           for (final f in friends) {
-            stdout.writeln('  ${f.id}  ${f.displayName}'
-                '${f.isOnline == true ? ' (online)' : ''}');
+            stdout.writeln(
+              '  ${f.id}  ${f.displayName}'
+              '${f.isOnline == true ? ' (online)' : ''}',
+            );
           }
         case '7':
           await steam.resetAllStats(includeAchievements: true);

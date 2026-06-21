@@ -74,8 +74,10 @@ void main() {
     test('getInstance returns the active provider cast to its type', () {
       final provider = _FakeProviderA();
       UnifiedGameServicesPlatform.instance = provider;
-      expect(UnifiedGameServicesPlatform.getInstance<_FakeProviderA>(),
-          same(provider));
+      expect(
+        UnifiedGameServicesPlatform.getInstance<_FakeProviderA>(),
+        same(provider),
+      );
     });
 
     test('getInstance throws when the active provider is a different type', () {
@@ -88,10 +90,14 @@ void main() {
 
     test('tryGetInstance returns null for a mismatched type', () {
       UnifiedGameServicesPlatform.instance = _FakeProviderA();
-      expect(UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderB>(),
-          isNull);
-      expect(UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderA>(),
-          isNotNull);
+      expect(
+        UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderB>(),
+        isNull,
+      );
+      expect(
+        UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderA>(),
+        isNotNull,
+      );
     });
   });
 }

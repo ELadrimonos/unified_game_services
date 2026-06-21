@@ -44,21 +44,34 @@ Future<void> main(List<String> argv) async {
     ..addOption('sdk', help: 'Path to an extracted Steamworks SDK root.')
     ..addOption('zip', help: 'Path to a Steamworks SDK zip to extract.')
     ..addOption('url', help: 'URL of a Steamworks SDK zip to download.')
-    ..addOption('output',
-        abbr: 'o',
-        help: 'Output dir for generated bindings.',
-        defaultsTo: '.steamworks')
-    ..addOption('target',
-        abbr: 't',
-        help: 'Target platform.',
-        allowed: _targets,
-        defaultsTo: _hostTarget())
-    ..addOption('app-id',
-        help: 'App id written to example/steam_appid.txt.', defaultsTo: '480')
-    ..addFlag('copy-natives',
-        help: 'Copy the native lib into example/.', defaultsTo: true)
-    ..addFlag('analyze',
-        help: 'Run dart analyze on the generated bindings.', defaultsTo: true)
+    ..addOption(
+      'output',
+      abbr: 'o',
+      help: 'Output dir for generated bindings.',
+      defaultsTo: '.steamworks',
+    )
+    ..addOption(
+      'target',
+      abbr: 't',
+      help: 'Target platform.',
+      allowed: _targets,
+      defaultsTo: _hostTarget(),
+    )
+    ..addOption(
+      'app-id',
+      help: 'App id written to example/steam_appid.txt.',
+      defaultsTo: '480',
+    )
+    ..addFlag(
+      'copy-natives',
+      help: 'Copy the native lib into example/.',
+      defaultsTo: true,
+    )
+    ..addFlag(
+      'analyze',
+      help: 'Run dart analyze on the generated bindings.',
+      defaultsTo: true,
+    )
     ..addFlag('help', abbr: 'h', negatable: false);
 
   final ArgResults args;
@@ -98,7 +111,12 @@ Future<void> main(List<String> argv) async {
   _writeAppId(p.join(packageDir, 'example'), args['app-id'] as String);
 
   if (args['analyze'] as bool) {
-    await _run('dart', ['analyze', outputDir], cwd: packageDir, allowFail: true);
+    await _run(
+      'dart',
+      ['analyze', outputDir],
+      cwd: packageDir,
+      allowFail: true,
+    );
   }
 
   _log('Done. Generated bindings: $outputDir');
@@ -118,14 +136,17 @@ override is only needed for linux/mac/arm (see steamworks issue #17).''');
 // ─── SDK acquisition ─────────────────────────────────────────────────────────
 
 Future<String> _resolveSdk(ArgResults args, String packageDir) async {
-  final sdkArg = (args['sdk'] as String?) ?? Platform.environment['STEAMWORKS_SDK'];
+  final sdkArg =
+      (args['sdk'] as String?) ?? Platform.environment['STEAMWORKS_SDK'];
   if (sdkArg != null && sdkArg.isNotEmpty) {
     if (!Directory(sdkArg).existsSync()) _fail('SDK dir not found: $sdkArg');
     return _sdkRoot(sdkArg);
   }
 
-  final zipArg = (args['zip'] as String?) ?? Platform.environment['STEAMWORKS_SDK_ZIP'];
-  final urlArg = (args['url'] as String?) ?? Platform.environment['STEAMWORKS_SDK_URL'];
+  final zipArg =
+      (args['zip'] as String?) ?? Platform.environment['STEAMWORKS_SDK_ZIP'];
+  final urlArg =
+      (args['url'] as String?) ?? Platform.environment['STEAMWORKS_SDK_URL'];
 
   final extractDir = p.join(packageDir, '.steamworks', 'sdk');
   if (zipArg != null && zipArg.isNotEmpty) {
@@ -140,9 +161,11 @@ Future<String> _resolveSdk(ArgResults args, String packageDir) async {
     return _sdkRoot(extractDir);
   }
 
-  _fail('No Steamworks SDK provided. Use --sdk/--zip/--url or the matching '
-      'STEAMWORKS_SDK[_ZIP|_URL] env var.\nThe SDK is login-gated: download it '
-      'from https://partner.steamgames.com/downloads/list and pass it here.');
+  _fail(
+    'No Steamworks SDK provided. Use --sdk/--zip/--url or the matching '
+    'STEAMWORKS_SDK[_ZIP|_URL] env var.\nThe SDK is login-gated: download it '
+    'from https://partner.steamgames.com/downloads/list and pass it here.',
+  );
 }
 
 /// The SDK zip extracts to an `sdk/` subdir; accept either layout.
@@ -220,11 +243,15 @@ Future<void> _generate({
   Directory(output).createSync(recursive: true);
   _log('Generating bindings (target=$target)…');
   // steamworks_gen rewrites the CWD pubspec's ffi dep — run it in the package.
-  final code = await _run(
-    'dart',
-    ['run', 'steamworks_gen', '-o', output, '-t', target, steamApiJson],
-    cwd: packageDir,
-  );
+  final code = await _run('dart', [
+    'run',
+    'steamworks_gen',
+    '-o',
+    output,
+    '-t',
+    target,
+    steamApiJson,
+  ], cwd: packageDir);
   if (code != 0) _fail('steamworks_gen exited with $code');
 }
 
@@ -276,8 +303,12 @@ Future<int> _run(
   required String cwd,
   bool allowFail = false,
 }) async {
-  final proc = await Process.start(exe, args,
-      workingDirectory: cwd, mode: ProcessStartMode.inheritStdio);
+  final proc = await Process.start(
+    exe,
+    args,
+    workingDirectory: cwd,
+    mode: ProcessStartMode.inheritStdio,
+  );
   final code = await proc.exitCode;
   if (code != 0 && !allowFail) return code;
   return code;

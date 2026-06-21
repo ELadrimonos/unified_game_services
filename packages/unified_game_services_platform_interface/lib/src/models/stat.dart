@@ -16,11 +16,7 @@ class Stat with StatMappable {
   /// Localized display name, if the provider exposes one.
   final String? displayName;
 
-  const Stat({
-    required this.key,
-    required this.value,
-    this.displayName,
-  });
+  const Stat({required this.key, required this.value, this.displayName});
 
   /// The value as an [int] (truncated).
   int get asInt => value.toInt();

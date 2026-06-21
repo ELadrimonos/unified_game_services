@@ -49,10 +49,10 @@ class CapabilityNotSupportedException extends GameServiceException {
   final GameCapability capability;
 
   CapabilityNotSupportedException(this.capability, {Object? cause})
-      : super(
-          'Capability "${capability.name}" is not supported by this provider.',
-          cause: cause,
-        );
+    : super(
+        'Capability "${capability.name}" is not supported by this provider.',
+        cause: cause,
+      );
 }
 
 /// Thrown when an operation fails due to connectivity problems.
