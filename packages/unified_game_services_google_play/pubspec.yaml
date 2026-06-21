@@ -1,7 +1,7 @@
 name: unified_game_services_google_play
 resolution: workspace
 description: Google Play Games provider for unified_game_services. Deferred — not yet implemented.
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:

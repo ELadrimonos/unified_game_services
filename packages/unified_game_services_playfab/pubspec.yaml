@@ -1,7 +1,7 @@
 name: unified_game_services_playfab
 resolution: workspace
 description: PlayFab provider for unified_game_services, using the PlayFab Client API over REST (pure Dart).
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
@@ -10,7 +10,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   http: ^1.2.0
-  unified_game_services_platform_interface: ^1.0.0
+  unified_game_services_platform_interface: ^0.0.1
 
 dev_dependencies:
   args: ^2.6.0

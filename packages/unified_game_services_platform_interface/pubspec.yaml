@@ -1,7 +1,7 @@
 name: unified_game_services_platform_interface
 resolution: workspace
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: Shared platform interface for unified_game_services — models, events, capabilities and the base contract every provider implements (pure Dart).
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:

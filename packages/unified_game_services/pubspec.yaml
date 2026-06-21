@@ -1,7 +1,7 @@
 name: unified_game_services
 resolution: workspace
 description: Unified, multi-platform game services API for Dart (achievements, leaderboards, cloud save and more).
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
@@ -10,12 +10,12 @@ environment:
 # Add regular dependencies here.
 dependencies:
   async: ^2.11.0
-  unified_game_services_platform_interface: ^1.0.0
+  unified_game_services_platform_interface: ^0.0.1
 
 dev_dependencies:
   lints: ^6.0.0
   plugin_platform_interface: ^2.1.8
   test: ^1.25.6
   # For the cross-provider example only (not a runtime dependency of the facade).
-  unified_game_services_gamejolt: ^1.0.0
-  unified_game_services_steam: ^1.0.0
+  unified_game_services_gamejolt: ^0.0.1
+  unified_game_services_steam: ^0.0.1

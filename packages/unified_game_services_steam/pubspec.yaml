@@ -1,7 +1,7 @@
 name: unified_game_services_steam
 resolution: workspace
 description: Steam provider for unified_game_services, backed by the pure-Dart steamworks FFI bindings.
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
@@ -11,7 +11,7 @@ environment:
 dependencies:
   ffi: ^2.1.4
   steamworks: ^0.4.8
-  unified_game_services_platform_interface: ^1.0.0
+  unified_game_services_platform_interface: ^0.0.1
 
 dev_dependencies:
   archive: ^4.0.0

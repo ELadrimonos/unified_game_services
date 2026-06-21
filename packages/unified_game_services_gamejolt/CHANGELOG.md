@@ -1,3 +1,3 @@
-## 1.0.0
+## 0.0.1
 
-- Initial version.
+- Initial release: GameJolt provider over the Game API v1.2 (pure Dart, REST).

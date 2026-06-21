@@ -1,3 +1,4 @@
-## 1.0.0
+## 0.0.1
 
-- Initial version.
+- Initial release: shared models, events, capabilities, exceptions and the
+  `UnifiedGameServicesPlatform` base contract.

@@ -1,7 +1,7 @@
 name: unified_game_services_game_center
 resolution: workspace
 description: Apple Game Center provider for unified_game_services. Deferred — not yet implemented.
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:

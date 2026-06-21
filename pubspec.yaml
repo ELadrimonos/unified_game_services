@@ -1,5 +1,7 @@
 name: unified_game_services_monorepo
 
+repository: https://github.com/ELadrimonos/unified_game_services
+
 environment:
   sdk: ^3.12.0
 
@@ -24,9 +26,25 @@ melos:
     bootstrap:
       runPubGetInParallel: true
     version:
+      # Per-package CHANGELOG.md (default on) + aggregated workspace changelog.
       workspaceChangelog: true
+      # Restrict automatic versioning to the main branch.
+      branch: main
+      # Link changelog entries to their commits.
+      linkToCommits: true
+      # Print a prefilled GitHub "new release" URL per bumped package.
+      releaseUrl: true
+      # Per-package git tags (`<package-name>-v<version>`) are created by
+      # default (--git-tag-version). No extra key needed.
 
   scripts:
+    version:sync:
+      description: >
+        Sync the master version (root VERSION file) into every package's
+        pubspec, including internal cross-package dependency constraints.
+        Pass `-- --check` to fail (CI) instead of writing.
+      run: dart run tool/sync_version.dart
+
     analyze:
       description: Run dart analyze in all packages.
       run: dart analyze --fatal-infos

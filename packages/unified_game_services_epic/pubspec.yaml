@@ -1,7 +1,7 @@
 name: unified_game_services_epic
 resolution: workspace
 description: Epic Online Services (EOS) provider for unified_game_services. Planned — not yet implemented.
-version: 1.0.0
+version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
 environment:
