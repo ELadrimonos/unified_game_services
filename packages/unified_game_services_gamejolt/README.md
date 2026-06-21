@@ -1,39 +1,82 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# unified_game_services_gamejolt
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+GameJolt provider for
+[`unified_game_services`](https://pub.dev/packages/unified_game_services), using
+the [GameJolt Game API v1.2](https://gamejolt.com/game-api/doc) over REST. Pure
+Dart, no Flutter dependency — runs anywhere, including servers and CLIs.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Capabilities
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+| Capability | GameJolt API |
+|------------|--------------|
+| achievements | Trophies |
+| leaderboards | Score tables |
+| cloudSave | Data store |
+| friends | Friends + Users |
 
-## Features
+GameJolt has no numeric stats or rich-presence text API, so those capabilities
+are not advertised. Online presence is available as a provider-specific
+[sessions](#provider-specific-sessions) API.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## Install
 
-## Getting started
+```yaml
+dependencies:
+  unified_game_services: ^1.0.0
+  unified_game_services_gamejolt: ^1.0.0
+```
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Credentials
+
+You need the **game** keys and a **player** token:
+
+- **Game ID** + **Private Key** — GameJolt dashboard → your game → *Game API*.
+- **Username** + **Game Token** — the player's GameJolt profile → *Game Token*
+  (not the account password).
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
-const like = 'sample';
+import 'package:unified_game_services/unified_game_services.dart';
+import 'package:unified_game_services_gamejolt/unified_game_services_gamejolt.dart';
+
+final services = UnifiedGameServices(providers: [
+  GameJoltProvider(
+    gameId: '123456',
+    privateKey: '••••',
+    username: 'player_name',
+    userToken: 'player_game_token',
+  ),
+]);
+
+await services.signIn();
+await services.unlockAchievement('123456');               // trophy id
+await services.submitScore(leaderboardId: '654321', score: 1500);
+final board = await services.getLeaderboard('654321');
 ```
 
-## Additional information
+### Provider-specific: sessions
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+GameJolt sessions track online presence (playing + active/idle). Reach them via
+`UnifiedGameServicesPlatform.getInstance<GameJoltProvider>()` or
+`services.provider<GameJoltProvider>()`:
+
+```dart
+final gj = services.provider<GameJoltProvider>()!;
+await gj.startSessionHeartbeat(); // open + auto-ping under the ~120s timeout
+// …play…
+await gj.stopSessionHeartbeat();
+```
+
+## Examples & tooling
+
+- [`example/interactive_login.dart`](example/interactive_login.dart) — log in
+  with a real profile and test every feature from a menu.
+- [`tool/smoke_test.dart`](tool/README.md) — non-interactive live check
+  (`melos run gamejolt:smoke`).
+
+See [`example/README.md`](example/README.md) for step-by-step credential setup.
+
+## License
+
+See the repository for license details.

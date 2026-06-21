@@ -1,39 +1,23 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# unified_game_services_epic
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Epic Online Services (EOS) provider for
+[`unified_game_services`](https://pub.dev/packages/unified_game_services).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+> **Status: planned (not yet implemented).** Part of the MVP roadmap. Pure Dart
+> via the EOS REST/C SDK. This package is currently a placeholder.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+When ready it will implement `UnifiedGameServicesPlatform` with EOS-backed
+achievements, leaderboards/stats and friends, and plug into the unified API
+alongside the other providers:
 
 ```dart
-const like = 'sample';
+final services = UnifiedGameServices(providers: [EpicProvider(/* … */)]);
 ```
 
-## Additional information
+For the available providers today, see
+[`unified_game_services`](https://pub.dev/packages/unified_game_services),
+`unified_game_services_steam` and `unified_game_services_gamejolt`.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## License
+
+See the repository for license details.

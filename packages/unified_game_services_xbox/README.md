@@ -1,39 +1,18 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# unified_game_services_xbox
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Xbox Live provider for
+[`unified_game_services`](https://pub.dev/packages/unified_game_services).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+> **Status: research (not yet implemented).** A pure-Dart path to Xbox Live
+> (XSAPI) is still being investigated. This package is currently a placeholder.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+When ready it will implement `UnifiedGameServicesPlatform` and plug into the
+unified API alongside the other providers.
 
-## Features
+For the available providers today, see
+[`unified_game_services`](https://pub.dev/packages/unified_game_services),
+`unified_game_services_steam` and `unified_game_services_gamejolt`.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## License
 
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+See the repository for license details.

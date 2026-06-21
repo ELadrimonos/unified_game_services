@@ -1,6 +1,6 @@
 name: unified_game_services_google_play
 resolution: workspace
-description: A starting point for Dart libraries or applications.
+description: Google Play Games provider for unified_game_services. Deferred — not yet implemented.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 

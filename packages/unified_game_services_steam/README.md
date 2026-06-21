@@ -1,39 +1,75 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# unified_game_services_steam
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Steam provider for
+[`unified_game_services`](https://pub.dev/packages/unified_game_services),
+backed by the pure-Dart
+[`steamworks`](https://pub.dev/packages/steamworks) FFI bindings — no Flutter
+dependency.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Capabilities
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+| Capability | Steam API |
+|------------|-----------|
+| achievements | `ISteamUserStats` (set/clear, enumerate) |
+| stats | `ISteamUserStats` (int stats) |
+| leaderboards | find / upload / download (async) |
+| cloudSave | `ISteamRemoteStorage` |
+| friends | `ISteamFriends` |
+| presence | `ISteamFriends` rich presence |
 
-## Features
+## Requirements
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Steam integration needs native bits the integrating app provides:
 
-## Getting started
+- The **Steam client** running and logged in (the signed-in user is the identity
+  — Steam has no username/password login).
+- The **Steamworks redistributable** next to your executable:
+  `steam_api64.dll` (Windows), `libsteam_api.so` (Linux), or
+  `libsteam_api.dylib` (macOS).
+- A **`steam_appid.txt`** with your app id (or pass `appId`).
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+> The published `steamworks` ships **Windows** bindings. For Linux/macOS,
+> regenerate them with the bundled tool — see
+> [`tool/README.md`](tool/README.md) — and add a `dependency_overrides` entry.
+
+## Install
+
+```yaml
+dependencies:
+  unified_game_services: ^1.0.0
+  unified_game_services_steam: ^1.0.0
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
-const like = 'sample';
+import 'package:unified_game_services/unified_game_services.dart';
+import 'package:unified_game_services_steam/unified_game_services_steam.dart';
+
+SteamProvider.registerWith(appId: 480); // 480 = Spacewar test app
+final services = UnifiedGameServices(); // uses the registered provider
+
+await services.signIn();
+await services.unlockAchievement('ACH_WIN_ONE_GAME');
+await services.submitScore(leaderboardId: 'Feet Traveled', score: 1500);
+final board = await services.getLeaderboard('Feet Traveled');
 ```
 
-## Additional information
+### Steam-specific API
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Beyond the unified API (reach via
+`UnifiedGameServicesPlatform.getInstance<SteamProvider>()`):
+
+- `clearAchievement(id)` — clear a single achievement.
+- `resetAllStats(includeAchievements: true)` — reset for re-testing.
+
+## Examples & tooling
+
+- [`example/interactive_login.dart`](example/interactive_login.dart) — live
+  Spacewar (480) playground.
+- [`tool/generate_steamworks.dart`](tool/README.md) — regenerate bindings + copy
+  the native lib (`melos run steam:gen`).
+
+## License
+
+See the repository for license details.
