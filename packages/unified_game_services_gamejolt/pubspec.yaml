@@ -1,6 +1,6 @@
 name: unified_game_services_gamejolt
 resolution: workspace
-description: A starting point for Dart libraries or applications.
+description: GameJolt provider for unified_game_services, using the GameJolt Game API v1.2 (pure Dart, REST).
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 
@@ -9,7 +9,9 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  crypto: ^3.0.6
+  http: ^1.2.0
+  unified_game_services_platform_interface: ^1.0.0
 
 dev_dependencies:
   lints: ^6.0.0

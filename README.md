@@ -24,7 +24,7 @@ Una capa de abstracción multiplataforma para servicios de videojuegos que unifi
 | User Profiles | 📋 Planificado |
 | Rich Presence | 📋 Planificado |
 | Steam | ✅ Implementado (Dart puro, FFI `steamworks`) — pendiente verificación en runtime Windows |
-| GameJolt | 🚧 MVP (Dart puro, REST) |
+| GameJolt | ✅ Implementado (Dart puro, REST Game API v1.2) — verificado con tests (MockClient) |
 | Epic Online Services | 🚧 MVP (Dart puro, EOS REST/C) |
 | Google Play Games | ⏸️ Aplazado (sin vía Dart puro) |
 | Apple Game Center | ⏸️ Aplazado (posible vía FFI/GameKit) |
