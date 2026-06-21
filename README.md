@@ -16,7 +16,7 @@ Una capa de abstracción multiplataforma para servicios de videojuegos que unifi
 
 | Módulo | Estado |
 |---------|---------|
-| Core API | 🚧 Diseño |
+| Core API | ✅ Implementado (interface + facade multi-provider) |
 | Achievements | 🚧 Diseño |
 | Leaderboards | 🚧 Diseño |
 | Stats | 🚧 Diseño |
