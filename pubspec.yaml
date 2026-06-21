@@ -52,3 +52,12 @@ melos:
       run: dart run tool/generate_steamworks.dart
       packageFilters:
         scope: unified_game_services_steam
+
+    gamejolt:smoke:
+      description: >
+        Live smoke test against the real GameJolt API. Needs GAMEJOLT_GAME_ID,
+        GAMEJOLT_PRIVATE_KEY, GAMEJOLT_USERNAME, GAMEJOLT_USER_TOKEN. Forward
+        args after `--`, e.g. `melos run gamejolt:smoke -- --cloud --session`.
+      run: dart run tool/smoke_test.dart
+      packageFilters:
+        scope: unified_game_services_gamejolt
