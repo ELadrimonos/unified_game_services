@@ -17,20 +17,51 @@ dependency.
 | friends | `ISteamFriends` |
 | presence | `ISteamFriends` rich presence |
 
-## Requirements
+## Native library — not bundled (important)
 
-Steam integration needs native bits the integrating app provides:
+Steam is **not zero-config**, and this is inherent to Steamworks, not this
+package: pub.dev ships Dart source only, and Valve's license forbids
+redistributing the SDK, so the native `steam_api` library is **never delivered
+with the package**. Every Steamworks integration (Unity, Godot, …) requires you
+to add the native lib yourself.
 
-- The **Steam client** running and logged in (the signed-in user is the identity
-  — Steam has no username/password login).
-- The **Steamworks redistributable** next to your executable:
-  `steam_api64.dll` (Windows), `libsteam_api.so` (Linux), or
-  `libsteam_api.dylib` (macOS).
-- A **`steam_appid.txt`** with your app id (or pass `appId`).
+### One-time dev setup
 
-> The published `steamworks` ships **Windows** bindings. For Linux/macOS,
-> regenerate them with the bundled tool — see
-> [`tool/README.md`](tool/README.md) — and add a `dependency_overrides` entry.
+The transitive `steamworks` package bundles the official redistributables. Copy
+the right one into your project and write a dev `steam_appid.txt` with:
+
+```sh
+dart run unified_game_services_steam:setup --app-id 480
+```
+
+Then make the dynamic loader find it at runtime (it does **not** search the
+working directory on macOS/Linux):
+
+| OS | What to do |
+|----|------------|
+| Windows | Keep `steam_api64.dll` next to the executable / run dir (searched automatically). |
+| macOS | `DYLD_LIBRARY_PATH="$PWD" dart run …` or copy `libsteam_api.dylib` to `/usr/local/lib`. |
+| Linux | `LD_LIBRARY_PATH="$PWD" dart run …`, copy `libsteam_api.so` to `/usr/local/lib`, or set an rpath. |
+
+In an IDE, set the run config's **working directory** and add the
+`DYLD_LIBRARY_PATH`/`LD_LIBRARY_PATH` **environment variable**.
+
+Also: the **Steam client** must be running and logged in (the signed-in user is
+the identity — Steam has no username/password login).
+
+### Production
+
+For a shipped build, distribute the native lib with your app (next to the
+executable) under your own Steamworks agreement, and bake the app id into code
+(`SteamProvider(appId: …)`, which calls `RestartAppIfNecessary`). **Do not ship
+`steam_appid.txt`** — it is a development-only override.
+
+### Cross-platform bindings
+
+The published `steamworks` ships **Windows** bindings; the same Dart bindings
+also work on macOS/Linux for the core API. If you hit ABI issues, regenerate
+per-platform bindings with [`tool/README.md`](tool/README.md) and a
+`dependency_overrides` entry.
 
 ## Install
 

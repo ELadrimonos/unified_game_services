@@ -29,6 +29,12 @@ dependencies:
 This package re-exports the shared models, capabilities, events and exceptions,
 so a single `import` is enough.
 
+> **Provider setup differs.** Pure-REST providers like GameJolt are zero-config
+> (just credentials). Native providers like Steam need a one-time native-library
+> setup that pub.dev cannot deliver for you (Valve's SDK can't be redistributed)
+> — run `dart run unified_game_services_steam:setup` and see the
+> [Steam package README](https://pub.dev/packages/unified_game_services_steam).
+
 ## Usage
 
 ```dart
