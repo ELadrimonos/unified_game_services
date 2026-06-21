@@ -144,9 +144,12 @@ String _read(String envKey, String label, {bool secret = false}) {
 
 String _prompt(String label, {bool secret = false}) {
   stdout.write('$label: ');
-  if (secret) stdin.echoMode = false;
+  // echoMode only works on a real terminal. IDE run consoles (IntelliJ,
+  // VS Code) are not TTYs and throw `Inappropriate ioctl for device`.
+  final canHide = secret && stdin.hasTerminal;
+  if (canHide) stdin.echoMode = false;
   final value = stdin.readLineSync()?.trim() ?? '';
-  if (secret) {
+  if (canHide) {
     stdin.echoMode = true;
     stdout.writeln();
   }

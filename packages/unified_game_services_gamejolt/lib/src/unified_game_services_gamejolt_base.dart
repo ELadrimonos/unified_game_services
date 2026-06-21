@@ -109,8 +109,8 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   @override
   Future<PlayerProfile?> getCurrentPlayer() async {
     final response = await _client.get('/users/', {'username': username});
-    final users = (response['users'] as List?)?.cast<Map<String, dynamic>>();
-    if (users == null || users.isEmpty) return null;
+    final users = _mapList(response['users']);
+    if (users.isEmpty) return null;
     return _profileFromUser(users.first);
   }
 
@@ -132,9 +132,7 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   @override
   Future<List<Achievement>> getAchievements() async {
     final response = await _client.get('/trophies/', _auth);
-    final trophies =
-        (response['trophies'] as List?)?.cast<Map<String, dynamic>>() ??
-            const [];
+    final trophies = _mapList(response['trophies']);
     return trophies.map(_achievementFromTrophy).toList();
   }
 
@@ -206,8 +204,7 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
       'table_id': leaderboardId,
       'limit': '$maxResults',
     });
-    final scores =
-        (response['scores'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final scores = _mapList(response['scores']);
     final entries = <LeaderboardEntry>[];
     for (var i = 0; i < scores.length; i++) {
       final s = scores[i];
@@ -272,8 +269,7 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   @override
   Future<List<CloudSaveMetadata>> listSaves() async {
     final response = await _client.get('/data-store/get-keys/', _auth);
-    final keys =
-        (response['keys'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final keys = _mapList(response['keys']);
     return keys.map((k) => CloudSaveMetadata(slot: '${k['key']}')).toList();
   }
 
@@ -287,15 +283,12 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   @override
   Future<List<PlayerProfile>> getFriends() async {
     final response = await _client.get('/friends/', _auth);
-    final friends =
-        (response['friends'] as List?)?.cast<Map<String, dynamic>>() ??
-            const [];
+    final friends = _mapList(response['friends']);
     final ids = friends.map((f) => '${f['friend_id']}').toList();
     if (ids.isEmpty) return const [];
 
     final users = await _client.get('/users/', {'user_id': ids.join(',')});
-    final list =
-        (users['users'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+    final list = _mapList(users['users']);
     return list
         .map((u) => _profileFromUser(u).copyWith(isFriend: true))
         .toList();
@@ -364,3 +357,13 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     if (!_events.isClosed) _events.add(event);
   }
 }
+
+/// Coerces a GameJolt list-shaped field into a list of maps.
+///
+/// The Game API envelope is not consistent: a field that holds a collection
+/// (`friends`, `users`, `trophies`, `scores`, `keys`) can come back as a JSON
+/// array, but also as `null` or even an empty string `""` when there are no
+/// rows. Anything that is not a list collapses to an empty list.
+List<Map<String, dynamic>> _mapList(dynamic value) => value is List
+    ? value.cast<Map<String, dynamic>>()
+    : const <Map<String, dynamic>>[];
