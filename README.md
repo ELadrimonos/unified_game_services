@@ -34,7 +34,7 @@ single Dart API.
 | Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
 | PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
 | Google Play Games | 📋 Research (pure Dart via REST Games API v1 + OAuth) |
-| Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
+| Apple Game Center | ✅ Implemented (pure Dart, FFI GameKit via `objective_c`) — auth + achievements + leaderboards, macOS/iOS |
 | Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |
 
@@ -43,7 +43,8 @@ single Dart API.
 > requires Flutter + platform channels). The MVP covers the providers reachable
 > from pure Dart. Google Play Games is reachable via its REST Games API v1
 > (`games.googleapis.com`) + OAuth 2.0 — no native SDK needed — so it is back on
-> the roadmap as research. Game Center stays deferred (no pure-Dart path yet).
+> the roadmap as research. Game Center is now implemented in pure Dart too, via
+`dart:ffi` + `package:objective_c` against GameKit (macOS/iOS).
 
 ---
 

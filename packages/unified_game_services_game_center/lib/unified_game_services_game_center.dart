@@ -1,8 +1,6 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// Apple Game Center provider for `unified_game_services`, backed by GameKit
+/// through pure-Dart Objective-C FFI (`package:objective_c`). macOS/iOS only;
+/// no Flutter dependency.
 library;
 
-export 'src/unified_game_services_game_center_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/game_center_provider.dart';

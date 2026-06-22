@@ -1,0 +1,57 @@
+# GameKit Objective-C bindings for the Game Center provider.
+#
+# Regenerate (macOS + Xcode required) with:
+#   cd packages/unified_game_services_game_center
+#   dart run ffigen --config ffigen_gamekit.yaml
+#
+# The generated lib/src/gamekit_bindings.dart is committed so consumers don't
+# need Xcode. Bindings call into GameKit through package:objective_c's runtime;
+# the framework is dlopen'd at runtime by the provider.
+name: GameKitBindings
+description: Minimal GameKit bindings (auth, achievements, leaderboards).
+language: objc
+# Only generate what we explicitly include below; without this ffigen pulls in
+# the entire transitive closure of GameKit (≈1000 interfaces, AppKit/UIKit, …).
+exclude-all-by-default: true
+output:
+  bindings: 'lib/src/gamekit_bindings.dart'
+headers:
+  entry-points:
+    - 'src/gamekit_wrapper.h'
+  include-directives:
+    - '**GameKit.framework**'
+compiler-opts:
+  - '-isysroot'
+  - '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk'
+  - '-x'
+  - 'objective-c'
+
+# Keep the surface small: only the interfaces the provider touches. ffigen
+# pulls in their transitive dependencies automatically.
+objc-interfaces:
+  include:
+    - '^GKLocalPlayer$'
+    - '^GKPlayer$'
+    - '^GKBasePlayer$'
+    - '^GKAchievement$'
+    - '^GKAchievementDescription$'
+    - '^GKLeaderboard$'
+    - '^GKLeaderboardEntry$'
+  # All members of these 7 interfaces are generated. We deliberately do NOT use
+  # member-filter: under exclude-all-by-default the file already stays ~7k lines,
+  # and member-filter silently drops class properties we need (e.g.
+  # GKLocalPlayer.localPlayer). Transitively referenced types (challenges, saved
+  # games, view controllers, images) are emitted as harmless empty stubs.
+# We drive GameKit purely through its Obj-C interfaces; no C functions needed.
+# Excluding them also dodges an ffigen crash on a nullable function signature.
+functions:
+  exclude:
+    - '.*'
+
+globals:
+  include:
+    - 'GKErrorDomain'
+
+preamble: |
+  // GENERATED — do not edit by hand. Regenerate with ffigen_gamekit.yaml.
+  // ignore_for_file: type=lint, unused_element, unused_field, return_of_invalid_type, void_checks, annotate_overrides, no_leading_underscores_for_local_identifiers, library_private_types_in_public_api, constant_identifier_names, camel_case_types, non_constant_identifier_names

@@ -126,11 +126,26 @@ Pure-Dart-reachable providers ship first:
   UX is not available without Flutter (acceptable — the constraint is no
   Flutter, not no Android).
 
-**Deferred: Game Center.** Obj-C GameKit, no clean pure-Dart path (no public
-REST equivalent). Do **not** pull it in via `games_services` (Flutter +
-platform channels — violates the no-Flutter constraint). Revisit later via FFI
-(GameKit through `package:objective_c`) or a deliberately-scoped optional-Flutter
-adapter.
+- **Game Center** — Obj-C GameKit via `dart:ffi` + `package:objective_c` (pure
+  Dart, no Flutter). Implemented: auth + achievements + leaderboards. macOS/iOS
+  only. Bindings are ffigen-generated from the SDK GameKit headers and committed
+  (`gamekit_bindings.dart`); regenerate with
+  `packages/unified_game_services_game_center/tool/regenerate_bindings.sh`
+  (macOS + Xcode). GameKit needs the *host* to supply a signed app bundle and a
+  pumped main run loop — same shape as Steam needing the Steam client running;
+  the package itself stays pure Dart. Do **not** pull in `games_services`
+  (Flutter + platform channels — violates the no-Flutter constraint). Stats and
+  rich presence have no GameKit equivalent (not advertised); cloud save
+  (`GKSavedGame`) and friends are planned.
+
+  ffigen gotchas for GameKit (encoded in `ffigen_gamekit.yaml`): set
+  `exclude-all-by-default: true` or the transitive closure explodes to ~1000
+  interfaces; do **not** use `member-filter` (it runs after scope creation,
+  drops class properties like `GKLocalPlayer.localPlayer`, and doesn't shrink
+  the file under exclude-all-by-default); requires ffigen `^21.0.0-dev.0` (20.x
+  crashes with a null-scope bug on transitively-referenced stubs). The regen
+  script strips ffigen-21's propagated `@Deprecated` annotations, which the
+  analyzer rejects on extension-type declarations.
 
 ## When adding a provider
 
