@@ -29,7 +29,10 @@ packages/
                                              #   exceptions, capabilities, the
                                              #   UnifiedGameServicesPlatform base
   unified_game_services                      # app-facing facade (multi-provider)
-  unified_game_services_android_rest         # Google Play Games via REST (impl)
+  unified_game_services_google_play_rest       # Google Play Games via REST (impl)
+  unified_game_services_google_play_android    # Google Play Games via Play Games v2
+                                             #   Java SDK (jni); Android-only, writes
+  unified_game_services_google_play           # auto: native on Android, REST else
   unified_game_services_game_center
   unified_game_services_steam
   unified_game_services_epic
@@ -115,7 +118,7 @@ Pure-Dart-reachable providers ship first:
 - **GameJolt** — REST API.
 - **Epic** — EOS REST / C SDK.
 - **Google Play Games** — three-package `android_*` family. Implemented today:
-  `unified_game_services_android_rest`, the cross-platform REST tier (Games API
+  `unified_game_services_google_play_rest`, the cross-platform REST tier (Games API
   v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises
   **achievements + leaderboards** only. Stats (GPG `stats` is fixed read-only
   analytics, not writable counters), cloud save (snapshots live in Drive
@@ -133,17 +136,27 @@ Pure-Dart-reachable providers ship first:
   `access_type=offline` + `prompt=consent`. The REST client refreshes once and
   retries on a single `401`.
 
-  **Planned (Phase 2, not built):** `unified_game_services_android_native` —
-  `jnigen` bindings to the Play Games v2 **Java** SDK so unlock/submit go
-  through the Play Services client and fire **native toasts/overlay** on
-  Android (REST can't — it writes to the cloud, bypassing the on-device client).
-  Heavy host requirements (engine supplies the `JavaVM*`/`JNIEnv` and the
-  `Activity` jobject; APK bundles the `play-services-games-v2` aar) — same
-  "host supplies the runtime" shape as Steam/GameCenter. Then
-  `unified_game_services_android` — a thin factory picking native on Android,
-  REST elsewhere (runtime `Platform.isAndroid` switch; Dart has no compile-time
-  OS guard, so the `jni` dep rides along into all builds but only runs on
-  Android).
+  **Phase 2 — `unified_game_services_google_play_android` (scaffolded, on-device
+  verify pending):** committed `jnigen` bindings to the Play Games v2 **Java**
+  SDK (`lib/src/playgames_bindings.dart`; regen via `tool/regenerate_bindings.sh`
+  — Android SDK + JDK ≤21 + Google Maven). Writes (`unlock`/`increment`/
+  `reveal`/`submitScore`) go through the on-device Play Games client and fire
+  **native toasts/overlay** (REST can't — it writes to the cloud, bypassing the
+  on-device client). Heavy host requirements (engine supplies the
+  `JavaVM*`/`JNIEnv` and the `Activity` jobject; APK bundles the
+  `play-services-games-v2` aar) — same "host supplies the runtime" shape as
+  Steam/GameCenter. **Read-path gap:** jnigen 0.16.0 mis-generates the generic
+  `tasks.Task`/`Tasks`, so they're excluded and `Task`-returning methods are
+  opaque `JObject` — confirming sign-in / current-player / list reads await a
+  jnigen generics fix or a hand-written JNI `Tasks.await`. Keep the runtime
+  `jni` aligned with jnigen (jnigen 0.16.0 → jni 1.0.0). Not yet runtime-tested
+  (needs a Dart-on-Android host + a Play Console game).
+
+  **`unified_game_services_google_play` (built):** thin factory picking native on
+  Android, REST elsewhere (runtime `Platform.isAndroid` switch; Dart has no
+  compile-time OS guard, so the `jni` dep rides along into all builds but only
+  runs on Android). Re-exports both concrete provider types + the REST auth
+  strategies.
 
   **Constraint clarification:** the native package is allowed under no-Flutter.
   `games_services` is banned because it uses Flutter **platform channels**;

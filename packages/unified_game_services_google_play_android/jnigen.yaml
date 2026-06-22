@@ -1,0 +1,52 @@
+# jnigen config for the Play Games v2 Java SDK bindings.
+#
+# This repo is NOT a Flutter project, so the usual jnigen Android path
+# (`android_sdk_config.add_gradle_deps` against an example app) does not apply.
+# Instead `tool/regenerate_bindings.sh` resolves the Play Games v2 aar + its
+# transitive deps from Google's Maven, extracts each `classes.jar`, and points
+# `class_path` here at those jars plus the platform `android.jar`. Run that
+# script (not jnigen directly) to regenerate.
+#
+# Requires: ANDROID_SDK_ROOT, a JDK the script picks, and network access to
+# Google's Maven. See tool/regenerate_bindings.sh.
+
+summarizer:
+  backend: asm
+
+output:
+  bindings_type: dart_only
+  dart:
+    path: lib/src/playgames_bindings.dart
+    structure: single_file
+
+# Populated by tool/regenerate_bindings.sh (extracted aar classes.jars +
+# android.jar). Each jar must be listed individually — a directory of jars is
+# not a valid Java classpath entry.
+class_path:
+  - 'build/jnigen/classpath/play-services-games-v2.jar'
+  - 'build/jnigen/classpath/play-services-tasks.jar'
+  - 'build/jnigen/classpath/play-services-base.jar'
+  - 'build/jnigen/classpath/play-services-basement.jar'
+  - 'build/jnigen/classpath/android.jar'
+
+# Only generate the surface the provider touches; jnigen pulls referenced types
+# transitively, so keep this list tight.
+classes:
+  - 'com.google.android.gms.games.PlayGames'
+  - 'com.google.android.gms.games.PlayGamesSdk'
+  - 'com.google.android.gms.games.GamesSignInClient'
+  - 'com.google.android.gms.games.AuthenticationResult'
+  - 'com.google.android.gms.games.AchievementsClient'
+  - 'com.google.android.gms.games.LeaderboardsClient'
+  - 'com.google.android.gms.games.PlayersClient'
+  - 'com.google.android.gms.games.Player'
+  # NOTE: com.google.android.gms.tasks.{Task,Tasks} are intentionally NOT listed.
+  # jnigen 0.16.0 mis-generates those generic classes (analyzer errors in the
+  # Task<TResult>/Tasks output). Left unlisted, methods returning Task<T> come
+  # back as opaque JObject. Awaiting a Task result (sign-in state, current
+  # player) therefore needs a jnigen that fixes generics, or a small hand-written
+  # JNI await helper — tracked as the remaining read-path work. The native-UX
+  # WRITES (unlock/increment/reveal/submitScore) are plain void calls and work.
+
+# android.* core classes are not in the aar; the script adds android.jar to the
+# classpath so Activity/Context resolve as referenced types.
