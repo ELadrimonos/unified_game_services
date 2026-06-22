@@ -33,7 +33,7 @@ single Dart API.
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
 | Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
 | PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
-| Google Play Games | 📋 Research (pure Dart via REST Games API v1 + OAuth) |
+| Google Play Games | ✅ Implemented (pure Dart, REST Games API v1 + OAuth) — achievements + leaderboards, verified with tests |
 | Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
 | Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |
@@ -41,9 +41,12 @@ single Dart API.
 > **Core constraint:** no package depends on Flutter. That is why
 > [`games_services`](https://pub.dev/packages/games_services) is not used (it
 > requires Flutter + platform channels). The MVP covers the providers reachable
-> from pure Dart. Google Play Games is reachable via its REST Games API v1
-> (`games.googleapis.com`) + OAuth 2.0 — no native SDK needed — so it is back on
-> the roadmap as research. Game Center stays deferred (no pure-Dart path yet).
+> from pure Dart. Google Play Games is implemented via its REST Games API v1
+> (`games.googleapis.com`) + OAuth 2.0 — no native SDK needed — in
+> `unified_game_services_android_rest` (achievements + leaderboards). Native
+> Android Play Services toasts need the Java SDK and are planned as a separate
+> `unified_game_services_android_native` provider (pure Dart via `package:jni`).
+> Game Center is implemented via FFI/GameKit.
 
 ---
 
@@ -95,7 +98,7 @@ unified_game_services
 │   └── presence
 │
 ├── providers
-│   ├── google_play
+│   ├── android_rest        # Google Play Games (REST)
 │   ├── game_center
 │   ├── steam
 │   ├── epic
@@ -116,7 +119,7 @@ packages/
 │
 ├── unified_game_services
 ├── unified_game_services_platform_interface
-├── unified_game_services_google_play
+├── unified_game_services_android_rest
 ├── unified_game_services_game_center
 ├── unified_game_services_steam
 ├── unified_game_services_epic

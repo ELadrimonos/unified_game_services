@@ -8,7 +8,7 @@ environment:
 workspace:
   - packages/unified_game_services
   - packages/unified_game_services_platform_interface
-  - packages/unified_game_services_google_play
+  - packages/unified_game_services_android_rest
   - packages/unified_game_services_game_center
   - packages/unified_game_services_steam
   - packages/unified_game_services_epic

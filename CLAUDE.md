@@ -29,7 +29,7 @@ packages/
                                              #   exceptions, capabilities, the
                                              #   UnifiedGameServicesPlatform base
   unified_game_services                      # app-facing facade (multi-provider)
-  unified_game_services_google_play          # provider impls (still stubs)
+  unified_game_services_android_rest         # Google Play Games via REST (impl)
   unified_game_services_game_center
   unified_game_services_steam
   unified_game_services_epic
@@ -114,17 +114,42 @@ Pure-Dart-reachable providers ship first:
 - **Steam** — Steamworks C API via `dart:ffi`.
 - **GameJolt** — REST API.
 - **Epic** — EOS REST / C SDK.
-- **Google Play Games** — REST Games API v1 (`games.googleapis.com/games/v1`) +
-  OAuth 2.0. Research stage. The REST surface covers the unified API
-  (`achievements.unlock/increment/reveal`, `scores.submit`, `snapshots` for
-  cloud save, `players.get`, `stats.get`, `events.record`) over `package:http`.
-  The *native* Android SDK (`.aar` + platform channels via `games_services`)
-  remains banned — it needs Flutter. Only the REST + OAuth path is allowed. The
-  open challenge is the player OAuth flow with scope
-  `https://www.googleapis.com/auth/games`: an authorization-code + loopback
-  flow works in pure Dart on desktop/CLI/server; Android's native auto-sign-in
-  UX is not available without Flutter (acceptable — the constraint is no
-  Flutter, not no Android).
+- **Google Play Games** — three-package `android_*` family. Implemented today:
+  `unified_game_services_android_rest`, the cross-platform REST tier (Games API
+  v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises
+  **achievements + leaderboards** only. Stats (GPG `stats` is fixed read-only
+  analytics, not writable counters), cloud save (snapshots live in Drive
+  appdata — separate API + `drive.appdata` scope) and friends/presence are
+  intentionally not advertised. Mirrors the GameJolt template (provider + thin
+  `GamesRestClient` + `MockClient` tests + a `.withClient()` seam).
+
+  Auth is a pluggable `AuthStrategy` (the provider performs no OAuth itself):
+  `LoopbackOAuthStrategy` (authorization-code + PKCE + `127.0.0.1` loopback,
+  desktop/CLI; needs a **Desktop app** OAuth client), `StoredCredentialStrategy`
+  (refresh token / brokered access token, server/headless), and
+  `NativeSilentTokenStrategy` consuming a host-implemented `NativeTokenProvider`
+  — the interface by which an Android host brokers a silent token. Scope
+  `https://www.googleapis.com/auth/games`; refresh tokens need
+  `access_type=offline` + `prompt=consent`. The REST client refreshes once and
+  retries on a single `401`.
+
+  **Planned (Phase 2, not built):** `unified_game_services_android_native` —
+  `jnigen` bindings to the Play Games v2 **Java** SDK so unlock/submit go
+  through the Play Services client and fire **native toasts/overlay** on
+  Android (REST can't — it writes to the cloud, bypassing the on-device client).
+  Heavy host requirements (engine supplies the `JavaVM*`/`JNIEnv` and the
+  `Activity` jobject; APK bundles the `play-services-games-v2` aar) — same
+  "host supplies the runtime" shape as Steam/GameCenter. Then
+  `unified_game_services_android` — a thin factory picking native on Android,
+  REST elsewhere (runtime `Platform.isAndroid` switch; Dart has no compile-time
+  OS guard, so the `jni` dep rides along into all builds but only runs on
+  Android).
+
+  **Constraint clarification:** the native package is allowed under no-Flutter.
+  `games_services` is banned because it uses Flutter **platform channels**;
+  `package:jni`/`jnigen` (pure Dart) reach the Java SDK via JNI — the same
+  approach `objective_c` uses for GameKit. "Native Android SDK banned" meant the
+  *Flutter* path, not JNI.
 
 **Deferred: Game Center.** Obj-C GameKit, no clean pure-Dart path (no public
 REST equivalent). Do **not** pull it in via `games_services` (Flutter +
