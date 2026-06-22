@@ -6,6 +6,10 @@ import 'package:ffi/ffi.dart';
 import 'package:steamworks/steamworks.dart' as sw;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
+import 'steam_auth_ticket.dart';
+
+export 'steam_auth_ticket.dart';
+
 /// Steam provider backed by the pure-Dart [`steamworks`](https://pub.dev/packages/steamworks)
 /// FFI wrapper of the Steamworks SDK.
 ///
@@ -536,6 +540,90 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       isFriend: isFriend,
     );
   }
+
+  // ─── Steam-specific extras (NOT part of the unified interface) ─────────────
+  //
+  // These members exist only on [SteamProvider] and are absent from
+  // [UnifiedGameServicesPlatform]. Reach them via
+  // `UnifiedGameServicesPlatform.getInstance<SteamProvider>()`.
+
+  /// The signed-in user's 64-bit Steam ID
+  /// (`SteamUser()->GetSteamID().ConvertToUint64()`).
+  ///
+  /// Same value as [PlayerProfile.id] from [signIn]/[getCurrentPlayer], but as
+  /// the raw [int]. Store it on your own users table to record the Steam link.
+  ///
+  /// Note: this is the *client-reported* ID — trustworthy for local use, but
+  /// spoofable before it reaches a server. To link an account with server-side
+  /// trust, use [getWebApiAuthTicket] and verify it on your backend.
+  int getSteamId64() => _ensureInit().steamUser.getSteamId();
+
+  /// Requests a Steam **Web API** auth ticket for server-side account linking.
+  ///
+  /// Returns once Steam delivers the ticket bytes. Send [SteamAuthTicket.hex]
+  /// to your backend, which calls the Steam Web API
+  /// `ISteamUserAuth/AuthenticateUserTicket` to obtain the *verified*
+  /// steamID64 — the anti-spoof basis for linking a Steam account to a row in
+  /// your database. See [SteamAuthTicket] for the full flow.
+  ///
+  /// [identity] is the optional remote-service identity string Steam embeds in
+  /// the ticket; pass the same value your backend expects (or omit for none).
+  Future<SteamAuthTicket> getWebApiAuthTicket({String? identity}) {
+    final client = _ensureInit();
+    final completer = Completer<SteamAuthTicket>();
+
+    int request(Pointer<Utf8> id) => client.steamUser.getAuthTicketForWebApi(id);
+    final handle = identity == null
+        ? request(nullptr)
+        : _withUtf8(identity, request);
+
+    if (handle == 0 /* k_HAuthTicketInvalid */) {
+      return Future.error(
+        const PlatformOperationException(
+          'Steam refused the Web API auth ticket request.',
+        ),
+      );
+    }
+
+    late final sw.Callback<sw.GetTicketForWebApiResponse> cb;
+    cb = client.registerCallback<sw.GetTicketForWebApiResponse>(
+      cb: (ptr) {
+        // The callback fires for every outstanding request; match our handle.
+        if (ptr.authTicket != handle || completer.isCompleted) return;
+        client.unregisterCallback(callback: cb);
+        if (ptr.result != sw.EResult.eResultOK) {
+          completer.completeError(
+            PlatformOperationException(
+              'Steam Web API auth ticket failed: ${ptr.result}.',
+            ),
+          );
+          return;
+        }
+        final len = ptr.ticket;
+        final arr = ptr.ticketAsArray;
+        final bytes = Uint8List(len);
+        for (var i = 0; i < len; i++) {
+          bytes[i] = arr[i];
+        }
+        completer.complete(SteamAuthTicket(handle: handle, bytes: bytes));
+      },
+    );
+
+    return completer.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        if (!completer.isCompleted) client.unregisterCallback(callback: cb);
+        throw const PlatformOperationException(
+          'Steam Web API auth ticket timed out.',
+        );
+      },
+    );
+  }
+
+  /// Releases an auth-ticket handle obtained from [getWebApiAuthTicket]
+  /// (`SteamUser()->CancelAuthTicket`). Call once your backend has consumed it.
+  void cancelAuthTicket(int handle) =>
+      _ensureInit().steamUser.cancelAuthTicket(handle);
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
 

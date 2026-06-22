@@ -93,6 +93,44 @@ Beyond the unified API (reach via
 
 - `clearAchievement(id)` — clear a single achievement.
 - `resetAllStats(includeAchievements: true)` — reset for re-testing.
+- `getSteamId64()` — the signed-in user's 64-bit Steam ID
+  (`SteamUser()->GetSteamID().ConvertToUint64()`) as a raw `int`.
+- `getWebApiAuthTicket({identity})` → `SteamAuthTicket` — request a Web API
+  auth ticket for server-side account linking (see below).
+- `cancelAuthTicket(handle)` — release a ticket once your backend consumed it.
+
+### Link a Steam account to your own backend ("Steam OAuth")
+
+Steam has no OAuth, but it offers an equivalent: a Web API **auth ticket** your
+server verifies against Valve. Use it to bind a Steam account to a row in your
+own database with anti-spoof trust.
+
+Two tiers, pick by how much trust you need:
+
+- **Local only** — `getSteamId64()` returns the steamID64 directly (same value
+  as `PlayerProfile.id`). Fine to display or cache locally, but a client can
+  lie about it, so never trust it on a server as proof of identity.
+- **Server-verified** — `getWebApiAuthTicket()` returns a `SteamAuthTicket`.
+  Send its `.hex` to your backend; only Valve can confirm it maps to a real
+  steamID64.
+
+```dart
+final steam = UnifiedGameServicesPlatform.getInstance<SteamProvider>();
+await steam.signIn();
+
+// 1. Client: get a ticket and send the hex to your server.
+final ticket = await steam.getWebApiAuthTicket();
+await http.post(myBackendUri, body: {'ticket': ticket.hex});
+steam.cancelAuthTicket(ticket.handle); // release when your server is done
+
+// 2. Server: verify with your publisher Web API key + app id.
+//    GET https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/
+//        ?key=<WEB_API_KEY>&appid=<APPID>&ticket=<hex>
+//    → response carries the *verified* steamid; store it on the user row.
+```
+
+The verified steamID64 is the link key — the client cannot forge it. This is
+the recommended path for "log in / link with Steam" against your own service.
 
 ## Examples & tooling
 
