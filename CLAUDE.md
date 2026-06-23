@@ -136,8 +136,8 @@ Pure-Dart-reachable providers ship first:
   `access_type=offline` + `prompt=consent`. The REST client refreshes once and
   retries on a single `401`.
 
-  **Phase 2 — `unified_game_services_google_play_android` (scaffolded, on-device
-  verify pending):** committed `jnigen` bindings to the Play Games v2 **Java**
+  **Phase 2 — `unified_game_services_google_play_android` (JNI bridge verified
+  on-device):** committed `jnigen` bindings to the Play Games v2 **Java**
   SDK (`lib/src/playgames_bindings.dart`; regen via `tool/regenerate_bindings.sh`
   — Android SDK + JDK ≤21 + Google Maven). Writes (`unlock`/`increment`/
   `reveal`/`submitScore`) go through the on-device Play Games client and fire
@@ -149,8 +149,15 @@ Pure-Dart-reachable providers ship first:
   `tasks.Task`/`Tasks`, so they're excluded and `Task`-returning methods are
   opaque `JObject` — confirming sign-in / current-player / list reads await a
   jnigen generics fix or a hand-written JNI `Tasks.await`. Keep the runtime
-  `jni` aligned with jnigen (jnigen 0.16.0 → jni 1.0.0). Not yet runtime-tested
-  (needs a Dart-on-Android host + a Play Console game).
+  `jni` aligned with jnigen (jnigen 0.16.0 → jni 1.0.0). **Runtime-verified on a
+  Flutter Android host** (`example/`): `signIn()` fires the native Play Games
+  sign-in overlay, proving the JNI path reaches the live SDK (VM/Activity wiring
+  + bindings work). The example is a Flutter app that *consumes* the pure-Dart
+  package (Flutter only in the example pubspec); it gets the runtime + Activity
+  jobject from `jni_flutter` (`androidActivity(engineId)`) — the Flutter plugin
+  half of `package:jni`, which belongs in the host, never in the package. Write
+  toasts and the `Task`-backed read path still need a configured Play Console
+  game to fully exercise.
 
   **`unified_game_services_google_play` (built):** thin factory picking native on
   Android, REST elsewhere (runtime `Platform.isAndroid` switch; Dart has no

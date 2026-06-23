@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Replace with the numeric "Project ID" from your Play Console game
+         (Configuration → app id, e.g. 123456789012). Keep it as a string;
+         do NOT inline it in the manifest. -->
+    <string name="game_services_project_id">000000000000</string>
+</resources>

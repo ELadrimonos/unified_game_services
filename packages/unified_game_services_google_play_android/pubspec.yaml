@@ -17,6 +17,10 @@ dependencies:
   jni: ^1.0.0
   unified_game_services_platform_interface: ^0.0.1
 
+screenshots:
+  - path: screenshot.png
+    description: Code example showcasing on-device capabilities
+
 dev_dependencies:
   jnigen: ^0.16.0
   lints: ^6.0.0
