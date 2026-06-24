@@ -4,6 +4,20 @@ description: Epic Online Services (EOS) provider for unified_game_services. Plan
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - epic-games
+  - gamedev
+
+# Desktop for now (EOS via REST/C SDK targets desktop first); revisit when
+# the provider is implemented.
+platforms:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ^3.12.0
 
