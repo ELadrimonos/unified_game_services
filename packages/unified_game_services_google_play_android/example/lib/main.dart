@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/material.dart';
+import 'package:jni/jni.dart' show JObject;
 import 'package:jni_flutter/jni_flutter.dart';
 import 'package:unified_game_services_google_play_android/unified_game_services_google_play_android.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
@@ -63,13 +64,19 @@ class _HomePageState extends State<HomePage> {
   void _init() {
     try {
       // The host Activity jobject — the one piece the provider can't get on
-      // its own. jni_flutter resolves it from the running Flutter engine.
-      final activity = androidActivity(PlatformDispatcher.instance.engineId!);
-      if (activity == null) {
+      // its own. jni_flutter resolves it from the running Flutter engine. We
+      // pass a *resolver* (not the activity itself): it's volatile and must be
+      // fetched fresh, synchronously, before each native call.
+      JObject resolveActivity() =>
+          androidActivity(PlatformDispatcher.instance.engineId!)!;
+      // Probe once so misconfiguration (not on Android) fails clearly here.
+      if (androidActivity(PlatformDispatcher.instance.engineId!) == null) {
         _append('init failed: no Android Activity (run on Android)');
         return;
       }
-      final provider = GooglePlayAndroidProvider(activity: activity);
+      final provider = GooglePlayAndroidProvider(
+        activityResolver: resolveActivity,
+      );
       _eventsSub = provider.events.listen(
         (e) => _append('event: ${e.runtimeType}'),
       );

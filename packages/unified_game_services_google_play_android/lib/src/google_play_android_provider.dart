@@ -16,8 +16,11 @@ import 'playgames_bindings.dart';
 /// ## Host requirements (the engine/app embedding Dart on Android)
 /// 1. A running ART VM with `package:jni` initialized against it (the host
 ///    hands the `JavaVM*`/`JNIEnv` to JNI on startup).
-/// 2. The current `Activity` jobject, passed to [registerWith] / the
-///    constructor (from `ANativeActivity.clazz` or the engine's activity).
+/// 2. An `activityResolver` (passed to [registerWith] / the constructor) that
+///    returns the current `Activity` jobject (from `ANativeActivity.clazz` or
+///    the engine's activity). It is invoked fresh before each native call so a
+///    volatile activity (e.g. Flutter's, which goes stale on rotation) is never
+///    cached; engine hosts with a stable activity pass `() => activity`.
 /// 3. The APK must bundle `com.google.android.gms:play-services-games-v2` and
 ///    declare the Play Games app id `<meta-data>` in its manifest.
 ///
@@ -36,15 +39,22 @@ import 'playgames_bindings.dart';
 /// native-UX writes.
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   GooglePlayAndroidProvider({
-    required JObject activity,
+    required JObject Function() activityResolver,
     super.leaderboardIds,
     super.achievementIds,
-  }) : _activity = activity {
-    PlayGamesSdk.initialize(activity);
+  }) : _activityResolver = activityResolver {
+    PlayGamesSdk.initialize(_activityResolver());
   }
 
-  /// The host Activity jobject the Play Games clients are bound to.
-  final JObject _activity;
+  /// Resolves the host Android `Activity` jobject the Play Games clients bind
+  /// to. **Called fresh, synchronously, immediately before each native call**
+  /// — never cached across an `await`.
+  ///
+  /// Under Flutter the activity reference is volatile (it can go stale on
+  /// rotation / backgrounding), so storing it would crash; the resolver lets
+  /// each operation fetch the live one. Engine hosts with a stable activity can
+  /// pass `() => activity`.
+  final JObject Function() _activityResolver;
 
   /// Best-effort sign-in flag: set once [signIn] has triggered the native flow.
   /// Not authoritative — confirming actual sign-in needs the Task read path.
@@ -55,14 +65,15 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   /// Registers a [GooglePlayAndroidProvider] as the active platform.
   ///
-  /// [activity] is the host Android `Activity` jobject.
+  /// [activityResolver] returns the host Android `Activity` jobject; it is
+  /// invoked fresh before each native call (see [_activityResolver]).
   static void registerWith({
-    required JObject activity,
+    required JObject Function() activityResolver,
     Map<String, String>? leaderboardIds,
     Map<String, String>? achievementIds,
   }) {
     UnifiedGameServicesPlatform.instance = GooglePlayAndroidProvider(
-      activity: activity,
+      activityResolver: activityResolver,
       leaderboardIds: leaderboardIds,
       achievementIds: achievementIds,
     );
@@ -87,7 +98,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     // Triggers the native Play Games sign-in UI. The returned Task is opaque
     // (see class docs) so we cannot yet read the AuthenticationResult or load
     // the profile here; returns null until the Task read path lands.
-    final client = PlayGames.getGamesSignInClient(_activity);
+    final client = PlayGames.getGamesSignInClient(_activityResolver());
     try {
       client.signIn().release();
       _signInTriggered = true;
@@ -155,7 +166,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     required int score,
   }) async {
     final id = resolveLeaderboardId(leaderboardId);
-    final client = PlayGames.getLeaderboardsClient(_activity);
+    final client = PlayGames.getLeaderboardsClient(_activityResolver());
     try {
       _withJString(id, (js) => client.submitScore(js, score));
     } finally {
@@ -181,7 +192,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   /// Runs [body] with a fresh `AchievementsClient`, releasing it afterwards.
   void _withAchievements(void Function(AchievementsClient client) body) {
-    final client = PlayGames.getAchievementsClient(_activity);
+    final client = PlayGames.getAchievementsClient(_activityResolver());
     try {
       body(client);
     } finally {
