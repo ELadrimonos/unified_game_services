@@ -1,11 +1,14 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 import 'auth_strategy.dart';
+// dart:io-backed loopback transport on native; a throwing stub on web (the
+// loopback flow needs a localhost server a browser can't host).
+import 'loopback_transport_web.dart'
+    if (dart.library.io) 'loopback_transport_io.dart';
 import 'pkce.dart';
 import 'token_refresher.dart';
 
@@ -98,12 +101,14 @@ class LoopbackOAuthStrategy implements AuthStrategy {
   }
 
   /// Runs the full interactive authorization-code flow once.
+  ///
+  /// The loopback server + redirect capture live in the platform transport
+  /// ([captureAuthorizationCode]); on web that stub throws — loopback needs a
+  /// localhost server a browser can't host.
   Future<TokenResponse> _authorize() async {
     final pkce = PkcePair.generate(_random);
-    final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
-    try {
-      final redirectUri = 'http://127.0.0.1:${server.port}';
-      final authUrl = Uri.parse(authorizationEndpoint).replace(
+    final result = await captureAuthorizationCode(
+      authUrlFor: (redirectUri) => Uri.parse(authorizationEndpoint).replace(
         queryParameters: {
           'response_type': 'code',
           'client_id': clientId,
@@ -114,65 +119,21 @@ class LoopbackOAuthStrategy implements AuthStrategy {
           'access_type': 'offline',
           'prompt': 'consent',
         },
-      );
-
-      await _launch(authUrl);
-
-      final code = await _awaitRedirect(server);
-      return _refresher.exchangeCode(
-        code: code,
-        codeVerifier: pkce.verifier,
-        redirectUri: redirectUri,
-      );
-    } finally {
-      await server.close(force: true);
-    }
+      ),
+      launch: _launch,
+    );
+    return _refresher.exchangeCode(
+      code: result.code,
+      codeVerifier: pkce.verifier,
+      redirectUri: result.redirectUri,
+    );
   }
 
-  /// Serves the first loopback request, extracts `?code=`, and replies with a
-  /// small "you can close this tab" page.
-  Future<String> _awaitRedirect(HttpServer server) async {
-    await for (final request in server) {
-      final params = request.uri.queryParameters;
-      final code = params['code'];
-      final error = params['error'];
-      final response = request.response
-        ..statusCode = 200
-        ..headers.contentType = ContentType.html;
-      if (code != null) {
-        response.write(_donePage);
-        await response.close();
-        return code;
-      }
-      response.write(_donePage);
-      await response.close();
-      throw SignInFailedException(
-        'OAuth consent did not return a code${error != null ? ' (error: $error)' : ''}.',
-      );
-    }
-    throw const SignInFailedException('OAuth redirect server closed early.');
-  }
-
-  /// The default [UrlLauncher]: print the URL and try the OS opener.
+  /// The default [UrlLauncher]: print the URL and try the OS opener (a no-op on
+  /// web — the printed URL is the fallback).
   static Future<void> defaultLauncher(Uri url) async {
     // ignore: avoid_print
     print('Open this URL to sign in:\n$url');
-    final command = Platform.isMacOS
-        ? 'open'
-        : Platform.isWindows
-        ? 'start'
-        : 'xdg-open';
-    try {
-      await Process.run(command, [
-        url.toString(),
-      ], runInShell: Platform.isWindows);
-    } catch (_) {
-      // No opener available (headless) — the printed URL is the fallback.
-    }
+    await openInBrowser(url);
   }
-
-  static const String _donePage =
-      '<!doctype html><meta charset="utf-8"><title>Signed in</title>'
-      '<body style="font-family:sans-serif;text-align:center;padding-top:3rem">'
-      '<h2>Signed in</h2><p>You can close this tab and return to the game.</p>';
 }

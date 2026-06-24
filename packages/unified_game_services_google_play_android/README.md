@@ -32,8 +32,9 @@ bundle + run loop):
 
 1. A running ART VM with `package:jni` initialized against it (host hands the
    `JavaVM*`/`JNIEnv` to JNI on startup).
-2. The current `Activity` jobject, passed to `registerWith` / the constructor
-   (e.g. from `ANativeActivity.clazz`).
+2. An `activityResolver` (`JObject Function()`) passed to `registerWith` / the
+   constructor — invoked fresh before each native call so a volatile activity is
+   never cached (e.g. `() => ANativeActivity.clazz` for a stable engine activity).
 3. The APK bundles `com.google.android.gms:play-services-games-v2` and declares
    the Play Games app id `<meta-data>` in its manifest.
 
@@ -50,8 +51,12 @@ bundle + run loop):
   `JObject`. Wiring reads needs a jnigen that fixes generics (or a small
   hand-written JNI `Tasks.await` helper). Meanwhile the unified facade can serve
   reads from the REST provider.
-- **Not runtime-verified on device** yet — the Play Games SDK loads only on
-  Android with a Play Console game + tester account.
+- **Runtime-verified on a Flutter Android host** (see the family's
+  [`..._flutter`](../unified_game_services_google_play_flutter) `example/`):
+  `signIn()` fires the native Play Games sign-in overlay, proving the JNI path
+  reaches the live SDK (VM/Activity wiring + bindings work). Write toasts and the
+  `Task`-backed read path still need a configured Play Console game + tester
+  account to fully exercise.
 
 ## Bindings
 

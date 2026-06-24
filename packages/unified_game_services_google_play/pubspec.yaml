@@ -5,6 +5,23 @@ version: 0.0.1
 publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - google-play-games
+  - gamedev
+
+# Native on Android (package:jni, dart.library.io-gated), REST elsewhere
+# including web. Union of both tiers.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.12.0
 

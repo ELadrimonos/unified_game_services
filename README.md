@@ -36,6 +36,7 @@ single Dart API.
 | Google Play Games (android_rest) | ✅ Implemented (pure Dart, REST Games API v1 + OAuth) — achievements + leaderboards, verified with tests |
 | Google Play Games (android_native) | ✅ Implemented (Play Games Services native SDK via package:jni) |
 | Google Play Games (android) | ✅ Implemented (auto-selects native on Android, REST elsewhere) |
+| Google Play Games (flutter) | ✅ Implemented (Flutter adapter — auto-resolves the Activity via jni_flutter for plug-and-play) |
 | Apple Game Center | ⏸️ Deferred (possible via FFI/GameKit) |
 | Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |

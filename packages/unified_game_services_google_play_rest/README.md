@@ -9,9 +9,13 @@ servers, not only Flutter apps.
 Because it talks to Google's cloud directly (not the on-device Play Services
 client), it works the same on desktop, Android (NDK) and servers. The trade-off:
 **no native Play Services achievement/leaderboard toasts** on Android — your
-app draws its own UI. (A planned `unified_game_services_google_play_android`
-provider will route writes through the Java SDK for native UX; this is the
-cross-platform REST tier.)
+app draws its own UI. For native UX on Android use
+[`unified_game_services_google_play_android`](../unified_game_services_google_play_android)
+(routes writes through the Java SDK); this package is the cross-platform REST
+tier. Most apps should use the auto-selecting
+[`unified_game_services_google_play`](../unified_game_services_google_play)
+(native on Android, REST elsewhere) rather than depending on either tier
+directly.
 
 ## Supported capabilities
 
@@ -34,15 +38,26 @@ The provider never performs OAuth itself — it takes a pluggable `AuthStrategy`
 
 - `LoopbackOAuthStrategy` — interactive authorization-code + **PKCE** flow with a
   `127.0.0.1` loopback redirect. Opens the system browser. For desktop/CLI.
-  Needs a Google Cloud OAuth client of type **Desktop app**.
+  Needs a Google Cloud OAuth client of type **Desktop app**. **Not available on
+  web** (a browser can't host the localhost server) — it throws
+  `UnsupportedError` there.
 - `StoredCredentialStrategy` — a refresh token (renewed automatically) or a
-  brokered access token. For servers/headless.
+  brokered access token. For servers/headless. Web-safe.
 - `NativeSilentTokenStrategy` — consumes a token from a host-implemented
   `NativeTokenProvider` (e.g. Android silent sign-in). This package contains no
-  native code; the host brokers the token.
+  native code; the host brokers the token. Web-safe.
 
 Scope: `https://www.googleapis.com/auth/games`. Refresh tokens require
 `access_type=offline` + `prompt=consent` (handled by `LoopbackOAuthStrategy`).
+
+### Web
+
+The package compiles and runs on web. The provider + REST client + the
+`StoredCredentialStrategy` / `NativeSilentTokenStrategy` strategies are pure
+Dart; only `LoopbackOAuthStrategy`'s loopback server is `dart:io`-bound and is
+swapped for a throwing stub on web via a conditional import. On web, broker a
+token (your own redirect-based OAuth flow or a backend) and pass it through
+`StoredCredentialStrategy`.
 
 ## Quick start
 

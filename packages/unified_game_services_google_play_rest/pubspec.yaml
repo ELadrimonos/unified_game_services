@@ -4,6 +4,24 @@ description: Google Play Games provider for unified_game_services over the REST 
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - google-play-games
+  - gamedev
+
+# Cross-platform REST tier. Not Android by design (use the native package
+# there). Web works for StoredCredential / NativeSilent strategies; the
+# interactive LoopbackOAuthStrategy is unavailable on web (needs a localhost
+# server) and throws UnsupportedError there.
+platforms:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.12.0
 

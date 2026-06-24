@@ -9,6 +9,17 @@ version: 0.0.1
 publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - google-play-games
+  - android
+
+# Android only — the Play Games v2 Java SDK loads only there.
+platforms:
+  android:
+
 environment:
   sdk: ^3.12.0
 

@@ -21,6 +21,15 @@ frameworks — not only Flutter apps.
 - Providers needing platform code must reach the OS via pure-Dart means (FFI, REST,
   process, conditional imports) — never a Flutter plugin dependency.
 
+**Sanctioned exception — `unified_game_services_google_play_flutter`.** This one
+adapter package depends on `flutter` + `jni_flutter` (a Flutter plugin) to
+auto-resolve the Android `Activity` for plug-and-play registration. It is a
+workspace member, so **root resolution (`dart pub get` / `melos bootstrap`) now
+requires the Flutter SDK on `PATH`**. The core/provider packages stay pure Dart
+(no `package:flutter` / `dart:ui` imports); only this adapter crosses the line,
+and Flutter apps opt into it explicitly. Engine/CLI hosts keep using the
+pure-Dart packages and supply their own `activityResolver`.
+
 ## Layout (melos workspace)
 
 ```
@@ -33,6 +42,8 @@ packages/
   unified_game_services_google_play_android    # Google Play Games via Play Games v2
                                              #   Java SDK (jni); Android-only, writes
   unified_game_services_google_play           # auto: native on Android, REST else
+  unified_game_services_google_play_flutter    # Flutter adapter: auto-resolves the
+                                             #   Activity (jni_flutter). NOT pure Dart
   unified_game_services_game_center
   unified_game_services_steam
   unified_game_services_epic
@@ -160,10 +171,35 @@ Pure-Dart-reachable providers ship first:
   game to fully exercise.
 
   **`unified_game_services_google_play` (built):** thin factory picking native on
-  Android, REST elsewhere (runtime `Platform.isAndroid` switch; Dart has no
-  compile-time OS guard, so the `jni` dep rides along into all builds but only
-  runs on Android). Re-exports both concrete provider types + the REST auth
-  strategies.
+  Android, REST elsewhere — **including web**. The native half (`dart:io` +
+  `package:jni`, which is FFI with no web support) sits behind a
+  `dart.library.io` conditional import (`native_provider_{io,web}.dart` +
+  `native_export_{io,web}.dart`), so `package:jni` never enters a web build and
+  the facade compiles to JS (verified via `dart compile js`); on native a
+  runtime `Platform.isAndroid` switch picks native on Android, REST otherwise.
+  Re-exports the REST API surface unconditionally and the native
+  `GooglePlayAndroidProvider` only on `dart.library.io`. The native path takes
+  an `activityResolver` **typed `Object Function()`** (not `JObject Function()`)
+  so the facade's public API carries no `jni` types and stays web-compilable;
+  the io seam casts to `JObject`. The resolver is invoked fresh before each
+  native call so a volatile Flutter activity (stale after rotation/
+  backgrounding) is never cached. Engine hosts with a stable activity pass
+  `() => activity`.
+
+  **`unified_game_services_google_play_flutter` (built):** the sanctioned Flutter
+  adapter (depends on `flutter` + `jni_flutter`; see the hard-constraint
+  exception above). One call — `GooglePlayGamesFlutter.registerWith(...)` /
+  `.create(...)` (same `<Type>.registerWith` idiom as every other provider) —
+  auto-resolves the Android `Activity` from the
+  running Flutter engine (`androidActivity(PlatformDispatcher.instance.engineId!)`,
+  wrapped into the `activityResolver` the factory needs) so app devs never touch
+  `jni_flutter` / `PlatformDispatcher`. Re-exports the whole family API. Off
+  Android — **including Flutter web** — it delegates to the REST path (`auth`
+  required); `jni_flutter` + `dart:ui` activity resolution sit behind a
+  `dart.library.io` conditional import (`src/activity_resolver_{io,web}.dart`)
+  and the OS pick uses `GooglePlayGames.usesNative` (not `dart:io` `Platform`),
+  so the adapter builds for web — verified with `flutter build web` on
+  `example/`. Example under `example/` (standalone, not a workspace member).
 
   **Constraint clarification:** the native package is allowed under no-Flutter.
   `games_services` is banned because it uses Flutter **platform channels**;
