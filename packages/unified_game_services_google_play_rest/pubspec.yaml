@@ -11,12 +11,9 @@ topics:
   - google-play-games
   - gamedev
 
-# Cross-platform REST tier — pure-Dart HTTP, so it runs everywhere, Android
-# included (e.g. Android NDK or as a fallback). On Android the auto-selecting
-# facade still prefers the native package for native toasts/overlay, but that's
-# a recommendation, not a compatibility limit. Web works for StoredCredential /
-# NativeSilent strategies; the interactive LoopbackOAuthStrategy is unavailable
-# on web (needs a localhost server) and throws UnsupportedError there.
+# Cross-platform REST tier — pure-Dart HTTP, so it runs everywhere.
+# Web works for StoredCredential / NativeSilent strategies; the interactive
+# LoopbackOAuthStrategy is unavailable on web (needs a localhost server) and throws UnsupportedError there.
 platforms:
   android:
   ios:

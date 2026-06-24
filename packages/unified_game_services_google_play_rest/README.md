@@ -7,7 +7,7 @@ Dart, no Flutter — runs in custom game engines / native OS windows, CLIs and
 servers, not only Flutter apps.
 
 Because it talks to Google's cloud directly (not the on-device Play Services
-client), it works the same on desktop, Android (NDK) and servers. The trade-off:
+client), it works the same on desktop, mobile and servers. The trade-off:
 **no native Play Services achievement/leaderboard toasts** on Android — your
 app draws its own UI. For native UX on Android use
 [`unified_game_services_google_play_android`](../unified_game_services_google_play_android)
