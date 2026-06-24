@@ -17,7 +17,7 @@ Wraps:
 | **Flutter app** (any platform) | [`unified_game_services_google_play_flutter`](../unified_game_services_google_play_flutter) — auto-resolves the Activity; no `jni_flutter` wiring. |
 | **Non-Flutter, multi-platform** (game engine / CLI / server) — native on Android, REST elsewhere | **this package** (`unified_game_services_google_play`) |
 | **Android only**, non-Flutter host, want native toasts | [`unified_game_services_google_play_android`](../unified_game_services_google_play_android) |
-| **Non-Android only** (desktop / CLI / server, REST) | [`unified_game_services_google_play_rest`](../unified_game_services_google_play_rest) |
+| **Cloud REST tier** — any platform incl. Android (NDK), no native toasts | [`unified_game_services_google_play_rest`](../unified_game_services_google_play_rest) |
 
 > **Building a Flutter app? Use `unified_game_services_google_play_flutter`
 > instead** — it wires the Android `Activity` resolver for you. This package

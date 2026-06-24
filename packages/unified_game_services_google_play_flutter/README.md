@@ -17,7 +17,7 @@ depends on Flutter: it resolves that activity from the running Flutter engine
 | **Flutter app** (any platform) | **this package** (`unified_game_services_google_play_flutter`) |
 | **Non-Flutter, multi-platform** (game engine / CLI / server) — native on Android, REST elsewhere | [`unified_game_services_google_play`](../unified_game_services_google_play) |
 | **Android only**, non-Flutter host, want native toasts | [`unified_game_services_google_play_android`](../unified_game_services_google_play_android) |
-| **Non-Android only** (desktop / CLI / server, REST) | [`unified_game_services_google_play_rest`](../unified_game_services_google_play_rest) |
+| **Cloud REST tier** — any platform incl. Android (NDK), no native toasts | [`unified_game_services_google_play_rest`](../unified_game_services_google_play_rest) |
 
 ## Usage
 
