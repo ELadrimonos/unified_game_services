@@ -2,6 +2,16 @@
 
 Flutter host app for the `unified_game_services_game_center` provider. macOS + iOS.
 
+> **⚠️ Not yet runtime-verified.** Game Center auth was only reachable up to the
+> server handshake with a **free** Apple account: GameKit then rejects sign-in
+> with `GKErrorDomain Code=15` / server `5019` — *"no game matching descriptor"* —
+> because the bundle id is not registered as a Game Center–enabled app in App
+> Store Connect. That registration requires a **paid Apple Developer Program
+> membership ($99/yr)**, which was not available here. The entitlement wiring and
+> the pure-Dart FFI path are confirmed working (the error advanced from
+> *missing entitlement* → *app not recognized*); full auth + achievements +
+> leaderboards still need a paid account + an App Store Connect record to verify.
+
 ## Why a Flutter app
 
 The provider itself is pure-Dart GameKit FFI (no Flutter). But GameKit only

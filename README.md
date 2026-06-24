@@ -37,7 +37,7 @@ single Dart API.
 | Google Play Games (android) | ✅ Implemented (Play Games Services native SDK via package:jni) |
 | Google Play Games | ✅ Implemented (auto-selects native on Android, REST elsewhere) |
 | Google Play Games (flutter) | ✅ Implemented (Flutter adapter — auto-resolves the Activity via jni_flutter for plug-and-play) |
-| Apple Game Center | ✅ Implemented (pure Dart, FFI GameKit via `objective_c`) — auth + achievements + leaderboards, macOS/iOS |
+| Apple Game Center | ⚠️ Implemented, unverified (pure Dart, FFI GameKit via `objective_c`) — auth + achievements + leaderboards, macOS/iOS; runtime auth needs a paid Apple Developer account + an App Store Connect record with Game Center enabled, not yet available for live testing |
 | Xbox on PC (GDK) | 📋 Research |
 | Huawei Game Service | 📋 Research |
 
