@@ -45,8 +45,9 @@ Future<void> main() async {
     }
     stdout.writeln('OK');
     stdout.writeln('Logged in as: ${player?.displayName} (id ${player?.id})');
-    if (player?.avatarUrl != null)
+    if (player?.avatarUrl != null) {
       stdout.writeln('Avatar: ${player!.avatarUrl}');
+    }
 
     await _menu(provider);
   } finally {

@@ -4,6 +4,19 @@ description: Steam provider for unified_game_services, backed by the pure-Dart s
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - steam
+  - gamedev
+
+# Steam runs on desktop only (Steamworks native lib + Steam client).
+platforms:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ^3.12.0
 
