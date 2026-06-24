@@ -1,0 +1,43 @@
+name: unified_game_services_google_play_flutter
+resolution: workspace
+description: Flutter adapter for unified_game_services Google Play Games — auto-resolves the Android Activity from the running Flutter engine for plug-and-play registration.
+version: 0.0.1
+publish_to: none
+repository: https://github.com/ELadrimonos/unified_game_services
+
+topics:
+  - game-services
+  - google-play-games
+  - flutter
+  - achievements
+  - leaderboards
+
+# Flutter adapter: native on Android, REST fallback elsewhere including web
+# (jni_flutter / package:jni are dart.library.io-gated, out of the web build).
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # jni_flutter is the Flutter plugin half of package:jni: on Android it bundles
+  # libdartjni.so, registers the JavaVM/JNIEnv, and exposes androidActivity().
+  jni_flutter: ^1.0.0
+  jni: ^1.0.0
+  unified_game_services_google_play: ^0.0.1
+  unified_game_services_google_play_android: ^0.0.1
+  unified_game_services_platform_interface: ^0.0.1
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

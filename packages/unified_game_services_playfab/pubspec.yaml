@@ -4,6 +4,22 @@ description: PlayFab provider for unified_game_services, using the PlayFab Clien
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - playfab
+  - gamedev
+
+# Pure-Dart REST (package:http, no dart:io) — runs everywhere.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.12.0
 

@@ -1,15 +1,35 @@
 name: unified_game_services_google_play
 resolution: workspace
-description: Google Play Games provider for unified_game_services (REST Games API v1). Research — not yet implemented.
+description: Auto-selecting Google Play Games provider for unified_game_services — native Play Games SDK on Android, REST elsewhere. Pure Dart, no Flutter.
 version: 0.0.1
+publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
+
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - google-play-games
+  - gamedev
+
+# Native on Android (package:jni, dart.library.io-gated), REST elsewhere
+# including web. Union of both tiers.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ^3.12.0
 
-# Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  jni: ^1.0.0
+  unified_game_services_google_play_android: ^0.0.1
+  unified_game_services_google_play_rest: ^0.0.1
+  unified_game_services_platform_interface: ^0.0.1
 
 dev_dependencies:
   lints: ^6.0.0

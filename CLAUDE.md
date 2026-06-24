@@ -21,6 +21,15 @@ frameworks — not only Flutter apps.
 - Providers needing platform code must reach the OS via pure-Dart means (FFI, REST,
   process, conditional imports) — never a Flutter plugin dependency.
 
+**Sanctioned exception — `unified_game_services_google_play_flutter`.** This one
+adapter package depends on `flutter` + `jni_flutter` (a Flutter plugin) to
+auto-resolve the Android `Activity` for plug-and-play registration. It is a
+workspace member, so **root resolution (`dart pub get` / `melos bootstrap`) now
+requires the Flutter SDK on `PATH`**. The core/provider packages stay pure Dart
+(no `package:flutter` / `dart:ui` imports); only this adapter crosses the line,
+and Flutter apps opt into it explicitly. Engine/CLI hosts keep using the
+pure-Dart packages and supply their own `activityResolver`.
+
 ## Layout (melos workspace)
 
 ```
@@ -29,7 +38,12 @@ packages/
                                              #   exceptions, capabilities, the
                                              #   UnifiedGameServicesPlatform base
   unified_game_services                      # app-facing facade (multi-provider)
-  unified_game_services_google_play          # provider impls (still stubs)
+  unified_game_services_google_play_rest       # Google Play Games via REST (impl)
+  unified_game_services_google_play_android    # Google Play Games via Play Games v2
+                                             #   Java SDK (jni); Android-only, writes
+  unified_game_services_google_play           # auto: native on Android, REST else
+  unified_game_services_google_play_flutter    # Flutter adapter: auto-resolves the
+                                             #   Activity (jni_flutter). NOT pure Dart
   unified_game_services_game_center
   unified_game_services_steam
   unified_game_services_epic
@@ -114,17 +128,84 @@ Pure-Dart-reachable providers ship first:
 - **Steam** — Steamworks C API via `dart:ffi`.
 - **GameJolt** — REST API.
 - **Epic** — EOS REST / C SDK.
-- **Google Play Games** — REST Games API v1 (`games.googleapis.com/games/v1`) +
-  OAuth 2.0. Research stage. The REST surface covers the unified API
-  (`achievements.unlock/increment/reveal`, `scores.submit`, `snapshots` for
-  cloud save, `players.get`, `stats.get`, `events.record`) over `package:http`.
-  The *native* Android SDK (`.aar` + platform channels via `games_services`)
-  remains banned — it needs Flutter. Only the REST + OAuth path is allowed. The
-  open challenge is the player OAuth flow with scope
-  `https://www.googleapis.com/auth/games`: an authorization-code + loopback
-  flow works in pure Dart on desktop/CLI/server; Android's native auto-sign-in
-  UX is not available without Flutter (acceptable — the constraint is no
-  Flutter, not no Android).
+- **Google Play Games** — three-package `android_*` family. Implemented today:
+  `unified_game_services_google_play_rest`, the cross-platform REST tier (Games API
+  v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises
+  **achievements + leaderboards** only. Stats (GPG `stats` is fixed read-only
+  analytics, not writable counters), cloud save (snapshots live in Drive
+  appdata — separate API + `drive.appdata` scope) and friends/presence are
+  intentionally not advertised. Mirrors the GameJolt template (provider + thin
+  `GamesRestClient` + `MockClient` tests + a `.withClient()` seam).
+
+  Auth is a pluggable `AuthStrategy` (the provider performs no OAuth itself):
+  `LoopbackOAuthStrategy` (authorization-code + PKCE + `127.0.0.1` loopback,
+  desktop/CLI; needs a **Desktop app** OAuth client), `StoredCredentialStrategy`
+  (refresh token / brokered access token, server/headless), and
+  `NativeSilentTokenStrategy` consuming a host-implemented `NativeTokenProvider`
+  — the interface by which an Android host brokers a silent token. Scope
+  `https://www.googleapis.com/auth/games`; refresh tokens need
+  `access_type=offline` + `prompt=consent`. The REST client refreshes once and
+  retries on a single `401`.
+
+  **Phase 2 — `unified_game_services_google_play_android` (JNI bridge verified
+  on-device):** committed `jnigen` bindings to the Play Games v2 **Java**
+  SDK (`lib/src/playgames_bindings.dart`; regen via `tool/regenerate_bindings.sh`
+  — Android SDK + JDK ≤21 + Google Maven). Writes (`unlock`/`increment`/
+  `reveal`/`submitScore`) go through the on-device Play Games client and fire
+  **native toasts/overlay** (REST can't — it writes to the cloud, bypassing the
+  on-device client). Heavy host requirements (engine supplies the
+  `JavaVM*`/`JNIEnv` and the `Activity` jobject; APK bundles the
+  `play-services-games-v2` aar) — same "host supplies the runtime" shape as
+  Steam/GameCenter. **Read-path gap:** jnigen 0.16.0 mis-generates the generic
+  `tasks.Task`/`Tasks`, so they're excluded and `Task`-returning methods are
+  opaque `JObject` — confirming sign-in / current-player / list reads await a
+  jnigen generics fix or a hand-written JNI `Tasks.await`. Keep the runtime
+  `jni` aligned with jnigen (jnigen 0.16.0 → jni 1.0.0). **Runtime-verified on a
+  Flutter Android host** (`example/`): `signIn()` fires the native Play Games
+  sign-in overlay, proving the JNI path reaches the live SDK (VM/Activity wiring
+  + bindings work). The example is a Flutter app that *consumes* the pure-Dart
+  package (Flutter only in the example pubspec); it gets the runtime + Activity
+  jobject from `jni_flutter` (`androidActivity(engineId)`) — the Flutter plugin
+  half of `package:jni`, which belongs in the host, never in the package. Write
+  toasts and the `Task`-backed read path still need a configured Play Console
+  game to fully exercise.
+
+  **`unified_game_services_google_play` (built):** thin factory picking native on
+  Android, REST elsewhere — **including web**. The native half (`dart:io` +
+  `package:jni`, which is FFI with no web support) sits behind a
+  `dart.library.io` conditional import (`native_provider_{io,web}.dart` +
+  `native_export_{io,web}.dart`), so `package:jni` never enters a web build and
+  the facade compiles to JS (verified via `dart compile js`); on native a
+  runtime `Platform.isAndroid` switch picks native on Android, REST otherwise.
+  Re-exports the REST API surface unconditionally and the native
+  `GooglePlayAndroidProvider` only on `dart.library.io`. The native path takes
+  an `activityResolver` **typed `Object Function()`** (not `JObject Function()`)
+  so the facade's public API carries no `jni` types and stays web-compilable;
+  the io seam casts to `JObject`. The resolver is invoked fresh before each
+  native call so a volatile Flutter activity (stale after rotation/
+  backgrounding) is never cached. Engine hosts with a stable activity pass
+  `() => activity`.
+
+  **`unified_game_services_google_play_flutter` (built):** the sanctioned Flutter
+  adapter (depends on `flutter` + `jni_flutter`; see the hard-constraint
+  exception above). One call — `GooglePlayGamesFlutter.registerWith(...)` /
+  `.create(...)` (same `<Type>.registerWith` idiom as every other provider) —
+  auto-resolves the Android `Activity` from the
+  running Flutter engine (`androidActivity(PlatformDispatcher.instance.engineId!)`,
+  wrapped into the `activityResolver` the factory needs) so app devs never touch
+  `jni_flutter` / `PlatformDispatcher`. Re-exports the whole family API. Off
+  Android — **including Flutter web** — it delegates to the REST path (`auth`
+  required); `jni_flutter` + `dart:ui` activity resolution sit behind a
+  `dart.library.io` conditional import (`src/activity_resolver_{io,web}.dart`)
+  and the OS pick uses `GooglePlayGames.usesNative` (not `dart:io` `Platform`),
+  so the adapter builds for web — verified with `flutter build web` on
+  `example/`. Example under `example/` (standalone, not a workspace member).
+
+  **Constraint clarification:** the native package is allowed under no-Flutter.
+  `games_services` is banned because it uses Flutter **platform channels**;
+  `package:jni`/`jnigen` (pure Dart) reach the Java SDK via JNI — the same
+  approach `objective_c` uses for GameKit. "Native Android SDK banned" meant the
+  *Flutter* path, not JNI.
 
 - **Game Center** — Obj-C GameKit via `dart:ffi` + `package:objective_c` (pure
   Dart, no Flutter). Implemented: auth + achievements + leaderboards. macOS/iOS
