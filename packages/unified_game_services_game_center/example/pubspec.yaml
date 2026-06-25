@@ -1,0 +1,40 @@
+name: game_center_example
+description: "Flutter host app exercising the Game Center provider — auth, achievements, leaderboards, and the native Game Center dashboard window."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The provider under test (pure-Dart GameKit FFI). A Flutter host supplies the
+  # signed app bundle + pumped run loop GameKit needs to present its windows.
+  unified_game_services_game_center:
+    path: ../
+  unified_game_services: ^0.0.1
+  unified_game_services_platform_interface: ^0.0.1
+
+  # Used directly by example/lib/game_center_ui.dart to present
+  # GKGameCenterViewController on the host window's view controller.
+  objective_c: ^9.4.1
+
+  cupertino_icons: ^1.0.8
+
+# Standalone (NOT a pub-workspace member) so this example resolves on its own.
+# The in-repo packages are unpublished, so pin every transitive sibling by path.
+dependency_overrides:
+  unified_game_services:
+    path: ../../unified_game_services
+  unified_game_services_platform_interface:
+    path: ../../unified_game_services_platform_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

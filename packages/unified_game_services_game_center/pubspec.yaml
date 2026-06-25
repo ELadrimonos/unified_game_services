@@ -1,6 +1,6 @@
 name: unified_game_services_game_center
 resolution: workspace
-description: Apple Game Center provider for unified_game_services. Deferred — not yet implemented.
+description: Apple Game Center provider for unified_game_services, backed by GameKit via pure-Dart Objective-C FFI (package:objective_c). macOS/iOS only.
 version: 0.0.1
 repository: https://github.com/ELadrimonos/unified_game_services
 
@@ -9,8 +9,14 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  code_assets: ^1.2.1
+  ffi: ^2.2.0
+  hooks: ^2.0.2
+  objective_c: ^9.4.1
+  unified_game_services_platform_interface: ^0.0.1
   # path: ^1.9.0
 
 dev_dependencies:
+  ffigen: ^21.0.0-dev.0
   lints: ^6.0.0
   test: ^1.25.6
