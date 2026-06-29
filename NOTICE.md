@@ -45,7 +45,7 @@ licenses:
 | Package | License | Copyright |
 | --- | --- | --- |
 | [`steamworks`][steamworks] | BSD-3-Clause | © 2022 Ahmet Enes Bayraktar |
-| [`dart_mappable`](https://pub.dev/packages/dart_mappable) | MIT | © Tobias Schäfer |
+| [`dart_mappable`](https://pub.dev/packages/dart_mappable) | MIT | © Kilian Schulte |
 | [`ffi`](https://pub.dev/packages/ffi) | BSD-3-Clause | © Dart project authors |
 | [`http`](https://pub.dev/packages/http) | BSD-3-Clause | © Dart project authors |
 | [`crypto`](https://pub.dev/packages/crypto) | BSD-3-Clause | © Dart project authors |
