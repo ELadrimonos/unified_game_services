@@ -26,10 +26,10 @@ single Dart API.
 | Achievements | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
 | Leaderboards | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
 | Stats | ✅ Implemented (Steam, PlayFab, Epic) |
-| Cloud Save | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| Cloud Save | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
 | User Profiles | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
 | Friends | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| Rich Presence | ✅ Implemented (Steam) |
+| Rich Presence | ✅ Implemented (Steam, Epic) |
 | Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
 | Epic Online Services | ✅ Implemented (pure Dart, EOS C SDK via FFI) — EAS login + real profile + friends + achievements, runtime-verified on macOS |
