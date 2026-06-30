@@ -1,0 +1,23 @@
+name: example
+description: "Ejemplo de integración con Epic Online Services"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Tu paquete local
+  unified_game_services_epic:
+    path: ../
+  # La interfaz local
+  unified_game_services_platform_interface:
+    path: ../../unified_game_services_platform_interface
+  cupertino_icons: ^1.0.8
+
+# --- ESTO ES LO QUE SOLUCIONA EL CONFLICTO ---
+dependency_overrides:
+  unified_game_services_platform_interface:
+    path: ../../unified_game_services_platform_interface

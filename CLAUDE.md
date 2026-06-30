@@ -127,7 +127,30 @@ Pure-Dart-reachable providers ship first:
 
 - **Steam** — Steamworks C API via `dart:ffi`.
 - **GameJolt** — REST API.
-- **Epic** — EOS REST / C SDK.
+- **Epic** — EOS C SDK via `dart:ffi` (**SDK-first, not REST**). Unlike Google
+  Play (REST is the primary tier), the EOS **Web API does not expose
+  achievements/leaderboards/stats/cloud-save/presence over REST** — those are
+  SDK-only; REST surfaces just friends(read) + display-name lookups. So the real
+  Epic provider is the FFI/C-SDK tier — same "host supplies the runtime" shape as
+  Steam/GameCenter: the host ships the EOS runtime lib (`EOSSDK-Win64-Shipping.dll`
+  / `libEOSSDK-Mac-Shipping.dylib` / `libEOSSDK-Linux-Shipping.so`) and supplies
+  `EpicCredentials` (ProductId/SandboxId/DeploymentId/ClientId/ClientSecret +
+  optional EncryptionKey, all from the Dev Portal; secret never committed). EOS
+  calls are async, completing inside `EOS_Platform_Tick` (pumped on a `Timer`);
+  completions correlate to Futures by the `ClientData` token via a static
+  `Pointer.fromFunction` callback. **Implemented (write+auth):** anonymous
+  Device ID sign-in → ProductUserId, `unlockAchievement`, and stat ingest
+  (`setStat`/`incrementStat`/`submitScore` — EOS leaderboards aggregate a backing
+  stat). **Gaps:** the `Copy*`-based **read path**, `EOS_Connect_CreateUser`
+  (first-time anonymous login), cloud save, friends, presence.
+  `lib/src/eos_bindings.dart` is **hand-authored** (so the package compiles
+  without the license-gated headers) and its struct offsets + `*_API_LATEST`
+  constants are **unverified** — regen with `tool/regenerate_bindings.sh`
+  (needs `EOS_SDK_DIR`; `melos run epic:gen`) to get verified ffigen output and
+  fill the read path. SDK headers/libs are NOT redistributable — never committed
+  (`.eos-sdk/` gitignored), same posture as Steamworks/GameKit. Capabilities
+  advertised: achievements, leaderboards, stats (with the documented read gap,
+  like google_play_android).
 - **Google Play Games** — three-package `android_*` family. Implemented today:
   `unified_game_services_google_play_rest`, the cross-platform REST tier (Games API
   v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises

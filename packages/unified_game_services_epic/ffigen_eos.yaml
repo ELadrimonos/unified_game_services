@@ -1,0 +1,44 @@
+# ffigen config for the Epic Online Services (EOS) C SDK bindings.
+#
+# Regenerate with: ./tool/regenerate_bindings.sh  (needs the license-gated SDK).
+# The script links $EOS_SDK_DIR/SDK -> ./.eos-sdk so this config sees the
+# headers at ./.eos-sdk/Include. .eos-sdk/ is gitignored — the SDK headers are
+# NOT redistributable and must never be committed.
+name: EosBindings
+description: |
+  Bindings to the Epic Online Services C SDK (lifecycle + achievements, stats,
+  leaderboards, connect, auth). GENERATED — do not edit by hand.
+output: 'lib/src/eos_bindings.dart'
+# Lookup-class style (EosBindings(DynamicLibrary)) — the host supplies the
+# runtime lib path at startup, so @Native (ffi-native) is not used.
+headers:
+  entry-points:
+    - '.eos-sdk/Include/eos_sdk.h'
+    - '.eos-sdk/Include/eos_init.h'
+    - '.eos-sdk/Include/eos_logging.h'
+    - '.eos-sdk/Include/eos_achievements.h'
+    - '.eos-sdk/Include/eos_stats.h'
+    - '.eos-sdk/Include/eos_leaderboards.h'
+    - '.eos-sdk/Include/eos_connect.h'
+    - '.eos-sdk/Include/eos_auth.h'
+    - '.eos-sdk/Include/eos_userinfo.h'
+  include-directives:
+    - '.eos-sdk/Include/**'
+compiler-opts:
+  - '-I.eos-sdk/Include'
+# EOS Options structs lead with an int32 ApiVersion field set to an
+# `*_API_LATEST` macro. Emit those #define constants so they don't silently
+# rot across SDK upgrades.
+macros:
+  include:
+    - 'EOS_.*_API_LATEST'
+    - 'EOS_.*_API_001'
+unnamed-enums:
+  include:
+    - '.*'
+preamble: |
+  // GENERATED — do not edit by hand. Regenerate with ffigen_eos.yaml.
+  // ignore_for_file: type=lint, unused_element, unused_field, camel_case_types, non_constant_identifier_names, constant_identifier_names, library_private_types_in_public_api
+comments:
+  style: any
+  length: brief
