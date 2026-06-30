@@ -52,7 +52,52 @@ UnifiedGameServicesPlatform.instance = provider; // or EpicProvider.registerWith
 await provider.signIn();                                   // anonymous Device ID → PUID
 await provider.unlockAchievement('ACHIEVEMENT_ID');
 await provider.submitScore(leaderboardId: 'STAT_NAME', score: 100);
+await provider.getAchievements();                          // read path (definitions + state)
 ```
+
+## Sign-in: anonymous vs Epic Account Services (EAS)
+
+`signIn()` picks the login method from how the provider was constructed:
+
+| Construction | Login method | Identity | Real profile + friends |
+|--------------|--------------|----------|:----------------------:|
+| (nothing extra) | Device ID (anonymous) | `ProductUserId` only | ✗ |
+| `devAuthHost` + `devAuthCredentialName` | `EOS_LCT_Developer` (Dev Auth Tool) | EpicAccountId → PUID | ✓ |
+| `exchangeCode` / `launchArgs` (Epic Launcher) | `EOS_LCT_ExchangeCode` | EpicAccountId → PUID | ✓ |
+
+EAS performs the full **Auth → Connect** flow: `EOS_Auth_Login` →
+`EOS_Auth_CopyUserAuthToken` → `EOS_Connect_Login` (`EOS_ECT_EPIC`), running
+`EOS_Connect_CreateUser` on first-time login. Only after an EAS login do
+`getCurrentPlayer()` return the **real Epic display name** and `getFriends()`
+return the player's Epic friends. The anonymous Device ID path has no Epic
+account, so `getFriends()` throws `CapabilityNotSupportedException`.
+
+```dart
+// Real Epic login during development, via the EOS Developer Authentication Tool
+// (run it from Tools/ in the SDK; no launcher or packaging needed):
+final provider = EpicProvider(
+  credentials: EpicCredentials(/* … */),
+  devAuthHost: '127.0.0.1:6300',          // host:port the tool listens on
+  devAuthCredentialName: 'MyCredential',  // credential name logged in the tool
+);
+final me = await provider.signIn();       // me.displayName == real Epic name
+final friends = await provider.getFriends();
+```
+
+In production the Epic Launcher passes the exchange code on the command line
+(`-AUTH_PASSWORD=…`); forward `main()`'s arguments via
+`EpicProvider.registerWith(launchArgs: args)`.
+
+> **EAS needs Dev Portal setup.** The Auth interface requires an **Epic Account
+> Services Application** with completed Brand settings and the **Client
+> associated to it** with a policy granting the requested scopes (Basic Profile,
+> Friends, Presence). A client configured only for Game Services returns
+> `EOS_InvalidRequest` (error 1012, "Client is not configured correctly").
+
+> **No avatar.** The EOS C SDK does not expose a player avatar — `EOS_UserInfo`
+> only carries display name, country, nickname and preferred language — so
+> `PlayerProfile.avatarUrl` is always null. Avatars are only reachable via the
+> EAS Web API.
 
 ## Implemented surface (and current gaps)
 
@@ -60,27 +105,51 @@ EOS calls are asynchronous: they complete inside `EOS_Platform_Tick`, which the
 provider pumps on a `Timer`. Completions are correlated to Dart `Future`s by the
 `ClientData` token.
 
-**Implemented today (write + auth path):**
-- Anonymous **Device ID sign-in** → `ProductUserId` (PUID).
+**Implemented today:**
+- **Sign-in** — three methods (see the table above): anonymous Device ID,
+  `EOS_LCT_Developer` (Dev Auth Tool), and `EOS_LCT_ExchangeCode` (Epic
+  Launcher). EAS logins run the full Auth → Connect flow, including
+  `EOS_Connect_CreateUser` for first-time login.
+- **Real profile** — `getCurrentPlayer()` returns the Epic display name after an
+  EAS login (`EOS_UserInfo_QueryUserInfo` + `CopyUserInfo`).
+- **Friends** — `getFriends()` (`EOS_Friends_QueryFriends` →
+  `GetFriendsCount`/`GetFriendAtIndex` → per-friend `EOS_UserInfo`). EAS only.
 - `unlockAchievement` (`EOS_Achievements_UnlockAchievements`).
+- `getAchievements` **read path** — `QueryDefinitions` +
+  `QueryPlayerAchievements` + `CopyPlayerAchievementByIndex`.
 - `setStat` / `incrementStat` / `submitScore` via `EOS_Stats_IngestStat`. EOS
   *aggregates* ingested stats per the portal-defined rule (SUM/LATEST/MIN/MAX);
   leaderboards rank a backing stat, so `submitScore` ingests that stat.
+- `getStats` / `getStat` **read path** — `QueryStats` + `GetStatsCount` +
+  `CopyStatByIndex`.
+- `getLeaderboard` / `getPlayerScore` **read path** —
+  `QueryLeaderboardRanks` + `GetLeaderboardRecordCount` +
+  `CopyLeaderboardRecordByIndex`. `getPlayerScore` currently scans the ranks
+  page (top 100) for the local player; a player below that is not found
+  (a dedicated `QueryLeaderboardUserScores` path is a TODO).
 
 **Not implemented yet (documented gaps):**
-- **Read path** (`getAchievements`/`getStats`/`getLeaderboard`/…): needs the
-  `Copy*`-based query result structs, which only the regenerated ffigen
-  bindings provide. Calls throw a `PlatformOperationException` pointing here.
-- **First-time anonymous login** (`EOS_Connect_CreateUser` continuance-token
-  step), cloud save, friends, presence.
+- **Cloud save** (`EOS_HPlayerDataStorage`) and **presence** (`EOS_HPresence`)
+  — the hand-authored bindings ship neither interface's function wrappers, so
+  these await a `melos run epic:gen` regen against your SDK. Not advertised.
+- **No avatar** — the SDK does not expose one (`PlayerProfile.avatarUrl` is
+  always null).
+
+### Debug logging
+
+Pass `debugLogging: true` to `EpicProvider(...)` to print verbose FFI/EOS traces
+(callback firing, result codes, the EOS native log). Off by default.
 
 ### Bindings are hand-authored — verify before shipping
 
 `lib/src/eos_bindings.dart` is a **hand-authored** minimal FFI binding written
 from the public EOS API reference, so the package compiles without the
-license-gated headers. Struct field offsets and the `*_API_LATEST` ApiVersion
-constants are **version-sensitive and unverified**. Before shipping, regenerate
-against your downloaded SDK:
+license-gated headers. The Auth, UserInfo and Friends interfaces used by the EAS
+flow are wired up here (the three `EOS_Friends_*` function wrappers were added by
+hand, as the generated stub shipped only their option/callback structs). Struct
+field offsets and the `*_API_LATEST` ApiVersion constants are
+**version-sensitive and unverified** — they work at runtime for the exercised
+paths, but before shipping, regenerate against your downloaded SDK:
 
 ```sh
 EOS_SDK_DIR=/path/to/EOS-SDK ./tool/regenerate_bindings.sh

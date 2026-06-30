@@ -138,19 +138,41 @@ Pure-Dart-reachable providers ship first:
   optional EncryptionKey, all from the Dev Portal; secret never committed). EOS
   calls are async, completing inside `EOS_Platform_Tick` (pumped on a `Timer`);
   completions correlate to Futures by the `ClientData` token via a static
-  `Pointer.fromFunction` callback. **Implemented (write+auth):** anonymous
-  Device ID sign-in → ProductUserId, `unlockAchievement`, and stat ingest
-  (`setStat`/`incrementStat`/`submitScore` — EOS leaderboards aggregate a backing
-  stat). **Gaps:** the `Copy*`-based **read path**, `EOS_Connect_CreateUser`
-  (first-time anonymous login), cloud save, friends, presence.
+  `Pointer.fromFunction` callback. **Implemented:** three sign-in methods —
+  anonymous Device ID, `EOS_LCT_Developer` (Dev Auth Tool: pass `devAuthHost`
+  `host:port` + `devAuthCredentialName`), and `EOS_LCT_ExchangeCode` (Epic
+  Launcher, via `launchArgs`/`exchangeCode`). EAS runs the full **Auth → Connect**
+  flow (`EOS_Auth_Login` → `EOS_Auth_CopyUserAuthToken` → `EOS_Connect_Login`
+  `EOS_ECT_EPIC`, incl. `EOS_Connect_CreateUser` on first login). After an EAS
+  login: **real profile** (`getCurrentPlayer` display name via
+  `EOS_UserInfo_QueryUserInfo`/`CopyUserInfo`) and **friends** (`getFriends` via
+  `EOS_Friends_QueryFriends`/`GetFriendsCount`/`GetFriendAtIndex`). Plus
+  `unlockAchievement`, the achievements **read path** (`getAchievements`:
+  QueryDefinitions + QueryPlayerAchievements + CopyPlayerAchievementByIndex),
+  stat ingest (`setStat`/`incrementStat`/`submitScore` — EOS leaderboards
+  aggregate a backing stat), the **stats read path** (`getStats`/`getStat`:
+  QueryStats + CopyStatByIndex) and the **leaderboards read path**
+  (`getLeaderboard`/`getPlayerScore`: QueryLeaderboardRanks +
+  CopyLeaderboardRecordByIndex; `getPlayerScore` scans the top-100 ranks page —
+  a dedicated QueryLeaderboardUserScores path is a TODO). `debugLogging: true`
+  (constructor) toggles verbose FFI traces, off by default. **Runtime-verified on
+  macOS** via the Dev Auth Tool (real display name + friends list). **Gaps:**
+  cloud save (`EOS_HPlayerDataStorage`) and presence (`EOS_HPresence`) — the
+  hand-authored stub ships neither interface's function wrappers, so both await a
+  bindings regen; **no avatar** (the C SDK exposes none —
+  `PlayerProfile.avatarUrl` stays null). EAS also requires
+  **Dev Portal config**: an Epic Account Services Application with the client
+  associated + scopes (else `EOS_InvalidRequest` 1012). Capabilities advertised:
+  achievements, leaderboards, stats, **friends**.
   `lib/src/eos_bindings.dart` is **hand-authored** (so the package compiles
-  without the license-gated headers) and its struct offsets + `*_API_LATEST`
-  constants are **unverified** — regen with `tool/regenerate_bindings.sh`
-  (needs `EOS_SDK_DIR`; `melos run epic:gen`) to get verified ffigen output and
-  fill the read path. SDK headers/libs are NOT redistributable — never committed
-  (`.eos-sdk/` gitignored), same posture as Steamworks/GameKit. Capabilities
-  advertised: achievements, leaderboards, stats (with the documented read gap,
-  like google_play_android).
+  without the license-gated headers); the Auth/UserInfo/Friends interfaces are
+  wired here (the three `EOS_Friends_*` function wrappers were **added by hand** —
+  the stub shipped only their option/callback structs). Struct offsets +
+  `*_API_LATEST` constants are **unverified** (work at runtime for exercised
+  paths) — regen with `tool/regenerate_bindings.sh` (needs `EOS_SDK_DIR`;
+  `melos run epic:gen`) for verified ffigen output. SDK headers/libs are NOT
+  redistributable — never committed (`.eos-sdk/` gitignored), same posture as
+  Steamworks/GameKit.
 - **Google Play Games** — three-package `android_*` family. Implemented today:
   `unified_game_services_google_play_rest`, the cross-platform REST tier (Games API
   v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises

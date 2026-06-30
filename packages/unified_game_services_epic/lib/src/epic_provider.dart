@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
@@ -12,21 +13,61 @@ import 'epic_credentials.dart';
 /// Result delivered by an EOS completion callback: the `EOS_EResult` code and,
 /// for login, the resolved ProductUserId pointer.
 class _CbResult {
-  _CbResult(this.code, [this.localUserId]);
+  _CbResult(
+    this.code, {
+    this.localUserId,
+    this.epicAccountId,
+    this.continuanceToken,
+  });
 
   final int code;
+
+  /// Connect's ProductUserId (anonymous / game-services identity).
   final EOS_ProductUserId? localUserId;
+
+  /// Auth's EpicAccountId (Epic Account Services identity), set by Auth login.
+  final EOS_EpicAccountId? epicAccountId;
+
+  /// Continuance token returned when a Connect login finds no existing user;
+  /// fed to EOS_Connect_CreateUser to finish first-time login.
+  final EOS_ContinuanceToken? continuanceToken;
 }
 
 /// Epic Online Services provider, backed by the EOS C SDK via dart:ffi.
 class EpicProvider extends UnifiedGameServicesPlatform {
   EpicProvider({
     required this.credentials,
+    this.exchangeCode,
+    this.devAuthHost,
+    this.devAuthCredentialName,
     this.libraryPath,
     this.tickInterval = const Duration(milliseconds: 100),
+    bool debugLogging = false,
     super.leaderboardIds,
     super.achievementIds,
-  });
+  }) {
+    EpicProvider.debugLogging = debugLogging;
+  }
+
+  /// When true, the provider emits verbose FFI/EOS traces via `print`. Off by
+  /// default. Static because the EOS completion callbacks are static
+  /// (`Pointer.fromFunction` requires top-level/static functions).
+  static bool debugLogging = false;
+
+  static void _log(String message) {
+    if (debugLogging) print(message);
+  }
+
+  final String? exchangeCode;
+
+  /// Epic Developer Authentication Tool endpoint, e.g. `localhost:6300`. When
+  /// set together with [devAuthCredentialName], [signIn] performs an
+  /// `EOS_LCT_Developer` Epic Account Services login (real account, no launcher
+  /// / packaging) — the recommended way to test EAS during development.
+  final String? devAuthHost;
+
+  /// The credential name registered in the Developer Authentication Tool.
+  final String? devAuthCredentialName;
 
   final EpicCredentials credentials;
   final String? libraryPath;
@@ -39,135 +80,432 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   EOS_HConnect? _connect;
   EOS_HAchievements? _achievements;
   EOS_HStats? _stats;
+  EOS_HLeaderboards? _leaderboards;
+  EOS_HAuth? _auth;
+  EOS_HUserInfo? _userInfo;
+  EOS_HFriends? _friends;
+  EOS_HPresence? _presence;
+  EOS_HPlayerDataStorage? _playerDataStorage;
   Timer? _pump;
   EOS_ProductUserId? _localUserId;
+
+  /// Epic Account ID, only set after an Epic Account Services (Auth) login;
+  /// null on the anonymous Device ID path. Required for real profile + friends.
+  EOS_EpicAccountId? _epicAccountId;
   String? _puid;
+  String? _displayName;
 
   final StreamController<GameServiceEvent> _events =
-  StreamController<GameServiceEvent>.broadcast();
+      StreamController<GameServiceEvent>.broadcast();
+
+  /// Extracts the Epic Launcher exchange code from the process launch
+  /// arguments (the launcher passes it as `-AUTH_PASSWORD=<code>`).
+  static String? _extractExchangeCode(List<String>? args) {
+    if (args == null) return null;
+
+    // Epic may pass the argument in upper or lower case depending on the
+    // platform, so match case-insensitively against -AUTH_PASSWORD=.
+    for (final arg in args) {
+      final upperArg = arg.toUpperCase();
+      if (upperArg.startsWith('-AUTH_PASSWORD=')) {
+        return arg.substring('-AUTH_PASSWORD='.length);
+      }
+    }
+    return null;
+  }
 
   // --- async bridge ----------------------------------------------------------
   static int _nextToken = 1;
   static final Map<int, Completer<_CbResult>> _pending = {};
 
+  // Player Data Storage transfers stream their payload through native data
+  // callbacks (called repeatedly per tick). Because `Pointer.fromFunction`
+  // requires static callbacks, the in-flight buffers live in these static maps
+  // keyed by the EOS filename. Single-flight per filename is assumed (set the
+  // entry before WriteFile/ReadFile, remove it once the completion fires).
+  static final Map<String, _WriteState> _writes = {};
+  static final Map<String, _ReadState> _reads = {};
+
   // Specific callbacks required by FFIgen's strict signatures
-  static void _onDeviceCreateComplete(Pointer<EOS_Connect_CreateDeviceIdCallbackInfo> info) {
-    print('👉 [FFI] Callback _onDeviceCreateComplete disparado!');
+  static void _onDeviceCreateComplete(
+    Pointer<EOS_Connect_CreateDeviceIdCallbackInfo> info,
+  ) {
+    _log('👉 [FFI] Callback _onDeviceCreateComplete fired!');
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
       final token = tokenPtr.value;
-      print('👉 [FFI] Token recuperado: $token');
+      _log('👉 [FFI] Token retrieved: $token');
       final c = _pending.remove(token);
       calloc.free(tokenPtr);
 
       final dynamic rc = info.ref.ResultCode;
       final int code = rc is int ? rc : rc.value;
-      print('👉 [FFI] ResultCode obtenido: $code');
+      _log('👉 [FFI] ResultCode received: $code');
       c?.complete(_CbResult(code));
     } catch (e, stack) {
-      print('🔥 [FFI FATAL] Error dentro del callback: $e\n$stack');
+      _log('🔥 [FFI FATAL] Error inside callback: $e\n$stack');
     }
   }
 
   static void _onLoginComplete(Pointer<EOS_Connect_LoginCallbackInfo> info) {
-    print('👉 [FFI] Callback _onLoginComplete disparado!');
+    _log('👉 [FFI] Callback _onLoginComplete fired!');
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
       final token = tokenPtr.value;
-      print('👉 [FFI] Token recuperado: $token');
+      _log('👉 [FFI] Token retrieved: $token');
       final c = _pending.remove(token);
       calloc.free(tokenPtr);
 
       final dynamic rc = info.ref.ResultCode;
       final int code = rc is int ? rc : rc.value;
-      print('👉 [FFI] ResultCode obtenido: $code');
-      c?.complete(_CbResult(code, info.ref.LocalUserId));
+      _log('👉 [FFI] ResultCode received: $code');
+      c?.complete(
+        _CbResult(
+          code,
+          localUserId: info.ref.LocalUserId,
+          continuanceToken: info.ref.ContinuanceToken,
+        ),
+      );
     } catch (e, stack) {
-      print('🔥 [FFI FATAL] Error dentro del callback: $e\n$stack');
+      _log('🔥 [FFI FATAL] Error inside callback: $e\n$stack');
+    }
+  }
+
+  /// Epic Account Services login completion (EOS_Auth_Login) — yields the
+  /// EpicAccountId on success, or a continuance token for account-link flows.
+  static void _onAuthLoginComplete(Pointer<EOS_Auth_LoginCallbackInfo> info) {
+    _log('👉 [FFI] Callback _onAuthLoginComplete fired!');
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      _log('👉 [FFI] Auth ResultCode: $code');
+      c?.complete(
+        _CbResult(
+          code,
+          epicAccountId: info.ref.LocalUserId,
+          continuanceToken: info.ref.ContinuanceToken,
+        ),
+      );
+    } catch (e, stack) {
+      _log('🔥 [FFI FATAL] _onAuthLoginComplete: $e\n$stack');
+    }
+  }
+
+  /// First-time anonymous/EAS Connect user creation (EOS_Connect_CreateUser).
+  static void _onConnectCreateUserComplete(
+    Pointer<EOS_Connect_CreateUserCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code, localUserId: info.ref.LocalUserId));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onConnectCreateUserComplete: $e\n$s');
+    }
+  }
+
+  static void _onQueryUserInfoComplete(
+    Pointer<EOS_UserInfo_QueryUserInfoCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onQueryUserInfoComplete: $e\n$s');
+    }
+  }
+
+  static void _onQueryFriendsComplete(
+    Pointer<EOS_Friends_QueryFriendsCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onQueryFriendsComplete: $e\n$s');
     }
   }
 
   static void _onUnlockAchievementsComplete(
-      Pointer<EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo> info,
-      ) {
-    print('👉 [FFI] Callback _onUnlockAchievementsComplete disparado!');
+    Pointer<EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo> info,
+  ) {
+    _log('👉 [FFI] Callback _onUnlockAchievementsComplete fired!');
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
       final token = tokenPtr.value;
-      print('👉 [FFI] Token recuperado: $token');
+      _log('👉 [FFI] Token retrieved: $token');
       final c = _pending.remove(token);
       calloc.free(tokenPtr);
 
       final dynamic rc = info.ref.ResultCode;
       final int code = rc is int ? rc : rc.value;
-      print('👉 [FFI] ResultCode obtenido: $code');
+      _log('👉 [FFI] ResultCode received: $code');
       c?.complete(_CbResult(code));
     } catch (e, stack) {
-      print('🔥 [FFI FATAL] Error dentro del callback: $e\n$stack');
+      _log('🔥 [FFI FATAL] Error inside callback: $e\n$stack');
+    }
+  }
+
+  static void _onQueryStatsComplete(
+    Pointer<EOS_Stats_OnQueryStatsCompleteCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onQueryStatsComplete: $e\n$s');
+    }
+  }
+
+  static void _onQueryLeaderboardRanksComplete(
+    Pointer<EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onQueryLeaderboardRanksComplete: $e\n$s');
     }
   }
 
   static void _onQueryDefinitionsComplete(
-      Pointer<EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo> info,
-      ) {
+    Pointer<EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo> info,
+  ) {
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
-      final token    = tokenPtr.value;
-      final c        = _pending.remove(token);
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
       calloc.free(tokenPtr);
       final dynamic rc = info.ref.ResultCode;
-      final int code   = rc is int ? rc : rc.value;
+      final int code = rc is int ? rc : rc.value;
       c?.complete(_CbResult(code));
     } catch (e, s) {
-      print('🔥 [FFI FATAL] _onQueryDefinitionsComplete: $e\n$s');
+      _log('🔥 [FFI FATAL] _onQueryDefinitionsComplete: $e\n$s');
     }
   }
 
   static void _onQueryPlayerAchievementsComplete(
-      Pointer<EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo> info,
-      ) {
+    Pointer<EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo>
+    info,
+  ) {
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
-      final token    = tokenPtr.value;
-      final c        = _pending.remove(token);
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
       calloc.free(tokenPtr);
       final dynamic rc = info.ref.ResultCode;
-      final int code   = rc is int ? rc : rc.value;
+      final int code = rc is int ? rc : rc.value;
       c?.complete(_CbResult(code));
     } catch (e, s) {
-      print('🔥 [FFI FATAL] _onQueryPlayerAchievementsComplete: $e\n$s');
+      _log('🔥 [FFI FATAL] _onQueryPlayerAchievementsComplete: $e\n$s');
     }
   }
 
   static void _onIngestStatComplete(
-      Pointer<EOS_Stats_IngestStatCompleteCallbackInfo> info,
-      ) {
-    print('👉 [FFI] Callback _onIngestStatComplete disparado!');
+    Pointer<EOS_Stats_IngestStatCompleteCallbackInfo> info,
+  ) {
+    _log('👉 [FFI] Callback _onIngestStatComplete fired!');
     try {
       final tokenPtr = info.ref.ClientData.cast<Int32>();
       final token = tokenPtr.value;
-      print('👉 [FFI] Token recuperado: $token');
+      _log('👉 [FFI] Token retrieved: $token');
       final c = _pending.remove(token);
       calloc.free(tokenPtr);
 
       final dynamic rc = info.ref.ResultCode;
       final int code = rc is int ? rc : rc.value;
-      print('👉 [FFI] ResultCode obtenido: $code');
+      _log('👉 [FFI] ResultCode received: $code');
       c?.complete(_CbResult(code));
     } catch (e, stack) {
-      print('🔥 [FFI FATAL] Error dentro del callback: $e\n$stack');
+      _log('🔥 [FFI FATAL] Error inside callback: $e\n$stack');
     }
   }
 
+  // --- presence callback -----------------------------------------------------
+  static void _onSetPresenceComplete(
+    Pointer<EOS_Presence_SetPresenceCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onSetPresenceComplete: $e\n$s');
+    }
+  }
+
+  // --- player data storage callbacks -----------------------------------------
+  /// Called repeatedly by the SDK to pull the next chunk to upload. Copies up
+  /// to `DataBufferLengthBytes` from the staged payload into `OutDataBuffer`.
+  static int _onWriteFileData(
+    Pointer<EOS_PlayerDataStorage_WriteFileDataCallbackInfo> info,
+    Pointer<Void> outDataBuffer,
+    Pointer<Uint32> outDataWritten,
+  ) {
+    try {
+      final filename = info.ref.Filename.cast<Utf8>().toDartString();
+      final maxBytes = info.ref.DataBufferLengthBytes;
+      final st = _writes[filename];
+      if (st == null) {
+        outDataWritten.value = 0;
+        return EOS_PlayerDataStorage_EWriteResult.EOS_WR_FailRequest.value;
+      }
+      final remaining = st.data.length - st.offset;
+      if (remaining <= 0) {
+        outDataWritten.value = 0;
+        return EOS_PlayerDataStorage_EWriteResult.EOS_WR_CompleteRequest.value;
+      }
+      final n = remaining < maxBytes ? remaining : maxBytes;
+      final dst = outDataBuffer.cast<Uint8>();
+      for (var i = 0; i < n; i++) {
+        dst[i] = st.data[st.offset + i];
+      }
+      st.offset += n;
+      outDataWritten.value = n;
+      return st.offset >= st.data.length
+          ? EOS_PlayerDataStorage_EWriteResult.EOS_WR_CompleteRequest.value
+          : EOS_PlayerDataStorage_EWriteResult.EOS_WR_ContinueWriting.value;
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onWriteFileData: $e\n$s');
+      outDataWritten.value = 0;
+      return EOS_PlayerDataStorage_EWriteResult.EOS_WR_FailRequest.value;
+    }
+  }
+
+  /// Called repeatedly by the SDK with the next downloaded chunk. Accumulates
+  /// it into the staged read buffer.
+  static int _onReadFileData(
+    Pointer<EOS_PlayerDataStorage_ReadFileDataCallbackInfo> info,
+  ) {
+    try {
+      final filename = info.ref.Filename.cast<Utf8>().toDartString();
+      final st = _reads[filename];
+      if (st == null) {
+        return EOS_PlayerDataStorage_EReadResult.EOS_RR_FailRequest.value;
+      }
+      final len = info.ref.DataChunkLengthBytes;
+      final chunk = info.ref.DataChunk;
+      if (len > 0 && chunk != nullptr) {
+        // asTypedList is a view over native memory valid only for this call;
+        // BytesBuilder.add copies synchronously, so the bytes survive.
+        st.builder.add(chunk.cast<Uint8>().asTypedList(len));
+      }
+      return EOS_PlayerDataStorage_EReadResult.EOS_RR_ContinueReading.value;
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onReadFileData: $e\n$s');
+      return EOS_PlayerDataStorage_EReadResult.EOS_RR_FailRequest.value;
+    }
+  }
+
+  static void _onWriteFileComplete(
+    Pointer<EOS_PlayerDataStorage_WriteFileCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onWriteFileComplete: $e\n$s');
+    }
+  }
+
+  static void _onReadFileComplete(
+    Pointer<EOS_PlayerDataStorage_ReadFileCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onReadFileComplete: $e\n$s');
+    }
+  }
+
+  static void _onQueryFileListComplete(
+    Pointer<EOS_PlayerDataStorage_QueryFileListCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onQueryFileListComplete: $e\n$s');
+    }
+  }
+
+  static void _onDeleteFileComplete(
+    Pointer<EOS_PlayerDataStorage_DeleteFileCallbackInfo> info,
+  ) {
+    try {
+      final tokenPtr = info.ref.ClientData.cast<Int32>();
+      final token = tokenPtr.value;
+      final c = _pending.remove(token);
+      calloc.free(tokenPtr);
+      final dynamic rc = info.ref.ResultCode;
+      final int code = rc is int ? rc : rc.value;
+      c?.complete(_CbResult(code));
+    } catch (e, s) {
+      _log('🔥 [FFI FATAL] _onDeleteFileComplete: $e\n$s');
+    }
+  }
+
+  /// @param launchArgs Pass main() arguments to extract Epic Launcher's EAS token
   static void registerWith({
     required EpicCredentials credentials,
     String? libraryPath,
+    List<String>? launchArgs,
     Map<String, String>? leaderboardIds,
     Map<String, String>? achievementIds,
   }) {
     UnifiedGameServicesPlatform.instance = EpicProvider(
       credentials: credentials,
       libraryPath: libraryPath,
+      exchangeCode: _extractExchangeCode(launchArgs),
       leaderboardIds: leaderboardIds,
       achievementIds: achievementIds,
     );
@@ -178,6 +516,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     GameCapability.achievements,
     GameCapability.leaderboards,
     GameCapability.stats,
+    GameCapability.friends,
+    GameCapability.presence,
+    GameCapability.cloudSave,
   };
 
   @override
@@ -196,7 +537,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   static void _onEosLog(Pointer<EOS_LogMessage> msg) {
     final text = msg.ref.Message.cast<Utf8>().toDartString();
-    print('🎮 [EOS NATIVE]: $text');
+    _log('🎮 [EOS NATIVE]: $text');
   }
 
   EosBindings _ensureInit() {
@@ -218,9 +559,12 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     try {
       final rc = eos.EOS_Initialize(initOpts);
       eos.EOS_Logging_SetLogLevel(
-          EOS_ELogCategory.EOS_LC_ALL_CATEGORIES, EOS_ELogLevel.EOS_LOG_Info);
+        EOS_ELogCategory.EOS_LC_ALL_CATEGORIES,
+        EOS_ELogLevel.EOS_LOG_Info,
+      );
       eos.EOS_Logging_SetCallback(
-          Pointer.fromFunction<Void Function(Pointer<EOS_LogMessage>)>(_onEosLog));
+        Pointer.fromFunction<Void Function(Pointer<EOS_LogMessage>)>(_onEosLog),
+      );
       if (rc.value != EosResult.success && rc.value != 15) {
         checkEosResult(rc.value, 'EOS_Initialize');
       }
@@ -266,31 +610,40 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
 
     _connect = eos.EOS_Platform_GetConnectInterface(_platform!);
-    print('🔌 [EOS] Connect interface: $_connect');
+    _log('🔌 [EOS] Connect interface: $_connect');
     _achievements = eos.EOS_Platform_GetAchievementsInterface(_platform!);
     _stats = eos.EOS_Platform_GetStatsInterface(_platform!);
+    _leaderboards = eos.EOS_Platform_GetLeaderboardsInterface(_platform!);
+    _auth = eos.EOS_Platform_GetAuthInterface(_platform!);
+    _userInfo = eos.EOS_Platform_GetUserInfoInterface(_platform!);
+    _friends = eos.EOS_Platform_GetFriendsInterface(_platform!);
+    _presence = eos.EOS_Platform_GetPresenceInterface(_platform!);
+    _playerDataStorage = eos.EOS_Platform_GetPlayerDataStorageInterface(
+      _platform!,
+    );
 
     _eos = eos;
     return eos;
   }
 
-  /// Espera a que el completador se complete, llamando a `EOS_Platform_Tick`
-  /// periódicamente para permitir que los callbacks se disparen.
+  /// Awaits the completer, pumping `EOS_Platform_Tick` periodically so the
+  /// native completion callbacks can fire.
   Future<_CbResult> _track(
-      void Function(int token, Pointer<Void> clientData) call,
-      {bool treatTimeoutAsSuccess = false}) async {
+    void Function(int token, Pointer<Void> clientData) call, {
+    bool treatTimeoutAsSuccess = false,
+  }) async {
     final token = _nextToken++;
     final completer = Completer<_CbResult>();
     _pending[token] = completer;
 
-    // Asignar memoria para el token
+    // Allocate the correlation token passed as ClientData.
     final tokenPtr = calloc<Int32>()..value = token;
     final clientData = tokenPtr.cast<Void>();
 
-    // Llamar a la operación
+    // Kick off the native operation.
     call(token, clientData);
 
-    // Bucle de ticks hasta que se complete o timeout
+    // Tick loop until the callback completes or we time out.
     final stopwatch = Stopwatch()..start();
     const timeout = Duration(seconds: 30);
     while (!completer.isCompleted && stopwatch.elapsed < timeout) {
@@ -304,14 +657,17 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       _pending.remove(token);
       calloc.free(tokenPtr);
       if (treatTimeoutAsSuccess) {
-        // Para CreateDeviceId, asumimos que el timeout significa que el dispositivo ya existe (código 24)
-        print('⚠️ [EOS] Timeout en CreateDeviceId, asumiendo EOS_DuplicateNotAllowed (24)');
+        // For CreateDeviceId, a timeout most likely means the device id
+        // already exists, so treat it as EOS_DuplicateNotAllowed (24).
+        _log(
+          '⚠️ [EOS] CreateDeviceId timed out, assuming EOS_DuplicateNotAllowed (24)',
+        );
         return _CbResult(24); // EOS_DuplicateNotAllowed
       }
       throw const NetworkException('EOS operation timed out.');
     }
 
-    // El callback ya liberó la memoria, así que no liberamos aquí.
+    // The callback already freed the token memory, so we must not free it here.
     return await completer.future;
   }
 
@@ -332,30 +688,55 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   // --- auth ------------------------------------------------------------------
   @override
   Future<PlayerProfile?> signIn() async {
-    print('🔐 [EOS] signIn() called');
+    _log('🔐 [EOS] signIn() called');
     final eos = _ensureInit();
-    print('🔐 [EOS] EOS initialized');
+    _log('🔐 [EOS] EOS initialized');
 
+    if (devAuthHost != null && devAuthCredentialName != null) {
+      _log('🔐 [EOS] Using Developer Auth Tool ($devAuthHost)...');
+      return await _signInWithAuth(
+        eos,
+        type: EOS_ELoginCredentialType.EOS_LCT_Developer,
+        id: devAuthHost,
+        token: devAuthCredentialName!,
+      );
+    } else if (exchangeCode != null && exchangeCode!.isNotEmpty) {
+      _log('🔐 [EOS] Epic Launcher exchange code detected. Using EAS...');
+      return await _signInWithAuth(
+        eos,
+        type: EOS_ELoginCredentialType.EOS_LCT_ExchangeCode,
+        id: null,
+        token: exchangeCode!,
+      );
+    } else {
+      _log(
+        '🔐 [EOS] No launcher arguments. Falling back to anonymous Device ID...',
+      );
+      return await _signInWithDeviceId(eos);
+    }
+  }
+
+  /// Anonymous account using device id, for testing purposes primarily
+  Future<PlayerProfile?> _signInWithDeviceId(EosBindings eos) async {
     // 1. Ensure a Device ID exists.
     final devOpts = calloc<EOS_Connect_CreateDeviceIdOptions>();
     devOpts.ref
       ..ApiVersion = EOS_CONNECT_CREATEDEVICEID_API_LATEST
       ..DeviceModel = 'unified_game_services'.toNativeUtf8().cast<Char>();
     try {
-      print('🔐 [EOS] Calling EOS_Connect_CreateDeviceId...');
+      _log('🔐 [EOS] Calling EOS_Connect_CreateDeviceId...');
       final res = await _track(
-            (_, cd) => eos.EOS_Connect_CreateDeviceId(
+        (_, cd) => eos.EOS_Connect_CreateDeviceId(
           _connect!,
           devOpts,
           cd,
           Pointer.fromFunction<
-              Void Function(Pointer<EOS_Connect_CreateDeviceIdCallbackInfo>)>(
-            _onDeviceCreateComplete,
-          ),
+            Void Function(Pointer<EOS_Connect_CreateDeviceIdCallbackInfo>)
+          >(_onDeviceCreateComplete),
         ),
         treatTimeoutAsSuccess: true,
       );
-      print('🔐 [EOS] CreateDeviceId result: ${res.code}');
+      _log('🔐 [EOS] CreateDeviceId result: ${res.code}');
       if (res.code != EosResult.success && res.code != 24) {
         checkEosResult(res.code, 'EOS_Connect_CreateDeviceId');
       }
@@ -371,7 +752,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       ..Token = nullptr.cast<Char>()
       ..Type = EOS_EExternalCredentialType.EOS_ECT_DEVICEID_ACCESS_TOKEN;
 
-    // Crear UserLoginInfo (necesario para evitar InvalidParameter)
+    // Build UserLoginInfo (required, otherwise EOS returns InvalidParameter).
     final userLoginInfo = calloc<EOS_Connect_UserLoginInfo>();
     final displayName = 'Player'.toNativeUtf8();
     userLoginInfo.ref
@@ -385,19 +766,18 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       ..UserLoginInfo = userLoginInfo;
 
     try {
-      print('🔐 [EOS] Calling EOS_Connect_Login...');
+      _log('🔐 [EOS] Calling EOS_Connect_Login...');
       final res = await _track(
-            (_, cd) => eos.EOS_Connect_Login(
+        (_, cd) => eos.EOS_Connect_Login(
           _connect!,
           loginOpts,
           cd,
           Pointer.fromFunction<
-              Void Function(Pointer<EOS_Connect_LoginCallbackInfo>)>(
-            _onLoginComplete,
-          ),
+            Void Function(Pointer<EOS_Connect_LoginCallbackInfo>)
+          >(_onLoginComplete),
         ),
       );
-      print('🔐 [EOS] Login result: ${res.code}');
+      _log('🔐 [EOS] Login result: ${res.code}');
       if (res.code == EosResult.invalidUser) {
         throw const SignInFailedException(
           'EOS_Connect_Login needs EOS_Connect_CreateUser for first-time login.',
@@ -406,7 +786,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       checkEosResult(res.code, 'EOS_Connect_Login');
       _localUserId = res.localUserId;
       _puid = _productUserIdToString(eos, _localUserId);
-      print('🔐 [EOS] Logged in as PUID: $_puid');
+      _log('🔐 [EOS] Logged in as PUID: $_puid');
     } finally {
       calloc.free(creds);
       calloc.free(displayName);
@@ -421,10 +801,260 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     return profile;
   }
 
+  /// Epic Account Services login: Auth (exchange code / dev-auth) →
+  /// EpicAccountId → user auth token → Connect login (EOS_ECT_EPIC) →
+  /// ProductUserId, then resolves the real Epic display name. See the EOS
+  /// Auth-vs-Connect flow.
+  ///
+  /// [type] selects the credential method; [id] is the auth ID (null for
+  /// exchange code, `host:port` for the Developer Auth Tool); [token] is the
+  /// exchange code or the dev-tool credential name.
+  Future<PlayerProfile?> _signInWithAuth(
+    EosBindings eos, {
+    required EOS_ELoginCredentialType type,
+    required String? id,
+    required String token,
+  }) async {
+    // ── 1. Auth login ────────────────────────────────────────────────────────
+    _log('🔐 [EOS] Auth creds → type=$type id="$id" token="$token"');
+    final authCreds = calloc<EOS_Auth_Credentials>();
+    final tokenPtr = token.toNativeUtf8();
+    final idPtr = id?.toNativeUtf8();
+    authCreds.ref
+      ..ApiVersion = EOS_AUTH_CREDENTIALS_API_LATEST
+      ..Id = idPtr == null ? nullptr : idPtr.cast<Char>()
+      ..Token = tokenPtr.cast<Char>()
+      ..Type = type;
+
+    final authOpts = calloc<EOS_Auth_LoginOptions>();
+    authOpts.ref
+      ..ApiVersion = EOS_AUTH_LOGIN_API_LATEST
+      ..Credentials = authCreds
+      // BasicProfile(1) | FriendsList(2) | Presence(4) = 7.
+      ..ScopeFlagsAsInt =
+          EOS_EAuthScopeFlags.EOS_AS_BasicProfile.value |
+          EOS_EAuthScopeFlags.EOS_AS_FriendsList.value |
+          EOS_EAuthScopeFlags.EOS_AS_Presence.value;
+
+    try {
+      _log('🔐 [EOS] Calling EOS_Auth_Login...');
+      final res = await _track(
+        (_, cd) => eos.EOS_Auth_Login(
+          _auth!,
+          authOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_Auth_LoginCallbackInfo>)
+          >(_onAuthLoginComplete),
+        ),
+      );
+      _log('🔐 [EOS] Auth_Login result: ${res.code}');
+      checkEosResult(res.code, 'EOS_Auth_Login');
+      _epicAccountId = res.epicAccountId;
+      if (_epicAccountId == null || _epicAccountId == nullptr) {
+        throw const SignInFailedException(
+          'EOS_Auth_Login succeeded but returned no EpicAccountId.',
+        );
+      }
+    } finally {
+      calloc.free(tokenPtr);
+      if (idPtr != null) calloc.free(idPtr);
+      calloc.free(authCreds);
+      calloc.free(authOpts);
+    }
+
+    // ── 2. Copy the user auth token (AccessToken feeds Connect) ──────────────
+    final copyOpts = calloc<EOS_Auth_CopyUserAuthTokenOptions>();
+    copyOpts.ref.ApiVersion = EOS_AUTH_COPYUSERAUTHTOKEN_API_LATEST;
+    final outToken = calloc<Pointer<EOS_Auth_Token>>();
+    String accessToken;
+    try {
+      final rc = eos.EOS_Auth_CopyUserAuthToken(
+        _auth!,
+        copyOpts,
+        _epicAccountId!,
+        outToken,
+      );
+      checkEosResult(rc.value, 'EOS_Auth_CopyUserAuthToken');
+      final at = outToken.value.ref.AccessToken;
+      if (at == nullptr) {
+        throw const SignInFailedException('EOS auth token had no AccessToken.');
+      }
+      accessToken = at.cast<Utf8>().toDartString();
+    } finally {
+      if (outToken.value != nullptr) {
+        eos.EOS_Auth_Token_Release(outToken.value);
+      }
+      calloc.free(copyOpts);
+      calloc.free(outToken);
+    }
+
+    // ── 3. Connect login with the Epic token (game-services identity) ────────
+    final connCreds = calloc<EOS_Connect_Credentials>();
+    final atPtr = accessToken.toNativeUtf8();
+    connCreds.ref
+      ..ApiVersion = EOS_CONNECT_CREDENTIALS_API_LATEST
+      ..Token = atPtr.cast<Char>()
+      ..Type = EOS_EExternalCredentialType.EOS_ECT_EPIC;
+
+    final loginOpts = calloc<EOS_Connect_LoginOptions>();
+    loginOpts.ref
+      ..ApiVersion = EOS_CONNECT_LOGIN_API_LATEST
+      ..Credentials = connCreds
+      ..UserLoginInfo = nullptr;
+
+    try {
+      _log('🔐 [EOS] Calling EOS_Connect_Login (EPIC)...');
+      final res = await _track(
+        (_, cd) => eos.EOS_Connect_Login(
+          _connect!,
+          loginOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_Connect_LoginCallbackInfo>)
+          >(_onLoginComplete),
+        ),
+      );
+      _log('🔐 [EOS] Connect_Login result: ${res.code}');
+
+      if (res.code == EosResult.invalidUser &&
+          res.continuanceToken != null &&
+          res.continuanceToken != nullptr) {
+        // First-time login for this Epic account on this product: create user.
+        _localUserId = await _createConnectUser(eos, res.continuanceToken!);
+      } else {
+        checkEosResult(res.code, 'EOS_Connect_Login');
+        _localUserId = res.localUserId;
+      }
+      _puid = _productUserIdToString(eos, _localUserId);
+      _log('🔐 [EOS] Logged in (EAS) as PUID: $_puid');
+    } finally {
+      calloc.free(atPtr);
+      calloc.free(connCreds);
+      calloc.free(loginOpts);
+    }
+
+    // ── 4. Resolve the real Epic display name ────────────────────────────────
+    await _queryDisplayName(eos);
+
+    final profile = _currentProfile();
+    if (profile != null) {
+      _events.add(UserSignedInEvent(player: profile, timestamp: _now()));
+    }
+    return profile;
+  }
+
+  /// Creates the Connect (game-services) user for a first-time Epic login,
+  /// returning the resulting ProductUserId.
+  Future<EOS_ProductUserId?> _createConnectUser(
+    EosBindings eos,
+    EOS_ContinuanceToken continuanceToken,
+  ) async {
+    final opts = calloc<EOS_Connect_CreateUserOptions>();
+    opts.ref
+      ..ApiVersion = EOS_CONNECT_CREATEUSER_API_LATEST
+      ..ContinuanceToken = continuanceToken;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_Connect_CreateUser(
+          _connect!,
+          opts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_Connect_CreateUserCallbackInfo>)
+          >(_onConnectCreateUserComplete),
+        ),
+      );
+      checkEosResult(res.code, 'EOS_Connect_CreateUser');
+      return res.localUserId;
+    } finally {
+      calloc.free(opts);
+    }
+  }
+
+  /// Queries + caches the local user's Epic display name. No-op on the Device
+  /// ID path (no EpicAccountId).
+  Future<void> _queryDisplayName(EosBindings eos) async {
+    final account = _epicAccountId;
+    if (account == null || account == nullptr) return;
+
+    final queryOpts = calloc<EOS_UserInfo_QueryUserInfoOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_USERINFO_QUERYUSERINFO_API_LATEST
+      ..LocalUserId = account
+      ..TargetUserId = account;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_UserInfo_QueryUserInfo(
+          _userInfo!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_UserInfo_QueryUserInfoCallbackInfo>)
+          >(_onQueryUserInfoComplete),
+        ),
+      );
+      if (res.code != EosResult.success) {
+        _log('⚠️ [EOS] QueryUserInfo failed: ${res.code}');
+        return;
+      }
+    } finally {
+      calloc.free(queryOpts);
+    }
+
+    _displayName = _copyDisplayName(eos, account, account);
+    _log('🪪 [EOS] Display name: $_displayName');
+  }
+
+  /// Copies the cached display name for [target] (queried by [local]); returns
+  /// null if unavailable. Releases the SDK-allocated struct.
+  String? _copyDisplayName(
+    EosBindings eos,
+    EOS_EpicAccountId local,
+    EOS_EpicAccountId target,
+  ) {
+    final copyOpts = calloc<EOS_UserInfo_CopyUserInfoOptions>();
+    copyOpts.ref
+      ..ApiVersion = EOS_USERINFO_COPYUSERINFO_API_LATEST
+      ..LocalUserId = local
+      ..TargetUserId = target;
+    final out = calloc<Pointer<EOS_UserInfo>>();
+    try {
+      final rc = eos.EOS_UserInfo_CopyUserInfo(_userInfo!, copyOpts, out);
+      if (rc.value != EosResult.success || out.value == nullptr) return null;
+      final info = out.value.ref;
+      final ptr = info.DisplayNameSanitized != nullptr
+          ? info.DisplayNameSanitized
+          : info.DisplayName;
+      final name = ptr == nullptr ? null : ptr.cast<Utf8>().toDartString();
+      eos.EOS_UserInfo_Release(out.value);
+      return name;
+    } finally {
+      calloc.free(copyOpts);
+      calloc.free(out);
+    }
+  }
+
+  String? _epicAccountIdToString(EosBindings eos, EOS_EpicAccountId? id) {
+    if (id == null || id == nullptr) return null;
+    final buf = calloc<Char>(64);
+    final len = calloc<Int32>()..value = 64;
+    try {
+      final rc = eos.EOS_EpicAccountId_ToString(id, buf, len);
+      if (rc.value != EosResult.success) return null;
+      return buf.cast<Utf8>().toDartString();
+    } finally {
+      calloc.free(buf);
+      calloc.free(len);
+    }
+  }
+
   @override
   Future<void> signOut() async {
     _localUserId = null;
+    _epicAccountId = null;
     _puid = null;
+    _displayName = null;
     _events.add(UserSignedOutEvent(timestamp: _now()));
   }
 
@@ -437,7 +1067,21 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   PlayerProfile? _currentProfile() {
     final id = _puid;
     if (id == null) return null;
-    return PlayerProfile(id: id, displayName: id);
+    final isEas = _epicAccountId != null && _epicAccountId != nullptr;
+    // Note: avatarUrl is intentionally left null. The EOS C SDK does not expose
+    // a player avatar — EOS_UserInfo only carries display name, country,
+    // nickname and preferred language. Avatars are only reachable via the Epic
+    // Account Services Web API, which is out of scope for this FFI provider.
+    return PlayerProfile(
+      id: id,
+      displayName: _displayName ?? id,
+      isOnline: true,
+      extra: {
+        if (!isEas) 'isAnonymous': true,
+        if (isEas)
+          'epicAccountId': _epicAccountIdToString(_eos!, _epicAccountId),
+      },
+    );
   }
 
   // --- achievements (write path) --------------------------------------------
@@ -459,14 +1103,17 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
     try {
       final res = await _track(
-            (_, cd) => eos.EOS_Achievements_UnlockAchievements(
+        (_, cd) => eos.EOS_Achievements_UnlockAchievements(
           _achievements!,
           opts,
           cd,
           Pointer.fromFunction<
-              Void Function(
-                  Pointer<EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo>,
-                  )>(_onUnlockAchievementsComplete),
+            Void Function(
+              Pointer<
+                EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo
+              >,
+            )
+          >(_onUnlockAchievementsComplete),
         ),
       );
       checkEosResult(res.code, 'EOS_Achievements_UnlockAchievements');
@@ -535,14 +1182,13 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
     try {
       final res = await _track(
-            (_, cd) => eos.EOS_Stats_IngestStat(
+        (_, cd) => eos.EOS_Stats_IngestStat(
           _stats!,
           opts,
           cd,
           Pointer.fromFunction<
-              Void Function(Pointer<EOS_Stats_IngestStatCompleteCallbackInfo>)>(
-            _onIngestStatComplete,
-          ),
+            Void Function(Pointer<EOS_Stats_IngestStatCompleteCallbackInfo>)
+          >(_onIngestStatComplete),
         ),
       );
       checkEosResult(res.code, 'EOS_Stats_IngestStat ($op)');
@@ -559,25 +1205,26 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     final eos = _ensureInit();
     _requireSignedIn();
 
-    // ── Paso 1: QueryDefinitions (carga nombres/descripciones en caché local) ──
+    // ── Step 1: QueryDefinitions (loads names/descriptions into local cache) ──
     final defOpts = calloc<EOS_Achievements_QueryDefinitionsOptions>();
     defOpts.ref
       ..ApiVersion = EOS_ACHIEVEMENTS_QUERYDEFINITIONS_API_LATEST
       ..LocalUserId = _localUserId!
-    // EpicUserId es opcional; déjalo en nullptr si no usas Epic Account Services
-      ..HiddenAchievementIds_DEPRECATED  = nullptr
+      // EpicUserId is optional; leave it as nullptr when not using EAS.
+      ..HiddenAchievementIds_DEPRECATED = nullptr
       ..HiddenAchievementsCount_DEPRECATED = 0;
 
     try {
       final res = await _track(
-            (_, cd) => eos.EOS_Achievements_QueryDefinitions(
+        (_, cd) => eos.EOS_Achievements_QueryDefinitions(
           _achievements!,
           defOpts,
           cd,
           Pointer.fromFunction<
-              Void Function(
-                  Pointer<EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo>,
-                  )>(_onQueryDefinitionsComplete),
+            Void Function(
+              Pointer<EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo>,
+            )
+          >(_onQueryDefinitionsComplete),
         ),
       );
       checkEosResult(res.code, 'EOS_Achievements_QueryDefinitions');
@@ -585,23 +1232,27 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       calloc.free(defOpts);
     }
 
-    // ── Paso 2: QueryPlayerAchievements (estado desbloqueado/bloqueado) ────────
-    final playerOpts = calloc<EOS_Achievements_QueryPlayerAchievementsOptions>();
+    // ── Step 2: QueryPlayerAchievements (unlocked/locked state) ──────────────
+    final playerOpts =
+        calloc<EOS_Achievements_QueryPlayerAchievementsOptions>();
     playerOpts.ref
-      ..ApiVersion    = EOS_ACHIEVEMENTS_QUERYPLAYERACHIEVEMENTS_API_LATEST
-      ..LocalUserId   = _localUserId!
-      ..TargetUserId  = _localUserId!;
+      ..ApiVersion = EOS_ACHIEVEMENTS_QUERYPLAYERACHIEVEMENTS_API_LATEST
+      ..LocalUserId = _localUserId!
+      ..TargetUserId = _localUserId!;
 
     try {
       final res = await _track(
-            (_, cd) => eos.EOS_Achievements_QueryPlayerAchievements(
+        (_, cd) => eos.EOS_Achievements_QueryPlayerAchievements(
           _achievements!,
           playerOpts,
           cd,
           Pointer.fromFunction<
-              Void Function(
-                  Pointer<EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo>,
-                  )>(_onQueryPlayerAchievementsComplete),
+            Void Function(
+              Pointer<
+                EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo
+              >,
+            )
+          >(_onQueryPlayerAchievementsComplete),
         ),
       );
       checkEosResult(res.code, 'EOS_Achievements_QueryPlayerAchievements');
@@ -609,31 +1260,33 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       calloc.free(playerOpts);
     }
 
-    // ── Paso 3: contar cuántos logros hay en caché ────────────────────────────
-    final countOpts = calloc<EOS_Achievements_GetPlayerAchievementCountOptions>();
+    // ── Step 3: count how many achievements are cached ───────────────────────
+    final countOpts =
+        calloc<EOS_Achievements_GetPlayerAchievementCountOptions>();
     countOpts.ref
       ..ApiVersion = EOS_ACHIEVEMENTS_GETPLAYERACHIEVEMENTCOUNT_API_LATEST
-      ..UserId     = _localUserId!;
+      ..UserId = _localUserId!;
     final count = eos.EOS_Achievements_GetPlayerAchievementCount(
-        _achievements!, countOpts);
+      _achievements!,
+      countOpts,
+    );
     calloc.free(countOpts);
 
-    print('🏆 [EOS] Player achievement count: $count');
+    _log('🏆 [EOS] Player achievement count: $count');
 
-    // ── Paso 4: copiar cada logro y mapear al modelo de la plataforma ─────────
+    // ── Step 4: copy each achievement and map it to the platform model ───────
     final results = <Achievement>[];
 
     for (int i = 0; i < count; i++) {
       final copyOpts =
-      calloc<EOS_Achievements_CopyPlayerAchievementByIndexOptions>();
+          calloc<EOS_Achievements_CopyPlayerAchievementByIndexOptions>();
       copyOpts.ref
-        ..ApiVersion      = EOS_ACHIEVEMENTS_COPYPLAYERACHIEVEMENTBYINDEX_API_LATEST
-        ..LocalUserId     = _localUserId!
-        ..TargetUserId    = _localUserId!
+        ..ApiVersion = EOS_ACHIEVEMENTS_COPYPLAYERACHIEVEMENTBYINDEX_API_LATEST
+        ..LocalUserId = _localUserId!
+        ..TargetUserId = _localUserId!
         ..AchievementIndex = i;
 
-      final outPtr =
-      calloc<Pointer<EOS_Achievements_PlayerAchievement>>();
+      final outPtr = calloc<Pointer<EOS_Achievements_PlayerAchievement>>();
 
       try {
         final dynamic rc = eos.EOS_Achievements_CopyPlayerAchievementByIndex(
@@ -663,26 +1316,31 @@ class EpicProvider extends UnifiedGameServicesPlatform {
               : a.Description.cast<Utf8>().toDartString();
 
           final iconUrl = a.IconURL == nullptr
-          ? null
-          : a.IconURL.cast<Utf8>().toDartString();
+              ? null
+              : a.IconURL.cast<Utf8>().toDartString();
 
           final unlockedAt = isUnlocked
-              ? DateTime.fromMillisecondsSinceEpoch(a.UnlockTime * 1000, isUtc: true)
+              ? DateTime.fromMillisecondsSinceEpoch(
+                  a.UnlockTime * 1000,
+                  isUtc: true,
+                )
               : null;
 
-          results.add(Achievement(
-            id: id,
-            title: name,
-            description: desc,
-            iconUrl: iconUrl,
-            isUnlocked: isUnlocked,
-            unlockedAt: unlockedAt
-          ));
+          results.add(
+            Achievement(
+              id: id,
+              title: name,
+              description: desc,
+              iconUrl: iconUrl,
+              isUnlocked: isUnlocked,
+              unlockedAt: unlockedAt,
+            ),
+          );
 
-          // ⚠️ Obligatorio: libera la copia alocada por el SDK
+          // Required: release the copy the SDK allocated for us.
           eos.EOS_Achievements_PlayerAchievement_Release(outPtr.value);
         } else {
-          print('⚠️ [EOS] CopyPlayerAchievementByIndex[$i] result: $code');
+          _log('⚠️ [EOS] CopyPlayerAchievementByIndex[$i] result: $code');
         }
       } finally {
         calloc.free(copyOpts);
@@ -694,30 +1352,691 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   @override
-  Future<List<Stat>> getStats() => _readGap('getStats');
+  Future<List<Stat>> getStats() async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+
+    // 1. Query stats into the local cache (all stats, all time).
+    final queryOpts = calloc<EOS_Stats_QueryStatsOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_STATS_QUERYSTATS_API_LATEST
+      ..LocalUserId = _localUserId!
+      ..StartTime =
+          -1 // EOS_STATS_TIME_UNDEFINED
+      ..EndTime = -1
+      ..StatNames = nullptr
+      ..StatNamesCount = 0;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_Stats_QueryStats(
+          _stats!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_Stats_OnQueryStatsCompleteCallbackInfo>)
+          >(_onQueryStatsComplete),
+        ),
+      );
+      checkEosResult(res.code, 'EOS_Stats_QueryStats');
+    } finally {
+      calloc.free(queryOpts);
+    }
+
+    // 2. Count, then copy each cached stat.
+    final countOpts = calloc<EOS_Stats_GetStatCountOptions>();
+    countOpts.ref
+      ..ApiVersion = EOS_STATS_GETSTATCOUNT_API_LATEST
+      ..TargetUserId = _localUserId!;
+    final count = eos.EOS_Stats_GetStatsCount(_stats!, countOpts);
+    calloc.free(countOpts);
+
+    final results = <Stat>[];
+    for (var i = 0; i < count; i++) {
+      final copyOpts = calloc<EOS_Stats_CopyStatByIndexOptions>();
+      copyOpts.ref
+        ..ApiVersion = EOS_STATS_COPYSTATBYINDEX_API_LATEST
+        ..TargetUserId = _localUserId!
+        ..StatIndex = i;
+      final out = calloc<Pointer<EOS_Stats_Stat>>();
+      try {
+        final rc = eos.EOS_Stats_CopyStatByIndex(_stats!, copyOpts, out);
+        if (rc.value == EosResult.success && out.value != nullptr) {
+          final s = out.value.ref;
+          final key = s.Name == nullptr
+              ? 'stat_$i'
+              : s.Name.cast<Utf8>().toDartString();
+          results.add(Stat(key: key, value: s.Value));
+          eos.EOS_Stats_Stat_Release(out.value);
+        }
+      } finally {
+        calloc.free(copyOpts);
+        calloc.free(out);
+      }
+    }
+    return results;
+  }
 
   @override
-  Future<Stat?> getStat(String key) => _readGap('getStat');
+  Future<Stat?> getStat(String key) async {
+    // Stats are addressed by their raw EOS stat name.
+    for (final stat in await getStats()) {
+      if (stat.key == key) return stat;
+    }
+    return null;
+  }
 
   @override
   Future<Leaderboard> getLeaderboard(
-      String leaderboardId, {
-        LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-        LeaderboardCollection collection = LeaderboardCollection.global,
-        int maxResults = 25,
-      }) =>
-      _readGap('getLeaderboard');
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    LeaderboardCollection collection = LeaderboardCollection.global,
+    int maxResults = 25,
+  }) async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    final id = resolveLeaderboardId(leaderboardId);
+
+    // 1. Query the global ranks for this leaderboard into the local cache.
+    final idPtr = id.toNativeUtf8();
+    final queryOpts = calloc<EOS_Leaderboards_QueryLeaderboardRanksOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST
+      ..LeaderboardId = idPtr.cast<Char>()
+      ..LocalUserId = _localUserId!;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_Leaderboards_QueryLeaderboardRanks(
+          _leaderboards!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(
+              Pointer<
+                EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo
+              >,
+            )
+          >(_onQueryLeaderboardRanksComplete),
+        ),
+      );
+      checkEosResult(res.code, 'EOS_Leaderboards_QueryLeaderboardRanks');
+    } finally {
+      calloc.free(idPtr);
+      calloc.free(queryOpts);
+    }
+
+    // 2. Count, then copy each record up to maxResults.
+    final countOpts =
+        calloc<EOS_Leaderboards_GetLeaderboardRecordCountOptions>();
+    countOpts.ref.ApiVersion =
+        EOS_LEADERBOARDS_GETLEADERBOARDRECORDCOUNT_API_LATEST;
+    final count = eos.EOS_Leaderboards_GetLeaderboardRecordCount(
+      _leaderboards!,
+      countOpts,
+    );
+    calloc.free(countOpts);
+
+    final entries = <LeaderboardEntry>[];
+    final limit = count < maxResults ? count : maxResults;
+    for (var i = 0; i < limit; i++) {
+      final copyOpts =
+          calloc<EOS_Leaderboards_CopyLeaderboardRecordByIndexOptions>();
+      copyOpts.ref
+        ..ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDRECORDBYINDEX_API_LATEST
+        ..LeaderboardRecordIndex = i;
+      final out = calloc<Pointer<EOS_Leaderboards_LeaderboardRecord>>();
+      try {
+        final rc = eos.EOS_Leaderboards_CopyLeaderboardRecordByIndex(
+          _leaderboards!,
+          copyOpts,
+          out,
+        );
+        if (rc.value == EosResult.success && out.value != nullptr) {
+          final r = out.value.ref;
+          final puid = _productUserIdToString(eos, r.UserId) ?? 'unknown';
+          final name = r.UserDisplayName == nullptr
+              ? puid
+              : r.UserDisplayName.cast<Utf8>().toDartString();
+          entries.add(
+            LeaderboardEntry(
+              rank: r.Rank,
+              score: r.Score,
+              player: PlayerProfile(id: puid, displayName: name),
+            ),
+          );
+          eos.EOS_Leaderboards_LeaderboardRecord_Release(out.value);
+        }
+      } finally {
+        calloc.free(copyOpts);
+        calloc.free(out);
+      }
+    }
+
+    return Leaderboard(
+      id: leaderboardId,
+      timeScope: timeScope,
+      collection: collection,
+      entries: entries,
+    );
+  }
 
   @override
   Future<LeaderboardEntry?> getPlayerScore(
-      String leaderboardId, {
-        LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-      }) =>
-      _readGap('getPlayerScore');
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async {
+    // EOS exposes a dedicated user-scores query, but it needs the leaderboard's
+    // backing stat name + aggregation. For now we reuse the ranks page and pick
+    // the local player's row — so a player ranked outside the fetched page
+    // (top 100) is not found. Revisit with EOS_Leaderboards_QueryLeaderboardUserScores.
+    final board = await getLeaderboard(
+      leaderboardId,
+      timeScope: timeScope,
+      maxResults: 100,
+    );
+    for (final entry in board.entries) {
+      if (entry.player.id == _puid) return entry;
+    }
+    return null;
+  }
 
-  Future<Never> _readGap(String op) async => throw PlatformOperationException(
-    'EOS $op (read path) is not implemented in the hand-authored bindings.',
+  // --- friends ---------------------------------------------------------------
+  @override
+  Future<List<PlayerProfile>> getFriends() async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    final account = _epicAccountId;
+    if (account == null || account == nullptr) {
+      throw CapabilityNotSupportedException(
+        GameCapability.friends,
+        cause:
+            'EOS friends require an Epic Account Services login; the anonymous '
+            'Device ID path has no Epic social graph.',
+      );
+    }
+
+    // 1. Query (cache) the friends list.
+    final queryOpts = calloc<EOS_Friends_QueryFriendsOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_FRIENDS_QUERYFRIENDS_API_LATEST
+      ..LocalUserId = account;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_Friends_QueryFriends(
+          _friends!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_Friends_QueryFriendsCallbackInfo>)
+          >(_onQueryFriendsComplete),
+        ),
+      );
+      _log('👥 [EOS] QueryFriends result: ${res.code}');
+      checkEosResult(res.code, 'EOS_Friends_QueryFriends');
+    } finally {
+      calloc.free(queryOpts);
+    }
+
+    // 2. Count, then collect each friend's EpicAccountId.
+    final countOpts = calloc<EOS_Friends_GetFriendsCountOptions>();
+    countOpts.ref
+      ..ApiVersion = EOS_FRIENDS_GETFRIENDSCOUNT_API_LATEST
+      ..LocalUserId = account;
+    final count = eos.EOS_Friends_GetFriendsCount(_friends!, countOpts);
+    calloc.free(countOpts);
+    _log('👥 [EOS] Friends count: $count');
+
+    final friendIds = <EOS_EpicAccountId>[];
+    for (var i = 0; i < count; i++) {
+      final atOpts = calloc<EOS_Friends_GetFriendAtIndexOptions>();
+      atOpts.ref
+        ..ApiVersion = EOS_FRIENDS_GETFRIENDATINDEX_API_LATEST
+        ..LocalUserId = account
+        ..Index = i;
+      final fid = eos.EOS_Friends_GetFriendAtIndex(_friends!, atOpts);
+      calloc.free(atOpts);
+      if (fid != nullptr) friendIds.add(fid);
+    }
+
+    // 3. Query + copy each friend's display name.
+    final results = <PlayerProfile>[];
+    for (final fid in friendIds) {
+      final queryOpts = calloc<EOS_UserInfo_QueryUserInfoOptions>();
+      queryOpts.ref
+        ..ApiVersion = EOS_USERINFO_QUERYUSERINFO_API_LATEST
+        ..LocalUserId = account
+        ..TargetUserId = fid;
+      try {
+        await _track(
+          (_, cd) => eos.EOS_UserInfo_QueryUserInfo(
+            _userInfo!,
+            queryOpts,
+            cd,
+            Pointer.fromFunction<
+              Void Function(Pointer<EOS_UserInfo_QueryUserInfoCallbackInfo>)
+            >(_onQueryUserInfoComplete),
+          ),
+        );
+      } finally {
+        calloc.free(queryOpts);
+      }
+
+      final id = _epicAccountIdToString(eos, fid);
+      if (id == null) continue;
+      final name = _copyDisplayName(eos, account, fid);
+      results.add(
+        PlayerProfile(id: id, displayName: name ?? id, isFriend: true),
+      );
+    }
+
+    return results;
+  }
+
+  // --- presence --------------------------------------------------------------
+  @override
+  Future<void> setPresence(RichPresence presence) {
+    // Only state + details map cleanly to EOS rich text. party size/max and
+    // startedAt have no EOS rich-presence equivalent and are left unmapped.
+    final text = presence.details == null || presence.details!.isEmpty
+        ? presence.state
+        : '${presence.state} — ${presence.details}';
+    return _applyPresence(
+      richText: text,
+      status: EOS_Presence_EStatus.EOS_PS_Online.value,
+    );
+  }
+
+  @override
+  Future<void> clearPresence() => _applyPresence(
+    richText: '',
+    status: EOS_Presence_EStatus.EOS_PS_Offline.value,
   );
+
+  Future<void> _applyPresence({
+    required String richText,
+    required int status,
+  }) async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    _requireEas(GameCapability.presence);
+    final account = _epicAccountId!;
+
+    // EOS rich text caps at 255 chars (EOS_PRESENCE_RICH_TEXT_MAX_VALUE_LENGTH).
+    final text = richText.length > 255 ? richText.substring(0, 255) : richText;
+
+    // 1. Create a presence modification handle.
+    final createOpts = calloc<EOS_Presence_CreatePresenceModificationOptions>();
+    createOpts.ref
+      ..ApiVersion = EOS_PRESENCE_CREATEPRESENCEMODIFICATION_API_LATEST
+      ..LocalUserId = account;
+    final outMod = calloc<EOS_HPresenceModification>();
+    EOS_HPresenceModification? mod;
+    Pointer<Char>? richTextPtr;
+    try {
+      final rc = eos.EOS_Presence_CreatePresenceModification(
+        _presence!,
+        createOpts,
+        outMod,
+      );
+      checkEosResult(rc.value, 'EOS_Presence_CreatePresenceModification');
+      mod = outMod.value;
+
+      // 2. Set status.
+      final statusOpts = calloc<EOS_PresenceModification_SetStatusOptions>();
+      statusOpts.ref
+        ..ApiVersion = EOS_PRESENCEMODIFICATION_SETSTATUS_API_LATEST
+        ..StatusAsInt = status;
+      try {
+        final sr = eos.EOS_PresenceModification_SetStatus(mod, statusOpts);
+        checkEosResult(sr.value, 'EOS_PresenceModification_SetStatus');
+      } finally {
+        calloc.free(statusOpts);
+      }
+
+      // 3. Set the raw rich text.
+      richTextPtr = text.toNativeUtf8().cast<Char>();
+      final rtOpts = calloc<EOS_PresenceModification_SetRawRichTextOptions>();
+      rtOpts.ref
+        ..ApiVersion = EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST
+        ..RichText = richTextPtr;
+      try {
+        final rtr = eos.EOS_PresenceModification_SetRawRichText(mod, rtOpts);
+        checkEosResult(rtr.value, 'EOS_PresenceModification_SetRawRichText');
+      } finally {
+        calloc.free(rtOpts);
+      }
+
+      // 4. Commit the modification (async).
+      final setOpts = calloc<EOS_Presence_SetPresenceOptions>();
+      setOpts.ref
+        ..ApiVersion = EOS_PRESENCE_SETPRESENCE_API_LATEST
+        ..LocalUserId = account
+        ..PresenceModificationHandle = mod;
+      try {
+        final res = await _track(
+          (_, cd) => eos.EOS_Presence_SetPresence(
+            _presence!,
+            setOpts,
+            cd,
+            Pointer.fromFunction<
+              Void Function(Pointer<EOS_Presence_SetPresenceCallbackInfo>)
+            >(_onSetPresenceComplete),
+          ),
+        );
+        _log('🎭 [EOS] SetPresence result: ${res.code}');
+        checkEosResult(res.code, 'EOS_Presence_SetPresence');
+      } finally {
+        calloc.free(setOpts);
+      }
+    } finally {
+      if (mod != null && mod != nullptr) {
+        eos.EOS_PresenceModification_Release(mod);
+      }
+      if (richTextPtr != null) calloc.free(richTextPtr);
+      calloc.free(createOpts);
+      calloc.free(outMod);
+    }
+  }
+
+  // --- cloud save (player data storage) --------------------------------------
+  @override
+  Future<void> saveData(String slot, Uint8List data) async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    _requireEas(GameCapability.cloudSave);
+    _requireEncryptionKey();
+    final user = _localUserId!;
+
+    _writes[slot] = _WriteState(data);
+    final filename = slot.toNativeUtf8().cast<Char>();
+    final opts = calloc<EOS_PlayerDataStorage_WriteFileOptions>();
+    opts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_WRITEFILE_API_LATEST
+      ..LocalUserId = user
+      ..Filename = filename
+      ..ChunkLengthBytes = 4096
+      ..WriteFileDataCallback =
+          Pointer.fromFunction<
+            EOS_PlayerDataStorage_OnWriteFileDataCallbackFunction
+          >(
+            _onWriteFileData,
+            // exceptionalReturn = FailRequest, if the Dart callback throws.
+            3,
+          )
+      ..FileTransferProgressCallback = nullptr;
+
+    EOS_HPlayerDataStorageFileTransferRequest? req;
+    try {
+      final res = await _track((_, cd) {
+        req = eos.EOS_PlayerDataStorage_WriteFile(
+          _playerDataStorage!,
+          opts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_PlayerDataStorage_WriteFileCallbackInfo>)
+          >(_onWriteFileComplete),
+        );
+      });
+      _log('💾 [EOS] WriteFile result: ${res.code}');
+      checkEosResult(res.code, 'EOS_PlayerDataStorage_WriteFile');
+    } finally {
+      _writes.remove(slot);
+      if (req != null && req != nullptr) {
+        eos.EOS_PlayerDataStorageFileTransferRequest_Release(req!);
+      }
+      calloc.free(filename);
+      calloc.free(opts);
+    }
+  }
+
+  @override
+  Future<CloudSave?> loadData(String slot) async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    _requireEas(GameCapability.cloudSave);
+    _requireEncryptionKey();
+    final user = _localUserId!;
+
+    final state = _ReadState();
+    _reads[slot] = state;
+    final filename = slot.toNativeUtf8().cast<Char>();
+    final opts = calloc<EOS_PlayerDataStorage_ReadFileOptions>();
+    opts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_READFILE_API_LATEST
+      ..LocalUserId = user
+      ..Filename = filename
+      ..ReadChunkLengthBytes = 4096
+      ..ReadFileDataCallback =
+          Pointer.fromFunction<
+            EOS_PlayerDataStorage_OnReadFileDataCallbackFunction
+          >(
+            _onReadFileData,
+            // exceptionalReturn = FailRequest, if the Dart callback throws.
+            2,
+          )
+      ..FileTransferProgressCallback = nullptr;
+
+    EOS_HPlayerDataStorageFileTransferRequest? req;
+    try {
+      final res = await _track((_, cd) {
+        req = eos.EOS_PlayerDataStorage_ReadFile(
+          _playerDataStorage!,
+          opts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_PlayerDataStorage_ReadFileCallbackInfo>)
+          >(_onReadFileComplete),
+        );
+      });
+      _log('💾 [EOS] ReadFile result: ${res.code}');
+      // EOS_NotFound (file does not exist) → null rather than an exception.
+      if (res.code == EosResult.notFound) return null;
+      checkEosResult(res.code, 'EOS_PlayerDataStorage_ReadFile');
+    } finally {
+      _reads.remove(slot);
+      if (req != null && req != nullptr) {
+        eos.EOS_PlayerDataStorageFileTransferRequest_Release(req!);
+      }
+      calloc.free(filename);
+      calloc.free(opts);
+    }
+
+    final bytes = state.builder.toBytes();
+    final meta = _copyFileMetadata(eos, user, slot);
+    return CloudSave.fromBytes(
+      metadata: meta ?? CloudSaveMetadata(slot: slot, sizeBytes: bytes.length),
+      bytes: bytes,
+    );
+  }
+
+  @override
+  Future<List<CloudSaveMetadata>> listSaves() async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    _requireEas(GameCapability.cloudSave);
+    final user = _localUserId!;
+
+    // 1. Query (cache) the file list.
+    final queryOpts = calloc<EOS_PlayerDataStorage_QueryFileListOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST
+      ..LocalUserId = user;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_PlayerDataStorage_QueryFileList(
+          _playerDataStorage!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(
+              Pointer<EOS_PlayerDataStorage_QueryFileListCallbackInfo>,
+            )
+          >(_onQueryFileListComplete),
+        ),
+      );
+      _log('💾 [EOS] QueryFileList result: ${res.code}');
+      checkEosResult(res.code, 'EOS_PlayerDataStorage_QueryFileList');
+    } finally {
+      calloc.free(queryOpts);
+    }
+
+    // 2. Count, then copy each cached file's metadata.
+    final countOpts =
+        calloc<EOS_PlayerDataStorage_GetFileMetadataCountOptions>();
+    countOpts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_GETFILEMETADATACOUNT_API_LATEST
+      ..LocalUserId = user;
+    final countOut = calloc<Int32>();
+    var count = 0;
+    try {
+      final rc = eos.EOS_PlayerDataStorage_GetFileMetadataCount(
+        _playerDataStorage!,
+        countOpts,
+        countOut,
+      );
+      if (rc.value == EosResult.success) count = countOut.value;
+    } finally {
+      calloc.free(countOpts);
+      calloc.free(countOut);
+    }
+    _log('💾 [EOS] File metadata count: $count');
+
+    final results = <CloudSaveMetadata>[];
+    for (var i = 0; i < count; i++) {
+      final copyOpts =
+          calloc<EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions>();
+      copyOpts.ref
+        ..ApiVersion = EOS_PLAYERDATASTORAGE_COPYFILEMETADATAATINDEX_API_LATEST
+        ..LocalUserId = user
+        ..Index = i;
+      final out = calloc<Pointer<EOS_PlayerDataStorage_FileMetadata>>();
+      try {
+        final rc = eos.EOS_PlayerDataStorage_CopyFileMetadataAtIndex(
+          _playerDataStorage!,
+          copyOpts,
+          out,
+        );
+        if (rc.value == EosResult.success && out.value != nullptr) {
+          final meta = _mapFileMetadata(out.value.ref);
+          if (meta != null) results.add(meta);
+          eos.EOS_PlayerDataStorage_FileMetadata_Release(out.value);
+        }
+      } finally {
+        calloc.free(copyOpts);
+        calloc.free(out);
+      }
+    }
+    return results;
+  }
+
+  @override
+  Future<void> deleteSave(String slot) async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+    _requireEas(GameCapability.cloudSave);
+    final user = _localUserId!;
+
+    final filename = slot.toNativeUtf8().cast<Char>();
+    final opts = calloc<EOS_PlayerDataStorage_DeleteFileOptions>();
+    opts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_DELETEFILE_API_LATEST
+      ..LocalUserId = user
+      ..Filename = filename;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_PlayerDataStorage_DeleteFile(
+          _playerDataStorage!,
+          opts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(Pointer<EOS_PlayerDataStorage_DeleteFileCallbackInfo>)
+          >(_onDeleteFileComplete),
+        ),
+      );
+      _log('💾 [EOS] DeleteFile result: ${res.code}');
+      checkEosResult(res.code, 'EOS_PlayerDataStorage_DeleteFile');
+    } finally {
+      calloc.free(filename);
+      calloc.free(opts);
+    }
+  }
+
+  /// Copies a single cached file's metadata by name (after a QueryFileList or
+  /// ReadFile populated the cache), or null if unavailable.
+  CloudSaveMetadata? _copyFileMetadata(
+    EosBindings eos,
+    EOS_ProductUserId user,
+    String slot,
+  ) {
+    final filename = slot.toNativeUtf8().cast<Char>();
+    final copyOpts =
+        calloc<EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions>();
+    copyOpts.ref
+      ..ApiVersion = EOS_PLAYERDATASTORAGE_COPYFILEMETADATABYFILENAME_API_LATEST
+      ..LocalUserId = user
+      ..Filename = filename;
+    final out = calloc<Pointer<EOS_PlayerDataStorage_FileMetadata>>();
+    try {
+      final rc = eos.EOS_PlayerDataStorage_CopyFileMetadataByFilename(
+        _playerDataStorage!,
+        copyOpts,
+        out,
+      );
+      if (rc.value != EosResult.success || out.value == nullptr) return null;
+      final meta = _mapFileMetadata(out.value.ref);
+      eos.EOS_PlayerDataStorage_FileMetadata_Release(out.value);
+      return meta;
+    } finally {
+      calloc.free(filename);
+      calloc.free(copyOpts);
+      calloc.free(out);
+    }
+  }
+
+  CloudSaveMetadata? _mapFileMetadata(EOS_PlayerDataStorage_FileMetadata m) {
+    if (m.Filename == nullptr) return null;
+    final slot = m.Filename.cast<Utf8>().toDartString();
+    // LastModifiedTime is POSIX seconds; 0 means the SDK didn't track it.
+    final modified = m.LastModifiedTime > 0
+        ? DateTime.fromMillisecondsSinceEpoch(
+            m.LastModifiedTime * 1000,
+            isUtc: true,
+          )
+        : null;
+    return CloudSaveMetadata(
+      slot: slot,
+      // UnencryptedDataSizeBytes is the original payload size; FileSizeBytes is
+      // the encrypted-at-rest size. Expose the former — it matches what the
+      // caller wrote.
+      sizeBytes: m.UnencryptedDataSizeBytes,
+      modifiedAt: modified,
+    );
+  }
+
+  /// Asserts an Epic Account Services login is active. Throws
+  /// [CapabilityNotSupportedException] on the anonymous Device ID path. After
+  /// it returns, both [_epicAccountId] (presence) and [_localUserId] (PDS) are
+  /// guaranteed non-null.
+  void _requireEas(GameCapability cap) {
+    final account = _epicAccountId;
+    if (account == null || account == nullptr) {
+      throw CapabilityNotSupportedException(
+        cap,
+        cause:
+            'EOS ${cap.name} requires an Epic Account Services login; the '
+            'anonymous Device ID path is not supported.',
+      );
+    }
+  }
+
+  void _requireEncryptionKey() {
+    if (credentials.encryptionKey == null ||
+        credentials.encryptionKey!.isEmpty) {
+      throw const PlatformOperationException(
+        'EOS Player Data Storage encrypts at rest; set '
+        'EpicCredentials.encryptionKey to use cloud save.',
+      );
+    }
+  }
 
   void _requireSignedIn() {
     if (_puid == null) throw const NotSignedInException();
@@ -735,7 +2054,26 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
     _platform = null;
     _eos = null;
+    _leaderboards = null;
+    _presence = null;
+    _playerDataStorage = null;
     _puid = null;
+    _epicAccountId = null;
+    _displayName = null;
     await _events.close();
   }
+}
+
+/// In-flight state for a PDS write: the payload plus how far the native data
+/// callback has consumed it.
+class _WriteState {
+  _WriteState(this.data);
+
+  final Uint8List data;
+  int offset = 0;
+}
+
+/// In-flight state for a PDS read: accumulates the downloaded chunks.
+class _ReadState {
+  final BytesBuilder builder = BytesBuilder(copy: true);
 }

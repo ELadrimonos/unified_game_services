@@ -23,15 +23,16 @@ single Dart API.
 | Module | Status |
 |---------|---------|
 | Core API | ✅ Implemented (interface + multi-provider facade) |
-| Achievements | ✅ Implemented (Steam, GameJolt, PlayFab) |
-| Leaderboards | ✅ Implemented (Steam, GameJolt, PlayFab) |
-| Stats | ✅ Implemented (Steam, PlayFab) |
+| Achievements | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
+| Leaderboards | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
+| Stats | ✅ Implemented (Steam, PlayFab, Epic) |
 | Cloud Save | ✅ Implemented (Steam, GameJolt, PlayFab) |
-| User Profiles | ✅ Implemented (Steam, GameJolt, PlayFab) |
+| User Profiles | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
+| Friends | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
 | Rich Presence | ✅ Implemented (Steam) |
 | Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
 | GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
-| Epic Online Services | 🚧 MVP (pure Dart, EOS REST/C) |
+| Epic Online Services | ✅ Implemented (pure Dart, EOS C SDK via FFI) — EAS login + real profile + friends + achievements, runtime-verified on macOS |
 | PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
 | Google Play Games (rest) | ✅ Implemented (pure Dart, REST Games API v1 + OAuth) — achievements + leaderboards, verified with tests |
 | Google Play Games (android) | ✅ Implemented (Play Games Services native SDK via package:jni) |

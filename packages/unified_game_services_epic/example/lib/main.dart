@@ -44,15 +44,41 @@ enum _AppState { idle, signingIn, ready, error }
 class _EosHomeScreenState extends State<EosHomeScreen> {
   EpicProvider? _provider;
   _AppState _appState = _AppState.idle;
-  String? _playerId;
+  PlayerProfile? _player;
   String? _errorMessage;
 
   List<Achievement> _achievements = [];
   bool _loadingAchievements = false;
 
+  List<PlayerProfile> _friends = [];
+  bool _loadingFriends = false;
+  String? _friendsError;
+
+  // ── Campos del formulario (prefill desde env / --dart-define si existe) ─────
+  late final _fields = <String, TextEditingController>{
+    'EOS_PRODUCT_ID': TextEditingController(text: _envOrNull('EOS_PRODUCT_ID')),
+    'EOS_SANDBOX_ID': TextEditingController(text: _envOrNull('EOS_SANDBOX_ID')),
+    'EOS_DEPLOYMENT_ID':
+        TextEditingController(text: _envOrNull('EOS_DEPLOYMENT_ID')),
+    'EOS_CLIENT_ID': TextEditingController(text: _envOrNull('EOS_CLIENT_ID')),
+    'EOS_CLIENT_SECRET':
+        TextEditingController(text: _envOrNull('EOS_CLIENT_SECRET')),
+    'EOS_DEV_AUTH_HOST': TextEditingController(
+        text: _envOrNull('EOS_DEV_AUTH_HOST') ?? 'localhost:20304'),
+    'EOS_DEV_AUTH_CRED':
+        TextEditingController(text: _envOrNull('EOS_DEV_AUTH_CRED')),
+    'EOS_SDK_DIR': TextEditingController(text: _envOrNull('EOS_SDK_DIR')),
+  };
+
+  String _field(String key) => _fields[key]!.text.trim();
+  String? _fieldOrNull(String key) {
+    final v = _field(key);
+    return v.isEmpty ? null : v;
+  }
+
   // ── SDK path ──────────────────────────────────────────────────────────────
   String? _sdkLibraryPath() {
-    final sdkDir = Platform.environment['EOS_SDK_DIR'];
+    final sdkDir = _fieldOrNull('EOS_SDK_DIR');
     if (sdkDir == null) return null;
     if (Platform.isMacOS) return '$sdkDir/Bin/libEOSSDK-Mac-Shipping.dylib';
     if (Platform.isWindows) return '$sdkDir/Bin/x64/EOSSDK-Win64-Shipping.dll';
@@ -61,12 +87,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
   }
 
   // ── Credentials ───────────────────────────────────────────────────────────
-  String _env(String key) {
-    final v = String.fromEnvironment(key).isNotEmpty
-        ? String.fromEnvironment(key)
-        : Platform.environment[key];
-    if (v == null || v.isEmpty) throw Exception('Falta la credencial: $key');
-    return v;
+  String? _envOrNull(String key) {
+    final fromDefine = String.fromEnvironment(key);
+    if (fromDefine.isNotEmpty) return fromDefine;
+    return Platform.environment[key];
   }
 
   // ── Sign in ───────────────────────────────────────────────────────────────
@@ -78,13 +102,19 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
 
     try {
       _provider ??= EpicProvider(
+        debugLogging: true,
         credentials: EpicCredentials(
-          productId: _env('EOS_PRODUCT_ID'),
-          sandboxId: _env('EOS_SANDBOX_ID'),
-          deploymentId: _env('EOS_DEPLOYMENT_ID'),
-          clientId: _env('EOS_CLIENT_ID'),
-          clientSecret: _env('EOS_CLIENT_SECRET'),
+          productId: _field('EOS_PRODUCT_ID'),
+          sandboxId: _field('EOS_SANDBOX_ID'),
+          deploymentId: _field('EOS_DEPLOYMENT_ID'),
+          clientId: _field('EOS_CLIENT_ID'),
+          clientSecret: _field('EOS_CLIENT_SECRET'),
         ),
+        // Developer Auth Tool → real EAS login (profile + friends) with no
+        // launcher. Leave these fields empty to fall back to anonymous Device
+        // ID login.
+        devAuthHost: _fieldOrNull('EOS_DEV_AUTH_HOST'),
+        devAuthCredentialName: _fieldOrNull('EOS_DEV_AUTH_CRED'),
         libraryPath: _sdkLibraryPath(),
         achievementIds: {
           'TEST': 'TEST_ACHIEVEMENT'
@@ -93,7 +123,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
 
       final player = await _provider!.signIn();
       setState(() {
-        _playerId = player?.id;
+        _player = player;
         _appState = _AppState.ready;
       });
 
@@ -114,9 +144,26 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
       final list = await _provider!.getAchievements();
       setState(() => _achievements = list);
     } catch (e) {
-      debugPrint('Error cargando logros: $e');
+      debugPrint('Error loading achievements: $e');
     } finally {
       setState(() => _loadingAchievements = false);
+    }
+  }
+
+  // ── Load friends (EAS only) ───────────────────────────────────────────────
+  Future<void> _loadFriends() async {
+    if (_provider == null) return;
+    setState(() {
+      _loadingFriends = true;
+      _friendsError = null;
+    });
+    try {
+      final list = await _provider!.getFriends();
+      setState(() => _friends = list);
+    } catch (e) {
+      setState(() => _friendsError = e.toString());
+    } finally {
+      setState(() => _loadingFriends = false);
     }
   }
 
@@ -129,7 +176,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('🏆 "${achievement.title}" desbloqueado!'),
+            content: Text('🏆 "${achievement.title}" unlocked!'),
             backgroundColor: const Color(0xFF00D4FF).withOpacity(0.9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -150,6 +197,9 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
 
   @override
   void dispose() {
+    for (final c in _fields.values) {
+      c.dispose();
+    }
     _provider?.dispose();
     super.dispose();
   }
@@ -161,7 +211,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
       body: SafeArea(
         child: switch (_appState) {
           _AppState.idle   => _buildIdle(),
-          _AppState.signingIn => _buildLoading('Iniciando sesión en Epic Games...'),
+          _AppState.signingIn => _buildLoading('Signing in to Epic Games...'),
           _AppState.ready  => _buildDashboard(),
           _AppState.error  => _buildError(),
         },
@@ -172,31 +222,80 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
   // ── Idle screen ───────────────────────────────────────────────────────────
   Widget _buildIdle() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.sports_esports, size: 80, color: Color(0xFF00D4FF)),
-          const SizedBox(height: 24),
-          const Text(
-            'EOS Flutter Test',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 520),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16),
+              const Icon(Icons.sports_esports,
+                  size: 64, color: Color(0xFF00D4FF)),
+              const SizedBox(height: 12),
+              const Text('EOS Flutter Test',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2)),
+              const SizedBox(height: 24),
+              const Text('Credentials (Dev Portal)',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _formField('EOS_PRODUCT_ID', 'Product ID'),
+              _formField('EOS_SANDBOX_ID', 'Sandbox ID'),
+              _formField('EOS_DEPLOYMENT_ID', 'Deployment ID'),
+              _formField('EOS_CLIENT_ID', 'Client ID'),
+              _formField('EOS_CLIENT_SECRET', 'Client Secret', obscure: true),
+              const SizedBox(height: 16),
+              const Text('Developer Auth Tool (real EAS login)',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              const Text(
+                'Empty → anonymous Device ID login (no real profile or friends).',
+                style: TextStyle(color: Colors.white38, fontSize: 11),
+              ),
+              const SizedBox(height: 8),
+              _formField('EOS_DEV_AUTH_HOST', 'Host (e.g. 127.0.0.1:20304)'),
+              _formField('EOS_DEV_AUTH_CRED', 'Credential name'),
+              const SizedBox(height: 16),
+              const Text('SDK', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _formField('EOS_SDK_DIR',
+                  'EOS_SDK_DIR path (empty = dylib on PATH/rpath)'),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: _signIn,
+                icon: const Icon(Icons.login),
+                label: const Text('Sign In'),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: const TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Epic Online Services SDK',
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14),
-          ),
-          const SizedBox(height: 48),
-          FilledButton.icon(
-            onPressed: _signIn,
-            icon: const Icon(Icons.login),
-            label: const Text('Iniciar Sesión'),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-              textStyle: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _formField(String key, String label, {bool obscure = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: TextField(
+        controller: _fields[key],
+        obscureText: obscure,
+        autocorrect: false,
+        enableSuggestions: false,
+        style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+        decoration: InputDecoration(
+          labelText: label,
+          isDense: true,
+          border: const OutlineInputBorder(),
+        ),
       ),
     );
   }
@@ -225,7 +324,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
             const SizedBox(height: 16),
-            const Text('Error al iniciar sesión',
+            const Text('Sign-in error',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Container(
@@ -243,7 +342,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             OutlinedButton.icon(
               onPressed: () => setState(() => _appState = _AppState.idle),
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: const Text('Retry'),
             ),
           ],
         ),
@@ -269,7 +368,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
           ),
           actions: [
             IconButton(
-              tooltip: 'Recargar logros',
+              tooltip: 'Reload achievements',
               onPressed: _loadingAchievements ? null : _loadAchievements,
               icon: _loadingAchievements
                   ? const SizedBox(
@@ -281,7 +380,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
           ],
         ),
 
-        // Lista de logros
+        // Panel de amigos (EAS)
+        SliverToBoxAdapter(child: _buildFriendsPanel()),
+
+        // Achievement list
         if (_loadingAchievements && _achievements.isEmpty)
           const SliverFillRemaining(
             child: Center(child: CircularProgressIndicator(color: Color(0xFF00D4FF))),
@@ -295,7 +397,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
                   Icon(Icons.emoji_events_outlined,
                       size: 64, color: Colors.white.withOpacity(0.3)),
                   const SizedBox(height: 12),
-                  Text('Sin logros disponibles',
+                  Text('No achievements available',
                       style: TextStyle(color: Colors.white.withOpacity(0.5))),
                 ],
               ),
@@ -314,6 +416,68 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildFriendsPanel() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.people_alt, color: Color(0xFF00D4FF), size: 20),
+              const SizedBox(width: 8),
+              const Text('Epic Friends',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Spacer(),
+              FilledButton.tonalIcon(
+                onPressed: _loadingFriends ? null : _loadFriends,
+                icon: _loadingFriends
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.download, size: 18),
+                label: const Text('Load'),
+              ),
+            ],
+          ),
+          if (_friendsError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                _friendsError!,
+                style: const TextStyle(
+                    color: Colors.redAccent, fontSize: 12, fontFamily: 'monospace'),
+              ),
+            )
+          else if (_friends.isEmpty && !_loadingFriends)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text('No friends loaded.',
+                  style: TextStyle(color: Colors.white38, fontSize: 12)),
+            )
+          else
+            ..._friends.map(
+              (f) => ListTile(
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                leading: const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Color(0x3300D4FF),
+                  child: Icon(Icons.person, size: 18, color: Color(0xFF00D4FF)),
+                ),
+                title: Text(f.displayName),
+                subtitle: Text(f.id,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 10)),
+              ),
+            ),
+          const Divider(height: 24),
+        ],
+      ),
     );
   }
 
@@ -343,15 +507,16 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Jugador conectado',
-                        style: TextStyle(color: Colors.white54, fontSize: 12)),
+                    Text(_player?.displayName ?? 'Connected player',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     Text(
-                      _playerId != null
-                          ? '${_playerId!.substring(0, 8)}...${_playerId!.substring(_playerId!.length - 6)}'
+                      _player != null
+                          ? '${_player!.id.substring(0, 8)}...${_player!.id.substring(_player!.id.length - 6)}'
                           : '—',
                       style: const TextStyle(
                           fontFamily: 'monospace',
-                          fontSize: 14,
+                          fontSize: 12,
                           color: Color(0xFF00D4FF)),
                     ),
                   ],
@@ -372,7 +537,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            '${(progress * 100).toStringAsFixed(0)}% completado',
+            '${(progress * 100).toStringAsFixed(0)}% completed',
             style: const TextStyle(color: Colors.white38, fontSize: 11),
           ),
         ],
@@ -401,7 +566,7 @@ class _AchievementCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Icono / trofeo
+              // Icon / trophy
               Container(
                 width: 52, height: 52,
                 decoration: BoxDecoration(
@@ -419,7 +584,7 @@ class _AchievementCard extends StatelessWidget {
               ),
               const SizedBox(width: 16),
 
-              // Nombre + descripción
+              // Name + description
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -455,7 +620,7 @@ class _AchievementCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
 
-              // Badge estado
+              // Status badge
               _StatusChip(unlocked: unlocked),
             ],
           ),
@@ -484,7 +649,7 @@ class _StatusChip extends StatelessWidget {
         ),
       ),
       child: Text(
-        unlocked ? '✓ Obtenido' : 'Bloqueado',
+        unlocked ? '✓ Unlocked' : 'Locked',
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,

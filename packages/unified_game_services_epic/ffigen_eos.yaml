@@ -7,7 +7,8 @@
 name: EosBindings
 description: |
   Bindings to the Epic Online Services C SDK (lifecycle + achievements, stats,
-  leaderboards, connect, auth). GENERATED — do not edit by hand.
+  leaderboards, connect, auth, userinfo, friends, presence, player data
+  storage). GENERATED — do not edit by hand.
 output: 'lib/src/eos_bindings.dart'
 # Lookup-class style (EosBindings(DynamicLibrary)) — the host supplies the
 # runtime lib path at startup, so @Native (ffi-native) is not used.
@@ -22,6 +23,12 @@ headers:
     - '.eos-sdk/Include/eos_connect.h'
     - '.eos-sdk/Include/eos_auth.h'
     - '.eos-sdk/Include/eos_userinfo.h'
+    # Functions are only emitted for headers listed here (types are pulled in
+    # transitively, which is why these interfaces' structs already existed but
+    # their function wrappers did not until added as entry-points).
+    - '.eos-sdk/Include/eos_friends.h'
+    - '.eos-sdk/Include/eos_presence.h'
+    - '.eos-sdk/Include/eos_playerdatastorage.h'
   include-directives:
     - '.eos-sdk/Include/**'
 compiler-opts:

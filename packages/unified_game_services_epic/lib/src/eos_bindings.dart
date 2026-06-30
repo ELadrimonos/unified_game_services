@@ -8,7 +8,8 @@
 import 'dart:ffi' as ffi;
 
 /// Bindings to the Epic Online Services C SDK (lifecycle + achievements, stats,
-/// leaderboards, connect, auth). GENERATED — do not edit by hand.
+/// leaderboards, connect, auth, userinfo, friends, presence, player data
+/// storage). GENERATED — do not edit by hand.
 ///
 class EosBindings {
   /// Holds the symbol lookup function.
@@ -2432,6 +2433,397 @@ class EosBindings {
         )
       >();
 
+  /// Starts an asynchronous task that accepts a friend invitation from another
+  /// user. The completion delegate is executed after the backend response has
+  /// been received.
+  void EOS_Friends_AcceptInvite(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_AcceptInviteOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnAcceptInviteCallback CompletionDelegate,
+  ) {
+    return _EOS_Friends_AcceptInvite(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Friends_AcceptInvitePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_AcceptInviteOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnAcceptInviteCallback,
+          )
+        >
+      >('EOS_Friends_AcceptInvite');
+  late final _EOS_Friends_AcceptInvite =
+      _EOS_Friends_AcceptInvitePtr.asFunction<
+        void Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_AcceptInviteOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnAcceptInviteCallback,
+        )
+      >();
+
+  /// Listen for changes to blocklist for a particular account.
+  int EOS_Friends_AddNotifyBlockedUsersUpdate(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_AddNotifyBlockedUsersUpdateOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnBlockedUsersUpdateCallback BlockedUsersUpdateHandler,
+  ) {
+    return _EOS_Friends_AddNotifyBlockedUsersUpdate(
+      Handle,
+      Options,
+      ClientData,
+      BlockedUsersUpdateHandler,
+    );
+  }
+
+  late final _EOS_Friends_AddNotifyBlockedUsersUpdatePtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_NotificationId Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_AddNotifyBlockedUsersUpdateOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnBlockedUsersUpdateCallback,
+          )
+        >
+      >('EOS_Friends_AddNotifyBlockedUsersUpdate');
+  late final _EOS_Friends_AddNotifyBlockedUsersUpdate =
+      _EOS_Friends_AddNotifyBlockedUsersUpdatePtr.asFunction<
+        int Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_AddNotifyBlockedUsersUpdateOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnBlockedUsersUpdateCallback,
+        )
+      >();
+
+  /// Listen for changes to friends for a particular account.
+  int EOS_Friends_AddNotifyFriendsUpdate(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_AddNotifyFriendsUpdateOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnFriendsUpdateCallback FriendsUpdateHandler,
+  ) {
+    return _EOS_Friends_AddNotifyFriendsUpdate(
+      Handle,
+      Options,
+      ClientData,
+      FriendsUpdateHandler,
+    );
+  }
+
+  late final _EOS_Friends_AddNotifyFriendsUpdatePtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_NotificationId Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_AddNotifyFriendsUpdateOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnFriendsUpdateCallback,
+          )
+        >
+      >('EOS_Friends_AddNotifyFriendsUpdate');
+  late final _EOS_Friends_AddNotifyFriendsUpdate =
+      _EOS_Friends_AddNotifyFriendsUpdatePtr.asFunction<
+        int Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_AddNotifyFriendsUpdateOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnFriendsUpdateCallback,
+        )
+      >();
+
+  /// Retrieves the Epic Account ID of an entry from the blocklist that has
+  /// already been retrieved by the EOS_Friends_QueryFriends API.
+  EOS_EpicAccountId EOS_Friends_GetBlockedUserAtIndex(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_GetBlockedUserAtIndexOptions> Options,
+  ) {
+    return _EOS_Friends_GetBlockedUserAtIndex(Handle, Options);
+  }
+
+  late final _EOS_Friends_GetBlockedUserAtIndexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_EpicAccountId Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_GetBlockedUserAtIndexOptions>,
+          )
+        >
+      >('EOS_Friends_GetBlockedUserAtIndex');
+  late final _EOS_Friends_GetBlockedUserAtIndex =
+      _EOS_Friends_GetBlockedUserAtIndexPtr.asFunction<
+        EOS_EpicAccountId Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_GetBlockedUserAtIndexOptions>,
+        )
+      >();
+
+  /// Retrieves the number of blocked users on the blocklist that has already
+  /// been retrieved by the EOS_Friends_QueryFriends API.
+  int EOS_Friends_GetBlockedUsersCount(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_GetBlockedUsersCountOptions> Options,
+  ) {
+    return _EOS_Friends_GetBlockedUsersCount(Handle, Options);
+  }
+
+  late final _EOS_Friends_GetBlockedUsersCountPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_GetBlockedUsersCountOptions>,
+          )
+        >
+      >('EOS_Friends_GetBlockedUsersCount');
+  late final _EOS_Friends_GetBlockedUsersCount =
+      _EOS_Friends_GetBlockedUsersCountPtr.asFunction<
+        int Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_GetBlockedUsersCountOptions>,
+        )
+      >();
+
+  /// Retrieves the Epic Account ID of an entry from the friends list that has
+  /// already been retrieved by the EOS_Friends_QueryFriends API. The Epic
+  /// Account ID returned by this function may belong to an account that has
+  /// been invited to be a friend or that has invited the local user to be a
+  /// friend. To determine if the Epic Account ID returned by this function is a
+  /// friend or a pending friend invitation, use the EOS_Friends_GetStatus
+  /// function.
+  EOS_EpicAccountId EOS_Friends_GetFriendAtIndex(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_GetFriendAtIndexOptions> Options,
+  ) {
+    return _EOS_Friends_GetFriendAtIndex(Handle, Options);
+  }
+
+  late final _EOS_Friends_GetFriendAtIndexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_EpicAccountId Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_GetFriendAtIndexOptions>,
+          )
+        >
+      >('EOS_Friends_GetFriendAtIndex');
+  late final _EOS_Friends_GetFriendAtIndex =
+      _EOS_Friends_GetFriendAtIndexPtr.asFunction<
+        EOS_EpicAccountId Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_GetFriendAtIndexOptions>,
+        )
+      >();
+
+  /// Retrieves the number of friends on the friends list that has already been
+  /// retrieved by the EOS_Friends_QueryFriends API.
+  int EOS_Friends_GetFriendsCount(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_GetFriendsCountOptions> Options,
+  ) {
+    return _EOS_Friends_GetFriendsCount(Handle, Options);
+  }
+
+  late final _EOS_Friends_GetFriendsCountPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_GetFriendsCountOptions>,
+          )
+        >
+      >('EOS_Friends_GetFriendsCount');
+  late final _EOS_Friends_GetFriendsCount =
+      _EOS_Friends_GetFriendsCountPtr.asFunction<
+        int Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_GetFriendsCountOptions>,
+        )
+      >();
+
+  /// Retrieve the friendship status between the local user and another user.
+  EOS_EFriendsStatus EOS_Friends_GetStatus(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_GetStatusOptions> Options,
+  ) {
+    return EOS_EFriendsStatus.fromValue(
+      _EOS_Friends_GetStatus(Handle, Options),
+    );
+  }
+
+  late final _EOS_Friends_GetStatusPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_GetStatusOptions>,
+          )
+        >
+      >('EOS_Friends_GetStatus');
+  late final _EOS_Friends_GetStatus =
+      _EOS_Friends_GetStatusPtr.asFunction<
+        int Function(EOS_HFriends, ffi.Pointer<EOS_Friends_GetStatusOptions>)
+      >();
+
+  /// Starts an asynchronous task that reads the user's friends list and
+  /// blocklist from the backend service, caching it for future use.
+  void EOS_Friends_QueryFriends(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_QueryFriendsOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnQueryFriendsCallback CompletionDelegate,
+  ) {
+    return _EOS_Friends_QueryFriends(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Friends_QueryFriendsPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_QueryFriendsOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnQueryFriendsCallback,
+          )
+        >
+      >('EOS_Friends_QueryFriends');
+  late final _EOS_Friends_QueryFriends =
+      _EOS_Friends_QueryFriendsPtr.asFunction<
+        void Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_QueryFriendsOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnQueryFriendsCallback,
+        )
+      >();
+
+  /// Starts an asynchronous task that rejects a friend invitation from another
+  /// user. The completion delegate is executed after the backend response has
+  /// been received.
+  void EOS_Friends_RejectInvite(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_RejectInviteOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnRejectInviteCallback CompletionDelegate,
+  ) {
+    return _EOS_Friends_RejectInvite(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Friends_RejectInvitePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_RejectInviteOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnRejectInviteCallback,
+          )
+        >
+      >('EOS_Friends_RejectInvite');
+  late final _EOS_Friends_RejectInvite =
+      _EOS_Friends_RejectInvitePtr.asFunction<
+        void Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_RejectInviteOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnRejectInviteCallback,
+        )
+      >();
+
+  /// Stop listening for blocklist changes on a previously bound handler.
+  void EOS_Friends_RemoveNotifyBlockedUsersUpdate(
+    EOS_HFriends Handle,
+    int NotificationId,
+  ) {
+    return _EOS_Friends_RemoveNotifyBlockedUsersUpdate(Handle, NotificationId);
+  }
+
+  late final _EOS_Friends_RemoveNotifyBlockedUsersUpdatePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(EOS_HFriends, EOS_NotificationId)>
+      >('EOS_Friends_RemoveNotifyBlockedUsersUpdate');
+  late final _EOS_Friends_RemoveNotifyBlockedUsersUpdate =
+      _EOS_Friends_RemoveNotifyBlockedUsersUpdatePtr.asFunction<
+        void Function(EOS_HFriends, int)
+      >();
+
+  /// Stop listening for friends changes on a previously bound handler.
+  void EOS_Friends_RemoveNotifyFriendsUpdate(
+    EOS_HFriends Handle,
+    int NotificationId,
+  ) {
+    return _EOS_Friends_RemoveNotifyFriendsUpdate(Handle, NotificationId);
+  }
+
+  late final _EOS_Friends_RemoveNotifyFriendsUpdatePtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(EOS_HFriends, EOS_NotificationId)>
+      >('EOS_Friends_RemoveNotifyFriendsUpdate');
+  late final _EOS_Friends_RemoveNotifyFriendsUpdate =
+      _EOS_Friends_RemoveNotifyFriendsUpdatePtr.asFunction<
+        void Function(EOS_HFriends, int)
+      >();
+
+  /// Starts an asynchronous task that sends a friend invitation to another
+  /// user. The completion delegate is executed after the backend response has
+  /// been received. It does not indicate that the target user has responded to
+  /// the friend invitation.
+  void EOS_Friends_SendInvite(
+    EOS_HFriends Handle,
+    ffi.Pointer<EOS_Friends_SendInviteOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Friends_OnSendInviteCallback CompletionDelegate,
+  ) {
+    return _EOS_Friends_SendInvite(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Friends_SendInvitePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HFriends,
+            ffi.Pointer<EOS_Friends_SendInviteOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Friends_OnSendInviteCallback,
+          )
+        >
+      >('EOS_Friends_SendInvite');
+  late final _EOS_Friends_SendInvite =
+      _EOS_Friends_SendInvitePtr.asFunction<
+        void Function(
+          EOS_HFriends,
+          ffi.Pointer<EOS_Friends_SendInviteOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Friends_OnSendInviteCallback,
+        )
+      >();
+
   /// Initialize the Epic Online Services SDK.
   EOS_EResult EOS_Initialize(ffi.Pointer<EOS_InitializeOptions> Options) {
     return EOS_EResult.fromValue(_EOS_Initialize(Options));
@@ -3942,6 +4334,87 @@ class EosBindings {
   late final _EOS_Platform_Tick =
       _EOS_Platform_TickPtr.asFunction<void Function(EOS_HPlatform)>();
 
+  /// Attempt to cancel this file request in progress. This is a best-effort
+  /// command and is not guaranteed to be successful if the request has
+  /// completed before this function is called.
+  EOS_EResult EOS_PlayerDataStorageFileTransferRequest_CancelRequest(
+    EOS_HPlayerDataStorageFileTransferRequest Handle,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorageFileTransferRequest_CancelRequest(Handle),
+    );
+  }
+
+  late final _EOS_PlayerDataStorageFileTransferRequest_CancelRequestPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(EOS_HPlayerDataStorageFileTransferRequest)
+        >
+      >('EOS_PlayerDataStorageFileTransferRequest_CancelRequest');
+  late final _EOS_PlayerDataStorageFileTransferRequest_CancelRequest =
+      _EOS_PlayerDataStorageFileTransferRequest_CancelRequestPtr.asFunction<
+        int Function(EOS_HPlayerDataStorageFileTransferRequest)
+      >();
+
+  /// Get the current state of a file request.
+  EOS_EResult EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(
+    EOS_HPlayerDataStorageFileTransferRequest Handle,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(Handle),
+    );
+  }
+
+  late final _EOS_PlayerDataStorageFileTransferRequest_GetFileRequestStatePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(EOS_HPlayerDataStorageFileTransferRequest)
+        >
+      >('EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState');
+  late final _EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState =
+      _EOS_PlayerDataStorageFileTransferRequest_GetFileRequestStatePtr.asFunction<
+        int Function(EOS_HPlayerDataStorageFileTransferRequest)
+      >();
+
+  /// Get the file name of the file this request is for. OutStringLength will
+  /// always be set to the string length of the file name if it is not NULL.
+  EOS_EResult EOS_PlayerDataStorageFileTransferRequest_GetFilename(
+    EOS_HPlayerDataStorageFileTransferRequest Handle,
+    int FilenameStringBufferSizeBytes,
+    ffi.Pointer<ffi.Char> OutStringBuffer,
+    ffi.Pointer<ffi.Int32> OutStringLength,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorageFileTransferRequest_GetFilename(
+        Handle,
+        FilenameStringBufferSizeBytes,
+        OutStringBuffer,
+        OutStringLength,
+      ),
+    );
+  }
+
+  late final _EOS_PlayerDataStorageFileTransferRequest_GetFilenamePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPlayerDataStorageFileTransferRequest,
+            ffi.Uint32,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >
+      >('EOS_PlayerDataStorageFileTransferRequest_GetFilename');
+  late final _EOS_PlayerDataStorageFileTransferRequest_GetFilename =
+      _EOS_PlayerDataStorageFileTransferRequest_GetFilenamePtr.asFunction<
+        int Function(
+          EOS_HPlayerDataStorageFileTransferRequest,
+          int,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Int32>,
+        )
+      >();
+
   /// Free the memory used by a cloud-storage file request handle. This will not
   /// cancel a request in progress.
   void EOS_PlayerDataStorageFileTransferRequest_Release(
@@ -3964,6 +4437,205 @@ class EosBindings {
         void Function(EOS_HPlayerDataStorageFileTransferRequest)
       >();
 
+  /// Get the cached copy of a file's metadata by index. The metadata will be
+  /// for the last retrieved or successfully saved version, and will not include
+  /// any local changes that have not been committed by calling SaveFile. The
+  /// returned pointer must be released by the user when no longer needed.
+  EOS_EResult EOS_PlayerDataStorage_CopyFileMetadataAtIndex(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions>
+    CopyFileMetadataOptions,
+    ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>> OutMetadata,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorage_CopyFileMetadataAtIndex(
+        Handle,
+        CopyFileMetadataOptions,
+        OutMetadata,
+      ),
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_CopyFileMetadataAtIndexPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions>,
+            ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>>,
+          )
+        >
+      >('EOS_PlayerDataStorage_CopyFileMetadataAtIndex');
+  late final _EOS_PlayerDataStorage_CopyFileMetadataAtIndex =
+      _EOS_PlayerDataStorage_CopyFileMetadataAtIndexPtr.asFunction<
+        int Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions>,
+          ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>>,
+        )
+      >();
+
+  /// Create the cached copy of a file's metadata by filename. The metadata will
+  /// be for the last retrieved or successfully saved version, and will not
+  /// include any changes that have not completed writing. The returned pointer
+  /// must be released by the user when no longer needed.
+  EOS_EResult EOS_PlayerDataStorage_CopyFileMetadataByFilename(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions>
+    CopyFileMetadataOptions,
+    ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>> OutMetadata,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorage_CopyFileMetadataByFilename(
+        Handle,
+        CopyFileMetadataOptions,
+        OutMetadata,
+      ),
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_CopyFileMetadataByFilenamePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<
+              EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions
+            >,
+            ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>>,
+          )
+        >
+      >('EOS_PlayerDataStorage_CopyFileMetadataByFilename');
+  late final _EOS_PlayerDataStorage_CopyFileMetadataByFilename =
+      _EOS_PlayerDataStorage_CopyFileMetadataByFilenamePtr.asFunction<
+        int Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions>,
+          ffi.Pointer<ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>>,
+        )
+      >();
+
+  /// Clear previously cached file data. This operation will be done
+  /// asynchronously. All cached files except those corresponding to the
+  /// transfers in progress will be removed. Warning: Use this with care. Cache
+  /// system generally tries to clear old and unused cached files from time to
+  /// time. Unnecessarily clearing cache can degrade performance as SDK will
+  /// have to re-download data.
+  EOS_EResult EOS_PlayerDataStorage_DeleteCache(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_DeleteCacheOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnDeleteCacheCompleteCallback CompletionCallback,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorage_DeleteCache(
+        Handle,
+        Options,
+        ClientData,
+        CompletionCallback,
+      ),
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_DeleteCachePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_DeleteCacheOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnDeleteCacheCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_DeleteCache');
+  late final _EOS_PlayerDataStorage_DeleteCache =
+      _EOS_PlayerDataStorage_DeleteCachePtr.asFunction<
+        int Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_DeleteCacheOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnDeleteCacheCompleteCallback,
+        )
+      >();
+
+  /// Deletes an existing file in the cloud. If successful, the file's data will
+  /// be removed from our local cache.
+  void EOS_PlayerDataStorage_DeleteFile(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_DeleteFileOptions> DeleteOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnDeleteFileCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_DeleteFile(
+      Handle,
+      DeleteOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_DeleteFilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_DeleteFileOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnDeleteFileCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_DeleteFile');
+  late final _EOS_PlayerDataStorage_DeleteFile =
+      _EOS_PlayerDataStorage_DeleteFilePtr.asFunction<
+        void Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_DeleteFileOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnDeleteFileCompleteCallback,
+        )
+      >();
+
+  /// Copies the data of an existing file to a new filename. This action happens
+  /// entirely on the server and will not upload the contents of the source
+  /// destination file from the host. This function paired with a subsequent
+  /// EOS_PlayerDataStorage_DeleteFile can be used to rename a file. If
+  /// successful, the destination file's metadata will be updated in our local
+  /// cache.
+  void EOS_PlayerDataStorage_DuplicateFile(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_DuplicateFileOptions> DuplicateOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnDuplicateFileCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_DuplicateFile(
+      Handle,
+      DuplicateOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_DuplicateFilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_DuplicateFileOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnDuplicateFileCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_DuplicateFile');
+  late final _EOS_PlayerDataStorage_DuplicateFile =
+      _EOS_PlayerDataStorage_DuplicateFilePtr.asFunction<
+        void Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_DuplicateFileOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnDuplicateFileCompleteCallback,
+        )
+      >();
+
   /// Free the memory used by the file metadata
   void EOS_PlayerDataStorage_FileMetadata_Release(
     ffi.Pointer<EOS_PlayerDataStorage_FileMetadata> FileMetadata,
@@ -3980,6 +4652,231 @@ class EosBindings {
   late final _EOS_PlayerDataStorage_FileMetadata_Release =
       _EOS_PlayerDataStorage_FileMetadata_ReleasePtr.asFunction<
         void Function(ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>)
+      >();
+
+  /// Get the count of files we have previously queried information for and
+  /// files we have previously read from / written to.
+  EOS_EResult EOS_PlayerDataStorage_GetFileMetadataCount(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_GetFileMetadataCountOptions>
+    GetFileMetadataCountOptions,
+    ffi.Pointer<ffi.Int32> OutFileMetadataCount,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PlayerDataStorage_GetFileMetadataCount(
+        Handle,
+        GetFileMetadataCountOptions,
+        OutFileMetadataCount,
+      ),
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_GetFileMetadataCountPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_GetFileMetadataCountOptions>,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >
+      >('EOS_PlayerDataStorage_GetFileMetadataCount');
+  late final _EOS_PlayerDataStorage_GetFileMetadataCount =
+      _EOS_PlayerDataStorage_GetFileMetadataCountPtr.asFunction<
+        int Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_GetFileMetadataCountOptions>,
+          ffi.Pointer<ffi.Int32>,
+        )
+      >();
+
+  /// Query a specific file's metadata, such as file names, size, and a MD5 hash
+  /// of the data. This is not required before a file may be opened, saved,
+  /// copied, or deleted. Once a file has been queried, its metadata will be
+  /// available by the EOS_PlayerDataStorage_CopyFileMetadataAtIndex and
+  /// EOS_PlayerDataStorage_CopyFileMetadataByFilename functions.
+  void EOS_PlayerDataStorage_QueryFile(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_QueryFileOptions> QueryFileOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnQueryFileCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_QueryFile(
+      Handle,
+      QueryFileOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_QueryFilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_QueryFileOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnQueryFileCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_QueryFile');
+  late final _EOS_PlayerDataStorage_QueryFile =
+      _EOS_PlayerDataStorage_QueryFilePtr.asFunction<
+        void Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_QueryFileOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnQueryFileCompleteCallback,
+        )
+      >();
+
+  /// Query the file metadata, such as file names, size, and a MD5 hash of the
+  /// data, for all files owned by this user for this application. This is not
+  /// required before a file may be opened, saved, copied, or deleted.
+  void EOS_PlayerDataStorage_QueryFileList(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_QueryFileListOptions>
+    QueryFileListOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnQueryFileListCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_QueryFileList(
+      Handle,
+      QueryFileListOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_QueryFileListPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_QueryFileListOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnQueryFileListCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_QueryFileList');
+  late final _EOS_PlayerDataStorage_QueryFileList =
+      _EOS_PlayerDataStorage_QueryFileListPtr.asFunction<
+        void Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_QueryFileListOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnQueryFileListCompleteCallback,
+        )
+      >();
+
+  /// Retrieve the contents of a specific file, potentially downloading the
+  /// contents if we do not have a local copy, from the cloud. This request will
+  /// occur asynchronously, potentially over multiple frames. All callbacks for
+  /// this function will come from the same thread that the SDK is ticked from.
+  /// If specified, the FileTransferProgressCallback will always be called at
+  /// least once if the request is started successfully.
+  EOS_HPlayerDataStorageFileTransferRequest EOS_PlayerDataStorage_ReadFile(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_ReadFileOptions> ReadOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnReadFileCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_ReadFile(
+      Handle,
+      ReadOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_ReadFilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_HPlayerDataStorageFileTransferRequest Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_ReadFileOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnReadFileCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_ReadFile');
+  late final _EOS_PlayerDataStorage_ReadFile =
+      _EOS_PlayerDataStorage_ReadFilePtr.asFunction<
+        EOS_HPlayerDataStorageFileTransferRequest Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_ReadFileOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnReadFileCompleteCallback,
+        )
+      >();
+
+  /// Write new data to a specific file, potentially overwriting any existing
+  /// file by the same name, to the cloud. This request will occur
+  /// asynchronously, potentially over multiple frames. All callbacks for this
+  /// function will come from the same thread that the SDK is ticked from. If
+  /// specified, the FileTransferProgressCallback will always be called at least
+  /// once if the request is started successfully.
+  EOS_HPlayerDataStorageFileTransferRequest EOS_PlayerDataStorage_WriteFile(
+    EOS_HPlayerDataStorage Handle,
+    ffi.Pointer<EOS_PlayerDataStorage_WriteFileOptions> WriteOptions,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_PlayerDataStorage_OnWriteFileCompleteCallback CompletionCallback,
+  ) {
+    return _EOS_PlayerDataStorage_WriteFile(
+      Handle,
+      WriteOptions,
+      ClientData,
+      CompletionCallback,
+    );
+  }
+
+  late final _EOS_PlayerDataStorage_WriteFilePtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_HPlayerDataStorageFileTransferRequest Function(
+            EOS_HPlayerDataStorage,
+            ffi.Pointer<EOS_PlayerDataStorage_WriteFileOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_PlayerDataStorage_OnWriteFileCompleteCallback,
+          )
+        >
+      >('EOS_PlayerDataStorage_WriteFile');
+  late final _EOS_PlayerDataStorage_WriteFile =
+      _EOS_PlayerDataStorage_WriteFilePtr.asFunction<
+        EOS_HPlayerDataStorageFileTransferRequest Function(
+          EOS_HPlayerDataStorage,
+          ffi.Pointer<EOS_PlayerDataStorage_WriteFileOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_PlayerDataStorage_OnWriteFileCompleteCallback,
+        )
+      >();
+
+  /// Removes one or more rows of user-defined presence data for a local user.
+  /// At least one DeleteDataInfo object must be specified.
+  EOS_EResult EOS_PresenceModification_DeleteData(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_DeleteDataOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_DeleteData(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_DeleteDataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_DeleteDataOptions>,
+          )
+        >
+      >('EOS_PresenceModification_DeleteData');
+  late final _EOS_PresenceModification_DeleteData =
+      _EOS_PresenceModification_DeleteDataPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_DeleteDataOptions>,
+        )
       >();
 
   /// Release the memory associated with an EOS_HPresenceModification handle.
@@ -4002,6 +4899,382 @@ class EosBindings {
         void Function(EOS_HPresenceModification)
       >();
 
+  /// Modifies one or more rows of user-defined presence data for a local user.
+  /// At least one InfoData object must be specified.
+  EOS_EResult EOS_PresenceModification_SetData(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetDataOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetData(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetDataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetDataOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetData');
+  late final _EOS_PresenceModification_SetData =
+      _EOS_PresenceModification_SetDataPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetDataOptions>,
+        )
+      >();
+
+  /// Sets your new join info custom game-data string. This is a helper function
+  /// for reading the presence data related to how a user can be joined. Its
+  /// meaning is entirely application dependent.
+  EOS_EResult EOS_PresenceModification_SetJoinInfo(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetJoinInfoOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetJoinInfo(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetJoinInfoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetJoinInfoOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetJoinInfo');
+  late final _EOS_PresenceModification_SetJoinInfo =
+      _EOS_PresenceModification_SetJoinInfoPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetJoinInfoOptions>,
+        )
+      >();
+
+  /// Modifies a user's Rich Presence string to a new state. This is the exact
+  /// value other users will see when they query the local user's presence.
+  EOS_EResult EOS_PresenceModification_SetRawRichText(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetRawRichTextOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetRawRichText(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetRawRichTextPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetRawRichTextOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetRawRichText');
+  late final _EOS_PresenceModification_SetRawRichText =
+      _EOS_PresenceModification_SetRawRichTextPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetRawRichTextOptions>,
+        )
+      >();
+
+  /// Modifies a user's online status to be the new state.
+  EOS_EResult EOS_PresenceModification_SetStatus(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetStatusOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetStatus(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetStatusPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetStatusOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetStatus');
+  late final _EOS_PresenceModification_SetStatus =
+      _EOS_PresenceModification_SetStatusPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetStatusOptions>,
+        )
+      >();
+
+  /// Adds variable data to a Presence Update template much like a format-arg
+  /// would. This value will be localized by the backend and displayed to users.
+  /// This function can be called multiple times for each variable. Subsequent
+  /// calls for the sane variable will replace the value with the latest
+  /// version.
+  EOS_EResult EOS_PresenceModification_SetTemplateData(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetTemplateDataOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetTemplateData(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetTemplateDataPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetTemplateDataOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetTemplateData');
+  late final _EOS_PresenceModification_SetTemplateData =
+      _EOS_PresenceModification_SetTemplateDataPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetTemplateDataOptions>,
+        )
+      >();
+
+  /// Modifies a user's Rich Presence string to a new state using a localized
+  /// template. This string represents a template ID that may contain one or
+  /// more variables that must be supplied via SetTemplateData. This function is
+  /// mutually exclusive with SetRawRichText meaning only one can be used on a
+  /// modification.
+  EOS_EResult EOS_PresenceModification_SetTemplateId(
+    EOS_HPresenceModification Handle,
+    ffi.Pointer<EOS_PresenceModification_SetTemplateIdOptions> Options,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_PresenceModification_SetTemplateId(Handle, Options),
+    );
+  }
+
+  late final _EOS_PresenceModification_SetTemplateIdPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresenceModification,
+            ffi.Pointer<EOS_PresenceModification_SetTemplateIdOptions>,
+          )
+        >
+      >('EOS_PresenceModification_SetTemplateId');
+  late final _EOS_PresenceModification_SetTemplateId =
+      _EOS_PresenceModification_SetTemplateIdPtr.asFunction<
+        int Function(
+          EOS_HPresenceModification,
+          ffi.Pointer<EOS_PresenceModification_SetTemplateIdOptions>,
+        )
+      >();
+
+  /// Register to receive notifications when a user accepts a join game option
+  /// via the social overlay.
+  int EOS_Presence_AddNotifyJoinGameAccepted(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_AddNotifyJoinGameAcceptedOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Presence_OnJoinGameAcceptedCallback NotificationFn,
+  ) {
+    return _EOS_Presence_AddNotifyJoinGameAccepted(
+      Handle,
+      Options,
+      ClientData,
+      NotificationFn,
+    );
+  }
+
+  late final _EOS_Presence_AddNotifyJoinGameAcceptedPtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_NotificationId Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_AddNotifyJoinGameAcceptedOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Presence_OnJoinGameAcceptedCallback,
+          )
+        >
+      >('EOS_Presence_AddNotifyJoinGameAccepted');
+  late final _EOS_Presence_AddNotifyJoinGameAccepted =
+      _EOS_Presence_AddNotifyJoinGameAcceptedPtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_AddNotifyJoinGameAcceptedOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Presence_OnJoinGameAcceptedCallback,
+        )
+      >();
+
+  /// Register to receive notifications when presence changes.
+  int EOS_Presence_AddNotifyOnPresenceChanged(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_AddNotifyOnPresenceChangedOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Presence_OnPresenceChangedCallback NotificationHandler,
+  ) {
+    return _EOS_Presence_AddNotifyOnPresenceChanged(
+      Handle,
+      Options,
+      ClientData,
+      NotificationHandler,
+    );
+  }
+
+  late final _EOS_Presence_AddNotifyOnPresenceChangedPtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_NotificationId Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_AddNotifyOnPresenceChangedOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Presence_OnPresenceChangedCallback,
+          )
+        >
+      >('EOS_Presence_AddNotifyOnPresenceChanged');
+  late final _EOS_Presence_AddNotifyOnPresenceChanged =
+      _EOS_Presence_AddNotifyOnPresenceChangedPtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_AddNotifyOnPresenceChangedOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Presence_OnPresenceChangedCallback,
+        )
+      >();
+
+  /// Get a user's cached presence object. If successful, this data must be
+  /// released by calling EOS_Presence_Info_Release
+  EOS_EResult EOS_Presence_CopyPresence(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_CopyPresenceOptions> Options,
+    ffi.Pointer<ffi.Pointer<EOS_Presence_Info>> OutPresence,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_Presence_CopyPresence(Handle, Options, OutPresence),
+    );
+  }
+
+  late final _EOS_Presence_CopyPresencePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_CopyPresenceOptions>,
+            ffi.Pointer<ffi.Pointer<EOS_Presence_Info>>,
+          )
+        >
+      >('EOS_Presence_CopyPresence');
+  late final _EOS_Presence_CopyPresence =
+      _EOS_Presence_CopyPresencePtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_CopyPresenceOptions>,
+          ffi.Pointer<ffi.Pointer<EOS_Presence_Info>>,
+        )
+      >();
+
+  /// Creates a presence modification handle. This handle can used to add
+  /// multiple changes to your presence that can be applied with
+  /// EOS_Presence_SetPresence. The resulting handle must be released by calling
+  /// EOS_PresenceModification_Release once it has been passed to
+  /// EOS_Presence_SetPresence.
+  EOS_EResult EOS_Presence_CreatePresenceModification(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_CreatePresenceModificationOptions> Options,
+    ffi.Pointer<EOS_HPresenceModification> OutPresenceModificationHandle,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_Presence_CreatePresenceModification(
+        Handle,
+        Options,
+        OutPresenceModificationHandle,
+      ),
+    );
+  }
+
+  late final _EOS_Presence_CreatePresenceModificationPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_CreatePresenceModificationOptions>,
+            ffi.Pointer<EOS_HPresenceModification>,
+          )
+        >
+      >('EOS_Presence_CreatePresenceModification');
+  late final _EOS_Presence_CreatePresenceModification =
+      _EOS_Presence_CreatePresenceModificationPtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_CreatePresenceModificationOptions>,
+          ffi.Pointer<EOS_HPresenceModification>,
+        )
+      >();
+
+  /// Gets a join info custom game-data string for a specific user. This is a
+  /// helper function for reading the presence data related to how a user can be
+  /// joined. Its meaning is entirely application dependent.
+  EOS_EResult EOS_Presence_GetJoinInfo(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_GetJoinInfoOptions> Options,
+    ffi.Pointer<ffi.Char> OutBuffer,
+    ffi.Pointer<ffi.Int32> InOutBufferLength,
+  ) {
+    return EOS_EResult.fromValue(
+      _EOS_Presence_GetJoinInfo(Handle, Options, OutBuffer, InOutBufferLength),
+    );
+  }
+
+  late final _EOS_Presence_GetJoinInfoPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.UnsignedInt Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_GetJoinInfoOptions>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Int32>,
+          )
+        >
+      >('EOS_Presence_GetJoinInfo');
+  late final _EOS_Presence_GetJoinInfo =
+      _EOS_Presence_GetJoinInfoPtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_GetJoinInfoOptions>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Int32>,
+        )
+      >();
+
+  /// Check if we already have presence for a user
+  int EOS_Presence_HasPresence(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_HasPresenceOptions> Options,
+  ) {
+    return _EOS_Presence_HasPresence(Handle, Options);
+  }
+
+  late final _EOS_Presence_HasPresencePtr =
+      _lookup<
+        ffi.NativeFunction<
+          EOS_Bool Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_HasPresenceOptions>,
+          )
+        >
+      >('EOS_Presence_HasPresence');
+  late final _EOS_Presence_HasPresence =
+      _EOS_Presence_HasPresencePtr.asFunction<
+        int Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_HasPresenceOptions>,
+        )
+      >();
+
   /// Release the memory associated with an EOS_Presence_Info structure and its
   /// sub-objects. This must be called on data retrieved from
   /// EOS_Presence_CopyPresence. This can be safely called on a NULL presence
@@ -4017,6 +5290,118 @@ class EosBindings {
   late final _EOS_Presence_Info_Release =
       _EOS_Presence_Info_ReleasePtr.asFunction<
         void Function(ffi.Pointer<EOS_Presence_Info>)
+      >();
+
+  /// Query a user's presence. This must complete successfully before
+  /// CopyPresence will have valid results. If HasPresence returns true for a
+  /// remote user, this does not need to be called.
+  void EOS_Presence_QueryPresence(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_QueryPresenceOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Presence_OnQueryPresenceCompleteCallback CompletionDelegate,
+  ) {
+    return _EOS_Presence_QueryPresence(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Presence_QueryPresencePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_QueryPresenceOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Presence_OnQueryPresenceCompleteCallback,
+          )
+        >
+      >('EOS_Presence_QueryPresence');
+  late final _EOS_Presence_QueryPresence =
+      _EOS_Presence_QueryPresencePtr.asFunction<
+        void Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_QueryPresenceOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Presence_OnQueryPresenceCompleteCallback,
+        )
+      >();
+
+  /// Unregister from receiving notifications when a user accepts a join game
+  /// option via the social overlay.
+  void EOS_Presence_RemoveNotifyJoinGameAccepted(
+    EOS_HPresence Handle,
+    int InId,
+  ) {
+    return _EOS_Presence_RemoveNotifyJoinGameAccepted(Handle, InId);
+  }
+
+  late final _EOS_Presence_RemoveNotifyJoinGameAcceptedPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(EOS_HPresence, EOS_NotificationId)>
+      >('EOS_Presence_RemoveNotifyJoinGameAccepted');
+  late final _EOS_Presence_RemoveNotifyJoinGameAccepted =
+      _EOS_Presence_RemoveNotifyJoinGameAcceptedPtr.asFunction<
+        void Function(EOS_HPresence, int)
+      >();
+
+  /// Unregister a previously bound notification handler from receiving presence
+  /// update notifications
+  void EOS_Presence_RemoveNotifyOnPresenceChanged(
+    EOS_HPresence Handle,
+    int NotificationId,
+  ) {
+    return _EOS_Presence_RemoveNotifyOnPresenceChanged(Handle, NotificationId);
+  }
+
+  late final _EOS_Presence_RemoveNotifyOnPresenceChangedPtr =
+      _lookup<
+        ffi.NativeFunction<ffi.Void Function(EOS_HPresence, EOS_NotificationId)>
+      >('EOS_Presence_RemoveNotifyOnPresenceChanged');
+  late final _EOS_Presence_RemoveNotifyOnPresenceChanged =
+      _EOS_Presence_RemoveNotifyOnPresenceChangedPtr.asFunction<
+        void Function(EOS_HPresence, int)
+      >();
+
+  /// Sets your new presence with the data applied to a
+  /// PresenceModificationHandle. The PresenceModificationHandle can be released
+  /// safely after calling this function.
+  void EOS_Presence_SetPresence(
+    EOS_HPresence Handle,
+    ffi.Pointer<EOS_Presence_SetPresenceOptions> Options,
+    ffi.Pointer<ffi.Void> ClientData,
+    EOS_Presence_SetPresenceCompleteCallback CompletionDelegate,
+  ) {
+    return _EOS_Presence_SetPresence(
+      Handle,
+      Options,
+      ClientData,
+      CompletionDelegate,
+    );
+  }
+
+  late final _EOS_Presence_SetPresencePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Void Function(
+            EOS_HPresence,
+            ffi.Pointer<EOS_Presence_SetPresenceOptions>,
+            ffi.Pointer<ffi.Void>,
+            EOS_Presence_SetPresenceCompleteCallback,
+          )
+        >
+      >('EOS_Presence_SetPresence');
+  late final _EOS_Presence_SetPresence =
+      _EOS_Presence_SetPresencePtr.asFunction<
+        void Function(
+          EOS_HPresence,
+          ffi.Pointer<EOS_Presence_SetPresenceOptions>,
+          ffi.Pointer<ffi.Void>,
+          EOS_Presence_SetPresenceCompleteCallback,
+        )
       >();
 
   /// Retrieve an EOS_ProductUserId from a raw string representing an Epic
@@ -8323,6 +9708,29 @@ enum EOS_EPlayerReportsCategory {
   };
 }
 
+/// Enum representing the types that may be passed as template data.
+enum EOS_EPresenceModificationTemplateType {
+  /// (32-bit) integer type
+  EOS_PMT_INT(1),
+
+  /// UTF8 String as an identifier
+  EOS_PMT_STRING(2),
+  __EOS_EPresenceModificationTemplateType_PAD_INT32__(2147483647);
+
+  final int value;
+  const EOS_EPresenceModificationTemplateType(this.value);
+
+  static EOS_EPresenceModificationTemplateType fromValue(int value) =>
+      switch (value) {
+        1 => EOS_PMT_INT,
+        2 => EOS_PMT_STRING,
+        2147483647 => __EOS_EPresenceModificationTemplateType_PAD_INT32__,
+        _ => throw ArgumentError(
+          'Unknown value for EOS_EPresenceModificationTemplateType: $value',
+        ),
+      };
+}
+
 /// All background modes supported by the RTC components
 enum EOS_ERTCBackgroundMode {
   /// Upon entering a background application status, all logged in users leave
@@ -11231,6 +12639,10 @@ const int EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST = 1;
 
 const int EOS_PRESENCEMODIFICATION_SETSTATUS_API_LATEST = 1;
 
+const int EOS_PRESENCEMODIFICATION_SETTEMPLATEDATA_API_LATEST = 1;
+
+const int EOS_PRESENCEMODIFICATION_SETTEMPLATEID_API_LATEST = 1;
+
 const int EOS_PRESENCE_ADDNOTIFYJOINGAMEACCEPTED_API_LATEST = 2;
 
 const int EOS_PRESENCE_ADDNOTIFYONPRESENCECHANGED_API_LATEST = 1;
@@ -11567,6 +12979,10 @@ typedef EOS_PresenceModification_SetRawRichTextOptions =
     _tagEOS_PresenceModification_SetRawRichTextOptions;
 typedef EOS_PresenceModification_SetStatusOptions =
     _tagEOS_PresenceModification_SetStatusOptions;
+typedef EOS_PresenceModification_SetTemplateDataOptions =
+    _tagEOS_PresenceModification_SetTemplateDataOptions;
+typedef EOS_PresenceModification_SetTemplateIdOptions =
+    _tagEOS_PresenceModification_SetTemplateIdOptions;
 typedef EOS_Presence_AddNotifyJoinGameAcceptedOptions =
     _tagEOS_Presence_AddNotifyJoinGameAcceptedOptions;
 typedef EOS_Presence_AddNotifyOnPresenceChangedOptions =
@@ -13430,8 +14846,18 @@ final class UnnamedUnion extends ffi.Union {
   external ffi.Pointer<ffi.Char> AsUtf8;
 }
 
-/// Value of the session attribute
+/// Union storage for template typed values
 final class UnnamedUnion$1 extends ffi.Union {
+  /// Localized integer
+  @ffi.Int32()
+  external int AsInt32;
+
+  /// Reference a StringId in the Backend
+  external ffi.Pointer<ffi.Char> AsStringId;
+}
+
+/// Value of the session attribute
+final class UnnamedUnion$2 extends ffi.Union {
   /// Stored as an 8 byte integer
   @ffi.Int64()
   external int AsInt64;
@@ -13449,7 +14875,7 @@ final class UnnamedUnion$1 extends ffi.Union {
 }
 
 /// Parameter value
-final class UnnamedUnion$2 extends ffi.Union {
+final class UnnamedUnion$3 extends ffi.Union {
   /// Client handle.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
@@ -13485,7 +14911,7 @@ final class UnnamedUnion$2 extends ffi.Union {
 }
 
 /// The Account ID for the player whose session is beginning.
-final class UnnamedUnion$3 extends ffi.Union {
+final class UnnamedUnion$4 extends ffi.Union {
   /// An Epic Account ID. Set this field when AccountIdType is set to
   /// EOS_MAIT_Epic.
   external EOS_EpicAccountId Epic;
@@ -13496,7 +14922,7 @@ final class UnnamedUnion$3 extends ffi.Union {
 }
 
 /// The Account ID for the player whose session is ending.
-final class UnnamedUnion$4 extends ffi.Union {
+final class UnnamedUnion$5 extends ffi.Union {
   /// An Epic Account ID. Set this field when AccountIdType is set to
   /// EOS_MAIT_Epic.
   external EOS_EpicAccountId Epic;
@@ -14454,7 +15880,7 @@ final class _tagEOS_AntiCheatCommon_LogEventParamPair extends ffi.Struct {
   set ParamValueType(EOS_EAntiCheatCommonEventParamType value) =>
       ParamValueTypeAsInt = value.value;
 
-  external UnnamedUnion$2 ParamValue;
+  external UnnamedUnion$3 ParamValue;
 }
 
 /// Input parameters for the EOS_AntiCheatServer_LogGameRoundEnd function.
@@ -20583,7 +22009,7 @@ final class _tagEOS_Metrics_BeginPlayerSessionOptions extends ffi.Struct {
   set AccountIdType(EOS_EMetricsAccountIdType value) =>
       AccountIdTypeAsInt = value.value;
 
-  external UnnamedUnion$3 AccountId;
+  external UnnamedUnion$4 AccountId;
 
   /// The in-game display name for the user as UTF-8 string.
   external ffi.Pointer<ffi.Char> DisplayName;
@@ -20621,7 +22047,7 @@ final class _tagEOS_Metrics_EndPlayerSessionOptions extends ffi.Struct {
   set AccountIdType(EOS_EMetricsAccountIdType value) =>
       AccountIdTypeAsInt = value.value;
 
-  external UnnamedUnion$4 AccountId;
+  external UnnamedUnion$5 AccountId;
 }
 
 /// EOS_Mod_Identifier is used to identify a mod.
@@ -22001,6 +23427,42 @@ final class _tagEOS_PresenceModification_SetStatusOptions extends ffi.Struct {
   EOS_Presence_EStatus get Status =>
       EOS_Presence_EStatus.fromValue(StatusAsInt);
   set Status(EOS_Presence_EStatus value) => StatusAsInt = value.value;
+}
+
+/// Data for the EOS_PresenceModification_SetTemplateData API.
+final class _tagEOS_PresenceModification_SetTemplateDataOptions
+    extends ffi.Struct {
+  /// API Version: Set this to
+  /// EOS_PRESENCEMODIFICATION_SETTEMPLATEDATA_API_LATEST.
+  @ffi.Int32()
+  external int ApiVersion;
+
+  /// Key for the named template parameter
+  external ffi.Pointer<ffi.Char> Key;
+
+  external UnnamedUnion$1 Value;
+
+  /// Type stored in the union
+  @ffi.UnsignedInt()
+  external int ValueTypeAsInt;
+
+  EOS_EPresenceModificationTemplateType get ValueType =>
+      EOS_EPresenceModificationTemplateType.fromValue(ValueTypeAsInt);
+  set ValueType(EOS_EPresenceModificationTemplateType value) =>
+      ValueTypeAsInt = value.value;
+}
+
+/// Data for the EOS_PresenceModification_SetTemplateId function.
+final class _tagEOS_PresenceModification_SetTemplateIdOptions
+    extends ffi.Struct {
+  /// API Version: Set this to
+  /// EOS_PRESENCEMODIFICATION_SETTEMPLATEID_API_LATEST.
+  @ffi.Int32()
+  external int ApiVersion;
+
+  /// The RichPresence Template ID. Setting this value will prevent
+  /// SetRawRichText from being used on this handle
+  external ffi.Pointer<ffi.Char> TemplateId;
 }
 
 /// Input parameters for the EOS_Presence_AddNotifyJoinGameAccepted function.
@@ -23512,7 +24974,7 @@ final class _tagEOS_Sessions_AttributeData extends ffi.Struct {
   /// Name of the session attribute
   external ffi.Pointer<ffi.Char> Key;
 
-  external UnnamedUnion$1 Value;
+  external UnnamedUnion$2 Value;
 
   /// Type of value stored in the union
   @ffi.UnsignedInt()
