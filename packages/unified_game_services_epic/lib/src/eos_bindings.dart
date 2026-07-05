@@ -7,25 +7,17 @@
 // ignore_for_file: unused_import
 import 'dart:ffi' as ffi;
 
-/// Bindings to the Epic Online Services C SDK (lifecycle + achievements, stats,
-/// leaderboards, connect, auth, userinfo, friends, presence, player data
-/// storage). GENERATED — do not edit by hand.
-///
 class EosBindings {
-  /// Holds the symbol lookup function.
   final ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName)
   _lookup;
 
-  /// The symbols are looked up in [dynamicLibrary].
   EosBindings(ffi.DynamicLibrary dynamicLibrary)
     : _lookup = dynamicLibrary.lookup;
 
-  /// The symbols are looked up with [lookup].
   EosBindings.fromLookup(
     ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
   ) : _lookup = lookup;
 
-  /// DEPRECATED! Use EOS_Achievements_AddNotifyAchievementsUnlockedV2 instead.
   int EOS_Achievements_AddNotifyAchievementsUnlocked(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_AddNotifyAchievementsUnlockedOptions> Options,
@@ -61,7 +53,6 @@ class EosBindings {
         )
       >();
 
-  /// Register to receive achievement unlocked notifications.
   int EOS_Achievements_AddNotifyAchievementsUnlockedV2(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_AddNotifyAchievementsUnlockedV2Options>
@@ -100,8 +91,6 @@ class EosBindings {
         )
       >();
 
-  /// DEPRECATED! Use
-  /// EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId instead.
   EOS_EResult EOS_Achievements_CopyAchievementDefinitionByAchievementId(
     EOS_HAchievements Handle,
     ffi.Pointer<
@@ -142,8 +131,6 @@ class EosBindings {
         )
       >();
 
-  /// DEPRECATED! Use EOS_Achievements_CopyAchievementDefinitionV2ByIndex
-  /// instead.
   EOS_EResult EOS_Achievements_CopyAchievementDefinitionByIndex(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyAchievementDefinitionByIndexOptions>
@@ -180,7 +167,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an achievement definition from a given achievement ID.
   EOS_EResult EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId(
     EOS_HAchievements Handle,
     ffi.Pointer<
@@ -221,7 +207,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an achievement definition from a given index.
   EOS_EResult EOS_Achievements_CopyAchievementDefinitionV2ByIndex(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyAchievementDefinitionV2ByIndexOptions>
@@ -260,7 +245,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a player achievement from a given achievement ID.
   EOS_EResult EOS_Achievements_CopyPlayerAchievementByAchievementId(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyPlayerAchievementByAchievementIdOptions>
@@ -299,7 +283,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a player achievement from a given index.
   EOS_EResult EOS_Achievements_CopyPlayerAchievementByIndex(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyPlayerAchievementByIndexOptions> Options,
@@ -333,8 +316,6 @@ class EosBindings {
         )
       >();
 
-  /// DEPRECATED! Use EOS_Achievements_CopyPlayerAchievementByAchievementId
-  /// instead.
   EOS_EResult EOS_Achievements_CopyUnlockedAchievementByAchievementId(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyUnlockedAchievementByAchievementIdOptions>
@@ -374,8 +355,6 @@ class EosBindings {
         )
       >();
 
-  /// DEPRECATED! Use EOS_Achievements_CopyPlayerAchievementByAchievementId
-  /// instead.
   EOS_EResult EOS_Achievements_CopyUnlockedAchievementByIndex(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_CopyUnlockedAchievementByIndexOptions> Options,
@@ -410,10 +389,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with EOS_Achievements_DefinitionV2. This
-  /// must be called on data retrieved from
-  /// EOS_Achievements_CopyAchievementDefinitionV2ByIndex or
-  /// EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId.
   void EOS_Achievements_DefinitionV2_Release(
     ffi.Pointer<EOS_Achievements_DefinitionV2> AchievementDefinition,
   ) {
@@ -431,10 +406,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Achievements_DefinitionV2>)
       >();
 
-  /// Release the memory associated with achievement definitions. This must be
-  /// called on data retrieved from
-  /// EOS_Achievements_CopyAchievementDefinitionByIndex or
-  /// EOS_Achievements_CopyAchievementDefinitionByAchievementId.
   void EOS_Achievements_Definition_Release(
     ffi.Pointer<EOS_Achievements_Definition> AchievementDefinition,
   ) {
@@ -452,7 +423,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Achievements_Definition>)
       >();
 
-  /// Fetch the number of achievement definitions that are cached locally.
   int EOS_Achievements_GetAchievementDefinitionCount(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_GetAchievementDefinitionCountOptions> Options,
@@ -477,7 +447,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch the number of player achievements that are cached locally.
   int EOS_Achievements_GetPlayerAchievementCount(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_GetPlayerAchievementCountOptions> Options,
@@ -502,9 +471,6 @@ class EosBindings {
         )
       >();
 
-  /// DEPRECATED! Use EOS_Achievements_GetPlayerAchievementCount,
-  /// EOS_Achievements_CopyPlayerAchievementByIndex and filter for unlocked
-  /// instead.
   int EOS_Achievements_GetUnlockedAchievementCount(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_GetUnlockedAchievementCountOptions> Options,
@@ -529,10 +495,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with a player achievement. This must be
-  /// called on data retrieved from
-  /// EOS_Achievements_CopyPlayerAchievementByIndex or
-  /// EOS_Achievements_CopyPlayerAchievementByAchievementId.
   void EOS_Achievements_PlayerAchievement_Release(
     ffi.Pointer<EOS_Achievements_PlayerAchievement> Achievement,
   ) {
@@ -550,8 +512,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Achievements_PlayerAchievement>)
       >();
 
-  /// Query for a list of definitions for all existing achievements, including
-  /// localized text, icon IDs and whether an achievement is hidden.
   void EOS_Achievements_QueryDefinitions(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_QueryDefinitionsOptions> Options,
@@ -587,10 +547,6 @@ class EosBindings {
         )
       >();
 
-  /// Query for a list of achievements for a specific player, including progress
-  /// towards completion for each achievement. Note: By default, this query will
-  /// not return locked hidden achievements. To return all achievements, call
-  /// EOS_Achievements_QueryDefinitions first.
   void EOS_Achievements_QueryPlayerAchievements(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_QueryPlayerAchievementsOptions> Options,
@@ -627,7 +583,6 @@ class EosBindings {
         )
       >();
 
-  /// Unregister from receiving achievement unlocked notifications.
   void EOS_Achievements_RemoveNotifyAchievementsUnlocked(
     EOS_HAchievements Handle,
     int InId,
@@ -646,7 +601,6 @@ class EosBindings {
         void Function(EOS_HAchievements, int)
       >();
 
-  /// Unlocks a number of achievements for a specific player.
   void EOS_Achievements_UnlockAchievements(
     EOS_HAchievements Handle,
     ffi.Pointer<EOS_Achievements_UnlockAchievementsOptions> Options,
@@ -682,10 +636,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an unlocked achievement. This must be
-  /// called on data retrieved from
-  /// EOS_Achievements_CopyUnlockedAchievementByIndex or
-  /// EOS_Achievements_CopyUnlockedAchievementByAchievementId.
   void EOS_Achievements_UnlockedAchievement_Release(
     ffi.Pointer<EOS_Achievements_UnlockedAchievement> Achievement,
   ) {
@@ -703,8 +653,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Achievements_UnlockedAchievement>)
       >();
 
-  /// Release the memory associated with an EOS_ActiveSession_Info structure.
-  /// This must be called on data retrieved from EOS_ActiveSession_CopyInfo.
   void EOS_ActiveSession_Info_Release(
     ffi.Pointer<EOS_ActiveSession_Info> ActiveSessionInfo,
   ) {
@@ -722,8 +670,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_ActiveSession_Info>)
       >();
 
-  /// Release the memory associated with an active session. This must be called
-  /// on data retrieved from EOS_Sessions_CopyActiveSessionHandle
   void EOS_ActiveSession_Release(EOS_HActiveSession ActiveSessionHandle) {
     return _EOS_ActiveSession_Release(ActiveSessionHandle);
   }
@@ -737,7 +683,6 @@ class EosBindings {
         void Function(EOS_HActiveSession)
       >();
 
-  /// Register to receive login status updates.
   int EOS_Auth_AddNotifyLoginStatusChanged(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_AddNotifyLoginStatusChangedOptions> Options,
@@ -773,7 +718,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch an ID token for an Epic Account ID.
   EOS_EResult EOS_Auth_CopyIdToken(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_CopyIdTokenOptions> Options,
@@ -803,7 +747,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch a user auth token for an Epic Account ID.
   EOS_EResult EOS_Auth_CopyUserAuthToken(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_CopyUserAuthTokenOptions> Options,
@@ -841,8 +784,6 @@ class EosBindings {
         )
       >();
 
-  /// Deletes a previously received and locally stored persistent auth access
-  /// token for the currently logged in user of the local device.
   void EOS_Auth_DeletePersistentAuth(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_DeletePersistentAuthOptions> Options,
@@ -878,7 +819,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch an Epic Account ID that is logged in.
   EOS_EpicAccountId EOS_Auth_GetLoggedInAccountByIndex(
     EOS_HAuth Handle,
     int Index,
@@ -895,7 +835,6 @@ class EosBindings {
         EOS_EpicAccountId Function(EOS_HAuth, int)
       >();
 
-  /// Fetch the number of accounts that are logged in.
   int EOS_Auth_GetLoggedInAccountsCount(EOS_HAuth Handle) {
     return _EOS_Auth_GetLoggedInAccountsCount(Handle);
   }
@@ -909,7 +848,6 @@ class EosBindings {
         int Function(EOS_HAuth)
       >();
 
-  /// Fetches the login status for an Epic Account ID.
   EOS_ELoginStatus EOS_Auth_GetLoginStatus(
     EOS_HAuth Handle,
     EOS_EpicAccountId LocalUserId,
@@ -930,7 +868,6 @@ class EosBindings {
         int Function(EOS_HAuth, EOS_EpicAccountId)
       >();
 
-  /// Fetch one of the merged account IDs for a given logged in account.
   EOS_EpicAccountId EOS_Auth_GetMergedAccountByIndex(
     EOS_HAuth Handle,
     EOS_EpicAccountId LocalUserId,
@@ -950,7 +887,6 @@ class EosBindings {
         EOS_EpicAccountId Function(EOS_HAuth, EOS_EpicAccountId, int)
       >();
 
-  /// Fetch the number of merged accounts for a given logged in account.
   int EOS_Auth_GetMergedAccountsCount(
     EOS_HAuth Handle,
     EOS_EpicAccountId LocalUserId,
@@ -967,8 +903,6 @@ class EosBindings {
         int Function(EOS_HAuth, EOS_EpicAccountId)
       >();
 
-  /// Fetch the selected account ID to the current application for a local
-  /// authenticated user.
   EOS_EResult EOS_Auth_GetSelectedAccountId(
     EOS_HAuth Handle,
     EOS_EpicAccountId LocalUserId,
@@ -998,8 +932,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an EOS_Auth_IdToken structure. This
-  /// must be called on data retrieved from EOS_Auth_CopyIdToken.
   void EOS_Auth_IdToken_Release(ffi.Pointer<EOS_Auth_IdToken> IdToken) {
     return _EOS_Auth_IdToken_Release(IdToken);
   }
@@ -1013,8 +945,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Auth_IdToken>)
       >();
 
-  /// Link external account by continuing previous login attempt with a
-  /// continuance token.
   void EOS_Auth_LinkAccount(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_LinkAccountOptions> Options,
@@ -1050,7 +980,6 @@ class EosBindings {
         )
       >();
 
-  /// Login/Authenticate with user credentials.
   void EOS_Auth_Login(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_LoginOptions> Options,
@@ -1081,7 +1010,6 @@ class EosBindings {
         )
       >();
 
-  /// Signs the player out of the online service.
   void EOS_Auth_Logout(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_LogoutOptions> Options,
@@ -1112,8 +1040,6 @@ class EosBindings {
         )
       >();
 
-  /// Query the backend for an ID token that describes one of the merged account
-  /// IDs of a local authenticated user.
   void EOS_Auth_QueryIdToken(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_QueryIdTokenOptions> Options,
@@ -1149,7 +1075,6 @@ class EosBindings {
         )
       >();
 
-  /// Unregister from receiving login status updates.
   void EOS_Auth_RemoveNotifyLoginStatusChanged(EOS_HAuth Handle, int InId) {
     return _EOS_Auth_RemoveNotifyLoginStatusChanged(Handle, InId);
   }
@@ -1163,8 +1088,6 @@ class EosBindings {
         void Function(EOS_HAuth, int)
       >();
 
-  /// Release the memory associated with an EOS_Auth_Token structure. This must
-  /// be called on data retrieved from EOS_Auth_CopyUserAuthToken.
   void EOS_Auth_Token_Release(ffi.Pointer<EOS_Auth_Token> AuthToken) {
     return _EOS_Auth_Token_Release(AuthToken);
   }
@@ -1178,7 +1101,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Auth_Token>)
       >();
 
-  /// Verify a given ID token for authenticity and validity.
   void EOS_Auth_VerifyIdToken(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_VerifyIdTokenOptions> Options,
@@ -1214,8 +1136,6 @@ class EosBindings {
         )
       >();
 
-  /// Contact the backend service to verify validity of an existing user auth
-  /// token. This function is intended for server-side use only.
   void EOS_Auth_VerifyUserAuth(
     EOS_HAuth Handle,
     ffi.Pointer<EOS_Auth_VerifyUserAuthOptions> Options,
@@ -1251,7 +1171,6 @@ class EosBindings {
         )
       >();
 
-  /// Encode a byte array into hex encoded string
   EOS_EResult EOS_ByteArray_ToString(
     ffi.Pointer<ffi.Uint8> ByteArray,
     int Length,
@@ -1284,10 +1203,6 @@ class EosBindings {
         )
       >();
 
-  /// Register to receive upcoming authentication expiration notifications.
-  /// Notification is approximately 1 minute prior to expiration. Call
-  /// EOS_Connect_Login again with valid third party credentials to refresh
-  /// access.
   int EOS_Connect_AddNotifyAuthExpiration(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_AddNotifyAuthExpirationOptions> Options,
@@ -1323,7 +1238,6 @@ class EosBindings {
         )
       >();
 
-  /// Register to receive user login status updates.
   int EOS_Connect_AddNotifyLoginStatusChanged(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_AddNotifyLoginStatusChangedOptions> Options,
@@ -1359,7 +1273,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an ID token for a Product User ID.
   EOS_EResult EOS_Connect_CopyIdToken(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CopyIdTokenOptions> Options,
@@ -1389,9 +1302,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch information about an external account linked to a Product User ID.
-  /// On a successful call, the caller must release the returned structure using
-  /// the EOS_Connect_ExternalAccountInfo_Release API.
   EOS_EResult EOS_Connect_CopyProductUserExternalAccountByAccountId(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CopyProductUserExternalAccountByAccountIdOptions>
@@ -1431,9 +1341,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch information about an external account of a specific type linked to a
-  /// Product User ID. On a successful call, the caller must release the
-  /// returned structure using the EOS_Connect_ExternalAccountInfo_Release API.
   EOS_EResult EOS_Connect_CopyProductUserExternalAccountByAccountType(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CopyProductUserExternalAccountByAccountTypeOptions>
@@ -1473,9 +1380,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch information about an external account linked to a Product User ID.
-  /// On a successful call, the caller must release the returned structure using
-  /// the EOS_Connect_ExternalAccountInfo_Release API.
   EOS_EResult EOS_Connect_CopyProductUserExternalAccountByIndex(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CopyProductUserExternalAccountByIndexOptions>
@@ -1513,10 +1417,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch information about a Product User, using the external account that
-  /// they most recently logged in with as the reference. On a successful call,
-  /// the caller must release the returned structure using the
-  /// EOS_Connect_ExternalAccountInfo_Release API.
   EOS_EResult EOS_Connect_CopyProductUserInfo(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CopyProductUserInfoOptions> Options,
@@ -1547,8 +1447,6 @@ class EosBindings {
         )
       >();
 
-  /// Create a new unique pseudo-account that can be used to identify the
-  /// current user profile on the local device.
   void EOS_Connect_CreateDeviceId(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CreateDeviceIdOptions> Options,
@@ -1584,8 +1482,6 @@ class EosBindings {
         )
       >();
 
-  /// Create an account association with the Epic Online Service as a product
-  /// user given their external auth credentials.
   void EOS_Connect_CreateUser(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_CreateUserOptions> Options,
@@ -1621,8 +1517,6 @@ class EosBindings {
         )
       >();
 
-  /// Delete any existing Device ID access credentials for the current user
-  /// profile on the local device.
   void EOS_Connect_DeleteDeviceId(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_DeleteDeviceIdOptions> Options,
@@ -1658,12 +1552,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an external account info. This must be
-  /// called on data retrieved from
-  /// EOS_Connect_CopyProductUserExternalAccountByIndex,
-  /// EOS_Connect_CopyProductUserExternalAccountByAccountType,
-  /// EOS_Connect_CopyProductUserExternalAccountByAccountId or
-  /// EOS_Connect_CopyProductUserInfo.
   void EOS_Connect_ExternalAccountInfo_Release(
     ffi.Pointer<EOS_Connect_ExternalAccountInfo> ExternalAccountInfo,
   ) {
@@ -1681,8 +1569,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Connect_ExternalAccountInfo>)
       >();
 
-  /// Fetch a Product User ID that maps to an external account ID cached from a
-  /// previous query.
   EOS_ProductUserId EOS_Connect_GetExternalAccountMapping(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_GetExternalAccountMappingsOptions> Options,
@@ -1707,8 +1593,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch a Product User ID that is logged in. This Product User ID is in the
-  /// Epic Online Services namespace.
   EOS_ProductUserId EOS_Connect_GetLoggedInUserByIndex(
     EOS_HConnect Handle,
     int Index,
@@ -1725,7 +1609,6 @@ class EosBindings {
         EOS_ProductUserId Function(EOS_HConnect, int)
       >();
 
-  /// Fetch the number of product users that are logged in.
   int EOS_Connect_GetLoggedInUsersCount(EOS_HConnect Handle) {
     return _EOS_Connect_GetLoggedInUsersCount(Handle);
   }
@@ -1739,9 +1622,6 @@ class EosBindings {
         int Function(EOS_HConnect)
       >();
 
-  /// Fetches the login status for an Product User ID. This Product User ID is
-  /// considered logged in as long as the underlying access token has not
-  /// expired.
   EOS_ELoginStatus EOS_Connect_GetLoginStatus(
     EOS_HConnect Handle,
     EOS_ProductUserId LocalUserId,
@@ -1762,7 +1642,6 @@ class EosBindings {
         int Function(EOS_HConnect, EOS_ProductUserId)
       >();
 
-  /// Fetch the number of linked external accounts for a Product User ID.
   int EOS_Connect_GetProductUserExternalAccountCount(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_GetProductUserExternalAccountCountOptions> Options,
@@ -1787,8 +1666,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch an external account ID, in string form, that maps to a given Product
-  /// User ID.
   EOS_EResult EOS_Connect_GetProductUserIdMapping(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_GetProductUserIdMappingOptions> Options,
@@ -1826,8 +1703,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an EOS_Connect_IdToken structure. This
-  /// must be called on data retrieved from EOS_Connect_CopyIdToken.
   void EOS_Connect_IdToken_Release(ffi.Pointer<EOS_Connect_IdToken> IdToken) {
     return _EOS_Connect_IdToken_Release(IdToken);
   }
@@ -1841,8 +1716,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Connect_IdToken>)
       >();
 
-  /// Link a set of external auth credentials with an existing product user on
-  /// the Epic Online Service.
   void EOS_Connect_LinkAccount(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_LinkAccountOptions> Options,
@@ -1878,7 +1751,6 @@ class EosBindings {
         )
       >();
 
-  /// Login/Authenticate given a valid set of external auth credentials.
   void EOS_Connect_Login(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_LoginOptions> Options,
@@ -1909,9 +1781,6 @@ class EosBindings {
         )
       >();
 
-  /// Logout a currently logged in user. NOTE: Access tokens for Product User
-  /// IDs cannot be revoked. This operation really just cleans up state for the
-  /// Product User ID and locally discards any associated access token.
   void EOS_Connect_Logout(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_LogoutOptions> Options,
@@ -1942,9 +1811,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve the equivalent Product User IDs from a list of external account
-  /// IDs from supported account providers. The values will be cached and
-  /// retrievable through EOS_Connect_GetExternalAccountMapping.
   void EOS_Connect_QueryExternalAccountMappings(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_QueryExternalAccountMappingsOptions> Options,
@@ -1980,8 +1846,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve the equivalent external account mappings from a list of Product
-  /// User IDs.
   void EOS_Connect_QueryProductUserIdMappings(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_QueryProductUserIdMappingsOptions> Options,
@@ -2017,7 +1881,6 @@ class EosBindings {
         )
       >();
 
-  /// Unregister from receiving expiration notifications.
   void EOS_Connect_RemoveNotifyAuthExpiration(EOS_HConnect Handle, int InId) {
     return _EOS_Connect_RemoveNotifyAuthExpiration(Handle, InId);
   }
@@ -2031,7 +1894,6 @@ class EosBindings {
         void Function(EOS_HConnect, int)
       >();
 
-  /// Unregister from receiving user login status updates.
   void EOS_Connect_RemoveNotifyLoginStatusChanged(
     EOS_HConnect Handle,
     int InId,
@@ -2048,9 +1910,6 @@ class EosBindings {
         void Function(EOS_HConnect, int)
       >();
 
-  /// Transfer a Device ID pseudo-account and the product user associated with
-  /// it into another keychain linked with real user accounts (such as Epic
-  /// Games, PlayStation(TM)Network, Xbox Live, and other).
   void EOS_Connect_TransferDeviceIdAccount(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_TransferDeviceIdAccountOptions> Options,
@@ -2086,8 +1945,6 @@ class EosBindings {
         )
       >();
 
-  /// Unlink external auth credentials from the owning keychain of a logged in
-  /// product user.
   void EOS_Connect_UnlinkAccount(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_UnlinkAccountOptions> Options,
@@ -2123,7 +1980,6 @@ class EosBindings {
         )
       >();
 
-  /// Verify a given ID token for authenticity and validity.
   void EOS_Connect_VerifyIdToken(
     EOS_HConnect Handle,
     ffi.Pointer<EOS_Connect_VerifyIdTokenOptions> Options,
@@ -2159,8 +2015,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve a null-terminated stringified continuance token from an
-  /// EOS_ContinuanceToken.
   EOS_EResult EOS_ContinuanceToken_ToString(
     EOS_ContinuanceToken ContinuanceToken,
     ffi.Pointer<ffi.Char> OutBuffer,
@@ -2194,7 +2048,6 @@ class EosBindings {
         )
       >();
 
-  /// Gets the string representation of an EOS_EApplicationStatus value.
   ffi.Pointer<ffi.Char> EOS_EApplicationStatus_ToString(
     EOS_EApplicationStatus ApplicationStatus,
   ) {
@@ -2210,7 +2063,6 @@ class EosBindings {
         ffi.Pointer<ffi.Char> Function(int)
       >();
 
-  /// Gets the string representation of an EOS_ENetworkStatus value.
   ffi.Pointer<ffi.Char> EOS_ENetworkStatus_ToString(
     EOS_ENetworkStatus NetworkStatus,
   ) {
@@ -2226,9 +2078,6 @@ class EosBindings {
         ffi.Pointer<ffi.Char> Function(int)
       >();
 
-  /// Returns whether a result is to be considered the final result, or false if
-  /// the callback that returned this result will be called again either after
-  /// some time or from another action.
   DartEOS_Bool EOS_EResult_IsOperationComplete(EOS_EResult Result) {
     return _EOS_EResult_IsOperationComplete(Result.value);
   }
@@ -2240,8 +2089,6 @@ class EosBindings {
   late final _EOS_EResult_IsOperationComplete =
       _EOS_EResult_IsOperationCompletePtr.asFunction<int Function(int)>();
 
-  /// Returns a string representation of an EOS_EResult. The return value is
-  /// never null. The return value must not be freed.
   ffi.Pointer<ffi.Char> EOS_EResult_ToString(EOS_EResult Result) {
     return _EOS_EResult_ToString(Result.value);
   }
@@ -2255,8 +2102,6 @@ class EosBindings {
         ffi.Pointer<ffi.Char> Function(int)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_CatalogItem structure. This
-  /// must be called on data retrieved from EOS_Ecom_CopyOfferItemByIndex.
   void EOS_Ecom_CatalogItem_Release(
     ffi.Pointer<EOS_Ecom_CatalogItem> CatalogItem,
   ) {
@@ -2272,8 +2117,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Ecom_CatalogItem>)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_CatalogOffer structure.
-  /// This must be called on data retrieved from EOS_Ecom_CopyOfferByIndex.
   void EOS_Ecom_CatalogOffer_Release(
     ffi.Pointer<EOS_Ecom_CatalogOffer> CatalogOffer,
   ) {
@@ -2291,9 +2134,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Ecom_CatalogOffer>)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_CatalogRelease structure.
-  /// This must be called on data retrieved from
-  /// EOS_Ecom_CopyItemReleaseByIndex.
   void EOS_Ecom_CatalogRelease_Release(
     ffi.Pointer<EOS_Ecom_CatalogRelease> CatalogRelease,
   ) {
@@ -2311,9 +2151,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Ecom_CatalogRelease>)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_Entitlement structure. This
-  /// must be called on data retrieved from EOS_Ecom_CopyEntitlementByIndex and
-  /// EOS_Ecom_CopyEntitlementById.
   void EOS_Ecom_Entitlement_Release(
     ffi.Pointer<EOS_Ecom_Entitlement> Entitlement,
   ) {
@@ -2329,9 +2166,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Ecom_Entitlement>)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_KeyImageInfo structure.
-  /// This must be called on data retrieved from
-  /// EOS_Ecom_CopyItemImageInfoByIndex.
   void EOS_Ecom_KeyImageInfo_Release(
     ffi.Pointer<EOS_Ecom_KeyImageInfo> KeyImageInfo,
   ) {
@@ -2349,8 +2183,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Ecom_KeyImageInfo>)
       >();
 
-  /// Release the memory associated with an EOS_Ecom_HTransaction. Is expected
-  /// to be called after being received from a EOS_Ecom_CheckoutCallbackInfo.
   void EOS_Ecom_Transaction_Release(EOS_Ecom_HTransaction Transaction) {
     return _EOS_Ecom_Transaction_Release(Transaction);
   }
@@ -2364,10 +2196,6 @@ class EosBindings {
         void Function(EOS_Ecom_HTransaction)
       >();
 
-  /// Retrieve an EOS_EpicAccountId from a raw string representing an Epic
-  /// Account ID. The input string must be null-terminated. NOTE: There is no
-  /// validation on the string format, this should only be used with values
-  /// serialized from legitimate sources such as EOS_EpicAccountId_ToString
   EOS_EpicAccountId EOS_EpicAccountId_FromString(
     ffi.Pointer<ffi.Char> AccountIdString,
   ) {
@@ -2383,9 +2211,6 @@ class EosBindings {
         EOS_EpicAccountId Function(ffi.Pointer<ffi.Char>)
       >();
 
-  /// Check whether or not the given Epic Account ID is considered valid NOTE:
-  /// This will return true for any EOS_EpicAccountId created with
-  /// EOS_EpicAccountId_FromString as there is no validation
   int EOS_EpicAccountId_IsValid(EOS_EpicAccountId AccountId) {
     return _EOS_EpicAccountId_IsValid(AccountId);
   }
@@ -2399,11 +2224,6 @@ class EosBindings {
         int Function(EOS_EpicAccountId)
       >();
 
-  /// Retrieve a null-terminated stringified Epic Account ID from an
-  /// EOS_EpicAccountId. This is useful for replication of Epic Account IDs in
-  /// multiplayer games. This string will be no larger than
-  /// EOS_EPICACCOUNTID_MAX_LENGTH + 1 and will only contain UTF8-encoded
-  /// printable characters as well as a null-terminator.
   EOS_EResult EOS_EpicAccountId_ToString(
     EOS_EpicAccountId AccountId,
     ffi.Pointer<ffi.Char> OutBuffer,
@@ -2433,9 +2253,6 @@ class EosBindings {
         )
       >();
 
-  /// Starts an asynchronous task that accepts a friend invitation from another
-  /// user. The completion delegate is executed after the backend response has
-  /// been received.
   void EOS_Friends_AcceptInvite(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_AcceptInviteOptions> Options,
@@ -2471,7 +2288,6 @@ class EosBindings {
         )
       >();
 
-  /// Listen for changes to blocklist for a particular account.
   int EOS_Friends_AddNotifyBlockedUsersUpdate(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_AddNotifyBlockedUsersUpdateOptions> Options,
@@ -2507,7 +2323,6 @@ class EosBindings {
         )
       >();
 
-  /// Listen for changes to friends for a particular account.
   int EOS_Friends_AddNotifyFriendsUpdate(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_AddNotifyFriendsUpdateOptions> Options,
@@ -2543,8 +2358,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieves the Epic Account ID of an entry from the blocklist that has
-  /// already been retrieved by the EOS_Friends_QueryFriends API.
   EOS_EpicAccountId EOS_Friends_GetBlockedUserAtIndex(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_GetBlockedUserAtIndexOptions> Options,
@@ -2569,8 +2382,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieves the number of blocked users on the blocklist that has already
-  /// been retrieved by the EOS_Friends_QueryFriends API.
   int EOS_Friends_GetBlockedUsersCount(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_GetBlockedUsersCountOptions> Options,
@@ -2595,13 +2406,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieves the Epic Account ID of an entry from the friends list that has
-  /// already been retrieved by the EOS_Friends_QueryFriends API. The Epic
-  /// Account ID returned by this function may belong to an account that has
-  /// been invited to be a friend or that has invited the local user to be a
-  /// friend. To determine if the Epic Account ID returned by this function is a
-  /// friend or a pending friend invitation, use the EOS_Friends_GetStatus
-  /// function.
   EOS_EpicAccountId EOS_Friends_GetFriendAtIndex(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_GetFriendAtIndexOptions> Options,
@@ -2626,8 +2430,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieves the number of friends on the friends list that has already been
-  /// retrieved by the EOS_Friends_QueryFriends API.
   int EOS_Friends_GetFriendsCount(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_GetFriendsCountOptions> Options,
@@ -2652,7 +2454,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve the friendship status between the local user and another user.
   EOS_EFriendsStatus EOS_Friends_GetStatus(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_GetStatusOptions> Options,
@@ -2676,8 +2477,6 @@ class EosBindings {
         int Function(EOS_HFriends, ffi.Pointer<EOS_Friends_GetStatusOptions>)
       >();
 
-  /// Starts an asynchronous task that reads the user's friends list and
-  /// blocklist from the backend service, caching it for future use.
   void EOS_Friends_QueryFriends(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_QueryFriendsOptions> Options,
@@ -2713,9 +2512,6 @@ class EosBindings {
         )
       >();
 
-  /// Starts an asynchronous task that rejects a friend invitation from another
-  /// user. The completion delegate is executed after the backend response has
-  /// been received.
   void EOS_Friends_RejectInvite(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_RejectInviteOptions> Options,
@@ -2751,7 +2547,6 @@ class EosBindings {
         )
       >();
 
-  /// Stop listening for blocklist changes on a previously bound handler.
   void EOS_Friends_RemoveNotifyBlockedUsersUpdate(
     EOS_HFriends Handle,
     int NotificationId,
@@ -2768,7 +2563,6 @@ class EosBindings {
         void Function(EOS_HFriends, int)
       >();
 
-  /// Stop listening for friends changes on a previously bound handler.
   void EOS_Friends_RemoveNotifyFriendsUpdate(
     EOS_HFriends Handle,
     int NotificationId,
@@ -2785,10 +2579,6 @@ class EosBindings {
         void Function(EOS_HFriends, int)
       >();
 
-  /// Starts an asynchronous task that sends a friend invitation to another
-  /// user. The completion delegate is executed after the backend response has
-  /// been received. It does not indicate that the target user has responded to
-  /// the friend invitation.
   void EOS_Friends_SendInvite(
     EOS_HFriends Handle,
     ffi.Pointer<EOS_Friends_SendInviteOptions> Options,
@@ -2824,7 +2614,6 @@ class EosBindings {
         )
       >();
 
-  /// Initialize the Epic Online Services SDK.
   EOS_EResult EOS_Initialize(ffi.Pointer<EOS_InitializeOptions> Options) {
     return EOS_EResult.fromValue(_EOS_Initialize(Options));
   }
@@ -2840,11 +2629,6 @@ class EosBindings {
         int Function(ffi.Pointer<EOS_InitializeOptions>)
       >();
 
-  /// Release the memory associated with an
-  /// EOS_HIntegratedPlatformOptionsContainer handle. This must be called on
-  /// Handles retrieved from
-  /// EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainer. This can
-  /// be safely called on a NULL integrated platform options container handle.
   void EOS_IntegratedPlatformOptionsContainer_Release(
     EOS_HIntegratedPlatformOptionsContainer
     IntegratedPlatformOptionsContainerHandle,
@@ -2865,11 +2649,6 @@ class EosBindings {
         void Function(EOS_HIntegratedPlatformOptionsContainer)
       >();
 
-  /// Creates an integrated platform options container handle. This handle can
-  /// used to add multiple options to your container which will then be applied
-  /// with EOS_Platform_Create. The resulting handle must be released by calling
-  /// EOS_IntegratedPlatformOptionsContainer_Release once it has been passed to
-  /// EOS_Platform_Create.
   EOS_EResult EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainer(
     ffi.Pointer<
       EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainerOptions
@@ -2907,8 +2686,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with a KWS permission status. This must be
-  /// called on data retrieved from EOS_KWS_CopyPermissionByIndex.
   void EOS_KWS_PermissionStatus_Release(
     ffi.Pointer<EOS_KWS_PermissionStatus> PermissionStatus,
   ) {
@@ -2926,7 +2703,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_KWS_PermissionStatus>)
       >();
 
-  /// Fetches a leaderboard definition from the cache using an index.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardDefinitionByIndex(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_CopyLeaderboardDefinitionByIndexOptions>
@@ -2964,7 +2740,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a leaderboard definition from the cache using a leaderboard ID.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId(
     EOS_HLeaderboards Handle,
     ffi.Pointer<
@@ -3006,7 +2781,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a leaderboard record from a given index.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardRecordByIndex(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_CopyLeaderboardRecordByIndexOptions> Options,
@@ -3041,7 +2815,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a leaderboard record from a given user ID.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardRecordByUserId(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_CopyLeaderboardRecordByUserIdOptions> Options,
@@ -3076,7 +2849,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches leaderboard user score from a given index.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardUserScoreByIndex(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_CopyLeaderboardUserScoreByIndexOptions>
@@ -3114,7 +2886,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches leaderboard user score from a given user ID.
   EOS_EResult EOS_Leaderboards_CopyLeaderboardUserScoreByUserId(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_CopyLeaderboardUserScoreByUserIdOptions>
@@ -3152,10 +2923,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with a leaderboard definition. This must be
-  /// called on data retrieved from
-  /// EOS_Leaderboards_CopyLeaderboardDefinitionByIndex or
-  /// EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId.
   void EOS_Leaderboards_Definition_Release(
     ffi.Pointer<EOS_Leaderboards_Definition> LeaderboardDefinition,
   ) {
@@ -3173,7 +2940,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Leaderboards_Definition>)
       >();
 
-  /// Fetch the number of leaderboards definitions that are cached locally.
   int EOS_Leaderboards_GetLeaderboardDefinitionCount(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_GetLeaderboardDefinitionCountOptions> Options,
@@ -3198,7 +2964,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch the number of leaderboard records that are cached locally.
   int EOS_Leaderboards_GetLeaderboardRecordCount(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_GetLeaderboardRecordCountOptions> Options,
@@ -3223,7 +2988,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch the number of leaderboard user scores that are cached locally.
   int EOS_Leaderboards_GetLeaderboardUserScoreCount(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_GetLeaderboardUserScoreCountOptions> Options,
@@ -3248,8 +3012,6 @@ class EosBindings {
         )
       >();
 
-  /// Do not use. Alias to the previous API name for backwards compatibility in
-  /// compilation.
   void EOS_Leaderboards_LeaderboardDefinition_Release(
     ffi.Pointer<EOS_Leaderboards_Definition> LeaderboardDefinition,
   ) {
@@ -3269,9 +3031,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Leaderboards_Definition>)
       >();
 
-  /// Release the memory associated with leaderboard record. This must be called
-  /// on data retrieved from EOS_Leaderboards_CopyLeaderboardRecordByIndex or
-  /// EOS_Leaderboards_CopyLeaderboardRecordByUserId.
   void EOS_Leaderboards_LeaderboardRecord_Release(
     ffi.Pointer<EOS_Leaderboards_LeaderboardRecord> LeaderboardRecord,
   ) {
@@ -3289,10 +3048,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Leaderboards_LeaderboardRecord>)
       >();
 
-  /// Release the memory associated with leaderboard user score. This must be
-  /// called on data retrieved from
-  /// EOS_Leaderboards_CopyLeaderboardUserScoreByIndex or
-  /// EOS_Leaderboards_CopyLeaderboardUserScoreByUserId.
   void EOS_Leaderboards_LeaderboardUserScore_Release(
     ffi.Pointer<EOS_Leaderboards_LeaderboardUserScore> LeaderboardUserScore,
   ) {
@@ -3310,8 +3065,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Leaderboards_LeaderboardUserScore>)
       >();
 
-  /// Query for a list of existing leaderboards definitions including their
-  /// attributes.
   void EOS_Leaderboards_QueryLeaderboardDefinitions(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_QueryLeaderboardDefinitionsOptions> Options,
@@ -3348,8 +3101,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieves top leaderboard records by rank in the leaderboard matching the
-  /// given leaderboard ID.
   void EOS_Leaderboards_QueryLeaderboardRanks(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_QueryLeaderboardRanksOptions> Options,
@@ -3385,7 +3136,6 @@ class EosBindings {
         )
       >();
 
-  /// Query for a list of scores for a given list of users.
   void EOS_Leaderboards_QueryLeaderboardUserScores(
     EOS_HLeaderboards Handle,
     ffi.Pointer<EOS_Leaderboards_QueryLeaderboardUserScoresOptions> Options,
@@ -3422,8 +3172,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with a lobby details info. This must be
-  /// called on data retrieved from EOS_LobbyDetails_CopyInfo.
   void EOS_LobbyDetails_Info_Release(
     ffi.Pointer<EOS_LobbyDetails_Info> LobbyDetailsInfo,
   ) {
@@ -3441,8 +3189,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_LobbyDetails_Info>)
       >();
 
-  /// Release the memory associated with a member info. This must be called on
-  /// data retrieved from EOS_LobbyDetails_CopyMemberInfo.
   void EOS_LobbyDetails_MemberInfo_Release(
     ffi.Pointer<EOS_LobbyDetails_MemberInfo> LobbyDetailsMemberInfo,
   ) {
@@ -3460,8 +3206,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_LobbyDetails_MemberInfo>)
       >();
 
-  /// Release the memory associated with a single lobby. This must be called on
-  /// data retrieved from EOS_LobbySearch_CopySearchResultByIndex.
   void EOS_LobbyDetails_Release(EOS_HLobbyDetails LobbyHandle) {
     return _EOS_LobbyDetails_Release(LobbyHandle);
   }
@@ -3475,8 +3219,6 @@ class EosBindings {
         void Function(EOS_HLobbyDetails)
       >();
 
-  /// Release the memory associated with a lobby modification. This must be
-  /// called on data retrieved from EOS_Lobby_UpdateLobbyModification.
   void EOS_LobbyModification_Release(
     EOS_HLobbyModification LobbyModificationHandle,
   ) {
@@ -3492,8 +3234,6 @@ class EosBindings {
         void Function(EOS_HLobbyModification)
       >();
 
-  /// Release the memory associated with a lobby search. This must be called on
-  /// data retrieved from EOS_Lobby_CreateLobbySearch.
   void EOS_LobbySearch_Release(EOS_HLobbySearch LobbySearchHandle) {
     return _EOS_LobbySearch_Release(LobbySearchHandle);
   }
@@ -3505,9 +3245,6 @@ class EosBindings {
   late final _EOS_LobbySearch_Release =
       _EOS_LobbySearch_ReleasePtr.asFunction<void Function(EOS_HLobbySearch)>();
 
-  /// Release the memory associated with a lobby attribute. This must be called
-  /// on data retrieved from the various Copy functions in the LobbyDetails
-  /// interface which return an EOS_Lobby_Attribute.
   void EOS_Lobby_Attribute_Release(
     ffi.Pointer<EOS_Lobby_Attribute> LobbyAttribute,
   ) {
@@ -3523,8 +3260,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Lobby_Attribute>)
       >();
 
-  /// Set the callback function to use for SDK log messages. Any previously set
-  /// callback will no longer be called.
   EOS_EResult EOS_Logging_SetCallback(EOS_LogMessageFunc Callback) {
     return EOS_EResult.fromValue(_EOS_Logging_SetCallback(Callback));
   }
@@ -3538,8 +3273,6 @@ class EosBindings {
         int Function(EOS_LogMessageFunc)
       >();
 
-  /// Set the logging level for the specified logging category. By default all
-  /// log categories will callback for Warnings, Errors, and Fatals.
   EOS_EResult EOS_Logging_SetLogLevel(
     EOS_ELogCategory LogCategory,
     EOS_ELogLevel LogLevel,
@@ -3558,9 +3291,6 @@ class EosBindings {
   late final _EOS_Logging_SetLogLevel =
       _EOS_Logging_SetLogLevelPtr.asFunction<int Function(int, int)>();
 
-  /// Release the memory associated with an EOS_Mods_ModInfo structure and its
-  /// sub-objects. This must be called on data retrieved from
-  /// EOS_Mods_CopyModInfo.
   void EOS_Mods_ModInfo_Release(ffi.Pointer<EOS_Mods_ModInfo> ModInfo) {
     return _EOS_Mods_ModInfo_Release(ModInfo);
   }
@@ -3574,8 +3304,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Mods_ModInfo>)
       >();
 
-  /// Checks if the app was launched through the Epic Games Launcher, and
-  /// relaunches it through the Epic Games Launcher if it wasn't.
   EOS_EResult EOS_Platform_CheckForLauncherAndRestart(EOS_HPlatform Handle) {
     return EOS_EResult.fromValue(
       _EOS_Platform_CheckForLauncherAndRestart(Handle),
@@ -3591,7 +3319,6 @@ class EosBindings {
         int Function(EOS_HPlatform)
       >();
 
-  /// Create a single Epic Online Services Platform Instance.
   EOS_HPlatform EOS_Platform_Create(ffi.Pointer<EOS_Platform_Options> Options) {
     return _EOS_Platform_Create(Options);
   }
@@ -3607,7 +3334,6 @@ class EosBindings {
         EOS_HPlatform Function(ffi.Pointer<EOS_Platform_Options>)
       >();
 
-  /// Get a handle to the Achievements Interface.
   EOS_HAchievements EOS_Platform_GetAchievementsInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3623,8 +3349,6 @@ class EosBindings {
         EOS_HAchievements Function(EOS_HPlatform)
       >();
 
-  /// This only will return the value set as the override otherwise EOS_NotFound
-  /// is returned. This is not currently used for anything internally.
   EOS_EResult EOS_Platform_GetActiveCountryCode(
     EOS_HPlatform Handle,
     EOS_EpicAccountId LocalUserId,
@@ -3662,10 +3386,6 @@ class EosBindings {
         )
       >();
 
-  /// Get the active locale code that the SDK will send to services which
-  /// require it. This returns the override value otherwise it will use the
-  /// locale code of the given user. This is used for localization. This follows
-  /// ISO 639.
   EOS_EResult EOS_Platform_GetActiveLocaleCode(
     EOS_HPlatform Handle,
     EOS_EpicAccountId LocalUserId,
@@ -3703,7 +3423,6 @@ class EosBindings {
         )
       >();
 
-  /// Get a handle to the Anti-Cheat Client Interface.
   EOS_HAntiCheatClient EOS_Platform_GetAntiCheatClientInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3719,7 +3438,6 @@ class EosBindings {
         EOS_HAntiCheatClient Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Anti-Cheat Server Interface.
   EOS_HAntiCheatServer EOS_Platform_GetAntiCheatServerInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3735,8 +3453,6 @@ class EosBindings {
         EOS_HAntiCheatServer Function(EOS_HPlatform)
       >();
 
-  /// Retrieves the current application state as told to the SDK by the
-  /// application.
   EOS_EApplicationStatus EOS_Platform_GetApplicationStatus(
     EOS_HPlatform Handle,
   ) {
@@ -3754,7 +3470,6 @@ class EosBindings {
         int Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Auth Interface.
   EOS_HAuth EOS_Platform_GetAuthInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetAuthInterface(Handle);
   }
@@ -3768,7 +3483,6 @@ class EosBindings {
         EOS_HAuth Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Connect Interface.
   EOS_HConnect EOS_Platform_GetConnectInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetConnectInterface(Handle);
   }
@@ -3782,7 +3496,6 @@ class EosBindings {
         EOS_HConnect Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Custom Invites Interface.
   EOS_HCustomInvites EOS_Platform_GetCustomInvitesInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3798,8 +3511,6 @@ class EosBindings {
         EOS_HCustomInvites Function(EOS_HPlatform)
       >();
 
-  /// Windows only. Checks that the application is ready to use desktop
-  /// crossplay functionality, with the necessary prerequisites having been met.
   EOS_EResult EOS_Platform_GetDesktopCrossplayStatus(
     EOS_HPlatform Handle,
     ffi.Pointer<EOS_Platform_GetDesktopCrossplayStatusOptions> Options,
@@ -3834,7 +3545,6 @@ class EosBindings {
         )
       >();
 
-  /// Get a handle to the Ecom Interface.
   EOS_HEcom EOS_Platform_GetEcomInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetEcomInterface(Handle);
   }
@@ -3848,7 +3558,6 @@ class EosBindings {
         EOS_HEcom Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Friends Interface.
   EOS_HFriends EOS_Platform_GetFriendsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetFriendsInterface(Handle);
   }
@@ -3862,7 +3571,6 @@ class EosBindings {
         EOS_HFriends Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Integrated Platform Interface.
   EOS_HIntegratedPlatform EOS_Platform_GetIntegratedPlatformInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3878,7 +3586,6 @@ class EosBindings {
         EOS_HIntegratedPlatform Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Kids Web Service Interface.
   EOS_HKWS EOS_Platform_GetKWSInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetKWSInterface(Handle);
   }
@@ -3892,7 +3599,6 @@ class EosBindings {
         EOS_HKWS Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Leaderboards Interface.
   EOS_HLeaderboards EOS_Platform_GetLeaderboardsInterface(
     EOS_HPlatform Handle,
   ) {
@@ -3908,7 +3614,6 @@ class EosBindings {
         EOS_HLeaderboards Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Lobby Interface.
   EOS_HLobby EOS_Platform_GetLobbyInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetLobbyInterface(Handle);
   }
@@ -3922,7 +3627,6 @@ class EosBindings {
         EOS_HLobby Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Metrics Interface.
   EOS_HMetrics EOS_Platform_GetMetricsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetMetricsInterface(Handle);
   }
@@ -3936,7 +3640,6 @@ class EosBindings {
         EOS_HMetrics Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Mods Interface.
   EOS_HMods EOS_Platform_GetModsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetModsInterface(Handle);
   }
@@ -3950,7 +3653,6 @@ class EosBindings {
         EOS_HMods Function(EOS_HPlatform)
       >();
 
-  /// Retrieves the current network state as told to the SDK by the application.
   EOS_ENetworkStatus EOS_Platform_GetNetworkStatus(EOS_HPlatform Handle) {
     return EOS_ENetworkStatus.fromValue(_EOS_Platform_GetNetworkStatus(Handle));
   }
@@ -3964,8 +3666,6 @@ class EosBindings {
         int Function(EOS_HPlatform)
       >();
 
-  /// Get the override country code that the SDK will send to services which
-  /// require it. This is not currently used for anything internally.
   EOS_EResult EOS_Platform_GetOverrideCountryCode(
     EOS_HPlatform Handle,
     ffi.Pointer<ffi.Char> OutBuffer,
@@ -3999,8 +3699,6 @@ class EosBindings {
         )
       >();
 
-  /// Get the override locale code that the SDK will send to services which
-  /// require it. This is used for localization. This follows ISO 639.
   EOS_EResult EOS_Platform_GetOverrideLocaleCode(
     EOS_HPlatform Handle,
     ffi.Pointer<ffi.Char> OutBuffer,
@@ -4030,7 +3728,6 @@ class EosBindings {
         )
       >();
 
-  /// Get a handle to the Peer-to-Peer Networking Interface.
   EOS_HP2P EOS_Platform_GetP2PInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetP2PInterface(Handle);
   }
@@ -4044,7 +3741,6 @@ class EosBindings {
         EOS_HP2P Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the PlayerDataStorage Interface.
   EOS_HPlayerDataStorage EOS_Platform_GetPlayerDataStorageInterface(
     EOS_HPlatform Handle,
   ) {
@@ -4060,7 +3756,6 @@ class EosBindings {
         EOS_HPlayerDataStorage Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Presence Interface.
   EOS_HPresence EOS_Platform_GetPresenceInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetPresenceInterface(Handle);
   }
@@ -4074,7 +3769,6 @@ class EosBindings {
         EOS_HPresence Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the ProgressionSnapshot Interface.
   EOS_HProgressionSnapshot EOS_Platform_GetProgressionSnapshotInterface(
     EOS_HPlatform Handle,
   ) {
@@ -4090,7 +3784,6 @@ class EosBindings {
         EOS_HProgressionSnapshot Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the RTC Admin interface
   EOS_HRTCAdmin EOS_Platform_GetRTCAdminInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetRTCAdminInterface(Handle);
   }
@@ -4104,9 +3797,6 @@ class EosBindings {
         EOS_HRTCAdmin Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Real Time Communications Interface (RTC). From the RTC
-  /// interface you can retrieve the handle to the audio interface (RTCAudio),
-  /// which is a component of RTC.
   EOS_HRTC EOS_Platform_GetRTCInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetRTCInterface(Handle);
   }
@@ -4120,7 +3810,6 @@ class EosBindings {
         EOS_HRTC Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Reports Interface.
   EOS_HReports EOS_Platform_GetReportsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetReportsInterface(Handle);
   }
@@ -4134,7 +3823,6 @@ class EosBindings {
         EOS_HReports Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Sanctions Interface.
   EOS_HSanctions EOS_Platform_GetSanctionsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetSanctionsInterface(Handle);
   }
@@ -4148,7 +3836,6 @@ class EosBindings {
         EOS_HSanctions Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Sessions Interface.
   EOS_HSessions EOS_Platform_GetSessionsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetSessionsInterface(Handle);
   }
@@ -4162,7 +3849,6 @@ class EosBindings {
         EOS_HSessions Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the Stats Interface.
   EOS_HStats EOS_Platform_GetStatsInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetStatsInterface(Handle);
   }
@@ -4176,7 +3862,6 @@ class EosBindings {
         EOS_HStats Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the TitleStorage Interface.
   EOS_HTitleStorage EOS_Platform_GetTitleStorageInterface(
     EOS_HPlatform Handle,
   ) {
@@ -4192,7 +3877,6 @@ class EosBindings {
         EOS_HTitleStorage Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the UI Interface.
   EOS_HUI EOS_Platform_GetUIInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetUIInterface(Handle);
   }
@@ -4206,7 +3890,6 @@ class EosBindings {
         EOS_HUI Function(EOS_HPlatform)
       >();
 
-  /// Get a handle to the UserInfo Interface.
   EOS_HUserInfo EOS_Platform_GetUserInfoInterface(EOS_HPlatform Handle) {
     return _EOS_Platform_GetUserInfoInterface(Handle);
   }
@@ -4220,8 +3903,6 @@ class EosBindings {
         EOS_HUserInfo Function(EOS_HPlatform)
       >();
 
-  /// Release an Epic Online Services platform instance previously returned from
-  /// EOS_Platform_Create.
   void EOS_Platform_Release(EOS_HPlatform Handle) {
     return _EOS_Platform_Release(Handle);
   }
@@ -4233,7 +3914,6 @@ class EosBindings {
   late final _EOS_Platform_Release =
       _EOS_Platform_ReleasePtr.asFunction<void Function(EOS_HPlatform)>();
 
-  /// Notify a change in application state.
   EOS_EResult EOS_Platform_SetApplicationStatus(
     EOS_HPlatform Handle,
     EOS_EApplicationStatus NewStatus,
@@ -4254,7 +3934,6 @@ class EosBindings {
         int Function(EOS_HPlatform, int)
       >();
 
-  /// Notify a change in network state.
   EOS_EResult EOS_Platform_SetNetworkStatus(
     EOS_HPlatform Handle,
     EOS_ENetworkStatus NewStatus,
@@ -4275,8 +3954,6 @@ class EosBindings {
         int Function(EOS_HPlatform, int)
       >();
 
-  /// Set the override country code that the SDK will send to services which
-  /// require it. This is not currently used for anything internally.
   EOS_EResult EOS_Platform_SetOverrideCountryCode(
     EOS_HPlatform Handle,
     ffi.Pointer<ffi.Char> NewCountryCode,
@@ -4297,8 +3974,6 @@ class EosBindings {
         int Function(EOS_HPlatform, ffi.Pointer<ffi.Char>)
       >();
 
-  /// Set the override locale code that the SDK will send to services which
-  /// require it. This is used for localization. This follows ISO 639.
   EOS_EResult EOS_Platform_SetOverrideLocaleCode(
     EOS_HPlatform Handle,
     ffi.Pointer<ffi.Char> NewLocaleCode,
@@ -4319,10 +3994,6 @@ class EosBindings {
         int Function(EOS_HPlatform, ffi.Pointer<ffi.Char>)
       >();
 
-  /// Notify the platform instance to do work. This function must be called
-  /// frequently in order for the services provided by the SDK to properly
-  /// function. For tick-based applications, it is usually desirable to call
-  /// this once per-tick.
   void EOS_Platform_Tick(EOS_HPlatform Handle) {
     return _EOS_Platform_Tick(Handle);
   }
@@ -4334,9 +4005,6 @@ class EosBindings {
   late final _EOS_Platform_Tick =
       _EOS_Platform_TickPtr.asFunction<void Function(EOS_HPlatform)>();
 
-  /// Attempt to cancel this file request in progress. This is a best-effort
-  /// command and is not guaranteed to be successful if the request has
-  /// completed before this function is called.
   EOS_EResult EOS_PlayerDataStorageFileTransferRequest_CancelRequest(
     EOS_HPlayerDataStorageFileTransferRequest Handle,
   ) {
@@ -4356,7 +4024,6 @@ class EosBindings {
         int Function(EOS_HPlayerDataStorageFileTransferRequest)
       >();
 
-  /// Get the current state of a file request.
   EOS_EResult EOS_PlayerDataStorageFileTransferRequest_GetFileRequestState(
     EOS_HPlayerDataStorageFileTransferRequest Handle,
   ) {
@@ -4376,8 +4043,6 @@ class EosBindings {
         int Function(EOS_HPlayerDataStorageFileTransferRequest)
       >();
 
-  /// Get the file name of the file this request is for. OutStringLength will
-  /// always be set to the string length of the file name if it is not NULL.
   EOS_EResult EOS_PlayerDataStorageFileTransferRequest_GetFilename(
     EOS_HPlayerDataStorageFileTransferRequest Handle,
     int FilenameStringBufferSizeBytes,
@@ -4415,8 +4080,6 @@ class EosBindings {
         )
       >();
 
-  /// Free the memory used by a cloud-storage file request handle. This will not
-  /// cancel a request in progress.
   void EOS_PlayerDataStorageFileTransferRequest_Release(
     EOS_HPlayerDataStorageFileTransferRequest
     PlayerDataStorageFileTransferHandle,
@@ -4437,10 +4100,6 @@ class EosBindings {
         void Function(EOS_HPlayerDataStorageFileTransferRequest)
       >();
 
-  /// Get the cached copy of a file's metadata by index. The metadata will be
-  /// for the last retrieved or successfully saved version, and will not include
-  /// any local changes that have not been committed by calling SaveFile. The
-  /// returned pointer must be released by the user when no longer needed.
   EOS_EResult EOS_PlayerDataStorage_CopyFileMetadataAtIndex(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions>
@@ -4475,10 +4134,6 @@ class EosBindings {
         )
       >();
 
-  /// Create the cached copy of a file's metadata by filename. The metadata will
-  /// be for the last retrieved or successfully saved version, and will not
-  /// include any changes that have not completed writing. The returned pointer
-  /// must be released by the user when no longer needed.
   EOS_EResult EOS_PlayerDataStorage_CopyFileMetadataByFilename(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions>
@@ -4515,12 +4170,6 @@ class EosBindings {
         )
       >();
 
-  /// Clear previously cached file data. This operation will be done
-  /// asynchronously. All cached files except those corresponding to the
-  /// transfers in progress will be removed. Warning: Use this with care. Cache
-  /// system generally tries to clear old and unused cached files from time to
-  /// time. Unnecessarily clearing cache can degrade performance as SDK will
-  /// have to re-download data.
   EOS_EResult EOS_PlayerDataStorage_DeleteCache(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_DeleteCacheOptions> Options,
@@ -4558,8 +4207,6 @@ class EosBindings {
         )
       >();
 
-  /// Deletes an existing file in the cloud. If successful, the file's data will
-  /// be removed from our local cache.
   void EOS_PlayerDataStorage_DeleteFile(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_DeleteFileOptions> DeleteOptions,
@@ -4595,12 +4242,6 @@ class EosBindings {
         )
       >();
 
-  /// Copies the data of an existing file to a new filename. This action happens
-  /// entirely on the server and will not upload the contents of the source
-  /// destination file from the host. This function paired with a subsequent
-  /// EOS_PlayerDataStorage_DeleteFile can be used to rename a file. If
-  /// successful, the destination file's metadata will be updated in our local
-  /// cache.
   void EOS_PlayerDataStorage_DuplicateFile(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_DuplicateFileOptions> DuplicateOptions,
@@ -4636,7 +4277,6 @@ class EosBindings {
         )
       >();
 
-  /// Free the memory used by the file metadata
   void EOS_PlayerDataStorage_FileMetadata_Release(
     ffi.Pointer<EOS_PlayerDataStorage_FileMetadata> FileMetadata,
   ) {
@@ -4654,8 +4294,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_PlayerDataStorage_FileMetadata>)
       >();
 
-  /// Get the count of files we have previously queried information for and
-  /// files we have previously read from / written to.
   EOS_EResult EOS_PlayerDataStorage_GetFileMetadataCount(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_GetFileMetadataCountOptions>
@@ -4690,11 +4328,6 @@ class EosBindings {
         )
       >();
 
-  /// Query a specific file's metadata, such as file names, size, and a MD5 hash
-  /// of the data. This is not required before a file may be opened, saved,
-  /// copied, or deleted. Once a file has been queried, its metadata will be
-  /// available by the EOS_PlayerDataStorage_CopyFileMetadataAtIndex and
-  /// EOS_PlayerDataStorage_CopyFileMetadataByFilename functions.
   void EOS_PlayerDataStorage_QueryFile(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_QueryFileOptions> QueryFileOptions,
@@ -4730,9 +4363,6 @@ class EosBindings {
         )
       >();
 
-  /// Query the file metadata, such as file names, size, and a MD5 hash of the
-  /// data, for all files owned by this user for this application. This is not
-  /// required before a file may be opened, saved, copied, or deleted.
   void EOS_PlayerDataStorage_QueryFileList(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_QueryFileListOptions>
@@ -4769,12 +4399,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve the contents of a specific file, potentially downloading the
-  /// contents if we do not have a local copy, from the cloud. This request will
-  /// occur asynchronously, potentially over multiple frames. All callbacks for
-  /// this function will come from the same thread that the SDK is ticked from.
-  /// If specified, the FileTransferProgressCallback will always be called at
-  /// least once if the request is started successfully.
   EOS_HPlayerDataStorageFileTransferRequest EOS_PlayerDataStorage_ReadFile(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_ReadFileOptions> ReadOptions,
@@ -4810,12 +4434,6 @@ class EosBindings {
         )
       >();
 
-  /// Write new data to a specific file, potentially overwriting any existing
-  /// file by the same name, to the cloud. This request will occur
-  /// asynchronously, potentially over multiple frames. All callbacks for this
-  /// function will come from the same thread that the SDK is ticked from. If
-  /// specified, the FileTransferProgressCallback will always be called at least
-  /// once if the request is started successfully.
   EOS_HPlayerDataStorageFileTransferRequest EOS_PlayerDataStorage_WriteFile(
     EOS_HPlayerDataStorage Handle,
     ffi.Pointer<EOS_PlayerDataStorage_WriteFileOptions> WriteOptions,
@@ -4851,8 +4469,6 @@ class EosBindings {
         )
       >();
 
-  /// Removes one or more rows of user-defined presence data for a local user.
-  /// At least one DeleteDataInfo object must be specified.
   EOS_EResult EOS_PresenceModification_DeleteData(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_DeleteDataOptions> Options,
@@ -4879,11 +4495,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an EOS_HPresenceModification handle.
-  /// This must be called on Handles retrieved from
-  /// EOS_Presence_CreatePresenceModification. This can be safely called on a
-  /// NULL presence modification handle. This also may be safely called while a
-  /// call to SetPresence is still pending.
   void EOS_PresenceModification_Release(
     EOS_HPresenceModification PresenceModificationHandle,
   ) {
@@ -4899,8 +4510,6 @@ class EosBindings {
         void Function(EOS_HPresenceModification)
       >();
 
-  /// Modifies one or more rows of user-defined presence data for a local user.
-  /// At least one InfoData object must be specified.
   EOS_EResult EOS_PresenceModification_SetData(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetDataOptions> Options,
@@ -4927,9 +4536,6 @@ class EosBindings {
         )
       >();
 
-  /// Sets your new join info custom game-data string. This is a helper function
-  /// for reading the presence data related to how a user can be joined. Its
-  /// meaning is entirely application dependent.
   EOS_EResult EOS_PresenceModification_SetJoinInfo(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetJoinInfoOptions> Options,
@@ -4956,8 +4562,6 @@ class EosBindings {
         )
       >();
 
-  /// Modifies a user's Rich Presence string to a new state. This is the exact
-  /// value other users will see when they query the local user's presence.
   EOS_EResult EOS_PresenceModification_SetRawRichText(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetRawRichTextOptions> Options,
@@ -4984,7 +4588,6 @@ class EosBindings {
         )
       >();
 
-  /// Modifies a user's online status to be the new state.
   EOS_EResult EOS_PresenceModification_SetStatus(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetStatusOptions> Options,
@@ -5011,11 +4614,6 @@ class EosBindings {
         )
       >();
 
-  /// Adds variable data to a Presence Update template much like a format-arg
-  /// would. This value will be localized by the backend and displayed to users.
-  /// This function can be called multiple times for each variable. Subsequent
-  /// calls for the sane variable will replace the value with the latest
-  /// version.
   EOS_EResult EOS_PresenceModification_SetTemplateData(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetTemplateDataOptions> Options,
@@ -5042,11 +4640,6 @@ class EosBindings {
         )
       >();
 
-  /// Modifies a user's Rich Presence string to a new state using a localized
-  /// template. This string represents a template ID that may contain one or
-  /// more variables that must be supplied via SetTemplateData. This function is
-  /// mutually exclusive with SetRawRichText meaning only one can be used on a
-  /// modification.
   EOS_EResult EOS_PresenceModification_SetTemplateId(
     EOS_HPresenceModification Handle,
     ffi.Pointer<EOS_PresenceModification_SetTemplateIdOptions> Options,
@@ -5073,8 +4666,6 @@ class EosBindings {
         )
       >();
 
-  /// Register to receive notifications when a user accepts a join game option
-  /// via the social overlay.
   int EOS_Presence_AddNotifyJoinGameAccepted(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_AddNotifyJoinGameAcceptedOptions> Options,
@@ -5110,7 +4701,6 @@ class EosBindings {
         )
       >();
 
-  /// Register to receive notifications when presence changes.
   int EOS_Presence_AddNotifyOnPresenceChanged(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_AddNotifyOnPresenceChangedOptions> Options,
@@ -5146,8 +4736,6 @@ class EosBindings {
         )
       >();
 
-  /// Get a user's cached presence object. If successful, this data must be
-  /// released by calling EOS_Presence_Info_Release
   EOS_EResult EOS_Presence_CopyPresence(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_CopyPresenceOptions> Options,
@@ -5177,11 +4765,6 @@ class EosBindings {
         )
       >();
 
-  /// Creates a presence modification handle. This handle can used to add
-  /// multiple changes to your presence that can be applied with
-  /// EOS_Presence_SetPresence. The resulting handle must be released by calling
-  /// EOS_PresenceModification_Release once it has been passed to
-  /// EOS_Presence_SetPresence.
   EOS_EResult EOS_Presence_CreatePresenceModification(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_CreatePresenceModificationOptions> Options,
@@ -5215,9 +4798,6 @@ class EosBindings {
         )
       >();
 
-  /// Gets a join info custom game-data string for a specific user. This is a
-  /// helper function for reading the presence data related to how a user can be
-  /// joined. Its meaning is entirely application dependent.
   EOS_EResult EOS_Presence_GetJoinInfo(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_GetJoinInfoOptions> Options,
@@ -5250,7 +4830,6 @@ class EosBindings {
         )
       >();
 
-  /// Check if we already have presence for a user
   int EOS_Presence_HasPresence(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_HasPresenceOptions> Options,
@@ -5275,10 +4854,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with an EOS_Presence_Info structure and its
-  /// sub-objects. This must be called on data retrieved from
-  /// EOS_Presence_CopyPresence. This can be safely called on a NULL presence
-  /// info object.
   void EOS_Presence_Info_Release(ffi.Pointer<EOS_Presence_Info> PresenceInfo) {
     return _EOS_Presence_Info_Release(PresenceInfo);
   }
@@ -5292,9 +4867,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Presence_Info>)
       >();
 
-  /// Query a user's presence. This must complete successfully before
-  /// CopyPresence will have valid results. If HasPresence returns true for a
-  /// remote user, this does not need to be called.
   void EOS_Presence_QueryPresence(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_QueryPresenceOptions> Options,
@@ -5330,8 +4902,6 @@ class EosBindings {
         )
       >();
 
-  /// Unregister from receiving notifications when a user accepts a join game
-  /// option via the social overlay.
   void EOS_Presence_RemoveNotifyJoinGameAccepted(
     EOS_HPresence Handle,
     int InId,
@@ -5348,8 +4918,6 @@ class EosBindings {
         void Function(EOS_HPresence, int)
       >();
 
-  /// Unregister a previously bound notification handler from receiving presence
-  /// update notifications
   void EOS_Presence_RemoveNotifyOnPresenceChanged(
     EOS_HPresence Handle,
     int NotificationId,
@@ -5366,9 +4934,6 @@ class EosBindings {
         void Function(EOS_HPresence, int)
       >();
 
-  /// Sets your new presence with the data applied to a
-  /// PresenceModificationHandle. The PresenceModificationHandle can be released
-  /// safely after calling this function.
   void EOS_Presence_SetPresence(
     EOS_HPresence Handle,
     ffi.Pointer<EOS_Presence_SetPresenceOptions> Options,
@@ -5404,11 +4969,6 @@ class EosBindings {
         )
       >();
 
-  /// Retrieve an EOS_ProductUserId from a raw string representing an Epic
-  /// Online Services Product User ID. The input string must be null-terminated.
-  /// NOTE: There is no validation on the string format, this should only be
-  /// used with values serialized from legitimate sources such as
-  /// EOS_ProductUserId_ToString
   EOS_ProductUserId EOS_ProductUserId_FromString(
     ffi.Pointer<ffi.Char> ProductUserIdString,
   ) {
@@ -5424,9 +4984,6 @@ class EosBindings {
         EOS_ProductUserId Function(ffi.Pointer<ffi.Char>)
       >();
 
-  /// Check whether or not the given account unique ID is considered valid NOTE:
-  /// This will return true for any EOS_ProductUserId created with
-  /// EOS_ProductUserId_FromString as there is no validation
   int EOS_ProductUserId_IsValid(EOS_ProductUserId AccountId) {
     return _EOS_ProductUserId_IsValid(AccountId);
   }
@@ -5440,11 +4997,6 @@ class EosBindings {
         int Function(EOS_ProductUserId)
       >();
 
-  /// Retrieve a null-terminated stringified Product User ID from an
-  /// EOS_ProductUserId. This is useful for replication of Product User IDs in
-  /// multiplayer games. This string will be no larger than
-  /// EOS_PRODUCTUSERID_MAX_LENGTH + 1 and will only contain UTF8-encoded
-  /// printable characters as well as the null-terminator.
   EOS_EResult EOS_ProductUserId_ToString(
     EOS_ProductUserId AccountId,
     ffi.Pointer<ffi.Char> OutBuffer,
@@ -5474,9 +5026,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with EOS_RTCAdmin_UserToken. This must be
-  /// called on data retrieved from EOS_RTCAdmin_CopyUserTokenByIndex or
-  /// EOS_RTCAdmin_CopyUserTokenByUserId.
   void EOS_RTCAdmin_UserToken_Release(
     ffi.Pointer<EOS_RTCAdmin_UserToken> UserToken,
   ) {
@@ -5494,8 +5043,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_RTCAdmin_UserToken>)
       >();
 
-  /// Release the memory associated with a player sanction. This must be called
-  /// on data retrieved from EOS_Sanctions_CopyPlayerSanctionByIndex.
   void EOS_Sanctions_PlayerSanction_Release(
     ffi.Pointer<EOS_Sanctions_PlayerSanction> Sanction,
   ) {
@@ -5513,9 +5060,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Sanctions_PlayerSanction>)
       >();
 
-  /// Release the memory associated with a session attribute. This must be
-  /// called on data retrieved from
-  /// EOS_SessionDetails_CopySessionAttributeByIndex.
   void EOS_SessionDetails_Attribute_Release(
     ffi.Pointer<EOS_SessionDetails_Attribute> SessionAttribute,
   ) {
@@ -5533,8 +5077,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_SessionDetails_Attribute>)
       >();
 
-  /// Release the memory associated with an EOS_SessionDetails_Info structure.
-  /// This must be called on data retrieved from EOS_SessionDetails_CopyInfo.
   void EOS_SessionDetails_Info_Release(
     ffi.Pointer<EOS_SessionDetails_Info> SessionInfo,
   ) {
@@ -5552,8 +5094,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_SessionDetails_Info>)
       >();
 
-  /// Release the memory associated with a single session. This must be called
-  /// on data retrieved from EOS_SessionSearch_CopySearchResultByIndex.
   void EOS_SessionDetails_Release(EOS_HSessionDetails SessionHandle) {
     return _EOS_SessionDetails_Release(SessionHandle);
   }
@@ -5567,9 +5107,6 @@ class EosBindings {
         void Function(EOS_HSessionDetails)
       >();
 
-  /// Release the memory associated with session modification. This must be
-  /// called on data retrieved from EOS_Sessions_CreateSessionModification or
-  /// EOS_Sessions_UpdateSessionModification
   void EOS_SessionModification_Release(
     EOS_HSessionModification SessionModificationHandle,
   ) {
@@ -5585,8 +5122,6 @@ class EosBindings {
         void Function(EOS_HSessionModification)
       >();
 
-  /// Release the memory associated with a session search. This must be called
-  /// on data retrieved from EOS_Sessions_CreateSessionSearch.
   void EOS_SessionSearch_Release(EOS_HSessionSearch SessionSearchHandle) {
     return _EOS_SessionSearch_Release(SessionSearchHandle);
   }
@@ -5600,7 +5135,6 @@ class EosBindings {
         void Function(EOS_HSessionSearch)
       >();
 
-  /// Tear down the Epic Online Services SDK.
   EOS_EResult EOS_Shutdown() {
     return EOS_EResult.fromValue(_EOS_Shutdown());
   }
@@ -5609,8 +5143,6 @@ class EosBindings {
       _lookup<ffi.NativeFunction<ffi.UnsignedInt Function()>>('EOS_Shutdown');
   late final _EOS_Shutdown = _EOS_ShutdownPtr.asFunction<int Function()>();
 
-  /// Fetches a stat from a given index. Use EOS_Stats_Stat_Release when
-  /// finished with the data.
   EOS_EResult EOS_Stats_CopyStatByIndex(
     EOS_HStats Handle,
     ffi.Pointer<EOS_Stats_CopyStatByIndexOptions> Options,
@@ -5640,8 +5172,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches a stat from cached stats by name. Use EOS_Stats_Stat_Release when
-  /// finished with the data.
   EOS_EResult EOS_Stats_CopyStatByName(
     EOS_HStats Handle,
     ffi.Pointer<EOS_Stats_CopyStatByNameOptions> Options,
@@ -5671,7 +5201,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetch the number of stats that are cached locally.
   int EOS_Stats_GetStatsCount(
     EOS_HStats Handle,
     ffi.Pointer<EOS_Stats_GetStatCountOptions> Options,
@@ -5693,11 +5222,6 @@ class EosBindings {
         int Function(EOS_HStats, ffi.Pointer<EOS_Stats_GetStatCountOptions>)
       >();
 
-  /// Ingest a stat by the amount specified in Options. When the operation is
-  /// complete and the delegate is triggered the stat will be uploaded to the
-  /// backend to be processed. The stat may not be updated immediately and an
-  /// achievement using the stat may take a while to be unlocked once the stat
-  /// has been uploaded.
   void EOS_Stats_IngestStat(
     EOS_HStats Handle,
     ffi.Pointer<EOS_Stats_IngestStatOptions> Options,
@@ -5733,7 +5257,6 @@ class EosBindings {
         )
       >();
 
-  /// Query for a list of stats for a specific player.
   void EOS_Stats_QueryStats(
     EOS_HStats Handle,
     ffi.Pointer<EOS_Stats_QueryStatsOptions> Options,
@@ -5769,8 +5292,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with a stat. This must be called on data
-  /// retrieved from EOS_Stats_CopyStatByIndex or EOS_Stats_CopyStatByName.
   void EOS_Stats_Stat_Release(ffi.Pointer<EOS_Stats_Stat> Stat) {
     return _EOS_Stats_Stat_Release(Stat);
   }
@@ -5784,8 +5305,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_Stats_Stat>)
       >();
 
-  /// Free the memory used by a cloud-storage file request handle. This will not
-  /// cancel a request in progress.
   void EOS_TitleStorageFileTransferRequest_Release(
     EOS_HTitleStorageFileTransferRequest TitleStorageFileTransferHandle,
   ) {
@@ -5805,7 +5324,6 @@ class EosBindings {
         void Function(EOS_HTitleStorageFileTransferRequest)
       >();
 
-  /// Free the memory used by the file metadata
   void EOS_TitleStorage_FileMetadata_Release(
     ffi.Pointer<EOS_TitleStorage_FileMetadata> FileMetadata,
   ) {
@@ -5823,9 +5341,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_TitleStorage_FileMetadata>)
       >();
 
-  /// Release the memory associated with EOS_UserInfo_BestDisplayName. This must
-  /// be called on data retrieved from
-  /// EOS_UserInfo_CopyBestDisplayNameWithPlatform.
   void EOS_UserInfo_BestDisplayName_Release(
     ffi.Pointer<EOS_UserInfo_BestDisplayName> BestDisplayName,
   ) {
@@ -5843,15 +5358,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_UserInfo_BestDisplayName>)
       >();
 
-  /// EOS_UserInfo_CopyBestDisplayName is used to immediately retrieve a copy of
-  /// user's best display name based on an Epic Account ID. This uses data
-  /// cached by a previous call to EOS_UserInfo_QueryUserInfo,
-  /// EOS_UserInfo_QueryUserInfoByDisplayName or
-  /// EOS_UserInfo_QueryUserInfoByExternalAccount as well as
-  /// EOS_Connect_QueryExternalAccountMappings. If the call returns an
-  /// EOS_Success result, the out parameter, OutBestDisplayName, must be passed
-  /// to EOS_UserInfo_BestDisplayName_Release to release the memory associated
-  /// with it.
   EOS_EResult EOS_UserInfo_CopyBestDisplayName(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyBestDisplayNameOptions> Options,
@@ -5881,14 +5387,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_CopyBestDisplayNameWithPlatform is used to immediately
-  /// retrieve a copy of user's best display name based on an Epic Account ID.
-  /// This uses data cached by a previous call to EOS_UserInfo_QueryUserInfo,
-  /// EOS_UserInfo_QueryUserInfoByDisplayName or
-  /// EOS_UserInfo_QueryUserInfoByExternalAccount. If the call returns an
-  /// EOS_Success result, the out parameter, OutBestDisplayName, must be passed
-  /// to EOS_UserInfo_BestDisplayName_Release to release the memory associated
-  /// with it.
   EOS_EResult EOS_UserInfo_CopyBestDisplayNameWithPlatform(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyBestDisplayNameWithPlatformOptions> Options,
@@ -5922,7 +5420,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an external user info for a given external account ID.
   EOS_EResult EOS_UserInfo_CopyExternalUserInfoByAccountId(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyExternalUserInfoByAccountIdOptions> Options,
@@ -5956,7 +5453,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an external user info for a given external account type.
   EOS_EResult EOS_UserInfo_CopyExternalUserInfoByAccountType(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyExternalUserInfoByAccountTypeOptions> Options,
@@ -5990,7 +5486,6 @@ class EosBindings {
         )
       >();
 
-  /// Fetches an external user info from a given index.
   EOS_EResult EOS_UserInfo_CopyExternalUserInfoByIndex(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyExternalUserInfoByIndexOptions> Options,
@@ -6024,11 +5519,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_CopyUserInfo is used to immediately retrieve a copy of user
-  /// information based on an Epic Account ID, cached by a previous call to
-  /// EOS_UserInfo_QueryUserInfo. If the call returns an EOS_Success result, the
-  /// out parameter, OutUserInfo, must be passed to EOS_UserInfo_Release to
-  /// release the memory associated with it.
   EOS_EResult EOS_UserInfo_CopyUserInfo(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_CopyUserInfoOptions> Options,
@@ -6058,8 +5548,6 @@ class EosBindings {
         )
       >();
 
-  /// Release the memory associated with external user info. This must be called
-  /// on data retrieved from EOS_UserInfo_CopyExternalUserInfoByIndexOptions.
   void EOS_UserInfo_ExternalUserInfo_Release(
     ffi.Pointer<EOS_UserInfo_ExternalUserInfo> ExternalUserInfo,
   ) {
@@ -6077,7 +5565,6 @@ class EosBindings {
         void Function(ffi.Pointer<EOS_UserInfo_ExternalUserInfo>)
       >();
 
-  /// Fetch the number of external user infos that are cached locally.
   int EOS_UserInfo_GetExternalUserInfoCount(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_GetExternalUserInfoCountOptions> Options,
@@ -6102,8 +5589,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_GetLocalPlatformType is used to retrieve the online platform
-  /// type of the current running instance of the game.
   int EOS_UserInfo_GetLocalPlatformType(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_GetLocalPlatformTypeOptions> Options,
@@ -6128,11 +5613,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_QueryUserInfo is used to start an asynchronous query to
-  /// retrieve information, such as display name, about another account. Once
-  /// the callback has been fired with a successful ResultCode, it is possible
-  /// to call EOS_UserInfo_CopyUserInfo to receive an EOS_UserInfo containing
-  /// the available information.
   void EOS_UserInfo_QueryUserInfo(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_QueryUserInfoOptions> Options,
@@ -6168,12 +5648,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_QueryUserInfoByDisplayName is used to start an asynchronous
-  /// query to retrieve user information by display name. This can be useful for
-  /// getting the EOS_EpicAccountId for a display name. Once the callback has
-  /// been fired with a successful ResultCode, it is possible to call
-  /// EOS_UserInfo_CopyUserInfo to receive an EOS_UserInfo containing the
-  /// available information.
   void EOS_UserInfo_QueryUserInfoByDisplayName(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_QueryUserInfoByDisplayNameOptions> Options,
@@ -6209,12 +5683,6 @@ class EosBindings {
         )
       >();
 
-  /// EOS_UserInfo_QueryUserInfoByExternalAccount is used to start an
-  /// asynchronous query to retrieve user information by external accounts. This
-  /// can be useful for getting the EOS_EpicAccountId for external accounts.
-  /// Once the callback has been fired with a successful ResultCode, it is
-  /// possible to call CopyUserInfo to receive an EOS_UserInfo containing the
-  /// available information.
   void EOS_UserInfo_QueryUserInfoByExternalAccount(
     EOS_HUserInfo Handle,
     ffi.Pointer<EOS_UserInfo_QueryUserInfoByExternalAccountOptions> Options,
@@ -6473,8 +5941,6 @@ typedef EOS_Achievements_GetPlayerAchievementCountOptions =
 typedef EOS_Achievements_GetUnlockedAchievementCountOptions =
     _tagEOS_Achievements_GetUnlockedAchievementCountOptions;
 
-/// Function prototype definition for notifications that come from
-/// EOS_Achievements_AddNotifyAchievementsUnlocked
 typedef EOS_Achievements_OnAchievementsUnlockedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6492,8 +5958,6 @@ typedef DartEOS_Achievements_OnAchievementsUnlockedCallbackFunction =
 typedef EOS_Achievements_OnAchievementsUnlockedCallbackInfo =
     _tagEOS_Achievements_OnAchievementsUnlockedCallbackInfo;
 
-/// Function prototype definition for notifications that come from
-/// EOS_Achievements_AddNotifyAchievementsUnlockedV2
 typedef EOS_Achievements_OnAchievementsUnlockedCallbackV2 =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6511,8 +5975,6 @@ typedef DartEOS_Achievements_OnAchievementsUnlockedCallbackV2Function =
 typedef EOS_Achievements_OnAchievementsUnlockedCallbackV2Info =
     _tagEOS_Achievements_OnAchievementsUnlockedCallbackV2Info;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Achievements_QueryDefinitions
 typedef EOS_Achievements_OnQueryDefinitionsCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6530,8 +5992,6 @@ typedef DartEOS_Achievements_OnQueryDefinitionsCompleteCallbackFunction =
 typedef EOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo =
     _tagEOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Achievements_QueryPlayerAchievements
 typedef EOS_Achievements_OnQueryPlayerAchievementsCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6555,8 +6015,6 @@ typedef DartEOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackFunction =
 typedef EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo =
     _tagEOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Achievements_UnlockAchievements
 typedef EOS_Achievements_OnUnlockAchievementsCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6598,7 +6056,6 @@ typedef EOS_ActiveSession_GetRegisteredPlayerCountOptions =
     _tagEOS_ActiveSession_GetRegisteredPlayerCountOptions;
 typedef EOS_ActiveSession_Info = _tagEOS_ActiveSession_Info;
 
-/// Function prototype type definition for functions that allocate memory.
 typedef EOS_AllocateMemoryFunc =
     ffi.Pointer<ffi.NativeFunction<EOS_AllocateMemoryFuncFunction>>;
 typedef EOS_AllocateMemoryFuncFunction =
@@ -6629,7 +6086,6 @@ typedef EOS_AntiCheatClient_GetModuleBuildIdOptions =
 typedef EOS_AntiCheatClient_GetProtectMessageOutputLengthOptions =
     _tagEOS_AntiCheatClient_GetProtectMessageOutputLengthOptions;
 
-/// Callback issued when the local client triggers an integrity violation.
 typedef EOS_AntiCheatClient_OnClientIntegrityViolatedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6649,7 +6105,6 @@ typedef DartEOS_AntiCheatClient_OnClientIntegrityViolatedCallbackFunction =
 typedef EOS_AntiCheatClient_OnClientIntegrityViolatedCallbackInfo =
     _tagEOS_AntiCheatClient_OnClientIntegrityViolatedCallbackInfo;
 
-/// Callback issued when a new message must be dispatched to a connected peer.
 typedef EOS_AntiCheatClient_OnMessageToPeerCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_AntiCheatClient_OnMessageToPeerCallbackFunction>
@@ -6663,7 +6118,6 @@ typedef DartEOS_AntiCheatClient_OnMessageToPeerCallbackFunction =
       ffi.Pointer<EOS_AntiCheatCommon_OnMessageToClientCallbackInfo> Data,
     );
 
-/// Callback issued when a new message must be dispatched to the game server.
 typedef EOS_AntiCheatClient_OnMessageToServerCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_AntiCheatClient_OnMessageToServerCallbackFunction>
@@ -6679,9 +6133,6 @@ typedef DartEOS_AntiCheatClient_OnMessageToServerCallbackFunction =
 typedef EOS_AntiCheatClient_OnMessageToServerCallbackInfo =
     _tagEOS_AntiCheatClient_OnMessageToServerCallbackInfo;
 
-/// Callback issued when an action must be applied to a connected peer. This
-/// callback is always issued from within EOS_Platform_Tick on its calling
-/// thread.
 typedef EOS_AntiCheatClient_OnPeerActionRequiredCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6697,9 +6148,6 @@ typedef DartEOS_AntiCheatClient_OnPeerActionRequiredCallbackFunction =
       ffi.Pointer<EOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo> Data,
     );
 
-/// Optional callback issued when a connected peer's authentication status has
-/// changed. This callback is always issued from within EOS_Platform_Tick on its
-/// calling thread.
 typedef EOS_AntiCheatClient_OnPeerAuthStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6735,8 +6183,6 @@ typedef EOS_AntiCheatClient_UnprotectMessageOptions =
 typedef EOS_AntiCheatClient_UnregisterPeerOptions =
     _tagEOS_AntiCheatClient_UnregisterPeerOptions;
 
-/// Arbitrary data that is a unique local identifier for a single remote client
-/// or peer.
 typedef EOS_AntiCheatCommon_ClientHandle = ffi.Pointer<ffi.Void>;
 typedef EOS_AntiCheatCommon_LogEventOptions =
     _tagEOS_AntiCheatCommon_LogEventOptions;
@@ -6794,9 +6240,6 @@ typedef EOS_AntiCheatServer_EndSessionOptions =
 typedef EOS_AntiCheatServer_GetProtectMessageOutputLengthOptions =
     _tagEOS_AntiCheatServer_GetProtectMessageOutputLengthOptions;
 
-/// Callback issued when an action must be applied to a connected client. This
-/// callback is always issued from within EOS_Platform_Tick on its calling
-/// thread.
 typedef EOS_AntiCheatServer_OnClientActionRequiredCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6812,9 +6255,6 @@ typedef DartEOS_AntiCheatServer_OnClientActionRequiredCallbackFunction =
       ffi.Pointer<EOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo> Data,
     );
 
-/// Optional callback issued when a connected client's authentication status has
-/// changed. This callback is always issued from within EOS_Platform_Tick on its
-/// calling thread.
 typedef EOS_AntiCheatServer_OnClientAuthStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -6832,7 +6272,6 @@ typedef DartEOS_AntiCheatServer_OnClientAuthStatusChangedCallbackFunction =
       Data,
     );
 
-/// Callback issued when a new message must be dispatched to a connected client.
 typedef EOS_AntiCheatServer_OnMessageToClientCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_AntiCheatServer_OnMessageToClientCallbackFunction>
@@ -6882,8 +6321,6 @@ typedef EOS_Auth_LoginStatusChangedCallbackInfo =
 typedef EOS_Auth_LogoutCallbackInfo = _tagEOS_Auth_LogoutCallbackInfo;
 typedef EOS_Auth_LogoutOptions = _tagEOS_Auth_LogoutOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Auth_DeletePersistentAuth
 typedef EOS_Auth_OnDeletePersistentAuthCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Auth_OnDeletePersistentAuthCallbackFunction>
@@ -6895,7 +6332,6 @@ typedef EOS_Auth_OnDeletePersistentAuthCallbackFunction =
 typedef DartEOS_Auth_OnDeletePersistentAuthCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_DeletePersistentAuthCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Auth_LinkAccount
 typedef EOS_Auth_OnLinkAccountCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnLinkAccountCallbackFunction>>;
 typedef EOS_Auth_OnLinkAccountCallbackFunction =
@@ -6903,7 +6339,6 @@ typedef EOS_Auth_OnLinkAccountCallbackFunction =
 typedef DartEOS_Auth_OnLinkAccountCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_LinkAccountCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Auth_Login
 typedef EOS_Auth_OnLoginCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnLoginCallbackFunction>>;
 typedef EOS_Auth_OnLoginCallbackFunction =
@@ -6911,8 +6346,6 @@ typedef EOS_Auth_OnLoginCallbackFunction =
 typedef DartEOS_Auth_OnLoginCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_LoginCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_Auth_AddNotifyLoginStatusChanged
 typedef EOS_Auth_OnLoginStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Auth_OnLoginStatusChangedCallbackFunction>
@@ -6924,7 +6357,6 @@ typedef EOS_Auth_OnLoginStatusChangedCallbackFunction =
 typedef DartEOS_Auth_OnLoginStatusChangedCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_LoginStatusChangedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Auth_Logout
 typedef EOS_Auth_OnLogoutCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnLogoutCallbackFunction>>;
 typedef EOS_Auth_OnLogoutCallbackFunction =
@@ -6932,8 +6364,6 @@ typedef EOS_Auth_OnLogoutCallbackFunction =
 typedef DartEOS_Auth_OnLogoutCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_LogoutCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed into
-/// EOS_Auth_QueryIdToken.
 typedef EOS_Auth_OnQueryIdTokenCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnQueryIdTokenCallbackFunction>>;
 typedef EOS_Auth_OnQueryIdTokenCallbackFunction =
@@ -6941,8 +6371,6 @@ typedef EOS_Auth_OnQueryIdTokenCallbackFunction =
 typedef DartEOS_Auth_OnQueryIdTokenCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_QueryIdTokenCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed into
-/// EOS_Auth_VerifyIdToken.
 typedef EOS_Auth_OnVerifyIdTokenCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnVerifyIdTokenCallbackFunction>>;
 typedef EOS_Auth_OnVerifyIdTokenCallbackFunction =
@@ -6950,8 +6378,6 @@ typedef EOS_Auth_OnVerifyIdTokenCallbackFunction =
 typedef DartEOS_Auth_OnVerifyIdTokenCallbackFunction =
     void Function(ffi.Pointer<EOS_Auth_VerifyIdTokenCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Auth_VerifyUserAuth
 typedef EOS_Auth_OnVerifyUserAuthCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Auth_OnVerifyUserAuthCallbackFunction>>;
 typedef EOS_Auth_OnVerifyUserAuthCallbackFunction =
@@ -7104,8 +6530,6 @@ typedef EOS_Connect_LoginStatusChangedCallbackInfo =
 typedef EOS_Connect_LogoutCallbackInfo = _tagEOS_Connect_LogoutCallbackInfo;
 typedef EOS_Connect_LogoutOptions = _tagEOS_Connect_LogoutOptions;
 
-/// Function prototype definition for notifications that come from
-/// EOS_Connect_AddNotifyAuthExpiration.
 typedef EOS_Connect_OnAuthExpirationCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnAuthExpirationCallbackFunction>
@@ -7115,8 +6539,6 @@ typedef EOS_Connect_OnAuthExpirationCallbackFunction =
 typedef DartEOS_Connect_OnAuthExpirationCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_AuthExpirationCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_CreateDeviceId.
 typedef EOS_Connect_OnCreateDeviceIdCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnCreateDeviceIdCallbackFunction>
@@ -7126,8 +6548,6 @@ typedef EOS_Connect_OnCreateDeviceIdCallbackFunction =
 typedef DartEOS_Connect_OnCreateDeviceIdCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_CreateDeviceIdCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_CreateUser.
 typedef EOS_Connect_OnCreateUserCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Connect_OnCreateUserCallbackFunction>>;
 typedef EOS_Connect_OnCreateUserCallbackFunction =
@@ -7135,8 +6555,6 @@ typedef EOS_Connect_OnCreateUserCallbackFunction =
 typedef DartEOS_Connect_OnCreateUserCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_CreateUserCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_DeleteDeviceId.
 typedef EOS_Connect_OnDeleteDeviceIdCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnDeleteDeviceIdCallbackFunction>
@@ -7146,8 +6564,6 @@ typedef EOS_Connect_OnDeleteDeviceIdCallbackFunction =
 typedef DartEOS_Connect_OnDeleteDeviceIdCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_DeleteDeviceIdCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_LinkAccount.
 typedef EOS_Connect_OnLinkAccountCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Connect_OnLinkAccountCallbackFunction>>;
 typedef EOS_Connect_OnLinkAccountCallbackFunction =
@@ -7155,7 +6571,6 @@ typedef EOS_Connect_OnLinkAccountCallbackFunction =
 typedef DartEOS_Connect_OnLinkAccountCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_LinkAccountCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Connect_Login.
 typedef EOS_Connect_OnLoginCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Connect_OnLoginCallbackFunction>>;
 typedef EOS_Connect_OnLoginCallbackFunction =
@@ -7163,8 +6578,6 @@ typedef EOS_Connect_OnLoginCallbackFunction =
 typedef DartEOS_Connect_OnLoginCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_LoginCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_Connect_AddNotifyLoginStatusChanged.
 typedef EOS_Connect_OnLoginStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnLoginStatusChangedCallbackFunction>
@@ -7176,7 +6589,6 @@ typedef EOS_Connect_OnLoginStatusChangedCallbackFunction =
 typedef DartEOS_Connect_OnLoginStatusChangedCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_LoginStatusChangedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Connect_Logout
 typedef EOS_Connect_OnLogoutCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Connect_OnLogoutCallbackFunction>>;
 typedef EOS_Connect_OnLogoutCallbackFunction =
@@ -7184,8 +6596,6 @@ typedef EOS_Connect_OnLogoutCallbackFunction =
 typedef DartEOS_Connect_OnLogoutCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_LogoutCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_QueryExternalAccountMappings.
 typedef EOS_Connect_OnQueryExternalAccountMappingsCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7201,8 +6611,6 @@ typedef DartEOS_Connect_OnQueryExternalAccountMappingsCallbackFunction =
       ffi.Pointer<EOS_Connect_QueryExternalAccountMappingsCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_QueryProductUserIdMappings.
 typedef EOS_Connect_OnQueryProductUserIdMappingsCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7218,8 +6626,6 @@ typedef DartEOS_Connect_OnQueryProductUserIdMappingsCallbackFunction =
       ffi.Pointer<EOS_Connect_QueryProductUserIdMappingsCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_TransferDeviceIdAccount.
 typedef EOS_Connect_OnTransferDeviceIdAccountCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnTransferDeviceIdAccountCallbackFunction>
@@ -7233,8 +6639,6 @@ typedef DartEOS_Connect_OnTransferDeviceIdAccountCallbackFunction =
       ffi.Pointer<EOS_Connect_TransferDeviceIdAccountCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Connect_UnlinkAccount.
 typedef EOS_Connect_OnUnlinkAccountCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnUnlinkAccountCallbackFunction>
@@ -7244,8 +6648,6 @@ typedef EOS_Connect_OnUnlinkAccountCallbackFunction =
 typedef DartEOS_Connect_OnUnlinkAccountCallbackFunction =
     void Function(ffi.Pointer<EOS_Connect_UnlinkAccountCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed into
-/// EOS_Connect_VerifyIdToken.
 typedef EOS_Connect_OnVerifyIdTokenCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Connect_OnVerifyIdTokenCallbackFunction>
@@ -7274,7 +6676,6 @@ typedef EOS_Connect_VerifyIdTokenCallbackInfo =
     _tagEOS_Connect_VerifyIdTokenCallbackInfo;
 typedef EOS_Connect_VerifyIdTokenOptions = _tagEOS_Connect_VerifyIdTokenOptions;
 
-/// A handle to a continuance token
 typedef EOS_ContinuanceToken = ffi.Pointer<EOS_ContinuanceTokenDetails>;
 
 final class EOS_ContinuanceTokenDetails extends ffi.Opaque {}
@@ -7308,8 +6709,6 @@ typedef EOS_CustomInvites_DisableRequestToJoinOptions =
 typedef EOS_CustomInvites_FinalizeInviteOptions =
     _tagEOS_CustomInvites_FinalizeInviteOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_CustomInvites_AcceptRequestToJoin
 typedef EOS_CustomInvites_OnAcceptRequestToJoinCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7325,8 +6724,6 @@ typedef DartEOS_CustomInvites_OnAcceptRequestToJoinCallbackFunction =
       ffi.Pointer<EOS_CustomInvites_AcceptRequestToJoinCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyCustomInviteAccepted
 typedef EOS_CustomInvites_OnCustomInviteAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7344,8 +6741,6 @@ typedef DartEOS_CustomInvites_OnCustomInviteAcceptedCallbackFunction =
 typedef EOS_CustomInvites_OnCustomInviteAcceptedCallbackInfo =
     _tagEOS_CustomInvites_OnCustomInviteAcceptedCallbackInfo;
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyCustomInviteReceived
 typedef EOS_CustomInvites_OnCustomInviteReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7363,8 +6758,6 @@ typedef DartEOS_CustomInvites_OnCustomInviteReceivedCallbackFunction =
 typedef EOS_CustomInvites_OnCustomInviteReceivedCallbackInfo =
     _tagEOS_CustomInvites_OnCustomInviteReceivedCallbackInfo;
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyCustomInviteRejected
 typedef EOS_CustomInvites_OnCustomInviteRejectedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7380,8 +6773,6 @@ typedef DartEOS_CustomInvites_OnCustomInviteRejectedCallbackFunction =
       ffi.Pointer<EOS_CustomInvites_CustomInviteRejectedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_CustomInvites_RejectRequestToJoin
 typedef EOS_CustomInvites_OnRejectRequestToJoinCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7397,8 +6788,6 @@ typedef DartEOS_CustomInvites_OnRejectRequestToJoinCallbackFunction =
       ffi.Pointer<EOS_CustomInvites_RejectRequestToJoinCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyRequestToJoinAccepted
 typedef EOS_CustomInvites_OnRequestToJoinAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7416,8 +6805,6 @@ typedef DartEOS_CustomInvites_OnRequestToJoinAcceptedCallbackFunction =
 typedef EOS_CustomInvites_OnRequestToJoinAcceptedCallbackInfo =
     _tagEOS_CustomInvites_OnRequestToJoinAcceptedCallbackInfo;
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyRequestToJoinReceived
 typedef EOS_CustomInvites_OnRequestToJoinReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7433,8 +6820,6 @@ typedef DartEOS_CustomInvites_OnRequestToJoinReceivedCallbackFunction =
       ffi.Pointer<EOS_CustomInvites_RequestToJoinReceivedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifyRequestToJoinRejected
 typedef EOS_CustomInvites_OnRequestToJoinRejectedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7452,8 +6837,6 @@ typedef DartEOS_CustomInvites_OnRequestToJoinRejectedCallbackFunction =
 typedef EOS_CustomInvites_OnRequestToJoinRejectedCallbackInfo =
     _tagEOS_CustomInvites_OnRequestToJoinRejectedCallbackInfo;
 
-/// Function prototype definition for notifications that come from
-/// EOS_CustomInvites_AddNotifyRequestToJoinResponseReceived
 typedef EOS_CustomInvites_OnRequestToJoinResponseReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7471,8 +6854,6 @@ typedef DartEOS_CustomInvites_OnRequestToJoinResponseReceivedCallbackFunction =
       Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_CustomInvites_SendCustomInvite
 typedef EOS_CustomInvites_OnSendCustomInviteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_CustomInvites_OnSendCustomInviteCallbackFunction>
@@ -7486,8 +6867,6 @@ typedef DartEOS_CustomInvites_OnSendCustomInviteCallbackFunction =
       ffi.Pointer<EOS_CustomInvites_SendCustomInviteCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_CustomInvites_AddNotifySendCustomNativeInviteRequested
 typedef EOS_CustomInvites_OnSendCustomNativeInviteRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -7505,8 +6884,6 @@ typedef DartEOS_CustomInvites_OnSendCustomNativeInviteRequestedCallbackFunction 
       Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_CustomInvites_SendRequestToJoin
 typedef EOS_CustomInvites_OnSendRequestToJoinCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_CustomInvites_OnSendRequestToJoinCallbackFunction>
@@ -7540,15 +6917,11 @@ typedef EOS_CustomInvites_SendRequestToJoinOptions =
 typedef EOS_CustomInvites_SetCustomInviteOptions =
     _tagEOS_CustomInvites_SetCustomInviteOptions;
 
-/// Operating modes
 enum EOS_EAntiCheatClientMode {
-  /// Not used
   EOS_ACCM_Invalid(0),
 
-  /// Dedicated or listen server mode
   EOS_ACCM_ClientServer(1),
 
-  /// Full mesh peer-to-peer mode
   EOS_ACCM_PeerToPeer(2),
   __EOS_EAntiCheatClientMode_PAD_INT32__(2147483647);
 
@@ -7566,56 +6939,37 @@ enum EOS_EAntiCheatClientMode {
   };
 }
 
-/// Anti-cheat integrity violation types
 enum EOS_EAntiCheatClientViolationType {
-  /// Not used
   EOS_ACCVT_Invalid(0),
 
-  /// An anti-cheat asset integrity catalog file could not be found
   EOS_ACCVT_IntegrityCatalogNotFound(1),
 
-  /// An anti-cheat asset integrity catalog file is corrupt or invalid
   EOS_ACCVT_IntegrityCatalogError(2),
 
-  /// An anti-cheat asset integrity catalog file's certificate has been revoked.
   EOS_ACCVT_IntegrityCatalogCertificateRevoked(3),
 
-  /// The primary anti-cheat asset integrity catalog does not include an entry
-  /// for the game's main executable, which is required.
   EOS_ACCVT_IntegrityCatalogMissingMainExecutable(4),
 
-  /// A disallowed game file modification was detected
   EOS_ACCVT_GameFileMismatch(5),
 
-  /// A disallowed game file removal was detected
   EOS_ACCVT_RequiredGameFileNotFound(6),
 
-  /// A disallowed game file addition was detected
   EOS_ACCVT_UnknownGameFileForbidden(7),
 
-  /// A system file failed an integrity check
   EOS_ACCVT_SystemFileUntrusted(8),
 
-  /// A disallowed code module was loaded into the game process
   EOS_ACCVT_ForbiddenModuleLoaded(9),
 
-  /// A disallowed game process memory modification was detected
   EOS_ACCVT_CorruptedMemory(10),
 
-  /// A disallowed tool was detected running in the system
   EOS_ACCVT_ForbiddenToolDetected(11),
 
-  /// An internal anti-cheat integrity check failed
   EOS_ACCVT_InternalAntiCheatViolation(12),
 
-  /// Integrity checks on messages between the game client and game server, or
-  /// between peers, failed
   EOS_ACCVT_CorruptedNetworkMessageFlow(13),
 
-  /// The game is running inside a disallowed virtual machine
   EOS_ACCVT_VirtualMachineNotAllowed(14),
 
-  /// A forbidden operating system configuration was detected
   EOS_ACCVT_ForbiddenSystemConfiguration(15),
   __EOS_EAntiCheatClientViolationType_PAD_INT32__(2147483647);
 
@@ -7647,12 +7001,9 @@ enum EOS_EAntiCheatClientViolationType {
       };
 }
 
-/// Anti-cheat action values. Applicable to both clients and remote peers.
 enum EOS_EAntiCheatCommonClientAction {
-  /// Not used
   EOS_ACCCA_Invalid(0),
 
-  /// The client/peer must be removed from the current game session
   EOS_ACCCA_RemovePlayer(1),
   __EOS_EAntiCheatCommonClientAction_PAD_INT32__(2147483647);
 
@@ -7670,39 +7021,27 @@ enum EOS_EAntiCheatCommonClientAction {
       };
 }
 
-/// Anti-cheat action reasons. Applicable to both clients and remote peers.
 enum EOS_EAntiCheatCommonClientActionReason {
-  /// Not used
   EOS_ACCCAR_Invalid(0),
 
-  /// An internal error occurred
   EOS_ACCCAR_InternalError(1),
 
-  /// An anti-cheat message received from the client/peer was corrupt or invalid
   EOS_ACCCAR_InvalidMessage(2),
 
-  /// The client/peer's anti-cheat authentication failed
   EOS_ACCCAR_AuthenticationFailed(3),
 
-  /// The client/peer failed to load the anti-cheat module at startup
   EOS_ACCCAR_NullClient(4),
 
-  /// The client/peer's anti-cheat heartbeat was not received
   EOS_ACCCAR_HeartbeatTimeout(5),
 
-  /// The client/peer failed an anti-cheat client runtime check
   EOS_ACCCAR_ClientViolation(6),
 
-  /// The client/peer failed an anti-cheat backend runtime check
   EOS_ACCCAR_BackendViolation(7),
 
-  /// The client/peer is temporarily blocked from playing on this game server
   EOS_ACCCAR_TemporaryCooldown(8),
 
-  /// The client/peer is temporarily banned
   EOS_ACCCAR_TemporaryBanned(9),
 
-  /// The client/peer is permanently banned
   EOS_ACCCAR_PermanentBanned(10),
   __EOS_EAntiCheatCommonClientActionReason_PAD_INT32__(2147483647);
 
@@ -7729,17 +7068,11 @@ enum EOS_EAntiCheatCommonClientActionReason {
       };
 }
 
-/// The client/peer's anti-cheat authentication status
 enum EOS_EAntiCheatCommonClientAuthStatus {
-  /// Not used
   EOS_ACCCAS_Invalid(0),
 
-  /// The client/peer's anti-cheat functionality has been validated by this game
-  /// server
   EOS_ACCCAS_LocalAuthComplete(1),
 
-  /// The client/peer's anti-cheat functionality has been validated by the
-  /// anti-cheat backend service
   EOS_ACCCAS_RemoteAuthComplete(2),
   __EOS_EAntiCheatCommonClientAuthStatus_PAD_INT32__(2147483647);
 
@@ -7758,12 +7091,9 @@ enum EOS_EAntiCheatCommonClientAuthStatus {
       };
 }
 
-/// Flags describing a remote client. These can be updated during a play session
 enum EOS_EAntiCheatCommonClientFlags {
-  /// No particular flags relevant for this client
   EOS_ACCCF_None(0),
 
-  /// The client has admin privileges on the game server
   EOS_ACCCF_Admin(1),
   __EOS_EAntiCheatCommonClientFlags_PAD_INT32__(2147483647);
 
@@ -7781,19 +7111,13 @@ enum EOS_EAntiCheatCommonClientFlags {
       };
 }
 
-/// Flags describing the input device used by a remote client, if known. These
-/// can be updated during a play session.
 enum EOS_EAntiCheatCommonClientInput {
-  /// Unknown input device
   EOS_ACCCI_Unknown(0),
 
-  /// The client is using mouse and keyboard
   EOS_ACCCI_MouseKeyboard(1),
 
-  /// The client is using a gamepad or game controller
   EOS_ACCCI_Gamepad(2),
 
-  /// The client is using a touch input device (e.g. phone/tablet screen)
   EOS_ACCCI_TouchInput(3),
   __EOS_EAntiCheatCommonClientInput_PAD_INT32__(2147483647);
 
@@ -7813,33 +7137,23 @@ enum EOS_EAntiCheatCommonClientInput {
       };
 }
 
-/// Flags describing the platform of a remote client, if known
 enum EOS_EAntiCheatCommonClientPlatform {
-  /// Unknown platform
   EOS_ACCCP_Unknown(0),
 
-  /// The client is playing on Windows
   EOS_ACCCP_Windows(1),
 
-  /// The client is playing on Mac
   EOS_ACCCP_Mac(2),
 
-  /// The client is playing on Linux
   EOS_ACCCP_Linux(3),
 
-  /// The client is playing on an Xbox device
   EOS_ACCCP_Xbox(4),
 
-  /// The client is playing on a PlayStation device
   EOS_ACCCP_PlayStation(5),
 
-  /// The client is playing on a Nintendo device
   EOS_ACCCP_Nintendo(6),
 
-  /// The client is playing on iOS
   EOS_ACCCP_iOS(7),
 
-  /// The client is playing on Android
   EOS_ACCCP_Android(8),
   __EOS_EAntiCheatCommonClientPlatform_PAD_INT32__(2147483647);
 
@@ -7864,16 +7178,11 @@ enum EOS_EAntiCheatCommonClientPlatform {
       };
 }
 
-/// Flags describing the type of a remote client
 enum EOS_EAntiCheatCommonClientType {
-  /// An ordinary player that requires anti-cheat client protection to play
   EOS_ACCCT_ProtectedClient(0),
 
-  /// The player does not need the anti-cheat client to play because of their
-  /// platform or other factors
   EOS_ACCCT_UnprotectedClient(1),
 
-  /// The client is an AI bot, not an actual human
   EOS_ACCCT_AIBot(2),
   __EOS_EAntiCheatCommonClientType_PAD_INT32__(2147483647);
 
@@ -7891,36 +7200,25 @@ enum EOS_EAntiCheatCommonClientType {
   };
 }
 
-/// Types supported for custom gameplay behavior event parameters
 enum EOS_EAntiCheatCommonEventParamType {
-  /// Not used
   EOS_ACCEPT_Invalid(0),
 
-  /// EOS_AntiCheatCommon_ClientHandle
   EOS_ACCEPT_ClientHandle(1),
 
-  /// const char*
   EOS_ACCEPT_String(2),
 
-  /// uint32_t
   EOS_ACCEPT_UInt32(3),
 
-  /// int32_t
   EOS_ACCEPT_Int32(4),
 
-  /// uint64_t
   EOS_ACCEPT_UInt64(5),
 
-  /// int64_t
   EOS_ACCEPT_Int64(6),
 
-  /// EOS_AntiCheatCommon_Vec3f
   EOS_ACCEPT_Vector3f(7),
 
-  /// EOS_AntiCheatCommon_Quat
   EOS_ACCEPT_Quat(8),
 
-  /// float
   EOS_ACCEPT_Float(9),
   __EOS_EAntiCheatCommonEventParamType_PAD_INT32__(2147483647);
 
@@ -7946,20 +7244,11 @@ enum EOS_EAntiCheatCommonEventParamType {
       };
 }
 
-/// Types supported for custom gameplay behavior events. These have a
-/// considerable impact on performance
 enum EOS_EAntiCheatCommonEventType {
-  /// Not used
   EOS_ACCET_Invalid(0),
 
-  /// A general game event that is not specific to any individual player. Low
-  /// memory use which is constant with respect to the number of players.
   EOS_ACCET_GameEvent(1),
 
-  /// An event that is logically associated with a specific player. Events
-  /// logged in this category require a specific ClientHandle to which they will
-  /// be attached. Higher memory use which scales according to the number of
-  /// players.
   EOS_ACCET_PlayerEvent(2),
   __EOS_EAntiCheatCommonEventType_PAD_INT32__(2147483647);
 
@@ -7977,18 +7266,13 @@ enum EOS_EAntiCheatCommonEventType {
   };
 }
 
-/// Flags describing the type of competition taking place
 enum EOS_EAntiCheatCommonGameRoundCompetitionType {
-  /// No particular competition type applies
   EOS_ACCGRCT_None(0),
 
-  /// Casual unranked play
   EOS_ACCGRCT_Casual(1),
 
-  /// Ranked play, usually with skill based matchmaking
   EOS_ACCGRCT_Ranked(2),
 
-  /// Organized competitive play like a tournament
   EOS_ACCGRCT_Competitive(3),
   __EOS_EAntiCheatCommonGameRoundCompetitionType_PAD_INT32__(2147483647);
 
@@ -8009,31 +7293,21 @@ enum EOS_EAntiCheatCommonGameRoundCompetitionType {
   };
 }
 
-/// Details of a player's movement state
 enum EOS_EAntiCheatCommonPlayerMovementState {
-  /// No particular state applies
   EOS_ACCPMS_None(0),
 
-  /// Player is crouching
   EOS_ACCPMS_Crouching(1),
 
-  /// Player is prone
   EOS_ACCPMS_Prone(2),
 
-  /// Player is mounted in a vehicle or similar
   EOS_ACCPMS_Mounted(3),
 
-  /// Player is swimming in a fluid volume
   EOS_ACCPMS_Swimming(4),
 
-  /// Player is falling under the effects of gravity, such as when jumping or
-  /// walking off the edge of a surface
   EOS_ACCPMS_Falling(5),
 
-  /// Player is flying, ignoring the effects of gravity
   EOS_ACCPMS_Flying(6),
 
-  /// Player is on a ladder
   EOS_ACCPMS_OnLadder(7),
   __EOS_EAntiCheatCommonPlayerMovementState_PAD_INT32__(2147483647);
 
@@ -8057,27 +7331,17 @@ enum EOS_EAntiCheatCommonPlayerMovementState {
       };
 }
 
-/// The result of a damage event, if any
 enum EOS_EAntiCheatCommonPlayerTakeDamageResult {
-  /// No direct state change consequence for the victim
   EOS_ACCPTDR_None(0),
 
-  /// Deprecated - use more specific values below instead
   EOS_ACCPTDR_Downed_DEPRECATED(1),
 
-  /// Deprecated - use more specific values below instead
   EOS_ACCPTDR_Eliminated_DEPRECATED(2),
 
-  /// Player character transitioned from a normal state to temporarily
-  /// incapacitated and requires assistance to recover.
   EOS_ACCPTDR_NormalToDowned(3),
 
-  /// Player character transitioned from a normal state to permanently
-  /// incapacitated and cannot recover (e.g. dead).
   EOS_ACCPTDR_NormalToEliminated(4),
 
-  /// Player character transitioned from a temporarily incapacitated state to
-  /// permanently incapacitated and cannot recover (e.g. dead).
   EOS_ACCPTDR_DownedToEliminated(5),
   __EOS_EAntiCheatCommonPlayerTakeDamageResult_PAD_INT32__(2147483647);
 
@@ -8100,18 +7364,13 @@ enum EOS_EAntiCheatCommonPlayerTakeDamageResult {
   };
 }
 
-/// The source of a damage event
 enum EOS_EAntiCheatCommonPlayerTakeDamageSource {
-  /// No particular source relevant
   EOS_ACCPTDS_None(0),
 
-  /// Damage caused by a player controlled character
   EOS_ACCPTDS_Player(1),
 
-  /// Damage caused by a non-player character such as an AI enemy
   EOS_ACCPTDS_NonPlayerCharacter(2),
 
-  /// Damage caused by the world (falling off level, into lava, etc)
   EOS_ACCPTDS_World(3),
   __EOS_EAntiCheatCommonPlayerTakeDamageSource_PAD_INT32__(2147483647);
 
@@ -8132,18 +7391,13 @@ enum EOS_EAntiCheatCommonPlayerTakeDamageSource {
   };
 }
 
-/// Type of damage applied in a damage event
 enum EOS_EAntiCheatCommonPlayerTakeDamageType {
-  /// No particular type relevant
   EOS_ACCPTDT_None(0),
 
-  /// Damage caused by a point source such as a bullet or melee attack
   EOS_ACCPTDT_PointDamage(1),
 
-  /// Damage caused by a radial source such as an explosion
   EOS_ACCPTDT_RadialDamage(2),
 
-  /// Damage over time such as bleeding, poison, etc
   EOS_ACCPTDT_DamageOverTime(3),
   __EOS_EAntiCheatCommonPlayerTakeDamageType_PAD_INT32__(2147483647);
 
@@ -8163,20 +7417,13 @@ enum EOS_EAntiCheatCommonPlayerTakeDamageType {
       };
 }
 
-/// All possible states of the application.
 enum EOS_EApplicationStatus {
-  /// Xbox only.
   EOS_AS_BackgroundConstrained(0),
 
-  /// Xbox only.
   EOS_AS_BackgroundUnconstrained(1),
 
-  /// Notifies the SDK that the application has been put into suspended state by
-  /// the platform system.
   EOS_AS_BackgroundSuspended(2),
 
-  /// Notifies the SDK that the application has been resumed from suspended
-  /// state.
   EOS_AS_Foreground(3),
   __EOS_EApplicationStatus_PAD_INT32__(2147483647);
 
@@ -8195,19 +7442,13 @@ enum EOS_EApplicationStatus {
   };
 }
 
-/// Supported types of data that can be stored with inside an attribute (used by
-/// sessions/lobbies/etc)
 enum EOS_EAttributeType {
-  /// Boolean value (true/false)
   EOS_AT_BOOLEAN(0),
 
-  /// 64 bit integers
   EOS_AT_INT64(1),
 
-  /// Double/floating point precision
   EOS_AT_DOUBLE(2),
 
-  /// UTF8 Strings
   EOS_AT_STRING(3),
   __EOS_EAttributeType_PAD_INT32__(2147483647);
 
@@ -8224,31 +7465,19 @@ enum EOS_EAttributeType {
   };
 }
 
-/// Flags that describe user permissions
 enum EOS_EAuthScopeFlags {
-  /// Default value, no permissions required
   EOS_AS_NoFlags(0),
 
-  /// Permissions to see your account ID, display name, and language
   EOS_AS_BasicProfile(1),
 
-  /// Permissions to see a list of your friends who use this application
   EOS_AS_FriendsList(2),
 
-  /// Permissions to set your online presence and see presence of your friends
   EOS_AS_Presence(4),
 
-  /// Permissions to manage the Epic friends list. This scope is restricted to
-  /// Epic first party products, and attempting to use it will result in
-  /// authentication failures.
   EOS_AS_FriendsManagement(8),
 
-  /// Permissions to see email in the response when fetching information for a
-  /// user. This scope is restricted to Epic first party products, and
-  /// attempting to use it will result in authentication failures.
   EOS_AS_Email(16),
 
-  /// Permissions to see your country
   EOS_AS_Country(32),
   __EOS_EAuthScopeFlags_PAD_INT32__(2147483647);
 
@@ -8268,12 +7497,9 @@ enum EOS_EAuthScopeFlags {
   };
 }
 
-/// Types of auth tokens
 enum EOS_EAuthTokenType {
-  /// Auth token is for a validated client
   EOS_ATT_Client(0),
 
-  /// Auth token is for a validated user
   EOS_ATT_User(1),
   __EOS_EAuthTokenType_PAD_INT32__(2147483647);
 
@@ -8370,16 +7596,11 @@ const int EOS_ECOM_TRANSACTION_COPYENTITLEMENTBYINDEX_API_LATEST = 1;
 
 const int EOS_ECOM_TRANSACTION_GETENTITLEMENTSCOUNT_API_LATEST = 1;
 
-/// An enumeration defining the possible orientation for the checkout page. This
-/// will be used on mobile.
 enum EOS_ECheckoutOrientation {
-  /// Current orientation will be used
   EOS_ECO_Default(0),
 
-  /// Portrait orientation
   EOS_ECO_Portrait(1),
 
-  /// Landscape orientation
   EOS_ECO_Landscape(2),
   __EOS_ECheckoutOrientation_PAD_INT32__(2147483647);
 
@@ -8397,52 +7618,33 @@ enum EOS_ECheckoutOrientation {
   };
 }
 
-/// All comparison operators associated with attributes.
 enum EOS_EComparisonOp {
-  /// Value must equal the one stored in the attribute
   EOS_CO_EQUAL(0),
 
-  /// Value must not equal the one stored in the attribute
   EOS_CO_NOTEQUAL(1),
 
-  /// Value must be strictly greater than the one stored in the attribute
   EOS_CO_GREATERTHAN(2),
 
-  /// Value must be greater than or equal to the one stored in the attribute
   EOS_CO_GREATERTHANOREQUAL(3),
 
-  /// Value must be strictly less than the one stored in the attribute
   EOS_CO_LESSTHAN(4),
 
-  /// Value must be less than or equal to the one stored in the attribute
   EOS_CO_LESSTHANOREQUAL(5),
 
-  /// Prefer values nearest the one specified ie. abs(SearchValue-SessionValue)
-  /// closest to 0
   EOS_CO_DISTANCE(6),
 
-  /// Value stored in the attribute may be any from a specified list
   EOS_CO_ANYOF(7),
 
-  /// Value stored in the attribute may NOT be any from a specified list
   EOS_CO_NOTANYOF(8),
 
-  /// This one value is a part of a collection. Supported in
-  /// EOS_SessionSearch_SetParameter only.
   EOS_CO_ONEOF(9),
 
-  /// This one value is NOT part of a collection. Supported in
-  /// EOS_SessionSearch_SetParameter only.
   EOS_CO_NOTONEOF(10),
 
-  /// This value is a CASE SENSITIVE substring of an attribute
   EOS_CO_CONTAINS(11),
 
-  /// This value is a regex match of an attribute
   EOS_CO_REGEXMATCH(12),
 
-  /// This array or string value's size must be equal to the one stored in the
-  /// attribute
   EOS_CO_SIZE(13),
   __EOS_EComparisonOp_PAD_INT32__(2147483647);
 
@@ -8469,53 +7671,29 @@ enum EOS_EComparisonOp {
   };
 }
 
-/// Reasons why a P2P connection was closed
 enum EOS_EConnectionClosedReason {
-  /// The connection was closed for unknown reasons. This most notably happens
-  /// during application shutdown.
   EOS_CCR_Unknown(0),
 
-  /// The connection was at least locally accepted, but was closed by the local
-  /// user via a call to EOS_P2P_CloseConnection / EOS_P2P_CloseConnections.
   EOS_CCR_ClosedByLocalUser(1),
 
-  /// The connection was at least locally accepted, but was gracefully closed by
-  /// the remote user via a call to EOS_P2P_CloseConnection /
-  /// EOS_P2P_CloseConnections.
   EOS_CCR_ClosedByPeer(2),
 
-  /// The connection was at least locally accepted, but was not remotely
-  /// accepted in time.
   EOS_CCR_TimedOut(3),
 
-  /// The connection was accepted, but the connection could not be created due
-  /// to too many other existing connections
   EOS_CCR_TooManyConnections(4),
 
-  /// The connection was accepted, The remote user sent an invalid message
   EOS_CCR_InvalidMessage(5),
 
-  /// The connection was accepted, but the remote user sent us invalid data
   EOS_CCR_InvalidData(6),
 
-  /// The connection was accepted, but we failed to ever establish a connection
-  /// with the remote user due to connectivity issues.
   EOS_CCR_ConnectionFailed(7),
 
-  /// The connection was accepted and established, but the peer silently went
-  /// away.
   EOS_CCR_ConnectionClosed(8),
 
-  /// The connection was locally accepted, but we failed to negotiate a
-  /// connection with the remote user. This most commonly occurs if the local
-  /// user goes offline or is logged-out during the connection process.
   EOS_CCR_NegotiationFailed(9),
 
-  /// The connection was accepted, but an internal error occurred and the
-  /// connection cannot be created or continue.
   EOS_CCR_UnexpectedError(10),
 
-  /// The connection was ignored because no connection listeners were bound.
   EOS_CCR_ConnectionIgnored(11),
   __EOS_EConnectionClosedReason_PAD_INT32__(2147483647);
 
@@ -8542,12 +7720,9 @@ enum EOS_EConnectionClosedReason {
   };
 }
 
-/// Type of established connection
 enum EOS_EConnectionEstablishedType {
-  /// The connection is brand new
   EOS_CET_NewConnection(0),
 
-  /// The connection is reestablished (reconnection)
   EOS_CET_Reconnection(1),
   __EOS_EConnectionEstablishedType_PAD_INT32__(2147483647);
 
@@ -8564,36 +7739,23 @@ enum EOS_EConnectionEstablishedType {
   };
 }
 
-/// Possible statuses for the availability of desktop crossplay functionality.
 enum EOS_EDesktopCrossplayStatus {
-  /// Desktop crossplay is ready to use.
   EOS_DCS_OK(0),
 
-  /// The application was not launched through the Bootstrapper.
   EOS_DCS_ApplicationNotBootstrapped(1),
 
-  /// The redistributable service is not installed.
   EOS_DCS_ServiceNotInstalled(2),
 
-  /// The service failed to start.
   EOS_DCS_ServiceStartFailed(3),
 
-  /// The service was started successfully, but is no longer running in the
-  /// background, for an unknown reason.
   EOS_DCS_ServiceNotRunning(4),
 
-  /// The application has explicitly disabled the overlay through SDK
-  /// initialization flags.
   EOS_DCS_OverlayDisabled(5),
 
-  /// The overlay is not installed.
   EOS_DCS_OverlayNotInstalled(6),
 
-  /// The overlay was not loaded due to failing trust check on the digital
-  /// signature of the file on disk.
   EOS_DCS_OverlayTrustCheckFailed(7),
 
-  /// The overlay failed to load.
   EOS_DCS_OverlayLoadFailed(8),
   __EOS_EDesktopCrossplayStatus_PAD_INT32__(2147483647);
 
@@ -8617,17 +7779,11 @@ enum EOS_EDesktopCrossplayStatus {
   };
 }
 
-/// An enumeration defining the type of catalog item. The primary use is to
-/// identify how the item is expended.
 enum EOS_EEcomItemType {
-  /// This entitlement is intended to persist.
   EOS_EIT_Durable(0),
 
-  /// This entitlement is intended to be transient and redeemed.
   EOS_EIT_Consumable(1),
 
-  /// This entitlement has a type that is not currently intended for an in-game
-  /// store.
   EOS_EIT_Other(2),
   __EOS_EEcomItemType_PAD_INT32__(2147483647);
 
@@ -8643,51 +7799,35 @@ enum EOS_EEcomItemType {
   };
 }
 
-/// All supported external account providers
 enum EOS_EExternalAccountType {
-  /// External account is associated with Epic Games
   EOS_EAT_EPIC(0),
 
-  /// External account is associated with Steam
   EOS_EAT_STEAM(1),
 
-  /// External account is associated with PlayStation(TM)Network
   EOS_EAT_PSN(2),
 
-  /// External account is associated with Xbox Live
   EOS_EAT_XBL(3),
 
-  /// External account is associated with Discord
   EOS_EAT_DISCORD(4),
 
-  /// External account is associated with GOG
   EOS_EAT_GOG(5),
 
-  /// External account is associated with Nintendo
   EOS_EAT_NINTENDO(6),
 
-  /// External account is associated with Uplay
   EOS_EAT_UPLAY(7),
 
-  /// External account is associated with an OpenID Provider
   EOS_EAT_OPENID(8),
 
-  /// External account is associated with Apple
   EOS_EAT_APPLE(9),
 
-  /// External account is associated with Google
   EOS_EAT_GOOGLE(10),
 
-  /// External account is associated with Oculus
   EOS_EAT_OCULUS(11),
 
-  /// External account is associated with itch.io
   EOS_EAT_ITCHIO(12),
 
-  /// External account is associated with Amazon
   EOS_EAT_AMAZON(13),
 
-  /// External account is associated with Viveport
   EOS_EAT_VIVEPORT(14),
   __EOS_EExternalAccountType_PAD_INT32__(2147483647);
 
@@ -8717,71 +7857,45 @@ enum EOS_EExternalAccountType {
   };
 }
 
-/// List of the supported identity providers to authenticate a user.
 enum EOS_EExternalCredentialType {
-  /// Epic Account Services Token
   EOS_ECT_EPIC(0),
 
-  /// Steam Encrypted App Ticket Note that EOS_ECT_STEAM_APP_TICKET is
-  /// deprecated for use with EOS_Auth_Login. Use EOS_ECT_STEAM_SESSION_TICKET
-  /// instead.
   EOS_ECT_STEAM_APP_TICKET(1),
 
-  /// PlayStation(TM)Network ID Token
   EOS_ECT_PSN_ID_TOKEN(2),
 
-  /// Xbox Live XSTS Token
   EOS_ECT_XBL_XSTS_TOKEN(3),
 
-  /// Discord Access Token
   EOS_ECT_DISCORD_ACCESS_TOKEN(4),
 
-  /// GOG Galaxy Encrypted App Ticket
   EOS_ECT_GOG_SESSION_TICKET(5),
 
-  /// Nintendo Account ID Token
   EOS_ECT_NINTENDO_ID_TOKEN(6),
 
-  /// Nintendo Service Account ID Token (NSA ID)
   EOS_ECT_NINTENDO_NSA_ID_TOKEN(7),
 
-  /// Uplay Access Token
   EOS_ECT_UPLAY_ACCESS_TOKEN(8),
 
-  /// OpenID Provider Access Token
   EOS_ECT_OPENID_ACCESS_TOKEN(9),
 
-  /// Device ID access token that identifies the current locally logged in user
-  /// profile on the local device. The local user profile here refers to the
-  /// operating system user login, for example the user's Windows Account or on
-  /// a mobile device the default active user profile.
   EOS_ECT_DEVICEID_ACCESS_TOKEN(10),
 
-  /// Apple ID Token
   EOS_ECT_APPLE_ID_TOKEN(11),
 
-  /// Google ID Token
   EOS_ECT_GOOGLE_ID_TOKEN(12),
 
-  /// Oculus User ID and Nonce
   EOS_ECT_OCULUS_USERID_NONCE(13),
 
-  /// itch.io JWT Access Token
   EOS_ECT_ITCHIO_JWT(14),
 
-  /// itch.io Key Access Token
   EOS_ECT_ITCHIO_KEY(15),
 
-  /// Epic Games ID Token
   EOS_ECT_EPIC_ID_TOKEN(16),
 
-  /// Amazon Access Token
   EOS_ECT_AMAZON_ACCESS_TOKEN(17),
 
-  /// Steam Auth Session Ticket
   EOS_ECT_STEAM_SESSION_TICKET(18),
 
-  /// VIVEPORT User Session Token
   EOS_ECT_VIVEPORT_USER_TOKEN(19),
   __EOS_EExternalCredentialType_PAD_INT32__(2147483647);
 
@@ -8816,18 +7930,13 @@ enum EOS_EExternalCredentialType {
   };
 }
 
-/// An enumeration of the different friendship statuses.
 enum EOS_EFriendsStatus {
-  /// The two accounts have no friendship status.
   EOS_FS_NotFriends(0),
 
-  /// The local account has sent a friend invite to the other account.
   EOS_FS_InviteSent(1),
 
-  /// The other account has sent a friend invite to the local account.
   EOS_FS_InviteReceived(2),
 
-  /// The accounts have accepted friendship.
   EOS_FS_Friends(3),
   __EOS_EFriendsStatus_PAD_INT32__(2147483647);
 
@@ -8844,55 +7953,21 @@ enum EOS_EFriendsStatus {
   };
 }
 
-/// These flags are used to determine how a specific Integrated Platform will be
-/// managed.
 enum EOS_EIntegratedPlatformManagementFlags {
-  /// The integrated platform library should be disabled. This is equivalent to
-  /// providing no flags.
   EOS_IPMF_Disabled(1),
 
-  /// The integrated platform library is managed by the calling application. EOS
-  /// SDK should only hook into an existing instance of the integrated platform
-  /// library.
   EOS_IPMF_LibraryManagedByApplication(2),
 
-  /// EOS SDK should fully manage the integrated platform library. It will do
-  /// this by performing the load, initialize, tick and unload operations as
-  /// necessary.
   EOS_IPMF_LibraryManagedBySDK(4),
 
-  /// The EOS SDK should not mirror the EOS rich presence with the Integrated
-  /// Platform. The default behavior is for EOS SDK to share local presence with
-  /// the Integrated Platform.
   EOS_IPMF_DisablePresenceMirroring(8),
 
-  /// EOS SDK should not perform any sessions management through the Integrated
-  /// Platform. The default behavior is for EOS SDK to perform sessions
-  /// management through the Integrated Platform. Sessions management includes:
-  /// - sharing the lobby and session presence enabled games with the Integrated
-  /// Platform. - handling Social Overlay join button events which cannot be
-  /// handled by normal processing of Epic Services. - handling Social Overlay
-  /// invite button events which cannot be handled by normal processing of Epic
-  /// Services. - handling startup requests from the Integrated Platform to
-  /// immediately join a game due to in invite while offline.
   EOS_IPMF_DisableSDKManagedSessions(16),
 
-  /// Some features within the EOS SDK may wish to know a preference of
-  /// Integrated Platform versus EOS. When determining an absolute platform
-  /// preference those with this flag will be skipped. The IntegratedPlatforms
-  /// list is provided via the EOS_Platform_Options during EOS_Platform_Create.
   EOS_IPMF_PreferEOSIdentity(32),
 
-  /// Some features within the EOS SDK may wish to know a preference of
-  /// Integrated Platform versus EOS. For further explanation see
-  /// EOS_IPMF_PreferEOSIdentity.
   EOS_IPMF_PreferIntegratedIdentity(64),
 
-  /// By default the EOS SDK will attempt to detect the login/logout events of
-  /// local users and update local states accordingly. Setting this flag will
-  /// disable this functionality, relying on the application to process
-  /// login/logout events and notify EOS SDK. It is not possible for the EOS SDK
-  /// to do this on all platforms, making this flag not always optional.
   EOS_IPMF_ApplicationManagedIdentityLogin(128),
   __EOS_EIntegratedPlatformManagementFlags_PAD_INT32__(2147483647);
 
@@ -8916,22 +7991,9 @@ enum EOS_EIntegratedPlatformManagementFlags {
       };
 }
 
-/// The return value for the EOS_IntegratedPlatform_OnUserPreLogoutCallback
-/// callback function. This signifies what the application wants to do for the
-/// provided user of the integrated platform.
 enum EOS_EIntegratedPlatformPreLogoutAction {
-  /// The application accepts the user being logged-out. all cached data for the
-  /// user will be cleared immediately and any pending actions canceled.
   EOS_IPLA_ProcessLogoutImmediately(0),
 
-  /// Instead of the user being logged-out, the SDK will wait for a call to
-  /// EOS_IntegratedPlatform_FinalizeDeferredUserLogout with the expected login
-  /// state of the user. If the expected state matches the current state, the
-  /// user will continue to be logged-in or they will be logged-out, depending
-  /// on the value of the expected state. This lets the application choose to
-  /// ask the user if they meant to logout if it wishes, possibly preventing
-  /// losing any unsaved changes, such as game progress, leaving a multiplayer
-  /// match, or similar.
   EOS_IPLA_DeferLogout(1),
   __EOS_EIntegratedPlatformPreLogoutAction_PAD_INT32__(2147483647);
 
@@ -8949,15 +8011,11 @@ enum EOS_EIntegratedPlatformPreLogoutAction {
       };
 }
 
-/// An enumeration of the different permission statuses.
 enum EOS_EKWSPermissionStatus {
-  /// Permission has been granted
   EOS_KPS_GRANTED(0),
 
-  /// Permission has been rejected
   EOS_KPS_REJECTED(1),
 
-  /// Permission is still pending approval
   EOS_KPS_PENDING(2),
   __EOS_EKWSPermissionStatus_PAD_INT32__(2147483647);
 
@@ -8975,18 +8033,13 @@ enum EOS_EKWSPermissionStatus {
   };
 }
 
-/// An enumeration of the different leaderboard aggregation types.
 enum EOS_ELeaderboardAggregation {
-  /// Minimum
   EOS_LA_Min(0),
 
-  /// Maximum
   EOS_LA_Max(1),
 
-  /// Sum
   EOS_LA_Sum(2),
 
-  /// Latest
   EOS_LA_Latest(3),
   __EOS_ELeaderboardAggregation_PAD_INT32__(2147483647);
 
@@ -9005,13 +8058,9 @@ enum EOS_ELeaderboardAggregation {
   };
 }
 
-/// Flags used to describe how the account linking operation is to be performed.
 enum EOS_ELinkAccountFlags {
-  /// Default flag used for a standard account linking operation.
   EOS_LA_NoFlags(0),
 
-  /// Specified when the EOS_ContinuanceToken describes a Nintendo NSA ID
-  /// account type.
   EOS_LA_NintendoNsaId(1),
   __EOS_ELinkAccountFlags_PAD_INT32__(2147483647);
 
@@ -9026,14 +8075,9 @@ enum EOS_ELinkAccountFlags {
   };
 }
 
-/// Advertisement properties for a single attribute associated with a lobby
 enum EOS_ELobbyAttributeVisibility {
-  /// Data is visible to lobby members, searchable and visible in search
-  /// results.
   EOS_LAT_PUBLIC(0),
 
-  /// Data is only visible to the user setting the data. Data is not visible to
-  /// lobby members, not searchable, and not visible in search results.
   EOS_LAT_PRIVATE(1),
   __EOS_ELobbyAttributeVisibility_PAD_INT32__(2147483647);
 
@@ -9050,24 +8094,17 @@ enum EOS_ELobbyAttributeVisibility {
   };
 }
 
-/// Various types of lobby member updates
 enum EOS_ELobbyMemberStatus {
-  /// The user has joined the lobby
   EOS_LMS_JOINED(0),
 
-  /// The user has explicitly left the lobby
   EOS_LMS_LEFT(1),
 
-  /// The user has unexpectedly left the lobby
   EOS_LMS_DISCONNECTED(2),
 
-  /// The user has been kicked from the lobby
   EOS_LMS_KICKED(3),
 
-  /// The user has been promoted to lobby owner
   EOS_LMS_PROMOTED(4),
 
-  /// The lobby has been closed and user has been removed
   EOS_LMS_CLOSED(5),
   __EOS_ELobbyMemberStatus_PAD_INT32__(2147483647);
 
@@ -9088,15 +8125,11 @@ enum EOS_ELobbyMemberStatus {
   };
 }
 
-/// Permission level gets more restrictive further down
 enum EOS_ELobbyPermissionLevel {
-  /// Anyone can find this lobby as long as it isn't full
   EOS_LPL_PUBLICADVERTISED(0),
 
-  /// Players who have access to presence can see this lobby
   EOS_LPL_JOINVIAPRESENCE(1),
 
-  /// Only players with invites registered can see this lobby
   EOS_LPL_INVITEONLY(2),
   __EOS_ELobbyPermissionLevel_PAD_INT32__(2147483647);
 
@@ -9114,13 +8147,9 @@ enum EOS_ELobbyPermissionLevel {
   };
 }
 
-/// Defines the type of action to take against RTC room when joining a lobby
 enum EOS_ELobbyRTCRoomJoinActionType {
-  /// Join RTC Room as soon as user joins the lobby
   EOS_LRRJAT_AutomaticJoin(0),
 
-  /// Do not join RTC Room when joining the lobby. User must manually call Join
-  /// RTC Room
   EOS_LRRJAT_ManualJoin(1),
   __EOS_ELobbyRTCRoomJoinActionType_PAD_INT32__(2147483647);
 
@@ -9139,108 +8168,72 @@ enum EOS_ELobbyRTCRoomJoinActionType {
 }
 
 enum EOS_ELogCategory {
-  /// Low level logs unrelated to specific services
   EOS_LC_Core(0),
 
-  /// Logs related to the Auth service
   EOS_LC_Auth(1),
 
-  /// Logs related to the Friends service
   EOS_LC_Friends(2),
 
-  /// Logs related to the Presence service
   EOS_LC_Presence(3),
 
-  /// Logs related to the UserInfo service
   EOS_LC_UserInfo(4),
 
-  /// Logs related to HTTP serialization
   EOS_LC_HttpSerialization(5),
 
-  /// Logs related to the Ecommerce service
   EOS_LC_Ecom(6),
 
-  /// Logs related to the P2P service
   EOS_LC_P2P(7),
 
-  /// Logs related to the Sessions service
   EOS_LC_Sessions(8),
 
-  /// Logs related to rate limiting
   EOS_LC_RateLimiter(9),
 
-  /// Logs related to the PlayerDataStorage service
   EOS_LC_PlayerDataStorage(10),
 
-  /// Logs related to sdk analytics
   EOS_LC_Analytics(11),
 
-  /// Logs related to the messaging service
   EOS_LC_Messaging(12),
 
-  /// Logs related to the Connect service
   EOS_LC_Connect(13),
 
-  /// Logs related to the Overlay
   EOS_LC_Overlay(14),
 
-  /// Logs related to the Achievements service
   EOS_LC_Achievements(15),
 
-  /// Logs related to the Stats service
   EOS_LC_Stats(16),
 
-  /// Logs related to the UI service
   EOS_LC_UI(17),
 
-  /// Logs related to the lobby service
   EOS_LC_Lobby(18),
 
-  /// Logs related to the Leaderboards service
   EOS_LC_Leaderboards(19),
 
-  /// Logs related to an internal Keychain feature that the authentication
-  /// interfaces use
   EOS_LC_Keychain(20),
 
-  /// Logs related to integrated platforms
   EOS_LC_IntegratedPlatform(21),
 
-  /// Logs related to Title Storage
   EOS_LC_TitleStorage(22),
 
-  /// Logs related to the Mods service
   EOS_LC_Mods(23),
 
-  /// Logs related to the Anti-Cheat service
   EOS_LC_AntiCheat(24),
 
-  /// Logs related to reports client.
   EOS_LC_Reports(25),
 
-  /// Logs related to the Sanctions service
   EOS_LC_Sanctions(26),
 
-  /// Logs related to the Progression Snapshot service
   EOS_LC_ProgressionSnapshots(27),
 
-  /// Logs related to the Kids Web Services integration
   EOS_LC_KWS(28),
 
-  /// Logs related to the RTC API
   EOS_LC_RTC(29),
 
-  /// Logs related to the RTC Admin API
   EOS_LC_RTCAdmin(30),
 
-  /// Logs related to the Custom Invites API
   EOS_LC_CustomInvites(31),
 
-  /// Logs related to EOS HTTP activity
   EOS_LC_HTTP(41),
 
-  /// Not a real log category. Used by EOS_Logging_SetLogLevel to set the log
-  /// level for all categories at the same time
   EOS_LC_ALL_CATEGORIES(2147483647);
 
   static const __EOS_ELogCategory_PAD_INT32__ = EOS_LC_ALL_CATEGORIES;
@@ -9294,30 +8287,19 @@ enum EOS_ELogCategory {
   }
 }
 
-/// Logging levels. When a log message is output, it has an associated log
-/// level. Messages will only be sent to the callback function if the message's
-/// associated log level is less than or equal to the configured log level for
-/// that category.
 enum EOS_ELogLevel {
-  /// The default value, disables logging
   EOS_LOG_Off(0),
 
-  /// The Fatal logging level
   EOS_LOG_Fatal(100),
 
-  /// The Error logging level
   EOS_LOG_Error(200),
 
-  /// The Warning logging level
   EOS_LOG_Warning(300),
 
-  /// The Info logging level
   EOS_LOG_Info(400),
 
-  /// The Verbose logging level
   EOS_LOG_Verbose(500),
 
-  /// The VeryVerbose logging level
   EOS_LOG_VeryVerbose(600),
   __EOS_ELogLevel_PAD_INT32__(2147483647);
 
@@ -9337,37 +8319,21 @@ enum EOS_ELogLevel {
   };
 }
 
-/// All possible types of login methods, availability depends on permissions
-/// granted to the client.
 enum EOS_ELoginCredentialType {
-  /// Login using account email address and password.
   EOS_LCT_Password(0),
 
-  /// A short-lived one-time use exchange code to login the local user.
   EOS_LCT_ExchangeCode(1),
 
-  /// Used by standalone applications distributed outside the supported game
-  /// platforms such as Epic Games Store or Steam, and on Nintendo Switch.
   EOS_LCT_PersistentAuth(2),
 
-  /// Not supported. Superseded by EOS_LCT_ExternalAuth login method.
   EOS_LCT_DeviceCode(3),
 
-  /// Login with named credentials hosted by the EOS SDK Developer
-  /// Authentication Tool.
   EOS_LCT_Developer(4),
 
-  /// Refresh token that was retrieved from a previous call to EOS_Auth_Login
-  /// API in another local process context. Mainly used in conjunction with
-  /// custom desktop launcher applications.
   EOS_LCT_RefreshToken(5),
 
-  /// Used by standalone applications distributed outside the supported game
-  /// platforms such as Epic Games Store or Steam, and on Nintendo Switch.
   EOS_LCT_AccountPortal(6),
 
-  /// Login using external account provider credentials, such as
-  /// PlayStation(TM)Network, Steam, and Xbox Live.
   EOS_LCT_ExternalAuth(7),
   __EOS_ELoginCredentialType_PAD_INT32__(2147483647);
 
@@ -9390,15 +8356,11 @@ enum EOS_ELoginCredentialType {
   };
 }
 
-/// All possible states of a local user
 enum EOS_ELoginStatus {
-  /// Player has not logged in or chosen a local profile
   EOS_LS_NotLoggedIn(0),
 
-  /// Player is using a local profile but is not logged in
   EOS_LS_UsingLocalProfile(1),
 
-  /// Player has been validated by the platform specific authentication service
   EOS_LS_LoggedIn(2),
   __EOS_ELoginStatus_PAD_INT32__(2147483647);
 
@@ -9414,13 +8376,9 @@ enum EOS_ELoginStatus {
   };
 }
 
-/// Account ID type for EOS_Metrics_BeginPlayerSession and
-/// EOS_Metrics_EndPlayerSession.
 enum EOS_EMetricsAccountIdType {
-  /// An Epic Account ID.
   EOS_MAIT_Epic(0),
 
-  /// An external service Account ID.
   EOS_MAIT_External(1),
   __EOS_EMetricsAccountIdType_PAD_INT32__(2147483647);
 
@@ -9437,12 +8395,9 @@ enum EOS_EMetricsAccountIdType {
   };
 }
 
-/// The type of mod enumeration.
 enum EOS_EModEnumerationType {
-  /// Installed mods
   EOS_MET_INSTALLED(0),
 
-  /// All available mods
   EOS_MET_ALL_AVAILABLE(1),
   __EOS_EModEnumerationType_PAD_INT32__(2147483647);
 
@@ -9459,18 +8414,13 @@ enum EOS_EModEnumerationType {
   };
 }
 
-/// Categories of NAT strictness.
 enum EOS_ENATType {
-  /// NAT type either unknown (remote) or we are unable to determine it (local)
   EOS_NAT_Unknown(0),
 
-  /// All peers can directly-connect to you
   EOS_NAT_Open(1),
 
-  /// You can directly-connect to other Moderate and Open peers
   EOS_NAT_Moderate(2),
 
-  /// You can only directly-connect to Open peers
   EOS_NAT_Strict(3),
   __EOS_ENATType_PAD_INT32__(2147483647);
 
@@ -9487,16 +8437,11 @@ enum EOS_ENATType {
   };
 }
 
-/// Types of network connections.
 enum EOS_ENetworkConnectionType {
-  /// There is no established connection
   EOS_NCT_NoConnection(0),
 
-  /// A direct connection to the peer over the Internet or Local Network
   EOS_NCT_DirectConnection(1),
 
-  /// A relayed connection using Epic-provided servers to the peer over the
-  /// Internet
   EOS_NCT_RelayedConnection(2),
   __EOS_ENetworkConnectionType_PAD_INT32__(2147483647);
 
@@ -9514,16 +8459,11 @@ enum EOS_ENetworkConnectionType {
   };
 }
 
-/// All possible states of the network.
 enum EOS_ENetworkStatus {
-  /// Networking unavailable.
   EOS_NS_Disabled(0),
 
-  /// Not connected to the internet. Only local area networking (LAN) may be
-  /// available.
   EOS_NS_Offline(1),
 
-  /// Connected to the internet.
   EOS_NS_Online(2),
   __EOS_ENetworkStatus_PAD_INT32__(2147483647);
 
@@ -9539,15 +8479,11 @@ enum EOS_ENetworkStatus {
   };
 }
 
-/// Permission level gets more restrictive further down
 enum EOS_EOnlineSessionPermissionLevel {
-  /// Anyone can find this session as long as it isn't full
   EOS_OSPF_PublicAdvertised(0),
 
-  /// Players who have access to presence can see this session
   EOS_OSPF_JoinViaPresence(1),
 
-  /// Only players with invites registered can see this session
   EOS_OSPF_InviteOnly(2),
   __EOS_EOnlineSessionPermissionLevel_PAD_INT32__(2147483647);
 
@@ -9566,33 +8502,21 @@ enum EOS_EOnlineSessionPermissionLevel {
       };
 }
 
-/// All possible states of an existing named session
 enum EOS_EOnlineSessionState {
-  /// An online session has not been created yet
   EOS_OSS_NoSession(0),
 
-  /// An online session is in the process of being created
   EOS_OSS_Creating(1),
 
-  /// Session has been created but the session hasn't started (pre match lobby)
   EOS_OSS_Pending(2),
 
-  /// Session has been asked to start (may take time due to communication with
-  /// backend)
   EOS_OSS_Starting(3),
 
-  /// The current session has started. Sessions with join in progress disabled
-  /// are no longer joinable
   EOS_OSS_InProgress(4),
 
-  /// The session is still valid, but the session is no longer being played
-  /// (post match lobby)
   EOS_OSS_Ending(5),
 
-  /// The session is closed and any stats committed
   EOS_OSS_Ended(6),
 
-  /// The session is being destroyed
   EOS_OSS_Destroying(7),
   __EOS_EOnlineSessionState_PAD_INT32__(2147483647);
 
@@ -9615,12 +8539,9 @@ enum EOS_EOnlineSessionState {
   };
 }
 
-/// An enumeration of the different ownership statuses.
 enum EOS_EOwnershipStatus {
-  /// The catalog item is not owned by the local user
   EOS_OS_NotOwned(0),
 
-  /// The catalog item is owned by the local user
   EOS_OS_Owned(1),
   __EOS_EOwnershipStatus_PAD_INT32__(2147483647);
 
@@ -9635,15 +8556,11 @@ enum EOS_EOwnershipStatus {
   };
 }
 
-/// Types of packet reliability.
 enum EOS_EPacketReliability {
-  /// Packets will only be sent once and may be received out of order
   EOS_PR_UnreliableUnordered(0),
 
-  /// Packets may be sent multiple times and may be received out of order
   EOS_PR_ReliableUnordered(1),
 
-  /// Packets may be sent multiple times and will be received in order
   EOS_PR_ReliableOrdered(2),
   __EOS_EPacketReliability_PAD_INT32__(2147483647);
 
@@ -9661,31 +8578,21 @@ enum EOS_EPacketReliability {
   };
 }
 
-/// An enumeration of the different player behavior categories that can be
-/// reported.
 enum EOS_EPlayerReportsCategory {
-  /// Not used
   EOS_PRC_Invalid(0),
 
-  /// The reported player is cheating
   EOS_PRC_Cheating(1),
 
-  /// The reported player is exploiting the game
   EOS_PRC_Exploiting(2),
 
-  /// The reported player has an offensive profile, name, etc
   EOS_PRC_OffensiveProfile(3),
 
-  /// The reported player is being abusive in chat
   EOS_PRC_VerbalAbuse(4),
 
-  /// The reported player is scamming other players
   EOS_PRC_Scamming(5),
 
-  /// The reported player is spamming chat
   EOS_PRC_Spamming(6),
 
-  /// The player is being reported for something else
   EOS_PRC_Other(7),
   __EOS_EPlayerReportsCategory_PAD_INT32__(2147483647);
 
@@ -9708,12 +8615,9 @@ enum EOS_EPlayerReportsCategory {
   };
 }
 
-/// Enum representing the types that may be passed as template data.
 enum EOS_EPresenceModificationTemplateType {
-  /// (32-bit) integer type
   EOS_PMT_INT(1),
 
-  /// UTF8 String as an identifier
   EOS_PMT_STRING(2),
   __EOS_EPresenceModificationTemplateType_PAD_INT32__(2147483647);
 
@@ -9731,17 +8635,9 @@ enum EOS_EPresenceModificationTemplateType {
       };
 }
 
-/// All background modes supported by the RTC components
 enum EOS_ERTCBackgroundMode {
-  /// Upon entering a background application status, all logged in users leave
-  /// any RTC rooms. All subsequent attempts to join any RTC rooms will be
-  /// rejected. Upon returning to a foreground application status, all
-  /// subsequent attempts to join any RTC rooms will be allowed.
   EOS_RTCBM_LeaveRooms(0),
 
-  /// Application status has no effect on RTC rooms. Audio is captured from
-  /// input devices and is played to output devices. Games should obtain consent
-  /// from users and otherwise make users aware this is occurring.
   EOS_RTCBM_KeepRoomsAlive(1),
   __EOS_ERTCBackgroundMode_PAD_INT32__(2147483647);
 
@@ -9758,12 +8654,9 @@ enum EOS_ERTCBackgroundMode {
   };
 }
 
-/// Participant RTC's status change
 enum EOS_ERTCParticipantStatus {
-  /// Participant joined the room
   EOS_RTCPS_Joined(0),
 
-  /// Participant left the room
   EOS_RTCPS_Left(1),
   __EOS_ERTCParticipantStatus_PAD_INT32__(2147483647);
 
@@ -9780,17 +8673,11 @@ enum EOS_ERTCParticipantStatus {
   };
 }
 
-/// An enumeration defining the different entitlement list types in the Redeem
-/// Entitlements result.
 enum EOS_ERedeemEntitlementsResultListType {
-  /// List of entitlements in the Redeem Entitlements result that were redeemed.
   EOS_ERERLT_Redeemed(0),
 
-  /// List of entitlements in the Redeem Entitlements result that were
-  /// previously redeemed.
   EOS_ERERLT_PreviouslyRedeemed(1),
 
-  /// List of entitlements in the Redeem Entitlements result that are invalid.
   EOS_ERERLT_Invalid(2),
   __EOS_ERedeemEntitlementsResultListType_PAD_INT32__(2147483647);
 
@@ -9809,18 +8696,11 @@ enum EOS_ERedeemEntitlementsResultListType {
       };
 }
 
-/// Setting for controlling whether relay servers are used.
 enum EOS_ERelayControl {
-  /// Peer connections will never attempt to use relay servers. Clients with
-  /// restrictive NATs may not be able to connect to peers.
   EOS_RC_NoRelays(0),
 
-  /// Peer connections will attempt to use relay servers, but only after direct
-  /// connection attempts fail. This is the default value if not changed.
   EOS_RC_AllowRelays(1),
 
-  /// Peer connections will only ever use relay servers. This will add latency
-  /// to all connections, but will hide IP Addresses from peers.
   EOS_RC_ForceRelays(2),
   __EOS_ERelayControl_PAD_INT32__(2147483647);
 
@@ -9836,12 +8716,9 @@ enum EOS_ERelayControl {
   };
 }
 
-/// Response to an invite request.
 enum EOS_ERequestToJoinResponse {
-  /// The target of the invite request has accepted.
   EOS_RTJR_ACCEPTED(0),
 
-  /// The target of the invite request has rejected.
   EOS_RTJR_REJECTED(1),
   __EOS_ERequestToJoinResponse_PAD_INT32__(2147483647);
 
@@ -9858,804 +8735,507 @@ enum EOS_ERequestToJoinResponse {
   };
 }
 
-/// Enum flags for all possible result values of operations in the SDK.
 enum EOS_EResult {
-  /// Successful result. no further error processing needed
   EOS_Success(0),
 
-  /// Failed due to no connection
   EOS_NoConnection(1),
 
-  /// Failed login due to invalid credentials
   EOS_InvalidCredentials(2),
 
-  /// Failed due to invalid or missing user
   EOS_InvalidUser(3),
 
-  /// Failed due to invalid or missing authentication token for user (e.g. not
-  /// logged in)
   EOS_InvalidAuth(4),
 
-  /// Failed due to invalid access
   EOS_AccessDenied(5),
 
-  /// If the client does not possess the permission required
   EOS_MissingPermissions(6),
 
-  /// If the token provided does not represent an account
   EOS_Token_Not_Account(7),
 
-  /// Throttled due to too many requests
   EOS_TooManyRequests(8),
 
-  /// Async request was already pending
   EOS_AlreadyPending(9),
 
-  /// Invalid parameters specified for request
   EOS_InvalidParameters(10),
 
-  /// Invalid request
   EOS_InvalidRequest(11),
 
-  /// Failed due to unable to parse or recognize a backend response
   EOS_UnrecognizedResponse(12),
 
-  /// Incompatible client for backend version
   EOS_IncompatibleVersion(13),
 
-  /// Not configured correctly for use
   EOS_NotConfigured(14),
 
-  /// Already configured for use.
   EOS_AlreadyConfigured(15),
 
-  /// Feature not available on this implementation
   EOS_NotImplemented(16),
 
-  /// Operation was canceled (likely by user)
   EOS_Canceled(17),
 
-  /// The requested information was not found
   EOS_NotFound(18),
 
-  /// An error occurred during an asynchronous operation, and it will be
-  /// retried. Callbacks receiving this result will be called again in the
-  /// future.
   EOS_OperationWillRetry(19),
 
-  /// The request had no effect
   EOS_NoChange(20),
 
-  /// The request attempted to use multiple or inconsistent API versions
   EOS_VersionMismatch(21),
 
-  /// A maximum limit was exceeded on the client, different from
-  /// EOS_TooManyRequests
   EOS_LimitExceeded(22),
 
-  /// Feature or client ID performing the operation has been disabled.
   EOS_Disabled(23),
 
-  /// Duplicate entry not allowed
   EOS_DuplicateNotAllowed(24),
 
-  /// Required parameters are missing. DEPRECATED: This error is no longer used.
   EOS_MissingParameters_DEPRECATED(25),
 
-  /// Sandbox ID is invalid
   EOS_InvalidSandboxId(26),
 
-  /// Request timed out
   EOS_TimedOut(27),
 
-  /// A query returned some but not all of the requested results.
   EOS_PartialResult(28),
 
-  /// Client is missing the whitelisted role
   EOS_Missing_Role(29),
 
-  /// Client is missing the whitelisted feature
   EOS_Missing_Feature(30),
 
-  /// The sandbox given to the backend is invalid
   EOS_Invalid_Sandbox(31),
 
-  /// The deployment given to the backend is invalid
   EOS_Invalid_Deployment(32),
 
-  /// The product ID specified to the backend is invalid
   EOS_Invalid_Product(33),
 
-  /// The product user ID specified to the backend is invalid
   EOS_Invalid_ProductUserID(34),
 
-  /// There was a failure with the backend service
   EOS_ServiceFailure(35),
 
-  /// Cache directory is not set in platform options.
   EOS_CacheDirectoryMissing(36),
 
-  /// Cache directory is not accessible.
   EOS_CacheDirectoryInvalid(37),
 
-  /// The request failed because resource was in an invalid state
   EOS_InvalidState(38),
 
-  /// Request is in progress
   EOS_RequestInProgress(39),
 
-  /// Application is suspended
   EOS_ApplicationSuspended(40),
 
-  /// Network is disconnected
   EOS_NetworkDisconnected(41),
 
-  /// Given output buffer is insufficient to complete the operation
   EOS_InsufficientOutputBuffer(42),
 
-  /// The associated feature or action is not enabled in the client policy
   EOS_ClientPolicyMissingAction(43),
 
-  /// Account locked due to login failures
   EOS_Auth_AccountLocked(1001),
 
-  /// Account locked by update operation.
   EOS_Auth_AccountLockedForUpdate(1002),
 
-  /// Refresh token used was invalid
   EOS_Auth_InvalidRefreshToken(1003),
 
-  /// Invalid access token, typically when switching between backend
-  /// environments
   EOS_Auth_InvalidToken(1004),
 
-  /// Invalid bearer token
   EOS_Auth_AuthenticationFailure(1005),
 
-  /// Invalid platform token
   EOS_Auth_InvalidPlatformToken(1006),
 
-  /// Auth parameters are not associated with this account
   EOS_Auth_WrongAccount(1007),
 
-  /// Auth parameters are not associated with this client
   EOS_Auth_WrongClient(1008),
 
-  /// Full account is required
   EOS_Auth_FullAccountRequired(1009),
 
-  /// Headless account is required
   EOS_Auth_HeadlessAccountRequired(1010),
 
-  /// Password reset is required
   EOS_Auth_PasswordResetRequired(1011),
 
-  /// Password was previously used and cannot be reused
   EOS_Auth_PasswordCannotBeReused(1012),
 
-  /// Authorization code/exchange code has expired
   EOS_Auth_Expired(1013),
 
-  /// Consent has not been given by the user
   EOS_Auth_ScopeConsentRequired(1014),
 
-  /// The application has no profile on the backend
   EOS_Auth_ApplicationNotFound(1015),
 
-  /// The requested consent wasn't found on the backend
   EOS_Auth_ScopeNotFound(1016),
 
-  /// This account has been denied access to login
   EOS_Auth_AccountFeatureRestricted(1017),
 
-  /// The overlay failed to load the Account Portal. This can range from general
-  /// overlay failure, to overlay failed to connect to the web server, to
-  /// overlay failed to render the web page.
   EOS_Auth_AccountPortalLoadError(1018),
 
-  /// An attempted login has failed due to the user needing to take corrective
-  /// action on their account.
   EOS_Auth_CorrectiveActionRequired(1019),
 
-  /// Pin grant code initiated
   EOS_Auth_PinGrantCode(1020),
 
-  /// Pin grant code attempt expired
   EOS_Auth_PinGrantExpired(1021),
 
-  /// Pin grant code attempt pending
   EOS_Auth_PinGrantPending(1022),
 
-  /// External auth source did not yield an account
   EOS_Auth_ExternalAuthNotLinked(1030),
 
-  /// External auth access revoked
   EOS_Auth_ExternalAuthRevoked(1032),
 
-  /// External auth token cannot be interpreted
   EOS_Auth_ExternalAuthInvalid(1033),
 
-  /// External auth cannot be linked to his account due to restrictions
   EOS_Auth_ExternalAuthRestricted(1034),
 
-  /// External auth cannot be used for login
   EOS_Auth_ExternalAuthCannotLogin(1035),
 
-  /// External auth is expired
   EOS_Auth_ExternalAuthExpired(1036),
 
-  /// External auth cannot be removed since it's the last possible way to login
   EOS_Auth_ExternalAuthIsLastLoginType(1037),
 
-  /// Exchange code not found
   EOS_Auth_ExchangeCodeNotFound(1040),
 
-  /// Originating exchange code session has expired
   EOS_Auth_OriginatingExchangeCodeSessionExpired(1041),
 
-  /// The account has been disabled and cannot be used for authentication
   EOS_Auth_AccountNotActive(1050),
 
-  /// MFA challenge required
   EOS_Auth_MFARequired(1060),
 
-  /// Parental locks are in place
   EOS_Auth_ParentalControls(1070),
 
-  /// Korea real ID association required but missing
   EOS_Auth_NoRealId(1080),
 
-  /// Silent login failed when EOS_LF_NO_USER_INTERFACE was specified, and user
-  /// interaction is needed before the user can be logged in.
   EOS_Auth_UserInterfaceRequired(1090),
 
-  /// An outgoing friend invitation is awaiting acceptance; sending another
-  /// invite to the same user is erroneous
   EOS_Friends_InviteAwaitingAcceptance(2000),
 
-  /// There is no friend invitation to accept/reject
   EOS_Friends_NoInvitation(2001),
 
-  /// Users are already friends, so sending another invite is erroneous
   EOS_Friends_AlreadyFriends(2003),
 
-  /// Users are not friends, so deleting the friend is erroneous
   EOS_Friends_NotFriends(2004),
 
-  /// Remote user has too many invites to receive new invites
   EOS_Friends_TargetUserTooManyInvites(2005),
 
-  /// Local user has too many invites to send new invites
   EOS_Friends_LocalUserTooManyInvites(2006),
 
-  /// Remote user has too many friends to make a new friendship
   EOS_Friends_TargetUserFriendLimitExceeded(2007),
 
-  /// Local user has too many friends to make a new friendship
   EOS_Friends_LocalUserFriendLimitExceeded(2008),
 
-  /// Request data was null or invalid
   EOS_Presence_DataInvalid(3000),
 
-  /// Request contained too many or too few unique data items, or the request
-  /// would overflow the maximum amount of data allowed
   EOS_Presence_DataLengthInvalid(3001),
 
-  /// Request contained data with an invalid key
   EOS_Presence_DataKeyInvalid(3002),
 
-  /// Request contained data with a key too long or too short
   EOS_Presence_DataKeyLengthInvalid(3003),
 
-  /// Request contained data with an invalid value
   EOS_Presence_DataValueInvalid(3004),
 
-  /// Request contained data with a value too long
   EOS_Presence_DataValueLengthInvalid(3005),
 
-  /// Request contained an invalid rich text string
   EOS_Presence_RichTextInvalid(3006),
 
-  /// Request contained a rich text string that was too long
   EOS_Presence_RichTextLengthInvalid(3007),
 
-  /// Request contained an invalid status state
   EOS_Presence_StatusInvalid(3008),
 
-  /// Request created with a template - rich text is not supported
   EOS_Presence_RichTextNotSupported(3009),
 
-  /// Request not created with a template - rich text expected
   EOS_Presence_TemplateNotSupported(3010),
 
-  /// Invalid Rich Presence Template ID
   EOS_Presence_TemplateIdInvalid(3011),
 
-  /// Template type value is not supported
   EOS_Presence_TemplateTypeInvalid(3012),
 
-  /// Template key is null or not supplied
   EOS_Presence_TemplateKeyInvalid(3013),
 
-  /// Template value, if type is a string, is null or not supplie
   EOS_Presence_TemplateValueInvalid(3014),
 
-  /// Template id was not found for the product or deployment
   EOS_Presence_TemplateNotFound(3015),
 
-  /// Failed to format template with given vairable data
   EOS_Presence_TemplateInvalidVariableInput(3016),
 
-  /// Localization server failed to format template
   EOS_Presence_TemplateLocalizationServerError(3017),
 
-  /// Unknown error formatting template
   EOS_Presence_TemplateUnknownError(3018),
 
-  /// The entitlement retrieved is stale, requery for updated information
   EOS_Ecom_EntitlementStale(4000),
 
-  /// The offer retrieved is stale, requery for updated information
   EOS_Ecom_CatalogOfferStale(4001),
 
-  /// The item or associated structure retrieved is stale, requery for updated
-  /// information
   EOS_Ecom_CatalogItemStale(4002),
 
-  /// The one or more offers has an invalid price. This may be caused by the
-  /// price setup.
   EOS_Ecom_CatalogOfferPriceInvalid(4003),
 
-  /// The checkout page failed to load
   EOS_Ecom_CheckoutLoadError(4004),
 
-  /// The player closed the purchase flow overlay after clicking the purchase
-  /// button. The purchase may still go through, and the game needs to query
-  /// unredeemed entitlements for a short time.
   EOS_Ecom_PurchaseProcessing(4005),
 
-  /// The offer is not valid in the catalog for the current sandbox
   EOS_Ecom_CatalogOfferInvalid(4006),
 
-  /// Session is already in progress
   EOS_Sessions_SessionInProgress(5000),
 
-  /// Too many players to register with this session
   EOS_Sessions_TooManyPlayers(5001),
 
-  /// Client has no permissions to access this session
   EOS_Sessions_NoPermission(5002),
 
-  /// Session already exists in the system
   EOS_Sessions_SessionAlreadyExists(5003),
 
-  /// Session lock required for operation
   EOS_Sessions_InvalidLock(5004),
 
-  /// Invalid session reference
   EOS_Sessions_InvalidSession(5005),
 
-  /// Sandbox ID associated with auth didn't match
   EOS_Sessions_SandboxNotAllowed(5006),
 
-  /// Invite failed to send
   EOS_Sessions_InviteFailed(5007),
 
-  /// Invite was not found with the service
   EOS_Sessions_InviteNotFound(5008),
 
-  /// This client may not modify the session
   EOS_Sessions_UpsertNotAllowed(5009),
 
-  /// Backend nodes unavailable to process request
   EOS_Sessions_AggregationFailed(5010),
 
-  /// Individual backend node is as capacity
   EOS_Sessions_HostAtCapacity(5011),
 
-  /// Sandbox on node is at capacity
   EOS_Sessions_SandboxAtCapacity(5012),
 
-  /// An anonymous operation was attempted on a non anonymous session
   EOS_Sessions_SessionNotAnonymous(5013),
 
-  /// Session is currently out of sync with the backend, data is saved locally
-  /// but needs to sync with backend
   EOS_Sessions_OutOfSync(5014),
 
-  /// User has received too many invites
   EOS_Sessions_TooManyInvites(5015),
 
-  /// Presence session already exists for the client
   EOS_Sessions_PresenceSessionExists(5016),
 
-  /// Deployment on node is at capacity
   EOS_Sessions_DeploymentAtCapacity(5017),
 
-  /// Session operation not allowed
   EOS_Sessions_NotAllowed(5018),
 
-  /// Session operation not allowed
   EOS_Sessions_PlayerSanctioned(5019),
 
-  /// Request filename was invalid
   EOS_PlayerDataStorage_FilenameInvalid(6000),
 
-  /// Request filename was too long
   EOS_PlayerDataStorage_FilenameLengthInvalid(6001),
 
-  /// Request filename contained invalid characters
   EOS_PlayerDataStorage_FilenameInvalidChars(6002),
 
-  /// Request operation would grow file too large
   EOS_PlayerDataStorage_FileSizeTooLarge(6003),
 
-  /// Request file length is not valid
   EOS_PlayerDataStorage_FileSizeInvalid(6004),
 
-  /// Request file handle is not valid
   EOS_PlayerDataStorage_FileHandleInvalid(6005),
 
-  /// Request data is invalid
   EOS_PlayerDataStorage_DataInvalid(6006),
 
-  /// Request data length was invalid
   EOS_PlayerDataStorage_DataLengthInvalid(6007),
 
-  /// Request start index was invalid
   EOS_PlayerDataStorage_StartIndexInvalid(6008),
 
-  /// Request is in progress
   EOS_PlayerDataStorage_RequestInProgress(6009),
 
-  /// User is marked as throttled which means he can't perform some operations
-  /// because limits are exceeded.
   EOS_PlayerDataStorage_UserThrottled(6010),
 
-  /// Encryption key is not set during SDK init.
   EOS_PlayerDataStorage_EncryptionKeyNotSet(6011),
 
-  /// User data callback returned error
-  /// (EOS_PlayerDataStorage_EWriteResult::EOS_WR_FailRequest or
-  /// EOS_PlayerDataStorage_EReadResult::EOS_RR_FailRequest)
   EOS_PlayerDataStorage_UserErrorFromDataCallback(6012),
 
-  /// User is trying to read file that has header from newer version of SDK.
-  /// Game/SDK needs to be updated.
   EOS_PlayerDataStorage_FileHeaderHasNewerVersion(6013),
 
-  /// The file is corrupted. In some cases retry can fix the issue.
   EOS_PlayerDataStorage_FileCorrupted(6014),
 
-  /// EOS Auth service deemed the external token invalid
   EOS_Connect_ExternalTokenValidationFailed(7000),
 
-  /// EOS Auth user already exists
   EOS_Connect_UserAlreadyExists(7001),
 
-  /// EOS Auth expired
   EOS_Connect_AuthExpired(7002),
 
-  /// EOS Auth invalid token
   EOS_Connect_InvalidToken(7003),
 
-  /// EOS Auth doesn't support this token type
   EOS_Connect_UnsupportedTokenType(7004),
 
-  /// EOS Auth Account link failure
   EOS_Connect_LinkAccountFailed(7005),
 
-  /// EOS Auth External service for validation was unavailable
   EOS_Connect_ExternalServiceUnavailable(7006),
 
-  /// EOS Auth External Service configuration failure with Dev Portal
   EOS_Connect_ExternalServiceConfigurationFailure(7007),
 
-  /// EOS Auth Account link failure. Tried to link Nintendo Network Service
-  /// Account without first linking Nintendo Account. DEPRECATED: The
-  /// requirement has been removed and this error is no longer used.
   EOS_Connect_LinkAccountFailedMissingNintendoIdAccount_DEPRECATED(7008),
 
-  /// The social overlay page failed to load
   EOS_UI_SocialOverlayLoadError(8000),
 
-  /// Virtual Memory Functions are an inconsistent mix of functions and nullptrs
   EOS_UI_InconsistentVirtualMemoryFunctions(8001),
 
-  /// Client has no permissions to modify this lobby
   EOS_Lobby_NotOwner(9000),
 
-  /// Lobby lock required for operation
   EOS_Lobby_InvalidLock(9001),
 
-  /// Lobby already exists in the system
   EOS_Lobby_LobbyAlreadyExists(9002),
 
-  /// Lobby is already in progress
   EOS_Lobby_SessionInProgress(9003),
 
-  /// Too many players to register with this lobby
   EOS_Lobby_TooManyPlayers(9004),
 
-  /// Client has no permissions to access this lobby
   EOS_Lobby_NoPermission(9005),
 
-  /// Invalid lobby session reference
   EOS_Lobby_InvalidSession(9006),
 
-  /// Sandbox ID associated with auth didn't match
   EOS_Lobby_SandboxNotAllowed(9007),
 
-  /// Invite failed to send
   EOS_Lobby_InviteFailed(9008),
 
-  /// Invite was not found with the service
   EOS_Lobby_InviteNotFound(9009),
 
-  /// This client may not modify the lobby
   EOS_Lobby_UpsertNotAllowed(9010),
 
-  /// Backend nodes unavailable to process request
   EOS_Lobby_AggregationFailed(9011),
 
-  /// Individual backend node is as capacity
   EOS_Lobby_HostAtCapacity(9012),
 
-  /// Sandbox on node is at capacity
   EOS_Lobby_SandboxAtCapacity(9013),
 
-  /// User has received too many invites
   EOS_Lobby_TooManyInvites(9014),
 
-  /// Deployment on node is at capacity
   EOS_Lobby_DeploymentAtCapacity(9015),
 
-  /// Lobby operation not allowed
   EOS_Lobby_NotAllowed(9016),
 
-  /// While restoring a lost connection lobby ownership changed and only local
-  /// member data was updated
   EOS_Lobby_MemberUpdateOnly(9017),
 
-  /// Presence lobby already exists for the client
   EOS_Lobby_PresenceLobbyExists(9018),
 
-  /// Operation requires lobby with voice enabled
   EOS_Lobby_VoiceNotEnabled(9019),
 
-  /// The client platform does not match the allowed platform list for the
-  /// lobby.
   EOS_Lobby_PlatformNotAllowed(9020),
 
-  /// User callback that receives data from storage returned error.
   EOS_TitleStorage_UserErrorFromDataCallback(10000),
 
-  /// User forgot to set Encryption key during platform init. Title Storage
-  /// can't work without it.
   EOS_TitleStorage_EncryptionKeyNotSet(10001),
 
-  /// Downloaded file is corrupted.
   EOS_TitleStorage_FileCorrupted(10002),
 
-  /// Downloaded file's format is newer than client SDK version.
   EOS_TitleStorage_FileHeaderHasNewerVersion(10003),
 
-  /// ModSdk process is already running. This error comes from the EOSSDK.
   EOS_Mods_ModSdkProcessIsAlreadyRunning(11000),
 
-  /// ModSdk command is empty. Either the ModSdk configuration file is missing
-  /// or the manifest location is empty.
   EOS_Mods_ModSdkCommandIsEmpty(11001),
 
-  /// Creation of the ModSdk process failed. This error comes from the SDK.
   EOS_Mods_ModSdkProcessCreationFailed(11002),
 
-  /// A critical error occurred in the external ModSdk process that we were
-  /// unable to resolve.
   EOS_Mods_CriticalError(11003),
 
-  /// A internal error occurred in the external ModSdk process that we were
-  /// unable to resolve.
   EOS_Mods_ToolInternalError(11004),
 
-  /// A IPC failure occurred in the external ModSdk process.
   EOS_Mods_IPCFailure(11005),
 
-  /// A invalid IPC response received in the external ModSdk process.
   EOS_Mods_InvalidIPCResponse(11006),
 
-  /// A URI Launch failure occurred in the external ModSdk process.
   EOS_Mods_URILaunchFailure(11007),
 
-  /// Attempting to perform an action with a mod that is not installed. This
-  /// error comes from the external ModSdk process.
   EOS_Mods_ModIsNotInstalled(11008),
 
-  /// Attempting to perform an action on a game that the user doesn't own. This
-  /// error comes from the external ModSdk process.
   EOS_Mods_UserDoesNotOwnTheGame(11009),
 
-  /// Invalid result of the request to get the offer for the mod. This error
-  /// comes from the external ModSdk process.
   EOS_Mods_OfferRequestByIdInvalidResult(11010),
 
-  /// Could not find the offer for the mod. This error comes from the external
-  /// ModSdk process.
   EOS_Mods_CouldNotFindOffer(11011),
 
-  /// Request to get the offer for the mod failed. This error comes from the
-  /// external ModSdk process.
   EOS_Mods_OfferRequestByIdFailure(11012),
 
-  /// Request to purchase the mod failed. This error comes from the external
-  /// ModSdk process.
   EOS_Mods_PurchaseFailure(11013),
 
-  /// Attempting to perform an action on a game that is not installed or is
-  /// partially installed. This error comes from the external ModSdk process.
   EOS_Mods_InvalidGameInstallInfo(11014),
 
-  /// Failed to get manifest location. Either the ModSdk configuration file is
-  /// missing or the manifest location is empty
   EOS_Mods_CannotGetManifestLocation(11015),
 
-  /// Attempting to perform an action with a mod that does not support the
-  /// current operating system.
   EOS_Mods_UnsupportedOS(11016),
 
-  /// The anti-cheat client protection is not available. Check that the game was
-  /// started using the anti-cheat bootstrapper.
   EOS_AntiCheat_ClientProtectionNotAvailable(12000),
 
-  /// The current anti-cheat mode is incorrect for using this API
   EOS_AntiCheat_InvalidMode(12001),
 
-  /// The ProductId provided to the anti-cheat client helper executable does not
-  /// match what was used to initialize the EOS SDK
   EOS_AntiCheat_ClientProductIdMismatch(12002),
 
-  /// The SandboxId provided to the anti-cheat client helper executable does not
-  /// match what was used to initialize the EOS SDK
   EOS_AntiCheat_ClientSandboxIdMismatch(12003),
 
-  /// (ProtectMessage/UnprotectMessage) No session key is available, but it is
-  /// required to complete this operation
   EOS_AntiCheat_ProtectMessageSessionKeyRequired(12004),
 
-  /// (ProtectMessage/UnprotectMessage) Message integrity is invalid
   EOS_AntiCheat_ProtectMessageValidationFailed(12005),
 
-  /// (ProtectMessage/UnprotectMessage) Initialization failed
   EOS_AntiCheat_ProtectMessageInitializationFailed(12006),
 
-  /// (RegisterPeer) Peer is already registered
   EOS_AntiCheat_PeerAlreadyRegistered(12007),
 
-  /// (UnregisterPeer) Peer does not exist
   EOS_AntiCheat_PeerNotFound(12008),
 
-  /// (ReceiveMessageFromPeer) Invalid call: Peer is not protected
   EOS_AntiCheat_PeerNotProtected(12009),
 
-  /// The DeploymentId provided to the anti-cheat client helper executable does
-  /// not match what was used to initialize the EOS SDK
   EOS_AntiCheat_ClientDeploymentIdMismatch(12010),
 
-  /// EOS Connect DeviceID auth method is not supported for anti-cheat
   EOS_AntiCheat_DeviceIdAuthIsNotSupported(12011),
 
-  /// EOS RTC room cannot accept more participants
   EOS_RTC_TooManyParticipants(13000),
 
-  /// EOS RTC room already exists
   EOS_RTC_RoomAlreadyExists(13001),
 
-  /// The user kicked out from the room
   EOS_RTC_UserKicked(13002),
 
-  /// The user is banned
   EOS_RTC_UserBanned(13003),
 
-  /// EOS RTC room was left successfully
   EOS_RTC_RoomWasLeft(13004),
 
-  /// Connection dropped due to long timeout
   EOS_RTC_ReconnectionTimegateExpired(13005),
 
-  /// EOS RTC room was left due to platform release
   EOS_RTC_ShutdownInvoked(13006),
 
-  /// EOS RTC operation failed because the user is in the local user's block
-  /// list
   EOS_RTC_UserIsInBlocklist(13007),
 
-  /// Failed to allocate resources
   EOS_RTC_AllocationFailed(13009),
 
-  /// Failed to join room due to voice moderation mode mismatch
   EOS_RTC_VoiceModerationModeMismatch(13010),
 
-  /// EOS RTC record buffer was empty
   EOS_RTC_EmptyRecord(13011),
 
-  /// Failed to join room due to room options mismatch
   EOS_RTC_RoomOptionsMismatch(13012),
 
-  /// The number of available Snapshot IDs have all been exhausted.
   EOS_ProgressionSnapshot_SnapshotIdUnavailable(14000),
 
-  /// The KWS user does not have a parental email associated with the account.
-  /// The parent account was unlinked or deleted
   EOS_KWS_ParentEmailMissing(15000),
 
-  /// The KWS user is no longer a minor and trying to update the parent email
   EOS_KWS_UserGraduated(15001),
 
-  /// EOS Android VM not stored
   EOS_Android_JavaVMNotStored(17000),
 
-  /// EOS Android if Reserved is set it must reference stored VM
   EOS_Android_ReservedMustReferenceLocalVM(17001),
 
-  /// EOS Android Reserved must not be provided
   EOS_Android_ReservedMustBeNull(17002),
 
-  /// Patch required before the user can use the privilege
   EOS_Permission_RequiredPatchAvailable(18000),
 
-  /// System update required before the user can use the privilege
   EOS_Permission_RequiredSystemUpdate(18001),
 
-  /// Parental control failure usually
   EOS_Permission_AgeRestrictionFailure(18002),
 
-  /// Premium Account Subscription required but not available
   EOS_Permission_AccountTypeFailure(18003),
 
-  /// User restricted from chat
   EOS_Permission_ChatRestriction(18004),
 
-  /// User restricted from User Generated Content
   EOS_Permission_UGCRestriction(18005),
 
-  /// Online play is restricted
   EOS_Permission_OnlinePlayRestricted(18006),
 
-  /// The application was not launched through the Bootstrapper. Desktop
-  /// crossplay functionality is unavailable.
   EOS_DesktopCrossplay_ApplicationNotBootstrapped(19000),
 
-  /// The redistributable service is not installed.
   EOS_DesktopCrossplay_ServiceNotInstalled(19001),
 
-  /// The desktop crossplay service failed to start.
   EOS_DesktopCrossplay_ServiceStartFailed(19002),
 
-  /// The desktop crossplay service is no longer running for an unknown reason.
   EOS_DesktopCrossplay_ServiceNotRunning(19003),
 
-  /// When sending the custom invite failed.
   EOS_CustomInvites_InviteFailed(20000),
 
-  /// The best display name could not be safely determined.
   EOS_UserInfo_BestDisplayNameIndeterminate(22000),
 
-  /// OnNetworkRequested_DEPRECATED callback not set when initializing platform
   EOS_ConsoleInit_OnNetworkRequestedDeprecatedCallbackNotSet(23000),
 
-  /// CacheStorageSizeKB must be a multiple of 16
   EOS_ConsoleInit_CacheStorage_SizeKBNotMultipleOf16(23001),
 
-  /// CacheStorageSizeKB is less than the minimum allowed
   EOS_ConsoleInit_CacheStorage_SizeKBBelowMinimumSize(23002),
 
-  /// CacheStorageSizeKB is greater than the maximum allowed (4000 MB)
   EOS_ConsoleInit_CacheStorage_SizeKBExceedsMaximumSize(23003),
 
-  /// CacheStorageIndex is out of its allowed range
   EOS_ConsoleInit_CacheStorage_IndexOutOfRangeRange(23004),
 
-  /// An unexpected error that we cannot identify has occurred.
   EOS_UnexpectedError(2147483647);
 
   static const __EOS_EResult_PAD_INT32__ = EOS_UnexpectedError;
@@ -10926,21 +9506,15 @@ enum EOS_EResult {
   }
 }
 
-/// Sanction appeal reason codes
 enum EOS_ESanctionAppealReason {
-  /// Not used
   EOS_SAR_Invalid(0),
 
-  /// Incorrectly placed sanction
   EOS_SAR_IncorrectSanction(1),
 
-  /// The account was compromised, typically this means stolen
   EOS_SAR_CompromisedAccount(2),
 
-  /// The punishment is considered too severe by the user
   EOS_SAR_UnfairPunishment(3),
 
-  /// The user admits to rulebreaking, but still appeals for forgiveness
   EOS_SAR_AppealForForgiveness(4),
   __EOS_ESanctionAppealReason_PAD_INT32__(2147483647);
 
@@ -10960,12 +9534,9 @@ enum EOS_ESanctionAppealReason {
   };
 }
 
-/// Advertisement properties for a single attribute associated with a session
 enum EOS_ESessionAttributeAdvertisementType {
-  /// Don't advertise via the online service
   EOS_SAAT_DontAdvertise(0),
 
-  /// Advertise via the online service only
   EOS_SAAT_Advertise(1),
   __EOS_ESessionAttributeAdvertisementType_PAD_INT32__(2147483647);
 
@@ -10983,18 +9554,13 @@ enum EOS_ESessionAttributeAdvertisementType {
       };
 }
 
-/// User game controller types.
 enum EOS_EUserControllerType {
-  /// The game controller type is unknown.
   EOS_UCT_Unknown(0),
 
-  /// Mouse and keyboard controller.
   EOS_UCT_MouseKeyboard(1),
 
-  /// Gamepad controller.
   EOS_UCT_GamepadControl(2),
 
-  /// Touch controller.
   EOS_UCT_TouchControl(3),
   __EOS_EUserControllerType_PAD_INT32__(2147483647);
 
@@ -11017,18 +9583,9 @@ final class EOS_EcomHandle extends ffi.Opaque {}
 
 typedef EOS_Ecom_CatalogItem = _tagEOS_Ecom_CatalogItem;
 
-/// A unique identifier for a catalog item defined and stored with the backend
-/// catalog service. A catalog item represents a distinct object within the
-/// catalog. When acquired by an account, an entitlement is granted that
-/// references a specific catalog item.
 typedef EOS_Ecom_CatalogItemId = ffi.Pointer<ffi.Char>;
 typedef EOS_Ecom_CatalogOffer = _tagEOS_Ecom_CatalogOffer;
 
-/// A unique identifier for a catalog offer defined and stored with the backend
-/// catalog service. A catalog offer is a purchasable collection of 1 or more
-/// items, associated with a price (which could be 0). When an offer is
-/// purchased an entitlement is granted for each of the items referenced by the
-/// offer.
 typedef EOS_Ecom_CatalogOfferId = ffi.Pointer<ffi.Char>;
 typedef EOS_Ecom_CatalogRelease = _tagEOS_Ecom_CatalogRelease;
 typedef EOS_Ecom_CheckoutCallbackInfo = _tagEOS_Ecom_CheckoutCallbackInfo;
@@ -11061,17 +9618,8 @@ typedef EOS_Ecom_CopyTransactionByIndexOptions =
     _tagEOS_Ecom_CopyTransactionByIndexOptions;
 typedef EOS_Ecom_Entitlement = _tagEOS_Ecom_Entitlement;
 
-/// A unique identifier for an entitlement owned by an account. An entitlement
-/// is always associated with a single account. The entitlement ID is provided
-/// to allow redeeming the entitlement as well as identify individual
-/// entitlement grants.
 typedef EOS_Ecom_EntitlementId = ffi.Pointer<ffi.Char>;
 
-/// An identifier which is defined on a catalog item and stored with the backend
-/// catalog service. The entitlement name may not be unique. A catalog may be
-/// configured with multiple items with the same entitlement name in order to
-/// define a logical grouping of entitlements. This is used to retrieve all
-/// entitlements granted to an account grouped in this way.
 typedef EOS_Ecom_EntitlementName = ffi.Pointer<ffi.Char>;
 typedef EOS_Ecom_GetEntitlementsByNameCountOptions =
     _tagEOS_Ecom_GetEntitlementsByNameCountOptions;
@@ -11093,15 +9641,10 @@ typedef EOS_Ecom_GetOfferItemCountOptions =
 typedef EOS_Ecom_GetTransactionCountOptions =
     _tagEOS_Ecom_GetTransactionCountOptions;
 
-/// This handle is copied when EOS_Ecom_CopyTransactionById or
-/// EOS_Ecom_CopyTransactionByIndex is called. A EOS_Ecom_CheckoutCallbackInfo
-/// provides the ID for the copy. After being copied,
-/// EOS_Ecom_Transaction_Release must be called.
 typedef EOS_Ecom_HTransaction = ffi.Pointer<EOS_Ecom_TransactionHandle>;
 typedef EOS_Ecom_ItemOwnership = _tagEOS_Ecom_ItemOwnership;
 typedef EOS_Ecom_KeyImageInfo = _tagEOS_Ecom_KeyImageInfo;
 
-/// Function prototype definition for callbacks passed to EOS_Ecom_Checkout
 typedef EOS_Ecom_OnCheckoutCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Ecom_OnCheckoutCallbackFunction>>;
 typedef EOS_Ecom_OnCheckoutCallbackFunction =
@@ -11109,8 +9652,6 @@ typedef EOS_Ecom_OnCheckoutCallbackFunction =
 typedef DartEOS_Ecom_OnCheckoutCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_CheckoutCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_QueryEntitlementToken.
 typedef EOS_Ecom_OnQueryEntitlementTokenCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Ecom_OnQueryEntitlementTokenCallbackFunction>
@@ -11122,8 +9663,6 @@ typedef EOS_Ecom_OnQueryEntitlementTokenCallbackFunction =
 typedef DartEOS_Ecom_OnQueryEntitlementTokenCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_QueryEntitlementTokenCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_QueryOwnershipToken
 typedef EOS_Ecom_OnQueryEntitlementsCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Ecom_OnQueryEntitlementsCallbackFunction>
@@ -11133,9 +9672,6 @@ typedef EOS_Ecom_OnQueryEntitlementsCallbackFunction =
 typedef DartEOS_Ecom_OnQueryEntitlementsCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_QueryEntitlementsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Ecom_QueryOffers.
-/// When one or more cached offers have an invalid price, the callback returns
-/// the result code EOS_EResult::EOS_Ecom_CatalogOfferPriceInvalid.
 typedef EOS_Ecom_OnQueryOffersCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Ecom_OnQueryOffersCallbackFunction>>;
 typedef EOS_Ecom_OnQueryOffersCallbackFunction =
@@ -11143,8 +9679,6 @@ typedef EOS_Ecom_OnQueryOffersCallbackFunction =
 typedef DartEOS_Ecom_OnQueryOffersCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_QueryOffersCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_QueryOwnershipBySandboxIds
 typedef EOS_Ecom_OnQueryOwnershipBySandboxIdsCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Ecom_OnQueryOwnershipBySandboxIdsCallbackFunction>
@@ -11158,8 +9692,6 @@ typedef DartEOS_Ecom_OnQueryOwnershipBySandboxIdsCallbackFunction =
       ffi.Pointer<EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_QueryOwnership
 typedef EOS_Ecom_OnQueryOwnershipCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Ecom_OnQueryOwnershipCallbackFunction>>;
 typedef EOS_Ecom_OnQueryOwnershipCallbackFunction =
@@ -11167,8 +9699,6 @@ typedef EOS_Ecom_OnQueryOwnershipCallbackFunction =
 typedef DartEOS_Ecom_OnQueryOwnershipCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_QueryOwnershipCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_QueryOwnershipToken
 typedef EOS_Ecom_OnQueryOwnershipTokenCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Ecom_OnQueryOwnershipTokenCallbackFunction>
@@ -11180,8 +9710,6 @@ typedef EOS_Ecom_OnQueryOwnershipTokenCallbackFunction =
 typedef DartEOS_Ecom_OnQueryOwnershipTokenCallbackFunction =
     void Function(ffi.Pointer<EOS_Ecom_QueryOwnershipTokenCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Ecom_RedeemEntitlements
 typedef EOS_Ecom_OnRedeemEntitlementsCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Ecom_OnRedeemEntitlementsCallbackFunction>
@@ -11218,7 +9746,6 @@ typedef EOS_Ecom_RedeemEntitlementsCallbackInfo =
 typedef EOS_Ecom_RedeemEntitlementsOptions =
     _tagEOS_Ecom_RedeemEntitlementsOptions;
 
-/// A unique identifier for the Sandbox.
 typedef EOS_Ecom_SandboxId = ffi.Pointer<ffi.Char>;
 typedef EOS_Ecom_SandboxIdItemOwnership = _tagEOS_Ecom_SandboxIdItemOwnership;
 
@@ -11229,8 +9756,6 @@ typedef EOS_Ecom_Transaction_CopyEntitlementByIndexOptions =
 typedef EOS_Ecom_Transaction_GetEntitlementsCountOptions =
     _tagEOS_Ecom_Transaction_GetEntitlementsCountOptions;
 
-/// A handle to a user's Epic Account ID This ID is associated with a specific
-/// login associated with Epic Account Services
 typedef EOS_EpicAccountId = ffi.Pointer<EOS_EpicAccountIdDetails>;
 
 final class EOS_EpicAccountIdDetails extends ffi.Opaque {}
@@ -11276,8 +9801,6 @@ typedef EOS_Friends_GetFriendsCountOptions =
     _tagEOS_Friends_GetFriendsCountOptions;
 typedef EOS_Friends_GetStatusOptions = _tagEOS_Friends_GetStatusOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Friends_AcceptInvite
 typedef EOS_Friends_OnAcceptInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Friends_OnAcceptInviteCallbackFunction>>;
 typedef EOS_Friends_OnAcceptInviteCallbackFunction =
@@ -11285,7 +9808,6 @@ typedef EOS_Friends_OnAcceptInviteCallbackFunction =
 typedef DartEOS_Friends_OnAcceptInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Friends_AcceptInviteCallbackInfo> Data);
 
-/// Callback for information related to a blocklist update.
 typedef EOS_Friends_OnBlockedUsersUpdateCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Friends_OnBlockedUsersUpdateCallbackFunction>
@@ -11297,7 +9819,6 @@ typedef DartEOS_Friends_OnBlockedUsersUpdateCallbackFunction =
 typedef EOS_Friends_OnBlockedUsersUpdateInfo =
     _tagEOS_Friends_OnBlockedUsersUpdateInfo;
 
-/// Callback for information related to a friend status update.
 typedef EOS_Friends_OnFriendsUpdateCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Friends_OnFriendsUpdateCallbackFunction>
@@ -11308,8 +9829,6 @@ typedef DartEOS_Friends_OnFriendsUpdateCallbackFunction =
     void Function(ffi.Pointer<EOS_Friends_OnFriendsUpdateInfo> Data);
 typedef EOS_Friends_OnFriendsUpdateInfo = _tagEOS_Friends_OnFriendsUpdateInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Friends_QueryFriends
 typedef EOS_Friends_OnQueryFriendsCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Friends_OnQueryFriendsCallbackFunction>>;
 typedef EOS_Friends_OnQueryFriendsCallbackFunction =
@@ -11317,8 +9836,6 @@ typedef EOS_Friends_OnQueryFriendsCallbackFunction =
 typedef DartEOS_Friends_OnQueryFriendsCallbackFunction =
     void Function(ffi.Pointer<EOS_Friends_QueryFriendsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Friends_RejectInvite
 typedef EOS_Friends_OnRejectInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Friends_OnRejectInviteCallbackFunction>>;
 typedef EOS_Friends_OnRejectInviteCallbackFunction =
@@ -11326,7 +9843,6 @@ typedef EOS_Friends_OnRejectInviteCallbackFunction =
 typedef DartEOS_Friends_OnRejectInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Friends_RejectInviteCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Friends_SendInvite
 typedef EOS_Friends_OnSendInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Friends_OnSendInviteCallbackFunction>>;
 typedef EOS_Friends_OnSendInviteCallbackFunction =
@@ -11344,14 +9860,12 @@ typedef EOS_Friends_SendInviteCallbackInfo =
 typedef EOS_Friends_SendInviteOptions = _tagEOS_Friends_SendInviteOptions;
 typedef EOS_HAchievements = ffi.Pointer<EOS_AchievementsHandle>;
 
-/// Handle to a single named session that exists locally
 typedef EOS_HActiveSession = ffi.Pointer<EOS_ActiveSessionHandle>;
 typedef EOS_HAntiCheatClient = ffi.Pointer<EOS_AntiCheatClientHandle>;
 typedef EOS_HAntiCheatServer = ffi.Pointer<EOS_AntiCheatServerHandle>;
 typedef EOS_HAuth = ffi.Pointer<EOS_AuthHandle>;
 typedef EOS_HConnect = ffi.Pointer<EOS_ConnectHandle>;
 
-/// Handle to the custom invites interface
 typedef EOS_HCustomInvites = ffi.Pointer<EOS_CustomInvitesHandle>;
 typedef EOS_HEcom = ffi.Pointer<EOS_EcomHandle>;
 typedef EOS_HFriends = ffi.Pointer<EOS_FriendsHandle>;
@@ -11361,16 +9875,12 @@ typedef EOS_HIntegratedPlatformOptionsContainer =
 typedef EOS_HKWS = ffi.Pointer<EOS_KWSHandle>;
 typedef EOS_HLeaderboards = ffi.Pointer<EOS_LeaderboardsHandle>;
 
-/// Handle to the lobby interface
 typedef EOS_HLobby = ffi.Pointer<EOS_LobbyHandle>;
 
-/// Handle to a single lobby
 typedef EOS_HLobbyDetails = ffi.Pointer<EOS_LobbyDetailsHandle>;
 
-/// Handle to a lobby modification object
 typedef EOS_HLobbyModification = ffi.Pointer<EOS_LobbyModificationHandle>;
 
-/// Handle to the calls responsible for creating a search object
 typedef EOS_HLobbySearch = ffi.Pointer<EOS_LobbySearchHandle>;
 typedef EOS_HMetrics = ffi.Pointer<EOS_MetricsHandle>;
 typedef EOS_HMods = ffi.Pointer<EOS_ModsHandle>;
@@ -11378,39 +9888,30 @@ typedef EOS_HP2P = ffi.Pointer<EOS_P2PHandle>;
 typedef EOS_HPlatform = ffi.Pointer<EOS_PlatformHandle>;
 typedef EOS_HPlayerDataStorage = ffi.Pointer<EOS_PlayerDataStorageHandle>;
 
-/// Handle type to a File Request
 typedef EOS_HPlayerDataStorageFileTransferRequest =
     ffi.Pointer<EOS_PlayerDataStorageFileTransferRequestHandle>;
 typedef EOS_HPresence = ffi.Pointer<EOS_PresenceHandle>;
 typedef EOS_HPresenceModification = ffi.Pointer<EOS_PresenceModificationHandle>;
 
-/// Handle to the ProgressionSnapshot interface
 typedef EOS_HProgressionSnapshot = ffi.Pointer<EOS_ProgressionSnapshotHandle>;
 typedef EOS_HRTC = ffi.Pointer<EOS_RTCHandle>;
 typedef EOS_HRTCAdmin = ffi.Pointer<EOS_RTCAdminHandle>;
 typedef EOS_HReports = ffi.Pointer<EOS_ReportsHandle>;
 typedef EOS_HSanctions = ffi.Pointer<EOS_SanctionsHandle>;
 
-/// Handle to a single session that may be part of a named session, search
-/// result, or invite
 typedef EOS_HSessionDetails = ffi.Pointer<EOS_SessionDetailsHandle>;
 
-/// Handle to the calls responsible for creating/updating sessions
 typedef EOS_HSessionModification = ffi.Pointer<EOS_SessionModificationHandle>;
 
-/// Handle to the calls responsible for creating a search object
 typedef EOS_HSessionSearch = ffi.Pointer<EOS_SessionSearchHandle>;
 
-/// Handle to the sessions interface
 typedef EOS_HSessions = ffi.Pointer<EOS_SessionsHandle>;
 typedef EOS_HStats = ffi.Pointer<EOS_StatsHandle>;
 typedef EOS_HTitleStorage = ffi.Pointer<EOS_TitleStorageHandle>;
 
-/// Handle type to a File Request
 typedef EOS_HTitleStorageFileTransferRequest =
     ffi.Pointer<EOS_TitleStorageFileTransferRequestHandle>;
 
-/// Handle to the UI interface
 typedef EOS_HUI = ffi.Pointer<EOS_UIHandle>;
 typedef EOS_HUserInfo = ffi.Pointer<EOS_UserInfoHandle>;
 
@@ -11447,9 +9948,6 @@ final class EOS_IntegratedPlatformOptionsContainerHandle extends ffi.Opaque {}
 typedef EOS_IntegratedPlatformOptionsContainer_AddOptions =
     _tagEOS_IntegratedPlatformOptionsContainer_AddOptions;
 
-/// This type is used to distinguish between different supported integrated
-/// platforms. Integrated platforms which are common across multiple host
-/// platforms will be defined here.
 typedef EOS_IntegratedPlatformType = ffi.Pointer<ffi.Char>;
 typedef EOS_IntegratedPlatform_AddNotifyUserLoginStatusChangedOptions =
     _tagEOS_IntegratedPlatform_AddNotifyUserLoginStatusChangedOptions;
@@ -11460,8 +9958,6 @@ typedef EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainerOptions =
 typedef EOS_IntegratedPlatform_FinalizeDeferredUserLogoutOptions =
     _tagEOS_IntegratedPlatform_FinalizeDeferredUserLogoutOptions;
 
-/// The callback function for when a local integrated platform user's login
-/// status has changed.
 typedef EOS_IntegratedPlatform_OnUserLoginStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -11479,8 +9975,6 @@ typedef DartEOS_IntegratedPlatform_OnUserLoginStatusChangedCallbackFunction =
       Data,
     );
 
-/// The callback function for when an integrated platform user is detected to
-/// have logged-out.
 typedef EOS_IntegratedPlatform_OnUserPreLogoutCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_IntegratedPlatform_OnUserPreLogoutCallbackFunction>
@@ -11530,7 +10024,6 @@ typedef EOS_KWS_GetPermissionByKeyOptions =
 typedef EOS_KWS_GetPermissionsCountOptions =
     _tagEOS_KWS_GetPermissionsCountOptions;
 
-/// Function prototype definition for callbacks passed to EOS_KWS_CreateUser
 typedef EOS_KWS_OnCreateUserCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_KWS_OnCreateUserCallbackFunction>>;
 typedef EOS_KWS_OnCreateUserCallbackFunction =
@@ -11538,8 +10031,6 @@ typedef EOS_KWS_OnCreateUserCallbackFunction =
 typedef DartEOS_KWS_OnCreateUserCallbackFunction =
     void Function(ffi.Pointer<EOS_KWS_CreateUserCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_KWS_AddNotifyPermissionsUpdateReceived
 typedef EOS_KWS_OnPermissionsUpdateReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_KWS_OnPermissionsUpdateReceivedCallbackFunction>
@@ -11553,7 +10044,6 @@ typedef DartEOS_KWS_OnPermissionsUpdateReceivedCallbackFunction =
       ffi.Pointer<EOS_KWS_PermissionsUpdateReceivedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to EOS_KWS_QueryAgeGate
 typedef EOS_KWS_OnQueryAgeGateCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_KWS_OnQueryAgeGateCallbackFunction>>;
 typedef EOS_KWS_OnQueryAgeGateCallbackFunction =
@@ -11561,8 +10051,6 @@ typedef EOS_KWS_OnQueryAgeGateCallbackFunction =
 typedef DartEOS_KWS_OnQueryAgeGateCallbackFunction =
     void Function(ffi.Pointer<EOS_KWS_QueryAgeGateCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_KWS_QueryPermissions
 typedef EOS_KWS_OnQueryPermissionsCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_KWS_OnQueryPermissionsCallbackFunction>>;
 typedef EOS_KWS_OnQueryPermissionsCallbackFunction =
@@ -11570,8 +10058,6 @@ typedef EOS_KWS_OnQueryPermissionsCallbackFunction =
 typedef DartEOS_KWS_OnQueryPermissionsCallbackFunction =
     void Function(ffi.Pointer<EOS_KWS_QueryPermissionsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_KWS_RequestPermissions
 typedef EOS_KWS_OnRequestPermissionsCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_KWS_OnRequestPermissionsCallbackFunction>
@@ -11581,8 +10067,6 @@ typedef EOS_KWS_OnRequestPermissionsCallbackFunction =
 typedef DartEOS_KWS_OnRequestPermissionsCallbackFunction =
     void Function(ffi.Pointer<EOS_KWS_RequestPermissionsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_KWS_UpdateParentEmail
 typedef EOS_KWS_OnUpdateParentEmailCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_KWS_OnUpdateParentEmailCallbackFunction>
@@ -11816,8 +10300,6 @@ typedef EOS_Leaderboards_LeaderboardRecord =
 typedef EOS_Leaderboards_LeaderboardUserScore =
     _tagEOS_Leaderboards_LeaderboardUserScore;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Leaderboards_QueryLeaderboardDefinitions
 typedef EOS_Leaderboards_OnQueryLeaderboardDefinitionsCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -11841,8 +10323,6 @@ typedef DartEOS_Leaderboards_OnQueryLeaderboardDefinitionsCompleteCallbackFuncti
 typedef EOS_Leaderboards_OnQueryLeaderboardDefinitionsCompleteCallbackInfo =
     _tagEOS_Leaderboards_OnQueryLeaderboardDefinitionsCompleteCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Leaderboards_QueryLeaderboardRanks
 typedef EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -11862,8 +10342,6 @@ typedef DartEOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackFunction =
 typedef EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo =
     _tagEOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Leaderboards_QueryLeaderboardUserScores
 typedef EOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -11923,7 +10401,6 @@ typedef EOS_LobbyDetails_MemberInfo = _tagEOS_LobbyDetails_MemberInfo;
 
 final class EOS_LobbyHandle extends ffi.Opaque {}
 
-/// All lobbies are referenced by a unique lobby ID
 typedef EOS_LobbyId = ffi.Pointer<ffi.Char>;
 
 final class EOS_LobbyModificationHandle extends ffi.Opaque {}
@@ -11956,7 +10433,6 @@ typedef EOS_LobbySearch_FindOptions = _tagEOS_LobbySearch_FindOptions;
 typedef EOS_LobbySearch_GetSearchResultCountOptions =
     _tagEOS_LobbySearch_GetSearchResultCountOptions;
 
-/// Function prototype definition for callbacks passed to EOS_LobbySearch_Find
 typedef EOS_LobbySearch_OnFindCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_LobbySearch_OnFindCallbackFunction>>;
 typedef EOS_LobbySearch_OnFindCallbackFunction =
@@ -12053,7 +10529,6 @@ typedef EOS_Lobby_LobbyUpdateReceivedCallbackInfo =
     _tagEOS_Lobby_LobbyUpdateReceivedCallbackInfo;
 typedef EOS_Lobby_LocalRTCOptions = _tagEOS_Lobby_LocalRTCOptions;
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_CreateLobby
 typedef EOS_Lobby_OnCreateLobbyCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnCreateLobbyCallbackFunction>>;
 typedef EOS_Lobby_OnCreateLobbyCallbackFunction =
@@ -12061,7 +10536,6 @@ typedef EOS_Lobby_OnCreateLobbyCallbackFunction =
 typedef DartEOS_Lobby_OnCreateLobbyCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_CreateLobbyCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_DestroyLobby
 typedef EOS_Lobby_OnDestroyLobbyCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnDestroyLobbyCallbackFunction>>;
 typedef EOS_Lobby_OnDestroyLobbyCallbackFunction =
@@ -12069,8 +10543,6 @@ typedef EOS_Lobby_OnDestroyLobbyCallbackFunction =
 typedef DartEOS_Lobby_OnDestroyLobbyCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_DestroyLobbyCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Lobby_HardMuteMember
 typedef EOS_Lobby_OnHardMuteMemberCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnHardMuteMemberCallbackFunction>>;
 typedef EOS_Lobby_OnHardMuteMemberCallbackFunction =
@@ -12078,8 +10550,6 @@ typedef EOS_Lobby_OnHardMuteMemberCallbackFunction =
 typedef DartEOS_Lobby_OnHardMuteMemberCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_HardMuteMemberCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyJoinLobbyAccepted
 typedef EOS_Lobby_OnJoinLobbyAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnJoinLobbyAcceptedCallbackFunction>
@@ -12091,8 +10561,6 @@ typedef EOS_Lobby_OnJoinLobbyAcceptedCallbackFunction =
 typedef DartEOS_Lobby_OnJoinLobbyAcceptedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_JoinLobbyAcceptedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Lobby_JoinLobbyById
 typedef EOS_Lobby_OnJoinLobbyByIdCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnJoinLobbyByIdCallbackFunction>>;
 typedef EOS_Lobby_OnJoinLobbyByIdCallbackFunction =
@@ -12100,7 +10568,6 @@ typedef EOS_Lobby_OnJoinLobbyByIdCallbackFunction =
 typedef DartEOS_Lobby_OnJoinLobbyByIdCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_JoinLobbyByIdCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_JoinLobby
 typedef EOS_Lobby_OnJoinLobbyCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnJoinLobbyCallbackFunction>>;
 typedef EOS_Lobby_OnJoinLobbyCallbackFunction =
@@ -12108,7 +10575,6 @@ typedef EOS_Lobby_OnJoinLobbyCallbackFunction =
 typedef DartEOS_Lobby_OnJoinLobbyCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_JoinLobbyCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_JoinRTCRoom
 typedef EOS_Lobby_OnJoinRTCRoomCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnJoinRTCRoomCallbackFunction>>;
 typedef EOS_Lobby_OnJoinRTCRoomCallbackFunction =
@@ -12116,7 +10582,6 @@ typedef EOS_Lobby_OnJoinRTCRoomCallbackFunction =
 typedef DartEOS_Lobby_OnJoinRTCRoomCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_JoinRTCRoomCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_KickMember
 typedef EOS_Lobby_OnKickMemberCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnKickMemberCallbackFunction>>;
 typedef EOS_Lobby_OnKickMemberCallbackFunction =
@@ -12124,7 +10589,6 @@ typedef EOS_Lobby_OnKickMemberCallbackFunction =
 typedef DartEOS_Lobby_OnKickMemberCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_KickMemberCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_LeaveLobby
 typedef EOS_Lobby_OnLeaveLobbyCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnLeaveLobbyCallbackFunction>>;
 typedef EOS_Lobby_OnLeaveLobbyCallbackFunction =
@@ -12132,8 +10596,6 @@ typedef EOS_Lobby_OnLeaveLobbyCallbackFunction =
 typedef DartEOS_Lobby_OnLeaveLobbyCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LeaveLobbyCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLeaveLobbyRequested.
 typedef EOS_Lobby_OnLeaveLobbyRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLeaveLobbyRequestedCallbackFunction>
@@ -12145,7 +10607,6 @@ typedef EOS_Lobby_OnLeaveLobbyRequestedCallbackFunction =
 typedef DartEOS_Lobby_OnLeaveLobbyRequestedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LeaveLobbyRequestedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_LeaveRTCRoom
 typedef EOS_Lobby_OnLeaveRTCRoomCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnLeaveRTCRoomCallbackFunction>>;
 typedef EOS_Lobby_OnLeaveRTCRoomCallbackFunction =
@@ -12153,8 +10614,6 @@ typedef EOS_Lobby_OnLeaveRTCRoomCallbackFunction =
 typedef DartEOS_Lobby_OnLeaveRTCRoomCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LeaveRTCRoomCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLobbyInviteAccepted
 typedef EOS_Lobby_OnLobbyInviteAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyInviteAcceptedCallbackFunction>
@@ -12166,8 +10625,6 @@ typedef EOS_Lobby_OnLobbyInviteAcceptedCallbackFunction =
 typedef DartEOS_Lobby_OnLobbyInviteAcceptedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LobbyInviteAcceptedCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLobbyInviteReceived
 typedef EOS_Lobby_OnLobbyInviteReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyInviteReceivedCallbackFunction>
@@ -12179,8 +10636,6 @@ typedef EOS_Lobby_OnLobbyInviteReceivedCallbackFunction =
 typedef DartEOS_Lobby_OnLobbyInviteReceivedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LobbyInviteReceivedCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLobbyInviteRejected
 typedef EOS_Lobby_OnLobbyInviteRejectedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyInviteRejectedCallbackFunction>
@@ -12192,8 +10647,6 @@ typedef EOS_Lobby_OnLobbyInviteRejectedCallbackFunction =
 typedef DartEOS_Lobby_OnLobbyInviteRejectedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LobbyInviteRejectedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Lobby_AddNotifyLobbyMemberStatusReceived
 typedef EOS_Lobby_OnLobbyMemberStatusReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyMemberStatusReceivedCallbackFunction>
@@ -12207,8 +10660,6 @@ typedef DartEOS_Lobby_OnLobbyMemberStatusReceivedCallbackFunction =
       ffi.Pointer<EOS_Lobby_LobbyMemberStatusReceivedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLobbyMemberUpdateReceived
 typedef EOS_Lobby_OnLobbyMemberUpdateReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyMemberUpdateReceivedCallbackFunction>
@@ -12222,8 +10673,6 @@ typedef DartEOS_Lobby_OnLobbyMemberUpdateReceivedCallbackFunction =
       ffi.Pointer<EOS_Lobby_LobbyMemberUpdateReceivedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyLobbyUpdateReceived
 typedef EOS_Lobby_OnLobbyUpdateReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnLobbyUpdateReceivedCallbackFunction>
@@ -12235,8 +10684,6 @@ typedef EOS_Lobby_OnLobbyUpdateReceivedCallbackFunction =
 typedef DartEOS_Lobby_OnLobbyUpdateReceivedCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_LobbyUpdateReceivedCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Lobby_PromoteMember
 typedef EOS_Lobby_OnPromoteMemberCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnPromoteMemberCallbackFunction>>;
 typedef EOS_Lobby_OnPromoteMemberCallbackFunction =
@@ -12244,7 +10691,6 @@ typedef EOS_Lobby_OnPromoteMemberCallbackFunction =
 typedef DartEOS_Lobby_OnPromoteMemberCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_PromoteMemberCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_QueryInvites
 typedef EOS_Lobby_OnQueryInvitesCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnQueryInvitesCallbackFunction>>;
 typedef EOS_Lobby_OnQueryInvitesCallbackFunction =
@@ -12252,8 +10698,6 @@ typedef EOS_Lobby_OnQueryInvitesCallbackFunction =
 typedef DartEOS_Lobby_OnQueryInvitesCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_QueryInvitesCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifyRTCRoomConnectionChanged
 typedef EOS_Lobby_OnRTCRoomConnectionChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Lobby_OnRTCRoomConnectionChangedCallbackFunction>
@@ -12267,7 +10711,6 @@ typedef DartEOS_Lobby_OnRTCRoomConnectionChangedCallbackFunction =
       ffi.Pointer<EOS_Lobby_RTCRoomConnectionChangedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_RejectInvite
 typedef EOS_Lobby_OnRejectInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnRejectInviteCallbackFunction>>;
 typedef EOS_Lobby_OnRejectInviteCallbackFunction =
@@ -12275,7 +10718,6 @@ typedef EOS_Lobby_OnRejectInviteCallbackFunction =
 typedef DartEOS_Lobby_OnRejectInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_RejectInviteCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_SendInvite
 typedef EOS_Lobby_OnSendInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnSendInviteCallbackFunction>>;
 typedef EOS_Lobby_OnSendInviteCallbackFunction =
@@ -12283,8 +10725,6 @@ typedef EOS_Lobby_OnSendInviteCallbackFunction =
 typedef DartEOS_Lobby_OnSendInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Lobby_SendInviteCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Lobby_AddNotifySendLobbyNativeInviteRequested
 typedef EOS_Lobby_OnSendLobbyNativeInviteRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12300,7 +10740,6 @@ typedef DartEOS_Lobby_OnSendLobbyNativeInviteRequestedCallbackFunction =
       ffi.Pointer<EOS_Lobby_SendLobbyNativeInviteRequestedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to EOS_Lobby_UpdateLobby
 typedef EOS_Lobby_OnUpdateLobbyCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Lobby_OnUpdateLobbyCallbackFunction>>;
 typedef EOS_Lobby_OnUpdateLobbyCallbackFunction =
@@ -12331,7 +10770,6 @@ typedef EOS_Lobby_UpdateLobbyModificationOptions =
 typedef EOS_Lobby_UpdateLobbyOptions = _tagEOS_Lobby_UpdateLobbyOptions;
 typedef EOS_LogMessage = _tagEOS_LogMessage;
 
-/// Function prototype definition for functions that receive log messages.
 typedef EOS_LogMessageFunc =
     ffi.Pointer<ffi.NativeFunction<EOS_LogMessageFuncFunction>>;
 typedef EOS_LogMessageFuncFunction =
@@ -12375,7 +10813,6 @@ typedef EOS_Mods_InstallModCallbackInfo = _tagEOS_Mods_InstallModCallbackInfo;
 typedef EOS_Mods_InstallModOptions = _tagEOS_Mods_InstallModOptions;
 typedef EOS_Mods_ModInfo = _tagEOS_Mods_ModInfo;
 
-/// Function prototype definition for callbacks passed to EOS_Mods_EnumerateMods
 typedef EOS_Mods_OnEnumerateModsCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Mods_OnEnumerateModsCallbackFunction>>;
 typedef EOS_Mods_OnEnumerateModsCallbackFunction =
@@ -12383,7 +10820,6 @@ typedef EOS_Mods_OnEnumerateModsCallbackFunction =
 typedef DartEOS_Mods_OnEnumerateModsCallbackFunction =
     void Function(ffi.Pointer<EOS_Mods_EnumerateModsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Mods_InstallMod
 typedef EOS_Mods_OnInstallModCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Mods_OnInstallModCallbackFunction>>;
 typedef EOS_Mods_OnInstallModCallbackFunction =
@@ -12391,7 +10827,6 @@ typedef EOS_Mods_OnInstallModCallbackFunction =
 typedef DartEOS_Mods_OnInstallModCallbackFunction =
     void Function(ffi.Pointer<EOS_Mods_InstallModCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Mods_UninstallMod
 typedef EOS_Mods_OnUninstallModCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Mods_OnUninstallModCallbackFunction>>;
 typedef EOS_Mods_OnUninstallModCallbackFunction =
@@ -12399,7 +10834,6 @@ typedef EOS_Mods_OnUninstallModCallbackFunction =
 typedef DartEOS_Mods_OnUninstallModCallbackFunction =
     void Function(ffi.Pointer<EOS_Mods_UninstallModCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Mods_UpdateMod
 typedef EOS_Mods_OnUpdateModCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Mods_OnUpdateModCallbackFunction>>;
 typedef EOS_Mods_OnUpdateModCallbackFunction =
@@ -12412,11 +10846,9 @@ typedef EOS_Mods_UninstallModOptions = _tagEOS_Mods_UninstallModOptions;
 typedef EOS_Mods_UpdateModCallbackInfo = _tagEOS_Mods_UpdateModCallbackInfo;
 typedef EOS_Mods_UpdateModOptions = _tagEOS_Mods_UpdateModOptions;
 
-/// Handle to an existing registered notification (0 is an invalid handle)
 typedef EOS_NotificationId = ffi.Uint64;
 typedef DartEOS_NotificationId = int;
 
-/// This type is used to distinguish between different online platforms.
 typedef EOS_OnlinePlatformType = ffi.Uint32;
 typedef DartEOS_OnlinePlatformType = int;
 
@@ -12474,7 +10906,6 @@ typedef EOS_P2P_GetPacketQueueInfoOptions =
 typedef EOS_P2P_GetPortRangeOptions = _tagEOS_P2P_GetPortRangeOptions;
 typedef EOS_P2P_GetRelayControlOptions = _tagEOS_P2P_GetRelayControlOptions;
 
-/// Callback for information related to incoming connection requests.
 typedef EOS_P2P_OnIncomingConnectionRequestCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnIncomingConnectionRequestCallbackFunction>
@@ -12488,7 +10919,6 @@ typedef DartEOS_P2P_OnIncomingConnectionRequestCallbackFunction =
 typedef EOS_P2P_OnIncomingConnectionRequestInfo =
     _tagEOS_P2P_OnIncomingConnectionRequestInfo;
 
-/// Callback for information related to incoming connection requests.
 typedef EOS_P2P_OnIncomingPacketQueueFullCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnIncomingPacketQueueFullCallbackFunction>
@@ -12500,7 +10930,6 @@ typedef DartEOS_P2P_OnIncomingPacketQueueFullCallbackFunction =
 typedef EOS_P2P_OnIncomingPacketQueueFullInfo =
     _tagEOS_P2P_OnIncomingPacketQueueFullInfo;
 
-/// Callback for information related to new connections being established
 typedef EOS_P2P_OnPeerConnectionEstablishedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnPeerConnectionEstablishedCallbackFunction>
@@ -12514,7 +10943,6 @@ typedef DartEOS_P2P_OnPeerConnectionEstablishedCallbackFunction =
 typedef EOS_P2P_OnPeerConnectionEstablishedInfo =
     _tagEOS_P2P_OnPeerConnectionEstablishedInfo;
 
-/// Callback for information related to open connections that are interrupted.
 typedef EOS_P2P_OnPeerConnectionInterruptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnPeerConnectionInterruptedCallbackFunction>
@@ -12528,7 +10956,6 @@ typedef DartEOS_P2P_OnPeerConnectionInterruptedCallbackFunction =
 typedef EOS_P2P_OnPeerConnectionInterruptedInfo =
     _tagEOS_P2P_OnPeerConnectionInterruptedInfo;
 
-/// Callback for information related to our NAT type query completing.
 typedef EOS_P2P_OnQueryNATTypeCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnQueryNATTypeCompleteCallbackFunction>
@@ -12540,7 +10967,6 @@ typedef DartEOS_P2P_OnQueryNATTypeCompleteCallbackFunction =
 typedef EOS_P2P_OnQueryNATTypeCompleteInfo =
     _tagEOS_P2P_OnQueryNATTypeCompleteInfo;
 
-/// Callback for information related to open connections being closed.
 typedef EOS_P2P_OnRemoteConnectionClosedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_P2P_OnRemoteConnectionClosedCallbackFunction>
@@ -12712,17 +11138,11 @@ typedef EOS_PlayerDataStorage_DuplicateFileCallbackInfo =
 typedef EOS_PlayerDataStorage_DuplicateFileOptions =
     _tagEOS_PlayerDataStorage_DuplicateFileOptions;
 
-/// Return results for EOS_PlayerDataStorage_OnReadFileDataCallback callbacks to
-/// return
 enum EOS_PlayerDataStorage_EReadResult {
-  /// Signifies the data was read successfully, and we should continue to the
-  /// next chunk if possible
   EOS_RR_ContinueReading(1),
 
-  /// Signifies there was a failure reading the data, and the request should end
   EOS_RR_FailRequest(2),
 
-  /// Signifies the request should be canceled, but not due to an error
   EOS_RR_CancelRequest(3),
   __EOS_PlayerDataStorage_EReadResult_PAD_INT32__(2147483647);
 
@@ -12741,21 +11161,13 @@ enum EOS_PlayerDataStorage_EReadResult {
       };
 }
 
-/// Return results for EOS_PlayerDataStorage_OnWriteFileDataCallback callbacks
-/// to return
 enum EOS_PlayerDataStorage_EWriteResult {
-  /// Signifies the data was written successfully, and we should write the data
-  /// the file
   EOS_WR_ContinueWriting(1),
 
-  /// Signifies all data has now been written successfully, and we should upload
-  /// the data to the cloud
   EOS_WR_CompleteRequest(2),
 
-  /// Signifies there was a failure writing the data, and the request should end
   EOS_WR_FailRequest(3),
 
-  /// Signifies the request should be canceled, but not due to an error
   EOS_WR_CancelRequest(4),
   __EOS_PlayerDataStorage_EWriteResult_PAD_INT32__(2147483647);
 
@@ -12782,7 +11194,6 @@ typedef EOS_PlayerDataStorage_FileTransferProgressCallbackInfo =
 typedef EOS_PlayerDataStorage_GetFileMetadataCountOptions =
     _tagEOS_PlayerDataStorage_GetFileMetadataCountOptions;
 
-/// Callback for when EOS_PlayerDataStorage_DeleteCache completes
 typedef EOS_PlayerDataStorage_OnDeleteCacheCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12798,7 +11209,6 @@ typedef DartEOS_PlayerDataStorage_OnDeleteCacheCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_DeleteCacheCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_DeleteFile completes
 typedef EOS_PlayerDataStorage_OnDeleteFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12814,7 +11224,6 @@ typedef DartEOS_PlayerDataStorage_OnDeleteFileCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_DeleteFileCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_DuplicateFile completes
 typedef EOS_PlayerDataStorage_OnDuplicateFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12830,7 +11239,6 @@ typedef DartEOS_PlayerDataStorage_OnDuplicateFileCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_DuplicateFileCallbackInfo> Data,
     );
 
-/// Callback for when there is a progress update for a file transfer in progress
 typedef EOS_PlayerDataStorage_OnFileTransferProgressCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12846,7 +11254,6 @@ typedef DartEOS_PlayerDataStorage_OnFileTransferProgressCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_FileTransferProgressCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_QueryFile completes
 typedef EOS_PlayerDataStorage_OnQueryFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12862,7 +11269,6 @@ typedef DartEOS_PlayerDataStorage_OnQueryFileCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_QueryFileCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_QueryFileList completes
 typedef EOS_PlayerDataStorage_OnQueryFileListCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12878,7 +11284,6 @@ typedef DartEOS_PlayerDataStorage_OnQueryFileListCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_QueryFileListCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_ReadFile completes
 typedef EOS_PlayerDataStorage_OnReadFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12892,8 +11297,6 @@ typedef EOS_PlayerDataStorage_OnReadFileCompleteCallbackFunction =
 typedef DartEOS_PlayerDataStorage_OnReadFileCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_PlayerDataStorage_ReadFileCallbackInfo> Data);
 
-/// Callback for when we have data ready to be read from the requested file. It
-/// is undefined how often this will be called during a single tick.
 typedef EOS_PlayerDataStorage_OnReadFileDataCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_PlayerDataStorage_OnReadFileDataCallbackFunction>
@@ -12907,7 +11310,6 @@ typedef DartEOS_PlayerDataStorage_OnReadFileDataCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_ReadFileDataCallbackInfo> Data,
     );
 
-/// Callback for when EOS_PlayerDataStorage_WriteFile completes
 typedef EOS_PlayerDataStorage_OnWriteFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -12923,9 +11325,6 @@ typedef DartEOS_PlayerDataStorage_OnWriteFileCompleteCallbackFunction =
       ffi.Pointer<EOS_PlayerDataStorage_WriteFileCallbackInfo> Data,
     );
 
-/// Callback for when we are ready to get more data to be written into the
-/// requested file. It is undefined how often this will be called during a
-/// single tick.
 typedef EOS_PlayerDataStorage_OnWriteFileDataCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_PlayerDataStorage_OnWriteFileDataCallbackFunction>
@@ -12992,21 +11391,15 @@ typedef EOS_Presence_CreatePresenceModificationOptions =
     _tagEOS_Presence_CreatePresenceModificationOptions;
 typedef EOS_Presence_DataRecord = _tagEOS_Presence_DataRecord;
 
-/// Presence Status states of a user
 enum EOS_Presence_EStatus {
-  /// The status of the account is offline or not known
   EOS_PS_Offline(0),
 
-  /// The status of the account is online
   EOS_PS_Online(1),
 
-  /// The status of the account is away
   EOS_PS_Away(2),
 
-  /// The status of the account is away, and has been away for a while
   EOS_PS_ExtendedAway(3),
 
-  /// The status of the account is do-not-disturb
   EOS_PS_DoNotDisturb(4),
   __EOS_Presence_EStatus_PAD_INT32__(2147483647);
 
@@ -13030,8 +11423,6 @@ typedef EOS_Presence_Info = _tagEOS_Presence_Info;
 typedef EOS_Presence_JoinGameAcceptedCallbackInfo =
     _tagEOS_Presence_JoinGameAcceptedCallbackInfo;
 
-/// Function prototype definition for notifications that come from
-/// EOS_Presence_AddNotifyJoinGameAccepted
 typedef EOS_Presence_OnJoinGameAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Presence_OnJoinGameAcceptedCallbackFunction>
@@ -13043,8 +11434,6 @@ typedef EOS_Presence_OnJoinGameAcceptedCallbackFunction =
 typedef DartEOS_Presence_OnJoinGameAcceptedCallbackFunction =
     void Function(ffi.Pointer<EOS_Presence_JoinGameAcceptedCallbackInfo> Data);
 
-/// Callback for information related to notifications from
-/// EOS_Presence_AddNotifyOnPresenceChanged triggering.
 typedef EOS_Presence_OnPresenceChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Presence_OnPresenceChangedCallbackFunction>
@@ -13056,7 +11445,6 @@ typedef EOS_Presence_OnPresenceChangedCallbackFunction =
 typedef DartEOS_Presence_OnPresenceChangedCallbackFunction =
     void Function(ffi.Pointer<EOS_Presence_PresenceChangedCallbackInfo> Data);
 
-/// Callback for information related to EOS_Presence_QueryPresence finishing.
 typedef EOS_Presence_OnQueryPresenceCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Presence_OnQueryPresenceCompleteCallbackFunction>
@@ -13074,7 +11462,6 @@ typedef EOS_Presence_QueryPresenceOptions =
 typedef EOS_Presence_SetPresenceCallbackInfo =
     _tagEOS_Presence_SetPresenceCallbackInfo;
 
-/// Callback for information related to EOS_Presence_SetPresence finishing.
 typedef EOS_Presence_SetPresenceCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Presence_SetPresenceCompleteCallbackFunction>
@@ -13085,9 +11472,6 @@ typedef DartEOS_Presence_SetPresenceCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_Presence_SetPresenceCallbackInfo> Data);
 typedef EOS_Presence_SetPresenceOptions = _tagEOS_Presence_SetPresenceOptions;
 
-/// A handle to a user's Product User ID (game services related ecosystem) This
-/// ID is associated with any of the external account providers (of which Epic
-/// Account Services is one)
 typedef EOS_ProductUserId = ffi.Pointer<EOS_ProductUserIdDetails>;
 
 final class EOS_ProductUserIdDetails extends ffi.Opaque {}
@@ -13105,8 +11489,6 @@ typedef EOS_ProgressionSnapshot_DeleteSnapshotOptions =
 typedef EOS_ProgressionSnapshot_EndSnapshotOptions =
     _tagEOS_ProgressionSnapshot_EndSnapshotOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_ProgressionSnapshot_DeleteSnapshot
 typedef EOS_ProgressionSnapshot_OnDeleteSnapshotCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13122,8 +11504,6 @@ typedef DartEOS_ProgressionSnapshot_OnDeleteSnapshotCallbackFunction =
       ffi.Pointer<EOS_ProgressionSnapshot_DeleteSnapshotCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_ProgressionSnapshot_SubmitSnapshot
 typedef EOS_ProgressionSnapshot_OnSubmitSnapshotCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13167,7 +11547,6 @@ typedef EOS_RTCAdmin_KickCompleteCallbackInfo =
     _tagEOS_RTCAdmin_KickCompleteCallbackInfo;
 typedef EOS_RTCAdmin_KickOptions = _tagEOS_RTCAdmin_KickOptions;
 
-/// Function prototype definition for callbacks passed to EOS_RTCAdmin_Kick
 typedef EOS_RTCAdmin_OnKickCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_RTCAdmin_OnKickCompleteCallbackFunction>
@@ -13177,8 +11556,6 @@ typedef EOS_RTCAdmin_OnKickCompleteCallbackFunction =
 typedef DartEOS_RTCAdmin_OnKickCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_RTCAdmin_KickCompleteCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_RTCAdmin_QueryJoinRoomToken
 typedef EOS_RTCAdmin_OnQueryJoinRoomTokenCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13194,8 +11571,6 @@ typedef DartEOS_RTCAdmin_OnQueryJoinRoomTokenCompleteCallbackFunction =
       ffi.Pointer<EOS_RTCAdmin_QueryJoinRoomTokenCompleteCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_RTCAdmin_SetParticipantHardMute
 typedef EOS_RTCAdmin_OnSetParticipantHardMuteCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13258,7 +11633,6 @@ typedef EOS_RTC_LeaveRoomOptions = _tagEOS_RTC_LeaveRoomOptions;
 
 const int EOS_RTC_OPTION_API_LATEST = 1;
 
-/// Callback for completion of block participants request.
 typedef EOS_RTC_OnBlockParticipantCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_RTC_OnBlockParticipantCallbackFunction>>;
 typedef EOS_RTC_OnBlockParticipantCallbackFunction =
@@ -13266,8 +11640,6 @@ typedef EOS_RTC_OnBlockParticipantCallbackFunction =
 typedef DartEOS_RTC_OnBlockParticipantCallbackFunction =
     void Function(ffi.Pointer<EOS_RTC_BlockParticipantCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_RTC_AddNotifyDisconnected
 typedef EOS_RTC_OnDisconnectedCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_RTC_OnDisconnectedCallbackFunction>>;
 typedef EOS_RTC_OnDisconnectedCallbackFunction =
@@ -13275,7 +11647,6 @@ typedef EOS_RTC_OnDisconnectedCallbackFunction =
 typedef DartEOS_RTC_OnDisconnectedCallbackFunction =
     void Function(ffi.Pointer<EOS_RTC_DisconnectedCallbackInfo> Data);
 
-/// Callback for completion of room join request.
 typedef EOS_RTC_OnJoinRoomCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_RTC_OnJoinRoomCallbackFunction>>;
 typedef EOS_RTC_OnJoinRoomCallbackFunction =
@@ -13283,7 +11654,6 @@ typedef EOS_RTC_OnJoinRoomCallbackFunction =
 typedef DartEOS_RTC_OnJoinRoomCallbackFunction =
     void Function(ffi.Pointer<EOS_RTC_JoinRoomCallbackInfo> Data);
 
-/// Callback for completion of room leave request.
 typedef EOS_RTC_OnLeaveRoomCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_RTC_OnLeaveRoomCallbackFunction>>;
 typedef EOS_RTC_OnLeaveRoomCallbackFunction =
@@ -13291,8 +11661,6 @@ typedef EOS_RTC_OnLeaveRoomCallbackFunction =
 typedef DartEOS_RTC_OnLeaveRoomCallbackFunction =
     void Function(ffi.Pointer<EOS_RTC_LeaveRoomCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_RTC_AddNotifyParticipantStatusChanged
 typedef EOS_RTC_OnParticipantStatusChangedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_RTC_OnParticipantStatusChangedCallbackFunction>
@@ -13306,8 +11674,6 @@ typedef DartEOS_RTC_OnParticipantStatusChangedCallbackFunction =
       ffi.Pointer<EOS_RTC_ParticipantStatusChangedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that comes from
-/// EOS_RTC_AddNotifyRoomBeforeJoin
 typedef EOS_RTC_OnRoomBeforeJoinCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_RTC_OnRoomBeforeJoinCallbackFunction>>;
 typedef EOS_RTC_OnRoomBeforeJoinCallbackFunction =
@@ -13315,8 +11681,6 @@ typedef EOS_RTC_OnRoomBeforeJoinCallbackFunction =
 typedef DartEOS_RTC_OnRoomBeforeJoinCallbackFunction =
     void Function(ffi.Pointer<EOS_RTC_RoomBeforeJoinCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_RTC_AddNotifyRoomStatisticsUpdated
 typedef EOS_RTC_OnRoomStatisticsUpdatedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_RTC_OnRoomStatisticsUpdatedCallbackFunction>
@@ -13344,7 +11708,6 @@ const int EOS_RTC_SETSETTING_API_LATEST = 1;
 typedef EOS_RTC_SetRoomSettingOptions = _tagEOS_RTC_SetRoomSettingOptions;
 typedef EOS_RTC_SetSettingOptions = _tagEOS_RTC_SetSettingOptions;
 
-/// Function prototype type definition for functions that reallocate memory.
 typedef EOS_ReallocateMemoryFunc =
     ffi.Pointer<ffi.NativeFunction<EOS_ReallocateMemoryFuncFunction>>;
 typedef EOS_ReallocateMemoryFuncFunction =
@@ -13360,7 +11723,6 @@ typedef DartEOS_ReallocateMemoryFuncFunction =
       int Alignment,
     );
 
-/// Function prototype type definition for functions that release memory.
 typedef EOS_ReleaseMemoryFunc =
     ffi.Pointer<ffi.NativeFunction<EOS_ReleaseMemoryFuncFunction>>;
 typedef EOS_ReleaseMemoryFuncFunction =
@@ -13370,8 +11732,6 @@ typedef DartEOS_ReleaseMemoryFuncFunction =
 
 final class EOS_ReportsHandle extends ffi.Opaque {}
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Reports_SendPlayerBehaviorReport.
 typedef EOS_Reports_OnSendPlayerBehaviorReportCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13532,8 +11892,6 @@ final class EOS_SanctionsHandle extends ffi.Opaque {}
 typedef EOS_Sanctions_CopyPlayerSanctionByIndexOptions =
     _tagEOS_Sanctions_CopyPlayerSanctionByIndexOptions;
 
-/// Function definition for callbacks passed to
-/// EOS_Sanctions_CreatePlayerSanctionAppeal.
 typedef EOS_Sanctions_CreatePlayerSanctionAppealCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13555,8 +11913,6 @@ typedef EOS_Sanctions_CreatePlayerSanctionAppealOptions =
 typedef EOS_Sanctions_GetPlayerSanctionCountOptions =
     _tagEOS_Sanctions_GetPlayerSanctionCountOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sanctions_QueryActivePlayerSanctions
 typedef EOS_Sanctions_OnQueryActivePlayerSanctionsCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13622,7 +11978,6 @@ typedef EOS_SessionSearch_FindOptions = _tagEOS_SessionSearch_FindOptions;
 typedef EOS_SessionSearch_GetSearchResultCountOptions =
     _tagEOS_SessionSearch_GetSearchResultCountOptions;
 
-/// Function prototype definition for callbacks passed to EOS_SessionSearch_Find
 typedef EOS_SessionSearch_OnFindCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_SessionSearch_OnFindCallbackFunction>>;
 typedef EOS_SessionSearch_OnFindCallbackFunction =
@@ -13690,8 +12045,6 @@ typedef EOS_Sessions_JoinSessionOptions = _tagEOS_Sessions_JoinSessionOptions;
 typedef EOS_Sessions_LeaveSessionRequestedCallbackInfo =
     _tagEOS_Sessions_LeaveSessionRequestedCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_DestroySession
 typedef EOS_Sessions_OnDestroySessionCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnDestroySessionCallbackFunction>
@@ -13703,8 +12056,6 @@ typedef EOS_Sessions_OnDestroySessionCallbackFunction =
 typedef DartEOS_Sessions_OnDestroySessionCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_DestroySessionCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_EndSession
 typedef EOS_Sessions_OnEndSessionCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Sessions_OnEndSessionCallbackFunction>>;
 typedef EOS_Sessions_OnEndSessionCallbackFunction =
@@ -13712,8 +12063,6 @@ typedef EOS_Sessions_OnEndSessionCallbackFunction =
 typedef DartEOS_Sessions_OnEndSessionCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_EndSessionCallbackInfo> Data);
 
-/// Function prototype definition for notifications that come from
-/// EOS_Sessions_AddNotifyJoinSessionAccepted
 typedef EOS_Sessions_OnJoinSessionAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnJoinSessionAcceptedCallbackFunction>
@@ -13727,8 +12076,6 @@ typedef DartEOS_Sessions_OnJoinSessionAcceptedCallbackFunction =
       ffi.Pointer<EOS_Sessions_JoinSessionAcceptedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_JoinSession
 typedef EOS_Sessions_OnJoinSessionCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Sessions_OnJoinSessionCallbackFunction>>;
 typedef EOS_Sessions_OnJoinSessionCallbackFunction =
@@ -13736,8 +12083,6 @@ typedef EOS_Sessions_OnJoinSessionCallbackFunction =
 typedef DartEOS_Sessions_OnJoinSessionCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_JoinSessionCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Sessions_AddNotifyLeaveSessionRequested.
 typedef EOS_Sessions_OnLeaveSessionRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnLeaveSessionRequestedCallbackFunction>
@@ -13751,8 +12096,6 @@ typedef DartEOS_Sessions_OnLeaveSessionRequestedCallbackFunction =
       ffi.Pointer<EOS_Sessions_LeaveSessionRequestedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_QueryInvites
 typedef EOS_Sessions_OnQueryInvitesCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnQueryInvitesCallbackFunction>
@@ -13762,8 +12105,6 @@ typedef EOS_Sessions_OnQueryInvitesCallbackFunction =
 typedef DartEOS_Sessions_OnQueryInvitesCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_QueryInvitesCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_RegisterPlayers
 typedef EOS_Sessions_OnRegisterPlayersCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnRegisterPlayersCallbackFunction>
@@ -13775,8 +12116,6 @@ typedef EOS_Sessions_OnRegisterPlayersCallbackFunction =
 typedef DartEOS_Sessions_OnRegisterPlayersCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_RegisterPlayersCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_RejectInvite
 typedef EOS_Sessions_OnRejectInviteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnRejectInviteCallbackFunction>
@@ -13786,8 +12125,6 @@ typedef EOS_Sessions_OnRejectInviteCallbackFunction =
 typedef DartEOS_Sessions_OnRejectInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_RejectInviteCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_SendInvite
 typedef EOS_Sessions_OnSendInviteCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_Sessions_OnSendInviteCallbackFunction>>;
 typedef EOS_Sessions_OnSendInviteCallbackFunction =
@@ -13795,8 +12132,6 @@ typedef EOS_Sessions_OnSendInviteCallbackFunction =
 typedef DartEOS_Sessions_OnSendInviteCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_SendInviteCallbackInfo> Data);
 
-/// Function prototype definition for notifications that comes from
-/// EOS_Sessions_AddNotifySendSessionNativeInviteRequested
 typedef EOS_Sessions_OnSendSessionNativeInviteRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -13814,8 +12149,6 @@ typedef DartEOS_Sessions_OnSendSessionNativeInviteRequestedCallbackFunction =
       Data,
     );
 
-/// Function prototype definition for notifications that come from
-/// EOS_Sessions_AddNotifySessionInviteAccepted
 typedef EOS_Sessions_OnSessionInviteAcceptedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnSessionInviteAcceptedCallbackFunction>
@@ -13829,8 +12162,6 @@ typedef DartEOS_Sessions_OnSessionInviteAcceptedCallbackFunction =
       ffi.Pointer<EOS_Sessions_SessionInviteAcceptedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that come from
-/// EOS_Sessions_AddNotifySessionInviteReceived
 typedef EOS_Sessions_OnSessionInviteReceivedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnSessionInviteReceivedCallbackFunction>
@@ -13844,8 +12175,6 @@ typedef DartEOS_Sessions_OnSessionInviteReceivedCallbackFunction =
       ffi.Pointer<EOS_Sessions_SessionInviteReceivedCallbackInfo> Data,
     );
 
-/// Function prototype definition for notifications that come from
-/// EOS_Sessions_AddNotifySessionInviteRejected
 typedef EOS_Sessions_OnSessionInviteRejectedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnSessionInviteRejectedCallbackFunction>
@@ -13859,8 +12188,6 @@ typedef DartEOS_Sessions_OnSessionInviteRejectedCallbackFunction =
       ffi.Pointer<EOS_Sessions_SessionInviteRejectedCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_StartSession
 typedef EOS_Sessions_OnStartSessionCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnStartSessionCallbackFunction>
@@ -13870,8 +12197,6 @@ typedef EOS_Sessions_OnStartSessionCallbackFunction =
 typedef DartEOS_Sessions_OnStartSessionCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_StartSessionCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_UnregisterPlayers
 typedef EOS_Sessions_OnUnregisterPlayersCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnUnregisterPlayersCallbackFunction>
@@ -13883,8 +12208,6 @@ typedef EOS_Sessions_OnUnregisterPlayersCallbackFunction =
 typedef DartEOS_Sessions_OnUnregisterPlayersCallbackFunction =
     void Function(ffi.Pointer<EOS_Sessions_UnregisterPlayersCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_Sessions_UpdateSession
 typedef EOS_Sessions_OnUpdateSessionCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Sessions_OnUpdateSessionCallbackFunction>
@@ -13938,7 +12261,6 @@ typedef EOS_Stats_IngestStatCompleteCallbackInfo =
     _tagEOS_Stats_IngestStatCompleteCallbackInfo;
 typedef EOS_Stats_IngestStatOptions = _tagEOS_Stats_IngestStatOptions;
 
-/// Function prototype definition for callbacks passed to EOS_Stats_IngestStat
 typedef EOS_Stats_OnIngestStatCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Stats_OnIngestStatCompleteCallbackFunction>
@@ -13950,7 +12272,6 @@ typedef EOS_Stats_OnIngestStatCompleteCallbackFunction =
 typedef DartEOS_Stats_OnIngestStatCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_Stats_IngestStatCompleteCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to EOS_Stats_QueryStats
 typedef EOS_Stats_OnQueryStatsCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_Stats_OnQueryStatsCompleteCallbackFunction>
@@ -14009,16 +12330,11 @@ typedef EOS_TitleStorage_DeleteCacheCallbackInfo =
 typedef EOS_TitleStorage_DeleteCacheOptions =
     _tagEOS_TitleStorage_DeleteCacheOptions;
 
-/// Return results for EOS_TitleStorage_OnReadFileDataCallback callbacks
 enum EOS_TitleStorage_EReadResult {
-  /// Signifies the data was read successfully, and we should continue to the
-  /// next chunk if possible
   EOS_TS_RR_ContinueReading(1),
 
-  /// Signifies there was a failure reading the data, and the request should end
   EOS_TS_RR_FailRequest(2),
 
-  /// Signifies the request should be canceled, but not due to an error
   EOS_TS_RR_CancelRequest(3),
   __EOS_TitleStorage_EReadResult_PAD_INT32__(2147483647);
 
@@ -14042,7 +12358,6 @@ typedef EOS_TitleStorage_FileTransferProgressCallbackInfo =
 typedef EOS_TitleStorage_GetFileMetadataCountOptions =
     _tagEOS_TitleStorage_GetFileMetadataCountOptions;
 
-/// Callback for when EOS_TitleStorage_DeleteCache completes
 typedef EOS_TitleStorage_OnDeleteCacheCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_TitleStorage_OnDeleteCacheCompleteCallbackFunction>
@@ -14054,7 +12369,6 @@ typedef EOS_TitleStorage_OnDeleteCacheCompleteCallbackFunction =
 typedef DartEOS_TitleStorage_OnDeleteCacheCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_TitleStorage_DeleteCacheCallbackInfo> Data);
 
-/// Callback for when there is a progress update for a file transfer in progress
 typedef EOS_TitleStorage_OnFileTransferProgressCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -14070,7 +12384,6 @@ typedef DartEOS_TitleStorage_OnFileTransferProgressCallbackFunction =
       ffi.Pointer<EOS_TitleStorage_FileTransferProgressCallbackInfo> Data,
     );
 
-/// Callback for when EOS_TitleStorage_QueryFile completes
 typedef EOS_TitleStorage_OnQueryFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_TitleStorage_OnQueryFileCompleteCallbackFunction>
@@ -14080,7 +12393,6 @@ typedef EOS_TitleStorage_OnQueryFileCompleteCallbackFunction =
 typedef DartEOS_TitleStorage_OnQueryFileCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_TitleStorage_QueryFileCallbackInfo> Data);
 
-/// Callback for when EOS_TitleStorage_QueryFileList completes
 typedef EOS_TitleStorage_OnQueryFileListCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -14094,7 +12406,6 @@ typedef EOS_TitleStorage_OnQueryFileListCompleteCallbackFunction =
 typedef DartEOS_TitleStorage_OnQueryFileListCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_TitleStorage_QueryFileListCallbackInfo> Data);
 
-/// Callback for when EOS_TitleStorage_ReadFile completes
 typedef EOS_TitleStorage_OnReadFileCompleteCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_TitleStorage_OnReadFileCompleteCallbackFunction>
@@ -14104,8 +12415,6 @@ typedef EOS_TitleStorage_OnReadFileCompleteCallbackFunction =
 typedef DartEOS_TitleStorage_OnReadFileCompleteCallbackFunction =
     void Function(ffi.Pointer<EOS_TitleStorage_ReadFileCallbackInfo> Data);
 
-/// Callback for when we have data ready to be read from the requested file. It
-/// is undefined how often this will be called during a single tick.
 typedef EOS_TitleStorage_OnReadFileDataCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_TitleStorage_OnReadFileDataCallbackFunction>
@@ -14159,8 +12468,6 @@ const int EOS_UI_CONFIGUREONSCREENKEYBOARD_API_LATEST = 1;
 typedef EOS_UI_ConfigureOnScreenKeyboardOptions =
     _tagEOS_UI_ConfigureOnScreenKeyboardOptions;
 
-/// Flags used in EOS_UI_ReportInputStateOptions to identify buttons which are
-/// down.
 enum EOS_UI_EInputStateButtonFlags {
   EOS_UISBF_None(0),
   EOS_UISBF_DPad_Left(1),
@@ -14452,18 +12759,13 @@ enum EOS_UI_EKeyCombination {
   }
 }
 
-/// Notification locations to be used to set the preference for pop-up.
 enum EOS_UI_ENotificationLocation {
-  /// The top left corner
   EOS_UNL_TopLeft(0),
 
-  /// The top right corner
   EOS_UNL_TopRight(1),
 
-  /// The bottom left corner
   EOS_UNL_BottomLeft(2),
 
-  /// The bottom right corner
   EOS_UNL_BottomRight(3),
   __EOS_UI_ENotificationLocation_PAD_INT32__(2147483647);
 
@@ -14482,17 +12784,11 @@ enum EOS_UI_ENotificationLocation {
   };
 }
 
-/// An on screen keyboard behavior.
 enum EOS_UI_EOnScreenKeyboardBehavior {
-  /// Do nothing when an on screen keyboard is requested. This effectively
-  /// disables on screen keyboards.
   EOS_UIOSKB_None(0),
 
-  /// Receive a notification when an on screen keyboard is requested. Use this
-  /// to implement custom on screen keyboard logic.
   EOS_UIOSKB_Notification(1),
 
-  /// Try to launch the native on screen keyboard when one is requested.
   EOS_UIOSKB_Native(2),
   __EOS_UI_EOnScreenKeyboardBehavior_PAD_INT32__(2147483647);
 
@@ -14511,33 +12807,23 @@ enum EOS_UI_EOnScreenKeyboardBehavior {
       };
 }
 
-/// An on screen keyboard type.
 enum EOS_UI_EOnScreenKeyboardType {
-  /// No on screen keyboard.
   EOS_UIOSKT_None(0),
 
-  /// The default on screen keyboard.
   EOS_UIOSKT_Default(1),
 
-  /// The text on screen keyboard.
   EOS_UIOSKT_Text(2),
 
-  /// The telephone number on screen keyboard.
   EOS_UIOSKT_TelephoneNumber(3),
 
-  /// The URL on screen keyboard.
   EOS_UIOSKT_URL(4),
 
-  /// The email on screen keyboard.
   EOS_UIOSKT_Email(5),
 
-  /// The numeric on screen keyboard.
   EOS_UIOSKT_Numeric(6),
 
-  /// The decimal on screen keyboard.
   EOS_UIOSKT_Decimal(7),
 
-  /// The search on screen keyboard.
   EOS_UIOSKT_Search(8),
   __EOS_UI_EOnScreenKeyboardType_PAD_INT32__(2147483647);
 
@@ -14561,7 +12847,6 @@ enum EOS_UI_EOnScreenKeyboardType {
   };
 }
 
-/// ID representing a specific UI event.
 typedef EOS_UI_EventId = ffi.Uint64;
 typedef DartEOS_UI_EventId = int;
 
@@ -14592,8 +12877,6 @@ typedef EOS_UI_IsSocialOverlayPausedOptions =
     _tagEOS_UI_IsSocialOverlayPausedOptions;
 typedef EOS_UI_MemoryMonitorCallbackInfo = _tagEOS_UI_MemoryMonitorCallbackInfo;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UI_AddNotifyDisplaySettingsUpdated
 typedef EOS_UI_OnDisplaySettingsUpdatedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_UI_OnDisplaySettingsUpdatedCallbackFunction>
@@ -14609,7 +12892,6 @@ typedef DartEOS_UI_OnDisplaySettingsUpdatedCallbackFunction =
 typedef EOS_UI_OnDisplaySettingsUpdatedCallbackInfo =
     _tagEOS_UI_OnDisplaySettingsUpdatedCallbackInfo;
 
-/// Function prototype definition for callbacks passed to EOS_UI_HideFriends
 typedef EOS_UI_OnHideFriendsCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnHideFriendsCallbackFunction>>;
 typedef EOS_UI_OnHideFriendsCallbackFunction =
@@ -14617,8 +12899,6 @@ typedef EOS_UI_OnHideFriendsCallbackFunction =
 typedef DartEOS_UI_OnHideFriendsCallbackFunction =
     void Function(ffi.Pointer<EOS_UI_HideFriendsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UI_AddNotifyMemoryMonitor
 typedef EOS_UI_OnMemoryMonitorCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnMemoryMonitorCallbackFunction>>;
 typedef EOS_UI_OnMemoryMonitorCallbackFunction =
@@ -14626,8 +12906,6 @@ typedef EOS_UI_OnMemoryMonitorCallbackFunction =
 typedef DartEOS_UI_OnMemoryMonitorCallbackFunction =
     void Function(ffi.Pointer<EOS_UI_MemoryMonitorCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UI_AddNotifyOnScreenKeyboardRequested.
 typedef EOS_UI_OnScreenKeyboardRequestedCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_UI_OnScreenKeyboardRequestedCallbackFunction>
@@ -14643,7 +12921,6 @@ typedef DartEOS_UI_OnScreenKeyboardRequestedCallbackFunction =
 typedef EOS_UI_OnScreenKeyboardRequestedCallbackInfo =
     _tagEOS_UI_OnScreenKeyboardRequestedCallbackInfo;
 
-/// Function prototype definition for callbacks passed to EOS_UI_ShowBlockPlayer
 typedef EOS_UI_OnShowBlockPlayerCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnShowBlockPlayerCallbackFunction>>;
 typedef EOS_UI_OnShowBlockPlayerCallbackFunction =
@@ -14653,7 +12930,6 @@ typedef DartEOS_UI_OnShowBlockPlayerCallbackFunction =
 typedef EOS_UI_OnShowBlockPlayerCallbackInfo =
     _tagEOS_UI_OnShowBlockPlayerCallbackInfo;
 
-/// Function prototype definition for callbacks passed to EOS_UI_ShowFriends
 typedef EOS_UI_OnShowFriendsCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnShowFriendsCallbackFunction>>;
 typedef EOS_UI_OnShowFriendsCallbackFunction =
@@ -14661,8 +12937,6 @@ typedef EOS_UI_OnShowFriendsCallbackFunction =
 typedef DartEOS_UI_OnShowFriendsCallbackFunction =
     void Function(ffi.Pointer<EOS_UI_ShowFriendsCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UI_ShowNativeProfile
 typedef EOS_UI_OnShowNativeProfileCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnShowNativeProfileCallbackFunction>>;
 typedef EOS_UI_OnShowNativeProfileCallbackFunction =
@@ -14670,8 +12944,6 @@ typedef EOS_UI_OnShowNativeProfileCallbackFunction =
 typedef DartEOS_UI_OnShowNativeProfileCallbackFunction =
     void Function(ffi.Pointer<EOS_UI_ShowNativeProfileCallbackInfo> Data);
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UI_ShowReportPlayer
 typedef EOS_UI_OnShowReportPlayerCallback =
     ffi.Pointer<ffi.NativeFunction<EOS_UI_OnShowReportPlayerCallbackFunction>>;
 typedef EOS_UI_OnShowReportPlayerCallbackFunction =
@@ -14771,8 +13043,6 @@ typedef EOS_UserInfo_GetExternalUserInfoCountOptions =
 typedef EOS_UserInfo_GetLocalPlatformTypeOptions =
     _tagEOS_UserInfo_GetLocalPlatformTypeOptions;
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UserInfo_QueryUserInfo
 typedef EOS_UserInfo_OnQueryUserInfoByDisplayNameCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -14788,8 +13058,6 @@ typedef DartEOS_UserInfo_OnQueryUserInfoByDisplayNameCallbackFunction =
       ffi.Pointer<EOS_UserInfo_QueryUserInfoByDisplayNameCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UserInfo_QueryUserInfoByExternalAccount
 typedef EOS_UserInfo_OnQueryUserInfoByExternalAccountCallback =
     ffi.Pointer<
       ffi.NativeFunction<
@@ -14805,8 +13073,6 @@ typedef DartEOS_UserInfo_OnQueryUserInfoByExternalAccountCallbackFunction =
       ffi.Pointer<EOS_UserInfo_QueryUserInfoByExternalAccountCallbackInfo> Data,
     );
 
-/// Function prototype definition for callbacks passed to
-/// EOS_UserInfo_QueryUserInfo
 typedef EOS_UserInfo_OnQueryUserInfoCallback =
     ffi.Pointer<
       ffi.NativeFunction<EOS_UserInfo_OnQueryUserInfoCallbackFunction>
@@ -14828,698 +13094,439 @@ typedef EOS_UserInfo_QueryUserInfoCallbackInfo =
 typedef EOS_UserInfo_QueryUserInfoOptions =
     _tagEOS_UserInfo_QueryUserInfoOptions;
 
-/// Value of the lobby attribute
 final class UnnamedUnion extends ffi.Union {
-  /// Stored as an 8 byte integer
   @ffi.Int64()
   external int AsInt64;
 
-  /// Stored as a double precision floating point
   @ffi.Double()
   external double AsDouble;
 
-  /// Stored as a boolean
   @EOS_Bool()
   external int AsBool;
 
-  /// Stored as a null terminated UTF8 string. Should not be nullptr
   external ffi.Pointer<ffi.Char> AsUtf8;
 }
 
-/// Union storage for template typed values
 final class UnnamedUnion$1 extends ffi.Union {
-  /// Localized integer
   @ffi.Int32()
   external int AsInt32;
 
-  /// Reference a StringId in the Backend
   external ffi.Pointer<ffi.Char> AsStringId;
 }
 
-/// Value of the session attribute
 final class UnnamedUnion$2 extends ffi.Union {
-  /// Stored as an 8 byte integer
   @ffi.Int64()
   external int AsInt64;
 
-  /// Stored as a double precision floating point
   @ffi.Double()
   external double AsDouble;
 
-  /// Stored as a boolean
   @EOS_Bool()
   external int AsBool;
 
-  /// Stored as a null terminated UTF8 string. Should not be nullptr
   external ffi.Pointer<ffi.Char> AsUtf8;
 }
 
-/// Parameter value
 final class UnnamedUnion$3 extends ffi.Union {
-  /// Client handle.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// The value as a string. Will be truncated if longer than
-  /// EOS_ANTICHEATCOMMON_LOGEVENT_STRING_MAX_LENGTH bytes.
   external ffi.Pointer<ffi.Char> String;
 
-  /// The value as a uint32_t.
   @ffi.Uint32()
   external int UInt32;
 
-  /// The value as an int32_t.
   @ffi.Int32()
   external int Int32;
 
-  /// The value as a uint64_t.
   @ffi.Uint64()
   external int UInt64;
 
-  /// The value as an int64_t.
   @ffi.Int64()
   external int Int64;
 
-  /// The value as an EOS_AntiCheatCommon_Vec3f.
   external EOS_AntiCheatCommon_Vec3f Vec3f;
 
-  /// The value as an EOS_AntiCheatCommon_Quat.
   external EOS_AntiCheatCommon_Quat Quat;
 
-  /// The value as a float.
   @ffi.Float()
   external double Float;
 }
 
-/// The Account ID for the player whose session is beginning.
 final class UnnamedUnion$4 extends ffi.Union {
-  /// An Epic Account ID. Set this field when AccountIdType is set to
-  /// EOS_MAIT_Epic.
   external EOS_EpicAccountId Epic;
 
-  /// An Account ID for another service. Set this field when AccountIdType is
-  /// set to EOS_MAIT_External.
   external ffi.Pointer<ffi.Char> External;
 }
 
-/// The Account ID for the player whose session is ending.
 final class UnnamedUnion$5 extends ffi.Union {
-  /// An Epic Account ID. Set this field when AccountIdType is set to
-  /// EOS_MAIT_Epic.
   external EOS_EpicAccountId Epic;
 
-  /// An Account ID for another service. Set this field when AccountIdType is
-  /// set to EOS_MAIT_External.
   external ffi.Pointer<ffi.Char> External;
 }
 
-/// Input parameters for the EOS_Achievements_AddNotifyAchievementsUnlocked
-/// function.
 final class _tagEOS_Achievements_AddNotifyAchievementsUnlockedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_ADDNOTIFYACHIEVEMENTSUNLOCKED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Achievements_AddNotifyAchievementsUnlocked
-/// function.
 final class _tagEOS_Achievements_AddNotifyAchievementsUnlockedV2Options
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_ADDNOTIFYACHIEVEMENTSUNLOCKEDV2_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the
-/// EOS_Achievements_CopyAchievementDefinitionByAchievementId function.
 final class _tagEOS_Achievements_CopyAchievementDefinitionByAchievementIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYDEFINITIONBYACHIEVEMENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Achievement ID to look for when copying definition from the cache
   external ffi.Pointer<ffi.Char> AchievementId;
 }
 
-/// Input parameters for the EOS_Achievements_CopyAchievementDefinitionByIndex
-/// function.
 final class _tagEOS_Achievements_CopyAchievementDefinitionByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYDEFINITIONBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the achievement definition to retrieve from the cache
   @ffi.Uint32()
   external int AchievementIndex;
 }
 
-/// Input parameters for the
-/// EOS_Achievements_CopyAchievementDefinitionV2ByAchievementId function.
 final class _tagEOS_Achievements_CopyAchievementDefinitionV2ByAchievementIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYACHIEVEMENTDEFINITIONV2BYACHIEVEMENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Achievement ID to look for when copying the definition from the cache.
   external ffi.Pointer<ffi.Char> AchievementId;
 }
 
-/// Input parameters for the EOS_Achievements_CopyAchievementDefinitionByIndex
-/// function.
 final class _tagEOS_Achievements_CopyAchievementDefinitionV2ByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYACHIEVEMENTDEFINITIONV2BYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the achievement definition to retrieve from the cache.
   @ffi.Uint32()
   external int AchievementIndex;
 }
 
-/// Input parameters for the
-/// EOS_Achievements_CopyPlayerAchievementByAchievementId function.
 final class _tagEOS_Achievements_CopyPlayerAchievementByAchievementIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYPLAYERACHIEVEMENTBYACHIEVEMENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose achievement is to be retrieved.
   external EOS_ProductUserId TargetUserId;
 
-  /// Achievement ID to search for when retrieving player achievement data from
-  /// the cache.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// The Product User ID for the user who is querying for a player achievement.
-  /// For a Dedicated Server this should be null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Achievements_CopyPlayerAchievementByIndex
-/// function.
 final class _tagEOS_Achievements_CopyPlayerAchievementByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYPLAYERACHIEVEMENTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose achievement is to be retrieved.
   external EOS_ProductUserId TargetUserId;
 
-  /// The index of the player achievement data to retrieve from the cache.
   @ffi.Uint32()
   external int AchievementIndex;
 
-  /// The Product User ID for the user who is querying for a player achievement.
-  /// For a Dedicated Server this should be null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the
-/// EOS_Achievements_CopyUnlockedAchievementByAchievementId function.
 final class _tagEOS_Achievements_CopyUnlockedAchievementByAchievementIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYUNLOCKEDACHIEVEMENTBYACHIEVEMENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user who is copying the unlocked achievement
   external EOS_ProductUserId UserId;
 
-  /// AchievementId of the unlocked achievement to retrieve from the cache
   external ffi.Pointer<ffi.Char> AchievementId;
 }
 
-/// Input parameters for the EOS_Achievements_CopyUnlockedAchievementByIndex
-/// function.
 final class _tagEOS_Achievements_CopyUnlockedAchievementByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_COPYUNLOCKEDACHIEVEMENTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user who is copying the unlocked achievement
   external EOS_ProductUserId UserId;
 
-  /// Index of the unlocked achievement to retrieve from the cache
   @ffi.Uint32()
   external int AchievementIndex;
 }
 
-/// Contains information about a single achievement definition with localized
-/// text.
 final class _tagEOS_Achievements_Definition extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_DEFINITION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Achievement ID that can be used to uniquely identify the achievement.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// Text representing the Name to display in-game when achievement has been
-  /// unlocked.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// Text representing the description to display in-game when achievement has
-  /// been unlocked.
   external ffi.Pointer<ffi.Char> Description;
 
-  /// Text representing the name to display in-game when achievement is locked.
   external ffi.Pointer<ffi.Char> LockedDisplayName;
 
-  /// Text representing the description of what needs to be done to trigger the
-  /// unlock of this achievement.
   external ffi.Pointer<ffi.Char> LockedDescription;
 
-  /// Text representing the description to display in-game when achievement is
-  /// hidden.
   external ffi.Pointer<ffi.Char> HiddenDescription;
 
-  /// Text representing the description of what happens when the achievement is
-  /// unlocked.
   external ffi.Pointer<ffi.Char> CompletionDescription;
 
-  /// Text representing the icon to display in-game when achievement is
-  /// unlocked.
   external ffi.Pointer<ffi.Char> UnlockedIconId;
 
-  /// Text representing the icon to display in-game when achievement is locked.
   external ffi.Pointer<ffi.Char> LockedIconId;
 
-  /// True if achievement is hidden, false otherwise.
   @EOS_Bool()
   external int bIsHidden;
 
-  /// The number of stat thresholds.
   @ffi.Int32()
   external int StatThresholdsCount;
 
-  /// Array of stat thresholds that need to be satisfied to unlock the
-  /// achievement.
   external ffi.Pointer<EOS_Achievements_StatThresholds> StatThresholds;
 }
 
-/// Contains information about a single achievement definition with localized
-/// text.
 final class _tagEOS_Achievements_DefinitionV2 extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_DEFINITIONV2_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Achievement ID that can be used to uniquely identify the achievement.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// Localized display name for the achievement when it has been unlocked.
   external ffi.Pointer<ffi.Char> UnlockedDisplayName;
 
-  /// Localized description for the achievement when it has been unlocked.
   external ffi.Pointer<ffi.Char> UnlockedDescription;
 
-  /// Localized display name for the achievement when it is locked or hidden.
   external ffi.Pointer<ffi.Char> LockedDisplayName;
 
-  /// Localized description for the achievement when it is locked or hidden.
   external ffi.Pointer<ffi.Char> LockedDescription;
 
-  /// Localized flavor text that can be used by the game in an arbitrary manner.
-  /// This may be null if there is no data configured in the dev portal.
   external ffi.Pointer<ffi.Char> FlavorText;
 
-  /// URL of an icon to display for the achievement when it is unlocked. This
-  /// may be null if there is no data configured in the dev portal.
   external ffi.Pointer<ffi.Char> UnlockedIconURL;
 
-  /// URL of an icon to display for the achievement when it is locked or hidden.
-  /// This may be null if there is no data configured in the dev portal.
   external ffi.Pointer<ffi.Char> LockedIconURL;
 
-  /// EOS_TRUE if the achievement is hidden; EOS_FALSE otherwise.
   @EOS_Bool()
   external int bIsHidden;
 
-  /// The number of stat thresholds used to monitor progress towards this
-  /// achievement.
   @ffi.Uint32()
   external int StatThresholdsCount;
 
-  /// Array of `EOS_Achievements_StatThresholds` that need to be satisfied to
-  /// unlock this achievement. Consists of Name and Threshold Value.
   external ffi.Pointer<EOS_Achievements_StatThresholds> StatThresholds;
 }
 
-/// Input parameters for the EOS_Achievements_GetAchievementDefinitionCount
-/// function.
 final class _tagEOS_Achievements_GetAchievementDefinitionCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_GETACHIEVEMENTDEFINITIONCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Achievements_GetPlayerAchievementCount
-/// function.
 final class _tagEOS_Achievements_GetPlayerAchievementCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_GETPLAYERACHIEVEMENTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose achievement count is being
-  /// retrieved.
   external EOS_ProductUserId UserId;
 }
 
-/// Input parameters for the EOS_Achievements_GetUnlockedAchievementCount
-/// function.
 final class _tagEOS_Achievements_GetUnlockedAchievementCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_GETUNLOCKEDACHIEVEMENTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID for which to retrieve the unlocked achievement count
   external EOS_ProductUserId UserId;
 }
 
-/// Output parameters for the EOS_Achievements_OnAchievementsUnlockedCallback
-/// Function.
 final class _tagEOS_Achievements_OnAchievementsUnlockedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_Achievements_AddNotifyAchievementsUnlocked
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID for the user who received the unlocked achievements
-  /// notification
   external EOS_ProductUserId UserId;
 
-  /// The number of achievements.
   @ffi.Uint32()
   external int AchievementsCount;
 
-  /// This member is not used and will always be set to NULL.
   external ffi.Pointer<ffi.Pointer<ffi.Char>> AchievementIds;
 }
 
-/// Output parameters for the EOS_Achievements_OnAchievementsUnlockedCallbackV2
-/// Function.
 final class _tagEOS_Achievements_OnAchievementsUnlockedCallbackV2Info
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_Achievements_AddNotifyAchievementsUnlocked
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID for the user who received the unlocked achievements
-  /// notification
   external EOS_ProductUserId UserId;
 
-  /// The Achievement ID for the achievement that was unlocked. Pass this to
-  /// EOS_Achievements_CopyPlayerAchievementByAchievementId to get the full
-  /// achievement information.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// POSIX timestamp when the achievement was unlocked.
   @ffi.Int64()
   external int UnlockTime;
 }
 
-/// Data containing the result information for a query definitions request.
 final class _tagEOS_Achievements_OnQueryDefinitionsCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// User-defined context that was passed into
-  /// EOS_Achievements_QueryDefinitions.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Data containing the result information for querying a player's achievements
-/// request.
 final class _tagEOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Achievements_QueryPlayerAchievements.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID whose achievements were retrieved.
   external EOS_ProductUserId TargetUserId;
 
-  /// The Product User ID of the user who initiated this request. For a
-  /// Dedicated Server this should be null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Data containing the result information for unlocking achievements request.
 final class _tagEOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Achievements_UnlockAchievements.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId UserId;
 
-  /// The number of achievements that the operation unlocked.
   @ffi.Uint32()
   external int AchievementsCount;
 }
 
-/// Contains information about a single player achievement.
 final class _tagEOS_Achievements_PlayerAchievement extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_PLAYERACHIEVEMENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// This achievement's unique identifier.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// Progress towards completing this achievement (as a percentage).
   @ffi.Double()
   external double Progress;
 
-  /// The POSIX timestamp when the achievement was unlocked. If the achievement
-  /// has not been unlocked, this value will be
-  /// EOS_ACHIEVEMENTS_ACHIEVEMENT_UNLOCKTIME_UNDEFINED.
   @ffi.Int64()
   external int UnlockTime;
 
-  /// The number of player stat info entries associated with this achievement.
   @ffi.Int32()
   external int StatInfoCount;
 
-  /// Array of EOS_Achievements_PlayerStatInfo structures containing information
-  /// about stat thresholds used to unlock the achievement and the player's
-  /// current values for those stats.
   external ffi.Pointer<EOS_Achievements_PlayerStatInfo> StatInfo;
 
-  /// Localized display name for the achievement based on this specific player's
-  /// current progress on the achievement.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// Localized description for the achievement based on this specific player's
-  /// current progress on the achievement.
   external ffi.Pointer<ffi.Char> Description;
 
-  /// URL of an icon to display for the achievement based on this specific
-  /// player's current progress on the achievement. This may be null if there is
-  /// no data configured in the dev portal.
   external ffi.Pointer<ffi.Char> IconURL;
 
-  /// Localized flavor text that can be used by the game in an arbitrary manner.
-  /// This may be null if there is no data configured in the dev portal.
   external ffi.Pointer<ffi.Char> FlavorText;
 }
 
-/// Contains information about a collection of stat info data.
 final class _tagEOS_Achievements_PlayerStatInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_PLAYERSTATINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of the stat.
   external ffi.Pointer<ffi.Char> Name;
 
-  /// The current value of the stat.
   @ffi.Int32()
   external int CurrentValue;
 
-  /// The threshold value of the stat, used in determining when to unlock an
-  /// achievement.
   @ffi.Int32()
   external int ThresholdValue;
 }
 
-/// Input parameters for the EOS_Achievements_QueryDefinitions function.
 final class _tagEOS_Achievements_QueryDefinitionsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_QUERYDEFINITIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID for user who is querying definitions. The localized text
-  /// returned will be based on the locale code of the given user if they have a
-  /// linked Epic Account ID. The localized text returned can also be overridden
-  /// using EOS_Platform_SetOverrideLocaleCode to override the locale. If the
-  /// locale code is not overridden and LocalUserId is not valid, default text
-  /// will be returned.
   external EOS_ProductUserId LocalUserId;
 
-  /// Deprecated
   external EOS_EpicAccountId EpicUserId_DEPRECATED;
 
-  /// Deprecated
   external ffi.Pointer<ffi.Pointer<ffi.Char>> HiddenAchievementIds_DEPRECATED;
 
-  /// Deprecated
   @ffi.Uint32()
   external int HiddenAchievementsCount_DEPRECATED;
 }
 
-/// Input parameters for the EOS_Achievements_QueryPlayerAchievements function.
 final class _tagEOS_Achievements_QueryPlayerAchievementsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACHIEVEMENTS_QUERYPLAYERACHIEVEMENTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose achievements are to be retrieved.
   external EOS_ProductUserId TargetUserId;
 
-  /// The Product User ID for the user who is querying for player achievements.
-  /// For a Dedicated Server this should be null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Contains information about a collection of stat threshold data.
 final class _tagEOS_Achievements_StatThresholds extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_STATTHRESHOLDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of the stat.
   external ffi.Pointer<ffi.Char> Name;
 
-  /// The value that the stat must surpass to satisfy the requirement for
-  /// unlocking an achievement.
   @ffi.Int32()
   external int Threshold;
 }
 
-/// Input parameters for the EOS_Achievements_UnlockAchievements function.
 final class _tagEOS_Achievements_UnlockAchievementsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_UNLOCKACHIEVEMENTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose achievements we want to unlock.
   external EOS_ProductUserId UserId;
 
-  /// An array of Achievement IDs to unlock.
   external ffi.Pointer<ffi.Pointer<ffi.Char>> AchievementIds;
 
-  /// The number of achievements to unlock.
   @ffi.Uint32()
   external int AchievementsCount;
 }
 
-/// Contains information about a single unlocked achievement.
 final class _tagEOS_Achievements_UnlockedAchievement extends ffi.Struct {
-  /// API Version: Set this to EOS_ACHIEVEMENTS_UNLOCKEDACHIEVEMENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Achievement ID that can be used to uniquely identify the unlocked
-  /// achievement.
   external ffi.Pointer<ffi.Char> AchievementId;
 
-  /// If not EOS_ACHIEVEMENTS_ACHIEVEMENT_UNLOCKTIME_UNDEFINED then this is the
-  /// POSIX timestamp that the achievement was unlocked.
   @ffi.Int64()
   external int UnlockTime;
 }
 
-/// Input parameters for the EOS_ActiveSession_CopyInfo function.
 final class _tagEOS_ActiveSession_CopyInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ACTIVESESSION_COPYINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_ActiveSession_GetRegisteredPlayerByIndex
-/// function.
 final class _tagEOS_ActiveSession_GetRegisteredPlayerByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACTIVESESSION_GETREGISTEREDPLAYERBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the registered player to retrieve
   @ffi.Uint32()
   external int PlayerIndex;
 }
 
-/// Input parameters for the EOS_ActiveSession_GetRegisteredPlayerCount
-/// function.
 final class _tagEOS_ActiveSession_GetRegisteredPlayerCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ACTIVESESSION_GETREGISTEREDPLAYERCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Top level details about an active session
 final class _tagEOS_ActiveSession_Info extends ffi.Struct {
-  /// API Version: Set this to EOS_ACTIVESESSION_INFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// The Product User ID of the local user who created or joined the session
   external EOS_ProductUserId LocalUserId;
 
-  /// Current state of the session
   @ffi.UnsignedInt()
   external int StateAsInt;
 
@@ -15527,84 +13534,53 @@ final class _tagEOS_ActiveSession_Info extends ffi.Struct {
       EOS_EOnlineSessionState.fromValue(StateAsInt);
   set State(EOS_EOnlineSessionState value) => StateAsInt = value.value;
 
-  /// Session details
   external ffi.Pointer<EOS_SessionDetails_Info> SessionDetails;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_AddExternalIntegrityCatalog
-/// function.
 final class _tagEOS_AntiCheatClient_AddExternalIntegrityCatalogOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDEXTERNALINTEGRITYCATALOG_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// UTF-8 path to the .bin catalog file to add
   external ffi.Pointer<ffi.Char> PathToBinFile;
 }
 
-/// Input parameters for the
-/// EOS_AntiCheatClient_AddNotifyClientIntegrityViolated function.
 final class _tagEOS_AntiCheatClient_AddNotifyClientIntegrityViolatedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDNOTIFYPEERAUTHSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_AddNotifyMessageToPeer
-/// function.
 final class _tagEOS_AntiCheatClient_AddNotifyMessageToPeerOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDNOTIFYMESSAGETOPEER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_AddNotifyMessageToServer
-/// function.
 final class _tagEOS_AntiCheatClient_AddNotifyMessageToServerOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDNOTIFYMESSAGETOSERVER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_AddNotifyPeerActionRequired
-/// function.
 final class _tagEOS_AntiCheatClient_AddNotifyPeerActionRequiredOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDNOTIFYPEERACTIONREQUIRED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_AddNotifyPeerAuthStatusChanged
-/// function.
 final class _tagEOS_AntiCheatClient_AddNotifyPeerAuthStatusChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_ADDNOTIFYPEERAUTHSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_BeginSession function.
 final class _tagEOS_AntiCheatClient_BeginSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_BEGINSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Logged in user identifier from earlier call to EOS_Connect_Login family of
-  /// functions
   external EOS_ProductUserId LocalUserId;
 
-  /// Operating mode
   @ffi.UnsignedInt()
   external int ModeAsInt;
 
@@ -15613,42 +13589,29 @@ final class _tagEOS_AntiCheatClient_BeginSessionOptions extends ffi.Struct {
   set Mode(EOS_EAntiCheatClientMode value) => ModeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_EndSession function.
 final class _tagEOS_AntiCheatClient_EndSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_ENDSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_GetModuleBuildId function.
 final class _tagEOS_AntiCheatClient_GetModuleBuildIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_GETMODULEBUILDID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_GetProtectMessageOutputLength
-/// function.
 final class _tagEOS_AntiCheatClient_GetProtectMessageOutputLengthOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_GETPROTECTMESSAGEOUTPUTLENGTH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 }
 
-/// Structure containing details about integrity violation related to the local
-/// client
 final class _tagEOS_AntiCheatClient_OnClientIntegrityViolatedCallbackInfo
     extends ffi.Struct {
-  /// Caller-specified context data
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Code describing the violation that occurred
   @ffi.UnsignedInt()
   external int ViolationTypeAsInt;
 
@@ -15657,102 +13620,70 @@ final class _tagEOS_AntiCheatClient_OnClientIntegrityViolatedCallbackInfo
   set ViolationType(EOS_EAntiCheatClientViolationType value) =>
       ViolationTypeAsInt = value.value;
 
-  /// String describing the violation which should be displayed to the user
   external ffi.Pointer<ffi.Char> ViolationMessage;
 }
 
-/// Structure containing details about a new message that must be dispatched to
-/// the game server.
 final class _tagEOS_AntiCheatClient_OnMessageToServerCallbackInfo
     extends ffi.Struct {
-  /// Caller-specified context data
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The message data that must be sent to the server
   external ffi.Pointer<ffi.Void> MessageData;
 
-  /// The size in bytes of MessageData
   @ffi.Uint32()
   external int MessageDataSizeBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_PollStatus function.
 final class _tagEOS_AntiCheatClient_PollStatusOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_POLLSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The size of OutMessage in bytes. Recommended size is 256 bytes.
   @ffi.Uint32()
   external int OutMessageLength;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_ProtectMessage function.
 final class _tagEOS_AntiCheatClient_ProtectMessageOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_PROTECTMESSAGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data to encrypt
   external ffi.Pointer<ffi.Void> Data;
 
-  /// The size in bytes of OutBuffer
   @ffi.Uint32()
   external int OutBufferSizeBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_ReceiveMessageFromPeer
-/// function.
 final class _tagEOS_AntiCheatClient_ReceiveMessageFromPeerOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_RECEIVEMESSAGEFROMPEER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The handle describing the sender of this message
   external EOS_AntiCheatCommon_ClientHandle PeerHandle;
 
-  /// The size of the data received
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data received
   external ffi.Pointer<ffi.Void> Data;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_ReceiveMessageFromServer
-/// function.
 final class _tagEOS_AntiCheatClient_ReceiveMessageFromServerOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCLIENT_RECEIVEMESSAGEFROMSERVER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The size of the data received
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data received
   external ffi.Pointer<ffi.Void> Data;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_RegisterPeerOptions function.
 final class _tagEOS_AntiCheatClient_RegisterPeerOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_REGISTERPEER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user (e.g. a player object
-  /// pointer)
   external EOS_AntiCheatCommon_ClientHandle PeerHandle;
 
-  /// Type of remote user being registered
   @ffi.UnsignedInt()
   external int ClientTypeAsInt;
 
@@ -15761,7 +13692,6 @@ final class _tagEOS_AntiCheatClient_RegisterPeerOptions extends ffi.Struct {
   set ClientType(EOS_EAntiCheatCommonClientType value) =>
       ClientTypeAsInt = value.value;
 
-  /// Remote user's platform, if known
   @ffi.UnsignedInt()
   external int ClientPlatformAsInt;
 
@@ -15770,108 +13700,73 @@ final class _tagEOS_AntiCheatClient_RegisterPeerOptions extends ffi.Struct {
   set ClientPlatform(EOS_EAntiCheatCommonClientPlatform value) =>
       ClientPlatformAsInt = value.value;
 
-  /// Time in seconds to allow newly registered peers to send the initial
-  /// message containing their token. Minimum value:
-  /// EOS_ANTICHEATCLIENT_REGISTERPEER_MIN_AUTHENTICATIONTIMEOUT Maximum value:
-  /// EOS_ANTICHEATCLIENT_REGISTERPEER_MAX_AUTHENTICATIONTIMEOUT
   @ffi.Uint32()
   external int AuthenticationTimeout;
 
-  /// Deprecated - use PeerProductUserId instead
   external ffi.Pointer<ffi.Char> AccountId_DEPRECATED;
 
-  /// Optional IP address for the remote user. May be null if not available.
-  /// IPv4 format: "0.0.0.0" IPv6 format: "0:0:0:0:0:0:0:0"
   external ffi.Pointer<ffi.Char> IpAddress;
 
-  /// EOS_ProductUserId Identifier for the remote user
   external EOS_ProductUserId PeerProductUserId;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_Reserved01 function.
 final class _tagEOS_AntiCheatClient_Reserved01Options extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_RESERVED01_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_Reserved02 function.
 final class _tagEOS_AntiCheatClient_Reserved02Options extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_RESERVED02_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Field reserved for future use
   @ffi.Int64()
   external int Reserved1;
 
-  /// Field reserved for future use
   @ffi.Uint32()
   external int Reserved2;
 
-  /// Field reserved for future use
   @ffi.Uint32()
   external int Reserved3;
 
-  /// Field reserved for future use
   external ffi.Pointer<ffi.Void> Reserved4;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_UnprotectMessage function.
 final class _tagEOS_AntiCheatClient_UnprotectMessageOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_UNPROTECTMESSAGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data to decrypt
   external ffi.Pointer<ffi.Void> Data;
 
-  /// The size in bytes of OutBuffer
   @ffi.Uint32()
   external int OutBufferSizeBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatClient_UnregisterPeer function.
 final class _tagEOS_AntiCheatClient_UnregisterPeerOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCLIENT_UNREGISTERPEER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user, as previously passed to
-  /// EOS_AntiCheatClient_RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle PeerHandle;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogEvent function.
 final class _tagEOS_AntiCheatCommon_LogEventOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGEVENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Optional client who this event is primarily associated with. If not
-  /// applicable, use 0.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// Unique event identifier previously configured in RegisterEvent
   @ffi.Uint32()
   external int EventId;
 
-  /// Number of parameters described in Params
   @ffi.Uint32()
   external int ParamsCount;
 
-  /// Set of parameter types previously configured in RegisterEvent, and their
-  /// values
   external ffi.Pointer<EOS_AntiCheatCommon_LogEventParamPair> Params;
 }
 
-/// Log Event Parameter.
 final class _tagEOS_AntiCheatCommon_LogEventParamPair extends ffi.Struct {
-  /// Parameter type
   @ffi.UnsignedInt()
   external int ParamValueTypeAsInt;
 
@@ -15883,40 +13778,28 @@ final class _tagEOS_AntiCheatCommon_LogEventParamPair extends ffi.Struct {
   external UnnamedUnion$3 ParamValue;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogGameRoundEnd function.
 final class _tagEOS_AntiCheatCommon_LogGameRoundEndOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGGAMEROUNDEND_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Optional identifier for the winning team
   @ffi.Uint32()
   external int WinningTeamId;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogGameRoundStart function.
 final class _tagEOS_AntiCheatCommon_LogGameRoundStartOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGGAMEROUNDSTART_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Optional game session or match identifier useful for some backend API
-  /// integrations
   external ffi.Pointer<ffi.Char> SessionIdentifier;
 
-  /// Optional name of the map being played
   external ffi.Pointer<ffi.Char> LevelName;
 
-  /// Optional name of the game mode being played
   external ffi.Pointer<ffi.Char> ModeName;
 
-  /// Optional length of the game round to be played, in seconds. If none, use
-  /// 0.
   @ffi.Uint32()
   external int RoundTimeSeconds;
 
-  /// Type of competition for this game round
   @ffi.UnsignedInt()
   external int CompetitionTypeAsInt;
 
@@ -15928,110 +13811,70 @@ final class _tagEOS_AntiCheatCommon_LogGameRoundStartOptions
       CompetitionTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerDespawn function.
 final class _tagEOS_AntiCheatCommon_LogPlayerDespawnOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGPLAYERDESPAWN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle DespawnedPlayerHandle;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerRevive function.
 final class _tagEOS_AntiCheatCommon_LogPlayerReviveOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGPLAYERREVIVE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle RevivedPlayerHandle;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle ReviverPlayerHandle;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerSpawn function.
 final class _tagEOS_AntiCheatCommon_LogPlayerSpawnOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGPLAYERSPAWN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle SpawnedPlayerHandle;
 
-  /// Optional identifier for the player's team. If none, use 0.
   @ffi.Uint32()
   external int TeamId;
 
-  /// Optional identifier for the player's character. If none, use 0.
   @ffi.Uint32()
   external int CharacterId;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerTakeDamage function.
 final class _tagEOS_AntiCheatCommon_LogPlayerTakeDamageOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCOMMON_LOGPLAYERTAKEDAMAGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle VictimPlayerHandle;
 
-  /// Victim player character's world position as a 3D vector. This should be
-  /// the center of the character.
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> VictimPlayerPosition;
 
-  /// Victim player camera's world rotation as a quaternion.
   external ffi.Pointer<EOS_AntiCheatCommon_Quat> VictimPlayerViewRotation;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer if applicable,
-  /// otherwise 0.
   external EOS_AntiCheatCommon_ClientHandle AttackerPlayerHandle;
 
-  /// Attacker player character's world position as a 3D vector if applicable,
-  /// otherwise NULL.
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> AttackerPlayerPosition;
 
-  /// Attacker player camera's world rotation as a quaternion if applicable,
-  /// otherwise NULL.
   external ffi.Pointer<EOS_AntiCheatCommon_Quat> AttackerPlayerViewRotation;
 
-  /// True if the damage was applied instantly at the time of attack from the
-  /// game simulation's perspective, otherwise false (simulated ballistics,
-  /// arrow, etc).
   @EOS_Bool()
   external int bIsHitscanAttack;
 
-  /// True if there is a visible line of sight between the attacker and the
-  /// victim at the time that damage is being applied, false if there is an
-  /// obstacle like a wall or terrain in the way. For some situations like melee
-  /// or hitscan weapons this is trivially true, for others like projectiles
-  /// with simulated physics it may not be e.g. a player could fire a slow
-  /// moving projectile and then move behind cover before it strikes.
   @EOS_Bool()
   external int bHasLineOfSight;
 
-  /// True if this was a critical hit that causes extra damage (e.g. headshot)
   @EOS_Bool()
   external int bIsCriticalHit;
 
-  /// Deprecated - use DamagePosition instead
   @ffi.Uint32()
   external int HitBoneId_DEPRECATED;
 
-  /// Number of health points that the victim lost due to this damage event
   @ffi.Float()
   external double DamageTaken;
 
-  /// Number of health points that the victim has remaining after this damage
-  /// event
   @ffi.Float()
   external double HealthRemaining;
 
-  /// Source of the damage event
   @ffi.UnsignedInt()
   external int DamageSourceAsInt;
 
@@ -16040,7 +13883,6 @@ final class _tagEOS_AntiCheatCommon_LogPlayerTakeDamageOptions
   set DamageSource(EOS_EAntiCheatCommonPlayerTakeDamageSource value) =>
       DamageSourceAsInt = value.value;
 
-  /// Type of the damage being applied
   @ffi.UnsignedInt()
   external int DamageTypeAsInt;
 
@@ -16049,7 +13891,6 @@ final class _tagEOS_AntiCheatCommon_LogPlayerTakeDamageOptions
   set DamageType(EOS_EAntiCheatCommonPlayerTakeDamageType value) =>
       DamageTypeAsInt = value.value;
 
-  /// Result of the damage for the victim, if any
   @ffi.UnsignedInt()
   external int DamageResultAsInt;
 
@@ -16058,51 +13899,33 @@ final class _tagEOS_AntiCheatCommon_LogPlayerTakeDamageOptions
   set DamageResult(EOS_EAntiCheatCommonPlayerTakeDamageResult value) =>
       DamageResultAsInt = value.value;
 
-  /// PlayerUseWeaponData associated with this damage event if available,
-  /// otherwise NULL
   external ffi.Pointer<EOS_AntiCheatCommon_LogPlayerUseWeaponData>
   PlayerUseWeaponData;
 
-  /// Time in milliseconds since the associated PlayerUseWeaponData event
-  /// occurred if available, otherwise 0
   @ffi.Uint32()
   external int TimeSincePlayerUseWeaponMs;
 
-  /// World position where damage hit the victim as a 3D vector if available,
-  /// otherwise NULL
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> DamagePosition;
 
-  /// Attacker player camera's world position as a 3D vector if applicable,
-  /// otherwise NULL
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> AttackerPlayerViewPosition;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerTick function.
 final class _tagEOS_AntiCheatCommon_LogPlayerTickOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_LOGPLAYERTICK_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle PlayerHandle;
 
-  /// Player character's current world position as a 3D vector. This should be
-  /// the center of the character.
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> PlayerPosition;
 
-  /// Player camera's current world rotation as a quaternion.
   external ffi.Pointer<EOS_AntiCheatCommon_Quat> PlayerViewRotation;
 
-  /// True if the player's view is zoomed (e.g. using a sniper rifle), otherwise
-  /// false
   @EOS_Bool()
   external int bIsPlayerViewZoomed;
 
-  /// Player's current health value
   @ffi.Float()
   external double PlayerHealth;
 
-  /// Any movement state applicable
   @ffi.UnsignedInt()
   external int PlayerMovementStateAsInt;
 
@@ -16113,85 +13936,57 @@ final class _tagEOS_AntiCheatCommon_LogPlayerTickOptions extends ffi.Struct {
   set PlayerMovementState(EOS_EAntiCheatCommonPlayerMovementState value) =>
       PlayerMovementStateAsInt = value.value;
 
-  /// Player camera's current world position as a 3D vector.
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> PlayerViewPosition;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerUseAbility function.
 final class _tagEOS_AntiCheatCommon_LogPlayerUseAbilityOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCOMMON_LOGPLAYERUSEABILITY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle PlayerHandle;
 
-  /// Game defined unique identifier for the ability being used
   @ffi.Uint32()
   external int AbilityId;
 
-  /// Duration of the ability effect in milliseconds. If not applicable, use 0.
   @ffi.Uint32()
   external int AbilityDurationMs;
 
-  /// Cooldown until the ability can be used again in milliseconds. If not
-  /// applicable, use 0.
   @ffi.Uint32()
   external int AbilityCooldownMs;
 }
 
-/// Log Player Use Weapon Data.
 final class _tagEOS_AntiCheatCommon_LogPlayerUseWeaponData extends ffi.Struct {
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle PlayerHandle;
 
-  /// Attack origin world position as a 3D vector
   external ffi.Pointer<EOS_AntiCheatCommon_Vec3f> PlayerPosition;
 
-  /// Attack direction as a quaternion
   external ffi.Pointer<EOS_AntiCheatCommon_Quat> PlayerViewRotation;
 
-  /// True if the player's view is zoomed (e.g. using a sniper rifle), otherwise
-  /// false
   @EOS_Bool()
   external int bIsPlayerViewZoomed;
 
-  /// Set to true if the player is using a melee attack, otherwise false
   @EOS_Bool()
   external int bIsMeleeAttack;
 
-  /// Name of the weapon used. Will be truncated to
-  /// EOS_ANTICHEATCOMMON_LOGPLAYERUSEWEAPON_WEAPONNAME_MAX_LENGTH bytes if
-  /// longer.
   external ffi.Pointer<ffi.Char> WeaponName;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_LogPlayerUseWeapon function.
 final class _tagEOS_AntiCheatCommon_LogPlayerUseWeaponOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATCOMMON_LOGPLAYERUSEWEAPON_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Struct containing detailed information about a weapon use event
   external ffi.Pointer<EOS_AntiCheatCommon_LogPlayerUseWeaponData>
   UseWeaponData;
 }
 
-/// Structure containing details about a required client/peer action
 final class _tagEOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo
     extends ffi.Struct {
-  /// Caller-specified context data
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The identifier of the client/peer that this action applies to. See the
-  /// RegisterClient and RegisterPeer functions.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// The action that must be applied to the specified client/peer
   @ffi.UnsignedInt()
   external int ClientActionAsInt;
 
@@ -16200,8 +13995,6 @@ final class _tagEOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo
   set ClientAction(EOS_EAntiCheatCommonClientAction value) =>
       ClientActionAsInt = value.value;
 
-  /// Code indicating the reason for the action. This can be displayed to the
-  /// affected player.
   @ffi.UnsignedInt()
   external int ActionReasonCodeAsInt;
 
@@ -16210,23 +14003,15 @@ final class _tagEOS_AntiCheatCommon_OnClientActionRequiredCallbackInfo
   set ActionReasonCode(EOS_EAntiCheatCommonClientActionReason value) =>
       ActionReasonCodeAsInt = value.value;
 
-  /// String containing details about the action reason. This can be displayed
-  /// to the affected player.
   external ffi.Pointer<ffi.Char> ActionReasonDetailsString;
 }
 
-/// Structure containing details about a client/peer authentication status
-/// change
 final class _tagEOS_AntiCheatCommon_OnClientAuthStatusChangedCallbackInfo
     extends ffi.Struct {
-  /// Caller-specified context data
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The identifier of the client/peer that this status change applies to. See
-  /// the RegisterClient and RegisterPeer functions.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// The client/peer's new authentication status
   @ffi.UnsignedInt()
   external int ClientAuthStatusAsInt;
 
@@ -16236,59 +14021,41 @@ final class _tagEOS_AntiCheatCommon_OnClientAuthStatusChangedCallbackInfo
       ClientAuthStatusAsInt = value.value;
 }
 
-/// Structure containing details about a new message that must be dispatched to
-/// a connected client/peer.
 final class _tagEOS_AntiCheatCommon_OnMessageToClientCallbackInfo
     extends ffi.Struct {
-  /// Caller-specified context data
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The identifier of the client/peer that this message must be delivered to.
-  /// See the RegisterClient and RegisterPeer functions.
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// The message data that must be sent to the client
   external ffi.Pointer<ffi.Void> MessageData;
 
-  /// The size in bytes of MessageData
   @ffi.Uint32()
   external int MessageDataSizeBytes;
 }
 
-/// Quaternion using left-handed coordinate system (as in Unreal Engine)
 final class _tagEOS_AntiCheatCommon_Quat extends ffi.Struct {
-  /// W component - scalar part
   @ffi.Float()
   external double w;
 
-  /// X component - forward direction
   @ffi.Float()
   external double x;
 
-  /// Y component - right direction
   @ffi.Float()
   external double y;
 
-  /// Z component - up direction
   @ffi.Float()
   external double z;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_RegisterEvent function.
 final class _tagEOS_AntiCheatCommon_RegisterEventOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_REGISTEREVENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Unique event identifier. Must be `>=
-  /// EOS_ANTICHEATCOMMON_REGISTEREVENT_CUSTOMEVENTBASE`.
   @ffi.Uint32()
   external int EventId;
 
-  /// Name of the custom event. Allowed characters are 0-9, A-Z, a-z, '_', '-'
   external ffi.Pointer<ffi.Char> EventName;
 
-  /// Type of the custom event
   @ffi.UnsignedInt()
   external int EventTypeAsInt;
 
@@ -16297,22 +14064,15 @@ final class _tagEOS_AntiCheatCommon_RegisterEventOptions extends ffi.Struct {
   set EventType(EOS_EAntiCheatCommonEventType value) =>
       EventTypeAsInt = value.value;
 
-  /// Number of parameters described in ParamDefs. Must be equal to or less than
-  /// EOS_ANTICHEATCOMMON_REGISTEREVENT_MAX_PARAMDEFSCOUNT.
   @ffi.Uint32()
   external int ParamDefsCount;
 
-  /// Pointer to an array of EOS_AntiCheatCommon_RegisterEventParamDef with
-  /// ParamDefsCount elements
   external ffi.Pointer<EOS_AntiCheatCommon_RegisterEventParamDef> ParamDefs;
 }
 
-/// Register Event Parameter Definition.
 final class _tagEOS_AntiCheatCommon_RegisterEventParamDef extends ffi.Struct {
-  /// Parameter name. Allowed characters are 0-9, A-Z, a-z, '_', '-'
   external ffi.Pointer<ffi.Char> ParamName;
 
-  /// Parameter type
   @ffi.UnsignedInt()
   external int ParamTypeAsInt;
 
@@ -16322,16 +14082,12 @@ final class _tagEOS_AntiCheatCommon_RegisterEventParamDef extends ffi.Struct {
       ParamTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_SetClientDetails function.
 final class _tagEOS_AntiCheatCommon_SetClientDetailsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_SETCLIENTDETAILS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value used in RegisterClient/RegisterPeer
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// General flags associated with this client, if any
   @ffi.UnsignedInt()
   external int ClientFlagsAsInt;
 
@@ -16340,7 +14096,6 @@ final class _tagEOS_AntiCheatCommon_SetClientDetailsOptions extends ffi.Struct {
   set ClientFlags(EOS_EAntiCheatCommonClientFlags value) =>
       ClientFlagsAsInt = value.value;
 
-  /// Input device being used by this client, if known
   @ffi.UnsignedInt()
   external int ClientInputMethodAsInt;
 
@@ -16350,163 +14105,105 @@ final class _tagEOS_AntiCheatCommon_SetClientDetailsOptions extends ffi.Struct {
       ClientInputMethodAsInt = value.value;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_SetGameSessionId function.
 final class _tagEOS_AntiCheatCommon_SetGameSessionIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATCOMMON_SETGAMESESSIONID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Game session identifier
   external ffi.Pointer<ffi.Char> GameSessionId;
 }
 
-/// Vector using left-handed coordinate system (as in Unreal Engine)
 final class _tagEOS_AntiCheatCommon_Vec3f extends ffi.Struct {
-  /// X axis coordinate - forward direction
   @ffi.Float()
   external double x;
 
-  /// Y axis coordinate - right direction
   @ffi.Float()
   external double y;
 
-  /// Z axis coordinate - up direction
   @ffi.Float()
   external double z;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_AddNotifyClientActionRequired
-/// function.
 final class _tagEOS_AntiCheatServer_AddNotifyClientActionRequiredOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_ADDNOTIFYCLIENTACTIONREQUIRED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the
-/// EOS_AntiCheatServer_AddNotifyClientAuthStatusChanged function.
 final class _tagEOS_AntiCheatServer_AddNotifyClientAuthStatusChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_ADDNOTIFYCLIENTAUTHSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_AddNotifyMessageToClient
-/// function.
 final class _tagEOS_AntiCheatServer_AddNotifyMessageToClientOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_ADDNOTIFYMESSAGETOCLIENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_BeginSession function.
 final class _tagEOS_AntiCheatServer_BeginSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_BEGINSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Time in seconds to allow newly registered clients to complete anti-cheat
-  /// authentication. Recommended value: 60 Minimum value:
-  /// EOS_ANTICHEATSERVER_BEGINSESSION_MIN_REGISTERTIMEOUT Maximum value:
-  /// EOS_ANTICHEATSERVER_BEGINSESSION_MAX_REGISTERTIMEOUT
   @ffi.Uint32()
   external int RegisterTimeoutSeconds;
 
-  /// Optional name of this game server
   external ffi.Pointer<ffi.Char> ServerName;
 
-  /// Gameplay data collection APIs such as LogPlayerTick will be enabled if set
-  /// to true. If you do not use these APIs you should set this value to false
-  /// to reduce memory use.
   @EOS_Bool()
   external int bEnableGameplayData;
 
-  /// The Product User ID of the local user who is associated with this session.
-  /// Dedicated servers should set this to null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_EndSession function.
 final class _tagEOS_AntiCheatServer_EndSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_ENDSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_GetProtectMessageOutputLength
-/// function.
 final class _tagEOS_AntiCheatServer_GetProtectMessageOutputLengthOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_GETPROTECTMESSAGEOUTPUTLENGTH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_ProtectMessage function.
 final class _tagEOS_AntiCheatServer_ProtectMessageOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_PROTECTMESSAGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user to whom the message will
-  /// be sent
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data to encrypt
   external ffi.Pointer<ffi.Void> Data;
 
-  /// The size in bytes of OutBuffer
   @ffi.Uint32()
   external int OutBufferSizeBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_ReceiveMessageFromClient
-/// function.
 final class _tagEOS_AntiCheatServer_ReceiveMessageFromClientOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_RECEIVEMESSAGEFROMCLIENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the corresponding remote user, as
-  /// previously passed to RegisterClient
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// The size of the data received
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data received
   external ffi.Pointer<ffi.Void> Data;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_RegisterClient function.
 final class _tagEOS_AntiCheatServer_RegisterClientOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_REGISTERCLIENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user (e.g. a player object
-  /// pointer)
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// Type of remote user being registered
   @ffi.UnsignedInt()
   external int ClientTypeAsInt;
 
@@ -16515,7 +14212,6 @@ final class _tagEOS_AntiCheatServer_RegisterClientOptions extends ffi.Struct {
   set ClientType(EOS_EAntiCheatCommonClientType value) =>
       ClientTypeAsInt = value.value;
 
-  /// Remote user's platform, if known
   @ffi.UnsignedInt()
   external int ClientPlatformAsInt;
 
@@ -16524,127 +14220,81 @@ final class _tagEOS_AntiCheatServer_RegisterClientOptions extends ffi.Struct {
   set ClientPlatform(EOS_EAntiCheatCommonClientPlatform value) =>
       ClientPlatformAsInt = value.value;
 
-  /// DEPRECATED - New code should set this to null and specify UserId instead.
   external ffi.Pointer<ffi.Char> AccountId_DEPRECATED;
 
-  /// Optional IP address for the remote user. May be null if not available.
-  /// IPv4 format: "0.0.0.0" IPv6 format: "0:0:0:0:0:0:0:0"
   external ffi.Pointer<ffi.Char> IpAddress;
 
-  /// The Product User ID for the remote user who is being registered.
   external EOS_ProductUserId UserId;
 
-  /// Reserved for future use. Must be set to 0.
   @ffi.Int32()
   external int Reserved01;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_SetClientNetworkState function.
 final class _tagEOS_AntiCheatServer_SetClientNetworkStateOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ANTICHEATSERVER_SETCLIENTNETWORKSTATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user (e.g. a player object
-  /// pointer)
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// True if the network is functioning normally, false if temporarily
-  /// interrupted
   @EOS_Bool()
   external int bIsNetworkActive;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_UnprotectMessage function.
 final class _tagEOS_AntiCheatServer_UnprotectMessageOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_UNPROTECTMESSAGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user from whom the message was
-  /// received
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 
-  /// Length in bytes of input
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data to decrypt
   external ffi.Pointer<ffi.Void> Data;
 
-  /// The size in bytes of OutBuffer
   @ffi.Uint32()
   external int OutBufferSizeBytes;
 }
 
-/// Input parameters for the EOS_AntiCheatServer_UnregisterClient function.
 final class _tagEOS_AntiCheatServer_UnregisterClientOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ANTICHEATSERVER_UNREGISTERCLIENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Locally unique value describing the remote user, as previously passed to
-  /// RegisterClient
   external EOS_AntiCheatCommon_ClientHandle ClientHandle;
 }
 
-/// Intermediate data needed to complete account restriction verification during
-/// login flow, returned by EOS_Auth_LoginCallbackInfo when the ResultCode is
-/// EOS_Auth_AccountFeatureRestricted. The URI inside should be exposed to the
-/// user for entry in a web browser. The URI must be copied out of this struct
-/// before completion of the callback.
 final class _tagEOS_Auth_AccountFeatureRestrictedInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_ACCOUNTFEATURERESTRICTEDINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The end-user verification URI. Users must be asked to open the page in a
-  /// browser to address the restrictions.
   external ffi.Pointer<ffi.Char> VerificationURI;
 }
 
-/// Input parameters for the EOS_Auth_AddNotifyLoginStatusChanged Function.
 final class _tagEOS_Auth_AddNotifyLoginStatusChangedOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_ADDNOTIFYLOGINSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Auth_CopyIdToken function.
 final class _tagEOS_Auth_CopyIdTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_COPYIDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user being queried.
   external EOS_EpicAccountId AccountId;
 }
 
-/// Input parameters for the EOS_Auth_CopyUserAuthToken function.
 final class _tagEOS_Auth_CopyUserAuthTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_COPYUSERAUTHTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Login credentials filled as part of the EOS_Auth_LoginOptions struct for
-/// EOS_Auth_Login API.
 final class _tagEOS_Auth_Credentials extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_CREDENTIALS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Authentication ID value based on the used EOS_ELoginCredentialType. If not
-  /// used, must be set to NULL.
   external ffi.Pointer<ffi.Char> Id;
 
-  /// Authentication Token value based on the used EOS_ELoginCredentialType. If
-  /// not used, must be set to NULL.
   external ffi.Pointer<ffi.Char> Token;
 
-  /// Login credentials type based on the authentication method used.
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -16652,12 +14302,8 @@ final class _tagEOS_Auth_Credentials extends ffi.Struct {
       EOS_ELoginCredentialType.fromValue(TypeAsInt);
   set Type(EOS_ELoginCredentialType value) => TypeAsInt = value.value;
 
-  /// This field is for system specific options, if any.
   external ffi.Pointer<ffi.Void> SystemAuthCredentialsOptions;
 
-  /// Type of external login. Needed to identify the external auth method to
-  /// use. Used when login type is set to EOS_LCT_ExternalAuth, ignored for
-  /// other EOS_ELoginCredentialType methods.
   @ffi.UnsignedInt()
   external int ExternalTypeAsInt;
 
@@ -16667,86 +14313,52 @@ final class _tagEOS_Auth_Credentials extends ffi.Struct {
       ExternalTypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Auth_DeletePersistentAuth Function.
 final class _tagEOS_Auth_DeletePersistentAuthCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_DeletePersistentAuth
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Auth_DeletePersistentAuth function.
 final class _tagEOS_Auth_DeletePersistentAuthOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_DELETEPERSISTENTAUTH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A long-lived refresh token that is used with the EOS_LCT_PersistentAuth
-  /// login type and is to be revoked from the authentication server. Only used
-  /// on Console platforms. On Desktop and Mobile platforms, set this parameter
-  /// to NULL.
   external ffi.Pointer<ffi.Char> RefreshToken;
 }
 
-/// A structure that contains an ID token. These structures are created by
-/// EOS_Auth_CopyIdToken and must be passed to EOS_Auth_IdToken_Release when
-/// finished.
 final class _tagEOS_Auth_IdToken extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_IDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID described by the ID token. Use
-  /// EOS_EpicAccountId_FromString to populate this field when validating a
-  /// received ID token.
   external EOS_EpicAccountId AccountId;
 
-  /// The ID token as a Json Web Token (JWT) string.
   external ffi.Pointer<ffi.Char> JsonWebToken;
 }
 
-/// Output parameters for the EOS_Auth_LinkAccount Function.
 final class _tagEOS_Auth_LinkAccountCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_LinkAccount.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose account has been linked during
-  /// login.
   external EOS_EpicAccountId LocalUserId;
 
-  /// Optional data that may be returned in the middle of the login flow, when
-  /// neither the in-game overlay or a platform browser is used. This data is
-  /// present when the ResultCode is EOS_Auth_PinGrantCode.
   external ffi.Pointer<EOS_Auth_PinGrantInfo> PinGrantInfo;
 
-  /// The Epic Account ID that has been previously selected to be used for the
-  /// current application. Applications should use this ID to authenticate with
-  /// online backend services that store game-scoped data for users.
   external EOS_EpicAccountId SelectedAccountId;
 }
 
-/// Input parameters for the EOS_Auth_LinkAccount function.
 final class _tagEOS_Auth_LinkAccountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_LINKACCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Combination of the enumeration flags to specify how the account linking
-  /// operation will be performed.
   @ffi.UnsignedInt()
   external int LinkAccountFlagsAsInt;
 
@@ -16755,62 +14367,38 @@ final class _tagEOS_Auth_LinkAccountOptions extends ffi.Struct {
   set LinkAccountFlags(EOS_ELinkAccountFlags value) =>
       LinkAccountFlagsAsInt = value.value;
 
-  /// Continuance token received from a previous call to the EOS_Auth_Login API.
   external EOS_ContinuanceToken ContinuanceToken;
 
-  /// The Epic Account ID of the logged in local user whose Epic Account will be
-  /// linked with the local Nintendo NSA ID Account. By default set to NULL.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Output parameters for the EOS_Auth_Login Function.
 final class _tagEOS_Auth_LoginCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_Login.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user who has logged in.
   external EOS_EpicAccountId LocalUserId;
 
-  /// Optional data that may be returned in the middle of the login flow, when
-  /// neither the in-game overlay or a platform browser is used. This data is
-  /// present when the ResultCode is EOS_Auth_PinGrantCode.
   external ffi.Pointer<EOS_Auth_PinGrantInfo> PinGrantInfo;
 
-  /// If the user was not found with external auth credentials passed into
-  /// EOS_Auth_Login, this continuance token can be passed to
-  /// EOS_Auth_LinkAccount to continue the flow.
   external EOS_ContinuanceToken ContinuanceToken;
 
-  /// Deprecated field that is no longer used.
   external ffi.Pointer<EOS_Auth_AccountFeatureRestrictedInfo>
   AccountFeatureRestrictedInfo_DEPRECATED;
 
-  /// The Epic Account ID that has been previously selected to be used for the
-  /// current application. Applications should use this ID to authenticate with
-  /// online backend services that store game-scoped data for users.
   external EOS_EpicAccountId SelectedAccountId;
 }
 
-/// Input parameters for the EOS_Auth_Login function.
 final class _tagEOS_Auth_LoginOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_LOGIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Credentials specified for a given login method.
   external ffi.Pointer<EOS_Auth_Credentials> Credentials;
 
-  /// Auth scope flags are permissions to request from the user while they are
-  /// logging in. This is a bitwise-or union of EOS_EAuthScopeFlags flags
-  /// defined above.
   @ffi.UnsignedInt()
   external int ScopeFlagsAsInt;
 
@@ -16818,21 +14406,15 @@ final class _tagEOS_Auth_LoginOptions extends ffi.Struct {
       EOS_EAuthScopeFlags.fromValue(ScopeFlagsAsInt);
   set ScopeFlags(EOS_EAuthScopeFlags value) => ScopeFlagsAsInt = value.value;
 
-  /// Optional flags for the desired login behavior, e.g.
-  /// EOS_LF_NO_USER_INTERFACE. This is a bitwise-or union of the defined flags.
   @ffi.Uint64()
   external int LoginFlags;
 }
 
-/// Output parameters for the EOS_Auth_OnLoginStatusChangedCallback Function.
 final class _tagEOS_Auth_LoginStatusChangedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Auth_AddNotifyLoginStatusChanged
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose status has changed
   external EOS_EpicAccountId LocalUserId;
 
-  /// The status prior to the change
   @ffi.UnsignedInt()
   external int PrevStatusAsInt;
 
@@ -16840,7 +14422,6 @@ final class _tagEOS_Auth_LoginStatusChangedCallbackInfo extends ffi.Struct {
       EOS_ELoginStatus.fromValue(PrevStatusAsInt);
   set PrevStatus(EOS_ELoginStatus value) => PrevStatusAsInt = value.value;
 
-  /// The status at the time of the notification
   @ffi.UnsignedInt()
   external int CurrentStatusAsInt;
 
@@ -16849,123 +14430,79 @@ final class _tagEOS_Auth_LoginStatusChangedCallbackInfo extends ffi.Struct {
   set CurrentStatus(EOS_ELoginStatus value) => CurrentStatusAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Auth_Logout Function.
 final class _tagEOS_Auth_LogoutCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_Login
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user requesting the information
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Auth_Logout function.
 final class _tagEOS_Auth_LogoutOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_LOGOUT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user who is being logged out
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Intermediate data for completing Epic account login, when neither the
-/// in-game overlay or a platform browser is used. The EOS_Auth_PinGrantInfo
-/// struct is returned as part of the EOS_Auth_LoginCallbackInfo and
-/// EOS_Auth_LinkAccountCallbackInfo structs. The data inside should be exposed
-/// to the user for entry on a secondary device. All data must be copied out
-/// before the completion of this callback.
 final class _tagEOS_Auth_PinGrantInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_PINGRANTINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Code the user must input on an external device to activate the login.
   external ffi.Pointer<ffi.Char> UserCode;
 
-  /// The end-user verification URI. Users can be asked to manually type this
-  /// into their browser.
   external ffi.Pointer<ffi.Char> VerificationURI;
 
-  /// Time the user has, in seconds, to complete the process or else timeout.
   @ffi.Int32()
   external int ExpiresIn;
 
-  /// A verification URI that includes the user code. Useful for non-textual
-  /// transmission.
   external ffi.Pointer<ffi.Char> VerificationURIComplete;
 }
 
-/// Output parameters for the EOS_Auth_QueryIdToken Function.
 final class _tagEOS_Auth_QueryIdTokenCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_QueryIdToken
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local authenticated user.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The target Epic Account ID for which the ID token was retrieved.
   external EOS_EpicAccountId TargetAccountId;
 }
 
-/// Input parameters for the EOS_Auth_QueryIdToken function.
 final class _tagEOS_Auth_QueryIdTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_QUERYIDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local authenticated user.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The target Epic Account ID for which to query an ID token. This account id
-  /// may be the same as the input LocalUserId or another merged account id
-  /// associated with the local user's Epic account.
   external EOS_EpicAccountId TargetAccountId;
 }
 
-/// A structure that contains an auth token. These structures are created by
-/// EOS_Auth_CopyUserAuthToken and must be passed to EOS_Auth_Token_Release.
 final class _tagEOS_Auth_Token extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_TOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the app related to the client ID involved with this token
   external ffi.Pointer<ffi.Char> App;
 
-  /// Client ID that requested this token
   external ffi.Pointer<ffi.Char> ClientId;
 
-  /// The Epic Account ID associated with this auth token
   external EOS_EpicAccountId AccountId;
 
-  /// Access token for the current user login session
   external ffi.Pointer<ffi.Char> AccessToken;
 
-  /// Time before the access token expires, in seconds, relative to the call to
-  /// EOS_Auth_CopyUserAuthToken
   @ffi.Double()
   external double ExpiresIn;
 
-  /// Absolute time in UTC before the access token expires, in ISO 8601 format
   external ffi.Pointer<ffi.Char> ExpiresAt;
 
-  /// Type of auth token
   @ffi.UnsignedInt()
   external int AuthTypeAsInt;
 
@@ -16973,57 +14510,38 @@ final class _tagEOS_Auth_Token extends ffi.Struct {
       EOS_EAuthTokenType.fromValue(AuthTypeAsInt);
   set AuthType(EOS_EAuthTokenType value) => AuthTypeAsInt = value.value;
 
-  /// Refresh token.
   external ffi.Pointer<ffi.Char> RefreshToken;
 
-  /// Time before the access token expires, in seconds, relative to the call to
-  /// EOS_Auth_CopyUserAuthToken
   @ffi.Double()
   external double RefreshExpiresIn;
 
-  /// Absolute time in UTC before the refresh token expires, in ISO 8601 format
   external ffi.Pointer<ffi.Char> RefreshExpiresAt;
 }
 
-/// Output parameters for the EOS_Auth_VerifyIdToken Function.
 final class _tagEOS_Auth_VerifyIdTokenCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_VerifyIdToken
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Epic Account Services Application ID.
   external ffi.Pointer<ffi.Char> ApplicationId;
 
-  /// Client ID of the authorized client.
   external ffi.Pointer<ffi.Char> ClientId;
 
-  /// Product ID.
   external ffi.Pointer<ffi.Char> ProductId;
 
-  /// Sandbox ID.
   external ffi.Pointer<ffi.Char> SandboxId;
 
-  /// Deployment ID.
   external ffi.Pointer<ffi.Char> DeploymentId;
 
-  /// Epic Account display name.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// Flag set to indicate whether external account information is present.
-  /// Applications must always first check this value to be set before
-  /// attempting to read the ExternalAccountIdType, ExternalAccountId,
-  /// ExternalAccountDisplayName and Platform fields.
   @EOS_Bool()
   external int bIsExternalAccountInfoPresent;
 
-  /// The identity provider that the user logged in with to their Epic Account.
   @ffi.UnsignedInt()
   external int ExternalAccountIdTypeAsInt;
 
@@ -17032,123 +14550,78 @@ final class _tagEOS_Auth_VerifyIdTokenCallbackInfo extends ffi.Struct {
   set ExternalAccountIdType(EOS_EExternalAccountType value) =>
       ExternalAccountIdTypeAsInt = value.value;
 
-  /// The external account ID of the logged in user.
   external ffi.Pointer<ffi.Char> ExternalAccountId;
 
-  /// The external account display name.
   external ffi.Pointer<ffi.Char> ExternalAccountDisplayName;
 
-  /// Platform that the user is connected from.
   external ffi.Pointer<ffi.Char> Platform;
 }
 
-/// Input parameters for the EOS_Auth_VerifyIdToken function.
 final class _tagEOS_Auth_VerifyIdTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_VERIFYIDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID token to verify. Use EOS_EpicAccountId_FromString to populate the
-  /// AccountId field of this struct.
   external ffi.Pointer<EOS_Auth_IdToken> IdToken;
 }
 
-/// Output parameters for the EOS_Auth_VerifyUserAuth Function.
 final class _tagEOS_Auth_VerifyUserAuthCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Auth_Login
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Auth_VerifyUserAuth function. This operation is
-/// destructive, the pointer will remain the same but the data pointers inside
-/// will update
 final class _tagEOS_Auth_VerifyUserAuthOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_AUTH_VERIFYUSERAUTH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Auth token to verify against the backend service
   external ffi.Pointer<EOS_Auth_Token> AuthToken;
 }
 
-/// Structure containing information for the auth expiration notification
-/// callback.
 final class _tagEOS_Connect_AddNotifyAuthExpirationOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_ADDNOTIFYAUTHEXPIRATION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information or the connect user login status change
-/// callback.
 final class _tagEOS_Connect_AddNotifyLoginStatusChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_ADDNOTIFYLOGINSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_Connect_OnAuthExpirationCallback function.
 final class _tagEOS_Connect_AuthExpirationCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Connect_AddNotifyAuthExpiration.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local player whose status has changed.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_CopyIdToken function.
 final class _tagEOS_Connect_CopyIdTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_COPYIDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The local Product User ID whose ID token should be copied.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the
-/// EOS_Connect_CopyProductUserExternalAccountByAccountId function.
 final class _tagEOS_Connect_CopyProductUserExternalAccountByAccountIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to look for when copying external account info from
-  /// the cache.
   external EOS_ProductUserId TargetUserId;
 
-  /// External auth service account ID to look for when copying external account
-  /// info from the cache.
   external ffi.Pointer<ffi.Char> AccountId;
 }
 
-/// Input parameters for the
-/// EOS_Connect_CopyProductUserExternalAccountByAccountType function.
 final class _tagEOS_Connect_CopyProductUserExternalAccountByAccountTypeOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYACCOUNTTYPE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to look for when copying external account info from
-  /// the cache.
   external EOS_ProductUserId TargetUserId;
 
-  /// External auth service account type to look for when copying external
-  /// account info from the cache.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17158,100 +14631,66 @@ final class _tagEOS_Connect_CopyProductUserExternalAccountByAccountTypeOptions
       AccountIdTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Connect_CopyProductUserExternalAccountByIndex
-/// function.
 final class _tagEOS_Connect_CopyProductUserExternalAccountByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_COPYPRODUCTUSEREXTERNALACCOUNTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to look for when copying external account info from
-  /// the cache.
   external EOS_ProductUserId TargetUserId;
 
-  /// Index of the external account info to retrieve from the cache.
   @ffi.Uint32()
   external int ExternalAccountInfoIndex;
 }
 
-/// Input parameters for the EOS_Connect_CopyProductUserInfo function.
 final class _tagEOS_Connect_CopyProductUserInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_COPYPRODUCTUSERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product user ID to look for when copying external account info from the
-  /// cache.
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Connect_CreateDeviceId function.
 final class _tagEOS_Connect_CreateDeviceIdCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_CreateDeviceId.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Connect_CreateDeviceId function.
 final class _tagEOS_Connect_CreateDeviceIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_CREATEDEVICEID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A freeform text description identifying the device type and model, which
-  /// can be used in account linking management to allow the player and customer
-  /// support to identify different devices linked to an EOS user keychain. For
-  /// example 'iPhone 6S' or 'PC Windows'.
   external ffi.Pointer<ffi.Char> DeviceModel;
 }
 
-/// Output parameters for the EOS_Connect_CreateUser function.
 final class _tagEOS_Connect_CreateUserCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_CreateUser.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// If the operation succeeded, this is the Product User ID of the local user
-  /// who was created.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_CreateUser function.
 final class _tagEOS_Connect_CreateUserOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_CREATEUSER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Continuance token from previous call to EOS_Connect_Login
   external EOS_ContinuanceToken ContinuanceToken;
 }
 
-/// A structure that contains external login credentials.
 final class _tagEOS_Connect_Credentials extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_CREDENTIALS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// External token associated with the user logging in.
   external ffi.Pointer<ffi.Char> Token;
 
-  /// Type of external login; identifies the auth method to use.
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -17260,44 +14699,31 @@ final class _tagEOS_Connect_Credentials extends ffi.Struct {
   set Type(EOS_EExternalCredentialType value) => TypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Connect_DeleteDeviceId function.
 final class _tagEOS_Connect_DeleteDeviceIdCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_DeleteDeviceId
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Connect_DeleteDeviceId function.
 final class _tagEOS_Connect_DeleteDeviceIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_DELETEDEVICEID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Contains information about an external account linked with a Product User
-/// ID.
 final class _tagEOS_Connect_ExternalAccountInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_EXTERNALACCOUNTINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the target user.
   external EOS_ProductUserId ProductUserId;
 
-  /// Display name, can be null if not set.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// External account ID.
   external ffi.Pointer<ffi.Char> AccountId;
 
-  /// The identity provider that owns the external account.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17306,24 +14732,17 @@ final class _tagEOS_Connect_ExternalAccountInfo extends ffi.Struct {
   set AccountIdType(EOS_EExternalAccountType value) =>
       AccountIdTypeAsInt = value.value;
 
-  /// The POSIX timestamp for the time the user last logged in, or
-  /// EOS_CONNECT_TIME_UNDEFINED.
   @ffi.Int64()
   external int LastLoginTime;
 }
 
-/// Input parameters for the EOS_Connect_GetExternalAccountMapping function.
 final class _tagEOS_Connect_GetExternalAccountMappingsOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_GETEXTERNALACCOUNTMAPPING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the existing, logged-in user who is querying
-  /// account mappings.
   external EOS_ProductUserId LocalUserId;
 
-  /// External auth service supplying the account IDs in string form.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17332,35 +14751,23 @@ final class _tagEOS_Connect_GetExternalAccountMappingsOptions
   set AccountIdType(EOS_EExternalAccountType value) =>
       AccountIdTypeAsInt = value.value;
 
-  /// Target user to retrieve the mapping for, as an external account ID.
   external ffi.Pointer<ffi.Char> TargetExternalUserId;
 }
 
-/// Input parameters for the EOS_Connect_GetProductUserExternalAccountCount
-/// function.
 final class _tagEOS_Connect_GetProductUserExternalAccountCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_GETPRODUCTUSEREXTERNALACCOUNTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to look for when getting external account info count
-  /// from the cache.
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Connect_GetProductUserIdMapping function.
 final class _tagEOS_Connect_GetProductUserIdMappingOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_GETPRODUCTUSERIDMAPPING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the existing, logged-in user that is querying
-  /// account mappings.
   external EOS_ProductUserId LocalUserId;
 
-  /// External auth service mapping to retrieve.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17369,103 +14776,67 @@ final class _tagEOS_Connect_GetProductUserIdMappingOptions extends ffi.Struct {
   set AccountIdType(EOS_EExternalAccountType value) =>
       AccountIdTypeAsInt = value.value;
 
-  /// The Product User ID of the user whose information is being requested.
   external EOS_ProductUserId TargetProductUserId;
 }
 
-/// A structure that contains an ID token. These structures are created by
-/// EOS_Connect_CopyIdToken and must be passed to EOS_Connect_IdToken_Release.
 final class _tagEOS_Connect_IdToken extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_IDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID described by the ID token. Use
-  /// EOS_ProductUserId_FromString to populate this field when validating a
-  /// received ID token.
   external EOS_ProductUserId ProductUserId;
 
-  /// The ID token as a Json Web Token (JWT) string.
   external ffi.Pointer<ffi.Char> JsonWebToken;
 }
 
-/// Output parameters for the EOS_Connect_LinkAccount function.
 final class _tagEOS_Connect_LinkAccountCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_LinkAccount.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the existing, logged-in user whose account was
-  /// linked (on success).
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_LinkAccount function.
 final class _tagEOS_Connect_LinkAccountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_LINKACCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The existing logged in product user for which to link the external account
-  /// described by the continuance token.
   external EOS_ProductUserId LocalUserId;
 
-  /// Continuance token from previous call to EOS_Connect_Login.
   external EOS_ContinuanceToken ContinuanceToken;
 }
 
-/// Output parameters for the EOS_Connect_Login function.
 final class _tagEOS_Connect_LoginCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_Login.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// If login was successful, this is the Product User ID of the local player
-  /// that logged in.
   external EOS_ProductUserId LocalUserId;
 
-  /// If the user was not found with credentials passed into EOS_Connect_Login,
-  /// this continuance token can be passed to either EOS_Connect_CreateUser or
-  /// EOS_Connect_LinkAccount to continue the flow.
   external EOS_ContinuanceToken ContinuanceToken;
 }
 
-/// Input parameters for the EOS_Connect_Login function.
 final class _tagEOS_Connect_LoginOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_LOGIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Credentials specified for a given login method
   external ffi.Pointer<EOS_Connect_Credentials> Credentials;
 
-  /// Additional information about the local user.
   external ffi.Pointer<EOS_Connect_UserLoginInfo> UserLoginInfo;
 }
 
-/// Output parameters for the EOS_Connect_OnLoginStatusChangedCallback function.
 final class _tagEOS_Connect_LoginStatusChangedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Connect_AddNotifyLoginStatusChanged.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local player whose status has changed.
   external EOS_ProductUserId LocalUserId;
 
-  /// The status prior to the change.
   @ffi.UnsignedInt()
   external int PreviousStatusAsInt;
 
@@ -17474,7 +14845,6 @@ final class _tagEOS_Connect_LoginStatusChangedCallbackInfo extends ffi.Struct {
   set PreviousStatus(EOS_ELoginStatus value) =>
       PreviousStatusAsInt = value.value;
 
-  /// The status at the time of the notification.
   @ffi.UnsignedInt()
   external int CurrentStatusAsInt;
 
@@ -17483,64 +14853,45 @@ final class _tagEOS_Connect_LoginStatusChangedCallbackInfo extends ffi.Struct {
   set CurrentStatus(EOS_ELoginStatus value) => CurrentStatusAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Connect_Logout function.
 final class _tagEOS_Connect_LogoutCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_Logout.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the player that is being logged out.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_Logout API
 final class _tagEOS_Connect_LogoutOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_LOGOUT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the player to logout
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Connect_QueryExternalAccountMappings function.
 final class _tagEOS_Connect_QueryExternalAccountMappingsCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_QueryExternalAccountMappings.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the existing, logged-in user who made the request.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_QueryExternalAccountMappings function.
 final class _tagEOS_Connect_QueryExternalAccountMappingsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_QUERYEXTERNALACCOUNTMAPPINGS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the existing, logged-in user who is querying
-  /// account mappings.
   external EOS_ProductUserId LocalUserId;
 
-  /// External auth service supplying the account IDs in string form.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17549,49 +14900,32 @@ final class _tagEOS_Connect_QueryExternalAccountMappingsOptions
   set AccountIdType(EOS_EExternalAccountType value) =>
       AccountIdTypeAsInt = value.value;
 
-  /// An array of external account IDs to map to the product user ID
-  /// representation.
   external ffi.Pointer<ffi.Pointer<ffi.Char>> ExternalAccountIds;
 
-  /// Number of account IDs to query.
   @ffi.Uint32()
   external int ExternalAccountIdCount;
 }
 
-/// Output parameters for the EOS_Connect_QueryProductUserIdMappings function.
 final class _tagEOS_Connect_QueryProductUserIdMappingsCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_QueryProductUserIdMappings.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The local Product User ID that was passed with the input options.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_QueryProductUserIdMappings function.
 final class _tagEOS_Connect_QueryProductUserIdMappingsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CONNECT_QUERYPRODUCTUSERIDMAPPINGS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Game Clients set this field to the Product User ID of the local
-  /// authenticated user querying account mappings. Game Servers set this field
-  /// to NULL. Usage is allowed given that the configured client policy for
-  /// server credentials permit it.
   external EOS_ProductUserId LocalUserId;
 
-  /// Deprecated - all external mappings are included in this call, it is no
-  /// longer necessary to specify this value.
   @ffi.UnsignedInt()
   external int AccountIdType_DEPRECATEDAsInt;
 
@@ -17600,123 +14934,78 @@ final class _tagEOS_Connect_QueryProductUserIdMappingsOptions
   set AccountIdType_DEPRECATED(EOS_EExternalAccountType value) =>
       AccountIdType_DEPRECATEDAsInt = value.value;
 
-  /// An array of Product User IDs to query for the given external account
-  /// representation.
   external ffi.Pointer<EOS_ProductUserId> ProductUserIds;
 
-  /// Number of Product User IDs to query.
   @ffi.Uint32()
   external int ProductUserIdCount;
 }
 
-/// Output parameters for the EOS_Connect_TransferDeviceIdAccount Function.
 final class _tagEOS_Connect_TransferDeviceIdAccountCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_TransferDeviceIdAccount.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ProductUserIdToPreserve that was passed to the original
-  /// EOS_Connect_TransferDeviceIdAccount call.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_TransferDeviceIdAccount Function.
 final class _tagEOS_Connect_TransferDeviceIdAccountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_TRANSFERDEVICEIDACCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The primary product user id, currently logged in, that is already
-  /// associated with a real external user account (such as Epic Games,
-  /// PlayStation(TM)Network, Xbox Live and other).
   external EOS_ProductUserId PrimaryLocalUserId;
 
-  /// The product user id, currently logged in, that has been originally created
-  /// using the anonymous local Device ID login type, and whose Device ID login
-  /// will be transferred to the keychain of the PrimaryLocalUserId.
   external EOS_ProductUserId LocalDeviceUserId;
 
-  /// Specifies which EOS_ProductUserId (i.e. game progression) will be
-  /// preserved in the operation.
   external EOS_ProductUserId ProductUserIdToPreserve;
 }
 
-/// Output parameters for the EOS_Connect_UnlinkAccount Function.
 final class _tagEOS_Connect_UnlinkAccountCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_UnlinkAccount.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The product user that was subject for the unlinking operation.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Connect_UnlinkAccount Function.
 final class _tagEOS_Connect_UnlinkAccountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_UNLINKACCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Existing logged in product user that is subject for the unlinking
-  /// operation. The external account that was used to login to the product user
-  /// will be unlinked from the owning keychain.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Additional information about the local user.
 final class _tagEOS_Connect_UserLoginInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_USERLOGININFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The user's display name on the identity provider systems as UTF-8 encoded
-  /// null-terminated string. The length of the name can be at maximum up to
-  /// EOS_CONNECT_USERLOGININFO_DISPLAYNAME_MAX_LENGTH characters.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// Nintendo Service Account ID Token (NSA ID).
   external ffi.Pointer<ffi.Char> NsaIdToken;
 }
 
-/// Output parameters for the EOS_Connect_VerifyIdToken Function.
 final class _tagEOS_Connect_VerifyIdTokenCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Connect_VerifyIdToken
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID associated with the ID token.
   external EOS_ProductUserId ProductUserId;
 
-  /// Flag set to indicate whether account information is available.
-  /// Applications must always first check this value to be set before
-  /// attempting to read the AccountType, AccountId, Platform and DeviceType
-  /// fields.
   @EOS_Bool()
   external int bIsAccountInfoPresent;
 
-  /// The identity provider that the user authenticated with to EOS Connect.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -17725,203 +15014,130 @@ final class _tagEOS_Connect_VerifyIdTokenCallbackInfo extends ffi.Struct {
   set AccountIdType(EOS_EExternalAccountType value) =>
       AccountIdTypeAsInt = value.value;
 
-  /// The external account ID of the authenticated user.
   external ffi.Pointer<ffi.Char> AccountId;
 
-  /// Platform that the user is connected from.
   external ffi.Pointer<ffi.Char> Platform;
 
-  /// Identifies the device type that the user is connected from. Can be used to
-  /// securely verify that the user is connected through a real Console device.
   external ffi.Pointer<ffi.Char> DeviceType;
 
-  /// Client ID of the authorized client.
   external ffi.Pointer<ffi.Char> ClientId;
 
-  /// Product ID.
   external ffi.Pointer<ffi.Char> ProductId;
 
-  /// Sandbox ID.
   external ffi.Pointer<ffi.Char> SandboxId;
 
-  /// Deployment ID.
   external ffi.Pointer<ffi.Char> DeploymentId;
 }
 
-/// Input parameters for the EOS_Connect_VerifyIdToken function.
 final class _tagEOS_Connect_VerifyIdTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CONNECT_VERIFYIDTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID token to verify. Use EOS_ProductUserId_FromString to populate the
-  /// ProductUserId field of this struct.
   external ffi.Pointer<EOS_Connect_IdToken> IdToken;
 }
 
-/// Output parameters for the EOS_CustomInvites_AcceptRequestToJoin Function.
-/// These parameters are received through the callback provided to
-/// EOS_CustomInvites_AcceptRequestToJoin
 final class _tagEOS_CustomInvites_AcceptRequestToJoinCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_CustomInvites_AcceptRequestToJoin
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user accepting an invite request
   external EOS_ProductUserId LocalUserId;
 
-  /// Target user that sent original invite request
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_CustomInvites_AcceptRequestToJoin function.
 final class _tagEOS_CustomInvites_AcceptRequestToJoinOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_ACCEPTREQUESTTOJOIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user accepting a request to join
   external EOS_ProductUserId LocalUserId;
 
-  /// Target user that sent original request to join
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_CustomInvites_AddNotifyCustomInviteAccepted
-/// function.
 final class _tagEOS_CustomInvites_AddNotifyCustomInviteAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYCUSTOMINVITEACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_CustomInvites_AddNotifyCustomInviteReceived
-/// function.
 final class _tagEOS_CustomInvites_AddNotifyCustomInviteReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYCUSTOMINVITERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_CustomInvites_AddNotifyCustomInviteRejected
-/// function.
 final class _tagEOS_CustomInvites_AddNotifyCustomInviteRejectedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYCUSTOMINVITEREJECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_CustomInvites_AddNotifyRequestToJoinAccepted
-/// function.
 final class _tagEOS_CustomInvites_AddNotifyRequestToJoinAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYREQUESTTOJOINACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the AddNotifyRequestToJoinReceived function.
 final class _tagEOS_CustomInvites_AddNotifyRequestToJoinReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYREQUESTTOJOINRECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_CustomInvites_AddNotifyRequestToJoinRejected
-/// function.
 final class _tagEOS_CustomInvites_AddNotifyRequestToJoinRejectedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYREQUESTTOJOINREJECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the
-/// EOS_CustomInvites_AddNotifyRequestToJoinResponseReceived function.
 final class _tagEOS_CustomInvites_AddNotifyRequestToJoinResponseReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYREQUESTTOJOINRESPONSERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the
-/// EOS_CustomInvites_AddNotifySendCustomNativeInviteRequested function.
 final class _tagEOS_CustomInvites_AddNotifySendCustomNativeInviteRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_ADDNOTIFYSENDCUSTOMNATIVEINVITEREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_CustomInvites_OnCustomInviteRejectedCallback
-/// Function.
 final class _tagEOS_CustomInvites_CustomInviteRejectedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyCustomInviteRejected
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent the custom invite
   external EOS_ProductUserId TargetUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 
-  /// Id of the rejected Custom Invite
   external ffi.Pointer<ffi.Char> CustomInviteId;
 
-  /// Payload of the rejected Custom Invite
   external ffi.Pointer<ffi.Char> Payload;
 }
 
-/// Input parameters for the EOS_CustomInvites_DisableRequestToJoin function.
 final class _tagEOS_CustomInvites_DisableRequestToJoinOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_CUSTOMINVITES_DISABLEREQUESTTOJOIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_CustomInvites_FinalizeInvite function.
 final class _tagEOS_CustomInvites_FinalizeInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_FINALIZEINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// User that sent the custom invite
   external EOS_ProductUserId TargetUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 
-  /// Id of the Custom Invite accepted
   external ffi.Pointer<ffi.Char> CustomInviteId;
 
-  /// Result of the Processing operation, transmitted to Social Overlay if
-  /// applicable
   @ffi.UnsignedInt()
   external int ProcessingResultAsInt;
 
@@ -17931,145 +15147,92 @@ final class _tagEOS_CustomInvites_FinalizeInviteOptions extends ffi.Struct {
       ProcessingResultAsInt = value.value;
 }
 
-/// Output parameters for the EOS_CustomInvites_OnCustomInviteAcceptedCallback
-/// Function.
 final class _tagEOS_CustomInvites_OnCustomInviteAcceptedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyCustomInviteAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent the custom invite
   external EOS_ProductUserId TargetUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 
-  /// Id of the accepted Custom Invite
   external ffi.Pointer<ffi.Char> CustomInviteId;
 
-  /// Payload of the accepted Custom Invite
   external ffi.Pointer<ffi.Char> Payload;
 }
 
-/// Output parameters for the EOS_CustomInvites_OnCustomInviteReceivedCallback
-/// Function.
 final class _tagEOS_CustomInvites_OnCustomInviteReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyCustomInviteReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent this custom invite
   external EOS_ProductUserId TargetUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 
-  /// Id of the received Custom Invite
   external ffi.Pointer<ffi.Char> CustomInviteId;
 
-  /// Payload of the received Custom Invite
   external ffi.Pointer<ffi.Char> Payload;
 }
 
-/// Output parameters for the EOS_CustomInvites_OnRequestToJoinAcceptedCallback
-/// Function.
 final class _tagEOS_CustomInvites_OnRequestToJoinAcceptedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyRequestToJoinAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent the request to join
   external EOS_ProductUserId TargetUserId;
 
-  /// Local user ID of the Request to Join recipient
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_CustomInvites_OnRequestToJoinRejectedCallback
-/// Function.
 final class _tagEOS_CustomInvites_OnRequestToJoinRejectedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyCustomInviteRejected
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent the custom invite
   external EOS_ProductUserId TargetUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_CustomInvites_RejectRequestToJoin Function.
-/// These parameters are received through the callback provided to
-/// EOS_CustomInvites_RejectRequestToJoin
 final class _tagEOS_CustomInvites_RejectRequestToJoinCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_CustomInvites_RejectRequestToJoin
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user declining a request to join
   external EOS_ProductUserId LocalUserId;
 
-  /// Target user that sent original request to join
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_CustomInvites_RejectRequestToJoin function.
 final class _tagEOS_CustomInvites_RejectRequestToJoinOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_REJECTREQUESTTOJOIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user declining an invite request
   external EOS_ProductUserId LocalUserId;
 
-  /// Target user that sent original invite request
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_CustomInvites_AddNotifyRequestToJoinReceived
-/// function.
 final class _tagEOS_CustomInvites_RequestToJoinReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyRequestToJoinReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent this response
   external EOS_ProductUserId FromUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId ToUserId;
 }
 
-/// Output parameters for the
-/// EOS_CustomInvites_OnRequestToJoinResponseReceivedCallback function.
 final class _tagEOS_CustomInvites_RequestToJoinResponseReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifyRequestToJoinResponseReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// User that sent this response
   external EOS_ProductUserId FromUserId;
 
-  /// Recipient Local user id
   external EOS_ProductUserId ToUserId;
 
-  /// The Intent associated with this response
   @ffi.UnsignedInt()
   external int ResponseAsInt;
 
@@ -18078,357 +15241,230 @@ final class _tagEOS_CustomInvites_RequestToJoinResponseReceivedCallbackInfo
   set Response(EOS_ERequestToJoinResponse value) => ResponseAsInt = value.value;
 }
 
-/// Output parameters for the EOS_CustomInvites_SendCustomInvite Function. These
-/// parameters are received through the callback provided to
-/// EOS_CustomInvites_SendCustomInvite
 final class _tagEOS_CustomInvites_SendCustomInviteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_CustomInvites_SendCustomInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user sending a CustomInvite
   external EOS_ProductUserId LocalUserId;
 
-  /// Users to whom the invites were successfully sent (can be different than
-  /// original call if an invite for same Payload was previously sent)
   external ffi.Pointer<EOS_ProductUserId> TargetUserIds;
 
-  /// The number of users we are sending to
   @ffi.Uint32()
   external int TargetUserIdsCount;
 }
 
-/// Input parameters for the EOS_CustomInvites_SendCustomInvite function.
 final class _tagEOS_CustomInvites_SendCustomInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_SENDCUSTOMINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user sending a CustomInvite
   external EOS_ProductUserId LocalUserId;
 
-  /// Users to whom the invites should be sent
   external ffi.Pointer<EOS_ProductUserId> TargetUserIds;
 
-  /// The number of users we are sending to
   @ffi.Uint32()
   external int TargetUserIdsCount;
 }
 
-/// Output parameters for the
-/// EOS_CustomInvites_OnSendCustomNativeInviteRequestedCallback Function.
 final class _tagEOS_CustomInvites_SendCustomNativeInviteRequestedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_CustomInvites_AddNotifySendCustomNativeInviteRequested
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Identifies this event which will need to be acknowledged with
-  /// EOS_UI_AcknowledgeEventId().
   @EOS_UI_EventId()
   external int UiEventId;
 
-  /// The Product User ID of the local user who is inviting.
   external EOS_ProductUserId LocalUserId;
 
-  /// The Native Platform Account Type. If only a single integrated platform is
-  /// configured then this will always reference that platform.
   external EOS_IntegratedPlatformType TargetNativeAccountType;
 
-  /// The Native Platform Account ID of the target user being invited.
   external ffi.Pointer<ffi.Char> TargetUserNativeAccountId;
 
-  /// Invite ID that the user is being invited to
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Output parameters for the EOS_CustomInvites_SendRequestToJoin Function.
-/// These parameters are received through the callback provided to
-/// EOS_CustomInvites_SendRequestToJoin
 final class _tagEOS_CustomInvites_SendRequestToJoinCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_CustomInvites_SendRequestToJoin
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user requesting an invite
   external EOS_ProductUserId LocalUserId;
 
-  /// Recipient of Request Invite
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_CustomInvites_SendRequestToJoin function.
 final class _tagEOS_CustomInvites_SendRequestToJoinOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_SENDREQUESTTOJOIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user Requesting an Invite
   external EOS_ProductUserId LocalUserId;
 
-  /// Recipient of Request Invite
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_CustomInvites_SetCustomInvite function.
 final class _tagEOS_CustomInvites_SetCustomInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_CUSTOMINVITES_SETCUSTOMINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user creating / sending a Custom Invite
   external EOS_ProductUserId LocalUserId;
 
-  /// String payload for the Custom Invite (must be less than
-  /// EOS_CUSTOMINVITES_MAX_PAYLOAD_LENGTH)
   external ffi.Pointer<ffi.Char> Payload;
 }
 
-/// Contains information about a single item within the catalog. Instances of
-/// this structure are created by EOS_Ecom_CopyOfferItemByIndex. They must be
-/// passed to EOS_Ecom_CatalogItem_Release.
 final class _tagEOS_Ecom_CatalogItem extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_CATALOGITEM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product namespace in which this item exists
   external ffi.Pointer<ffi.Char> CatalogNamespace;
 
-  /// The ID of this item
   external EOS_Ecom_CatalogItemId Id;
 
-  /// The entitlement name associated with this item
   external EOS_Ecom_EntitlementName EntitlementName;
 
-  /// Localized UTF-8 title of this item
   external ffi.Pointer<ffi.Char> TitleText;
 
-  /// Localized UTF-8 description of this item
   external ffi.Pointer<ffi.Char> DescriptionText;
 
-  /// Localized UTF-8 long description of this item
   external ffi.Pointer<ffi.Char> LongDescriptionText;
 
-  /// Localized UTF-8 technical details of this item
   external ffi.Pointer<ffi.Char> TechnicalDetailsText;
 
-  /// Localized UTF-8 developer of this item
   external ffi.Pointer<ffi.Char> DeveloperText;
 
-  /// The type of item as defined in the catalog
   @ffi.UnsignedInt()
   external int ItemTypeAsInt;
 
   EOS_EEcomItemType get ItemType => EOS_EEcomItemType.fromValue(ItemTypeAsInt);
   set ItemType(EOS_EEcomItemType value) => ItemTypeAsInt = value.value;
 
-  /// If not -1 then this is the POSIX timestamp that the entitlement will end
   @ffi.Int64()
   external int EntitlementEndTimestamp;
 }
 
-/// Contains information about a single offer within the catalog. Instances of
-/// this structure are created by EOS_Ecom_CopyOfferByIndex. They must be passed
-/// to EOS_Ecom_CatalogOffer_Release. Prices are stored in the lowest
-/// denomination for the associated currency. If CurrencyCode is "USD" then a
-/// price of 299 represents "$2.99".
 final class _tagEOS_Ecom_CatalogOffer extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_CATALOGOFFER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of this offer as it exists on the server. This is useful for
-  /// understanding pagination data.
   @ffi.Int32()
   external int ServerIndex;
 
-  /// Product namespace in which this offer exists
   external ffi.Pointer<ffi.Char> CatalogNamespace;
 
-  /// The ID of this offer
   external EOS_Ecom_CatalogOfferId Id;
 
-  /// Localized UTF-8 title of this offer
   external ffi.Pointer<ffi.Char> TitleText;
 
-  /// Localized UTF-8 description of this offer
   external ffi.Pointer<ffi.Char> DescriptionText;
 
-  /// Localized UTF-8 long description of this offer
   external ffi.Pointer<ffi.Char> LongDescriptionText;
 
-  /// Deprecated. EOS_Ecom_CatalogItem::TechnicalDetailsText is still valid.
   external ffi.Pointer<ffi.Char> TechnicalDetailsText_DEPRECATED;
 
-  /// The Currency Code for this offer
   external ffi.Pointer<ffi.Char> CurrencyCode;
 
-  /// If this value is EOS_Success then OriginalPrice, CurrentPrice, and
-  /// DiscountPercentage contain valid data. Otherwise this value represents the
-  /// error that occurred on the price query.
   @ffi.UnsignedInt()
   external int PriceResultAsInt;
 
   EOS_EResult get PriceResult => EOS_EResult.fromValue(PriceResultAsInt);
   set PriceResult(EOS_EResult value) => PriceResultAsInt = value.value;
 
-  /// The original price of this offer as a 32-bit number is deprecated.
   @ffi.Uint32()
   external int OriginalPrice_DEPRECATED;
 
-  /// The current price including discounts of this offer as a 32-bit number is
-  /// deprecated..
   @ffi.Uint32()
   external int CurrentPrice_DEPRECATED;
 
-  /// A value from 0 to 100 define the percentage of the OrignalPrice that the
-  /// CurrentPrice represents
   @ffi.Uint8()
   external int DiscountPercentage;
 
-  /// Contains the POSIX timestamp that the offer expires or -1 if it does not
-  /// expire
   @ffi.Int64()
   external int ExpirationTimestamp;
 
-  /// The number of times that the requesting account has purchased this offer.
-  /// This value is deprecated and the backend no longer returns this value.
   @ffi.Uint32()
   external int PurchasedCount_DEPRECATED;
 
-  /// The maximum number of times that the offer can be purchased. A negative
-  /// value implies there is no limit.
   @ffi.Int32()
   external int PurchaseLimit;
 
-  /// True if the user can purchase this offer.
   @EOS_Bool()
   external int bAvailableForPurchase;
 
-  /// The original price of this offer as a 64-bit number.
   @ffi.Uint64()
   external int OriginalPrice64;
 
-  /// The current price including discounts of this offer as a 64-bit number.
   @ffi.Uint64()
   external int CurrentPrice64;
 
-  /// The decimal point for the provided price. For example, DecimalPoint '2'
-  /// and CurrentPrice64 '12345' would be '123.45'.
   @ffi.Uint32()
   external int DecimalPoint;
 
-  /// Timestamp indicating when the time when the offer was released. Can be
-  /// ignored if set to -1.
   @ffi.Int64()
   external int ReleaseDateTimestamp;
 
-  /// Timestamp indicating the effective date of the offer. Can be ignored if
-  /// set to -1.
   @ffi.Int64()
   external int EffectiveDateTimestamp;
 }
 
-/// Contains information about a single release within the catalog. Instances of
-/// this structure are created by EOS_Ecom_CopyItemReleaseByIndex. They must be
-/// passed to EOS_Ecom_CatalogRelease_Release.
 final class _tagEOS_Ecom_CatalogRelease extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_CATALOGRELEASE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The number of APP IDs
   @ffi.Uint32()
   external int CompatibleAppIdCount;
 
-  /// A list of compatible APP IDs
   external ffi.Pointer<ffi.Pointer<ffi.Char>> CompatibleAppIds;
 
-  /// The number of platforms
   @ffi.Uint32()
   external int CompatiblePlatformCount;
 
-  /// A list of compatible Platforms
   external ffi.Pointer<ffi.Pointer<ffi.Char>> CompatiblePlatforms;
 
-  /// Release note for compatible versions
   external ffi.Pointer<ffi.Char> ReleaseNote;
 }
 
-/// Output parameters for the EOS_Ecom_Checkout Function.
 final class _tagEOS_Ecom_CheckoutCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, otherwise one of the error codes is returned. See eos_common.h
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_Checkout
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user who initiated the purchase
   external EOS_EpicAccountId LocalUserId;
 
-  /// The transaction ID which can be used to obtain an EOS_Ecom_HTransaction
-  /// using EOS_Ecom_CopyTransactionById.
   external ffi.Pointer<ffi.Char> TransactionId;
 }
 
-/// Contains information about a request to purchase a single offer. This
-/// structure is set as part of the EOS_Ecom_CheckoutOptions structure.
 final class _tagEOS_Ecom_CheckoutEntry extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_CHECKOUTENTRY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the offer to purchase
   external EOS_Ecom_CatalogOfferId OfferId;
 }
 
-/// Input parameters for the EOS_Ecom_Checkout function.
 final class _tagEOS_Ecom_CheckoutOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_CHECKOUT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user who is making the purchase
   external EOS_EpicAccountId LocalUserId;
 
-  /// The catalog namespace will be the current Sandbox ID (in
-  /// EOS_Platform_Options) unless overridden by this field
   external ffi.Pointer<ffi.Char> OverrideCatalogNamespace;
 
-  /// The number of EOS_Ecom_CheckoutEntry elements contained in Entries
   @ffi.Uint32()
   external int EntryCount;
 
-  /// An array of EOS_Ecom_CheckoutEntry elements, each containing the details
-  /// of a single offer
   external ffi.Pointer<EOS_Ecom_CheckoutEntry> Entries;
 
-  /// Preferred device orientation, specifies Default, Portrait or Landscape.
-  /// This is used only on mobile platforms currently. SDK can use it to
-  /// optimize how the Checkout page should be displayed. Please check the
-  /// mobile SDK documentation for additional required setup.
   @ffi.UnsignedInt()
   external int PreferredOrientationAsInt;
 
@@ -18438,117 +15474,81 @@ final class _tagEOS_Ecom_CheckoutOptions extends ffi.Struct {
       PreferredOrientationAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Ecom_CopyEntitlementById function.
 final class _tagEOS_Ecom_CopyEntitlementByIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYENTITLEMENTBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose entitlement is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// ID of the entitlement to retrieve from the cache
   external EOS_Ecom_EntitlementId EntitlementId;
 }
 
-/// Input parameters for the EOS_Ecom_CopyEntitlementByIndex function.
 final class _tagEOS_Ecom_CopyEntitlementByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYENTITLEMENTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose entitlement is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// Index of the entitlement to retrieve from the cache
   @ffi.Uint32()
   external int EntitlementIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyEntitlementByNameAndIndex function.
 final class _tagEOS_Ecom_CopyEntitlementByNameAndIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_COPYENTITLEMENTBYNAMEANDINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose entitlement is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// Name of the entitlement to retrieve from the cache
   external EOS_Ecom_EntitlementName EntitlementName;
 
-  /// Index of the entitlement within the named set to retrieve from the cache.
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input parameters for the EOS_Ecom_CopyItemById function.
 final class _tagEOS_Ecom_CopyItemByIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYITEMBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the item to get.
   external EOS_Ecom_CatalogItemId ItemId;
 }
 
-/// Input parameters for the EOS_Ecom_CopyItemImageInfoByIndex function.
 final class _tagEOS_Ecom_CopyItemImageInfoByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYITEMIMAGEINFOBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item image is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the item to get the images for.
   external EOS_Ecom_CatalogItemId ItemId;
 
-  /// The index of the image to get.
   @ffi.Uint32()
   external int ImageInfoIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyItemReleaseByIndex function.
 final class _tagEOS_Ecom_CopyItemReleaseByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYITEMRELEASEBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item release is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the item to get the releases for.
   external EOS_Ecom_CatalogItemId ItemId;
 
-  /// The index of the release to get.
   @ffi.Uint32()
   external int ReleaseIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyLastRedeemEntitlementsResultByIndex
-/// function.
 final class _tagEOS_Ecom_CopyLastRedeemEntitlementsResultByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_COPYLASTREDEEMENTITLEMENTSRESULTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose last redeemed entitlement id
-  /// is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// Index of the entitlement of the given result type.
   @ffi.Uint32()
   external int EntitlementIndex;
 
-  /// The Redeem Entitlements Result Type.
   @ffi.UnsignedInt()
   external int ResultTypeAsInt;
 
@@ -18558,212 +15558,140 @@ final class _tagEOS_Ecom_CopyLastRedeemEntitlementsResultByIndexOptions
       ResultTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Ecom_CopyLastRedeemedEntitlementByIndex
-/// function.
 final class _tagEOS_Ecom_CopyLastRedeemedEntitlementByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_COPYLASTREDEEMEDENTITLEMENTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose last redeemed entitlement id
-  /// is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// Index of the last redeemed entitlement id to retrieve from the cache
   @ffi.Uint32()
   external int RedeemedEntitlementIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyOfferById function.
 final class _tagEOS_Ecom_CopyOfferByIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYOFFERBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offer is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the offer to get.
   external EOS_Ecom_CatalogOfferId OfferId;
 }
 
-/// Input parameters for the EOS_Ecom_CopyOfferByIndex function.
 final class _tagEOS_Ecom_CopyOfferByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYOFFERBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offer is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The index of the offer to get.
   @ffi.Uint32()
   external int OfferIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyOfferImageInfoByIndex function.
 final class _tagEOS_Ecom_CopyOfferImageInfoByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYOFFERIMAGEINFOBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offer image is being copied.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the offer to get the images for.
   external EOS_Ecom_CatalogOfferId OfferId;
 
-  /// The index of the image to get.
   @ffi.Uint32()
   external int ImageInfoIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyOfferItemByIndex function.
 final class _tagEOS_Ecom_CopyOfferItemByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYOFFERITEMBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item is being copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the offer to get the items for.
   external EOS_Ecom_CatalogOfferId OfferId;
 
-  /// The index of the item to get.
   @ffi.Uint32()
   external int ItemIndex;
 }
 
-/// Input parameters for the EOS_Ecom_CopyTransactionById function.
 final class _tagEOS_Ecom_CopyTransactionByIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYTRANSACTIONBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user who is associated with the
-  /// transaction
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the transaction to get
   external ffi.Pointer<ffi.Char> TransactionId;
 }
 
-/// Input parameters for the EOS_Ecom_CopyTransactionByIndex function.
 final class _tagEOS_Ecom_CopyTransactionByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_COPYTRANSACTIONBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user who is associated with the
-  /// transaction
   external EOS_EpicAccountId LocalUserId;
 
-  /// The index of the transaction to get
   @ffi.Uint32()
   external int TransactionIndex;
 }
 
-/// Contains information about a single entitlement associated with an account.
-/// Instances of this structure are created by EOS_Ecom_CopyEntitlementByIndex,
-/// EOS_Ecom_CopyEntitlementByNameAndIndex, or EOS_Ecom_CopyEntitlementById.
-/// They must be passed to EOS_Ecom_Entitlement_Release.
 final class _tagEOS_Ecom_Entitlement extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_ENTITLEMENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the entitlement
   external EOS_Ecom_EntitlementName EntitlementName;
 
-  /// ID of the entitlement owned by an account
   external EOS_Ecom_EntitlementId EntitlementId;
 
-  /// ID of the item associated with the offer which granted this entitlement
   external EOS_Ecom_CatalogItemId CatalogItemId;
 
-  /// If queried using pagination then ServerIndex represents the index of the
-  /// entitlement as it exists on the server. If not queried using pagination
-  /// then ServerIndex will be -1.
   @ffi.Int32()
   external int ServerIndex;
 
-  /// If true then the catalog has this entitlement marked as redeemed
   @EOS_Bool()
   external int bRedeemed;
 
-  /// If not -1 then this is a POSIX timestamp that this entitlement will end
   @ffi.Int64()
   external int EndTimestamp;
 }
 
-/// Input parameters for the EOS_Ecom_GetEntitlementsByNameCount function.
 final class _tagEOS_Ecom_GetEntitlementsByNameCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETENTITLEMENTSBYNAMECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user for which to retrieve the
-  /// entitlement count
   external EOS_EpicAccountId LocalUserId;
 
-  /// Name of the entitlement to count in the cache
   external EOS_Ecom_EntitlementName EntitlementName;
 }
 
-/// Input parameters for the EOS_Ecom_GetEntitlementsCount function.
 final class _tagEOS_Ecom_GetEntitlementsCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETENTITLEMENTSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user for which to retrieve the
-  /// entitlement count
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Ecom_GetItemImageInfoCount function.
 final class _tagEOS_Ecom_GetItemImageInfoCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETITEMIMAGEINFOCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item image is being accessed
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the item to get the images for.
   external EOS_Ecom_CatalogItemId ItemId;
 }
 
-/// Input parameters for the EOS_Ecom_GetItemReleaseCount function.
 final class _tagEOS_Ecom_GetItemReleaseCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETITEMRELEASECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose item release is being accessed
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the item to get the releases for.
   external EOS_Ecom_CatalogItemId ItemId;
 }
 
-/// Input parameters for the EOS_Ecom_GetLastRedeemEntitlementsResultCount
-/// function.
 final class _tagEOS_Ecom_GetLastRedeemEntitlementsResultCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_GETLASTREDEEMENTITLEMENTSRESULTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user for who to retrieve the last
-  /// redeemed entitlements count
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Redeem Entitlements Result Type.
   @ffi.UnsignedInt()
   external int ResultTypeAsInt;
 
@@ -18773,79 +15701,52 @@ final class _tagEOS_Ecom_GetLastRedeemEntitlementsResultCountOptions
       ResultTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Ecom_GetLastRedeemedEntitlementsCount function.
 final class _tagEOS_Ecom_GetLastRedeemedEntitlementsCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_GETLASTREDEEMEDENTITLEMENTSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user for who to retrieve the last
-  /// redeemed entitlements count
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Ecom_GetOfferCount function.
 final class _tagEOS_Ecom_GetOfferCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETOFFERCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offers are being accessed
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Ecom_GetOfferImageInfoCount function.
 final class _tagEOS_Ecom_GetOfferImageInfoCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETOFFERIMAGEINFOCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offer image is being accessed.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The ID of the offer to get the images for.
   external EOS_Ecom_CatalogOfferId OfferId;
 }
 
-/// Input parameters for the EOS_Ecom_GetOfferItemCount function.
 final class _tagEOS_Ecom_GetOfferItemCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETOFFERITEMCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user who made the initial request for the
-  /// Catalog Offer through EOS_Ecom_QueryOffers
   external EOS_EpicAccountId LocalUserId;
 
-  /// An ID that corresponds to a cached Catalog Offer (retrieved by
-  /// EOS_Ecom_CopyOfferByIndex)
   external EOS_Ecom_CatalogOfferId OfferId;
 }
 
-/// Input parameters for the EOS_Ecom_GetTransactionCount function.
 final class _tagEOS_Ecom_GetTransactionCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_GETTRANSACTIONCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose transaction count to get
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Contains information about a single item ownership associated with an
-/// account. This structure is returned as part of the
-/// EOS_Ecom_QueryOwnershipCallbackInfo structure.
 final class _tagEOS_Ecom_ItemOwnership extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_ITEMOWNERSHIP_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// ID of the catalog item
   external EOS_Ecom_CatalogItemId Id;
 
-  /// Is this catalog item owned by the local user
   @ffi.UnsignedInt()
   external int OwnershipStatusAsInt;
 
@@ -18855,515 +15756,338 @@ final class _tagEOS_Ecom_ItemOwnership extends ffi.Struct {
       OwnershipStatusAsInt = value.value;
 }
 
-/// Contains information about a key image used by the catalog. Instances of
-/// this structure are created by EOS_Ecom_CopyItemImageInfoByIndex. They must
-/// be passed to EOS_Ecom_KeyImageInfo_Release. A Key Image is defined within
-/// Dev Portal and is associated with a Catalog Item. A Key Image is intended to
-/// be used to provide imagery for an in-game store.
 final class _tagEOS_Ecom_KeyImageInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_KEYIMAGEINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Describes the usage of the image (ex: home_thumbnail)
   external ffi.Pointer<ffi.Char> Type;
 
-  /// The URL of the image
   external ffi.Pointer<ffi.Char> Url;
 
-  /// The expected width in pixels of the image
   @ffi.Uint32()
   external int Width;
 
-  /// The expected height in pixels of the image
   @ffi.Uint32()
   external int Height;
 }
 
-/// Output parameters for the EOS_Ecom_QueryEntitlementToken Function.
 final class _tagEOS_Ecom_QueryEntitlementTokenCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryEntitlementToken
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose entitlement was queried
   external EOS_EpicAccountId LocalUserId;
 
-  /// Entitlements token containing details about the catalog items queried
   external ffi.Pointer<ffi.Char> EntitlementToken;
 }
 
-/// Input parameters for the EOS_Ecom_QueryEntitlementToken function.
 final class _tagEOS_Ecom_QueryEntitlementTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_QUERYENTITLEMENTTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose Entitlements you want to
-  /// retrieve
   external EOS_EpicAccountId LocalUserId;
 
-  /// An array of Entitlement Names that you want to check
   external ffi.Pointer<EOS_Ecom_EntitlementName> EntitlementNames;
 
-  /// The number of Entitlement Names included in the array, up to
-  /// EOS_ECOM_QUERYENTITLEMENTTOKEN_MAX_ENTITLEMENT_IDS; use zero to request
-  /// all Entitlements associated with the user's Epic Online Services account.
   @ffi.Uint32()
   external int EntitlementNameCount;
 }
 
-/// Output parameters for the EOS_Ecom_QueryEntitlements Function.
 final class _tagEOS_Ecom_QueryEntitlementsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryEntitlements
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose entitlement was queried
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Ecom_QueryEntitlements function.
 final class _tagEOS_Ecom_QueryEntitlementsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_QUERYENTITLEMENTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose Entitlements you want to
-  /// retrieve
   external EOS_EpicAccountId LocalUserId;
 
-  /// An array of Entitlement Names that you want to check
   external ffi.Pointer<EOS_Ecom_EntitlementName> EntitlementNames;
 
-  /// The number of Entitlement Names included in the array, up to
-  /// EOS_ECOM_QUERYENTITLEMENTS_MAX_ENTITLEMENT_IDS; use zero to request all
-  /// Entitlements associated with the user's Epic Online Services account.
   @ffi.Uint32()
   external int EntitlementNameCount;
 
-  /// If true, Entitlements that have been redeemed will be included in the
-  /// results.
   @EOS_Bool()
   external int bIncludeRedeemed;
 
-  /// If not provided then the SandboxId is used as the catalog namespace
   external ffi.Pointer<ffi.Char> OverrideCatalogNamespace;
 }
 
-/// Output parameters for the EOS_Ecom_QueryOffers Function.
 final class _tagEOS_Ecom_QueryOffersCallbackInfo extends ffi.Struct {
-  /// Possible result codes for the operation: - EOS_Success: The request was
-  /// successful. - EOS_IncompatibleVersion: The API version passed in is
-  /// incorrect. - EOS_InvalidParameters: An options parameter is incorrect. -
-  /// EOS_InvalidUser: An invalid Product User Id is specified. -
-  /// EOS_InvalidAuth: A valid Product User Id is specified but the local user
-  /// is not logged in. - EOS_TooManyRequests: There are too many requests in
-  /// progress at this time. - EOS_PartialResult: Only part of the backend
-  /// response was received and processed by the client.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryOffers
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose offer was queried; needed for
-  /// localization of Catalog Item (Item) description text and pricing
-  /// information
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Ecom_QueryOffers function.
 final class _tagEOS_Ecom_QueryOffersOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_QUERYOFFERS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose offer to query
   external EOS_EpicAccountId LocalUserId;
 
-  /// If not provided then the SandboxId is used as the catalog namespace
   external ffi.Pointer<ffi.Char> OverrideCatalogNamespace;
 }
 
-/// Output parameters for the EOS_Ecom_QueryOwnershipBySandboxIds Function.
 final class _tagEOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryOwnership
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose ownership was queried
   external EOS_EpicAccountId LocalUserId;
 
-  /// List of SandboxIds and their corresponding owned catalog item Ids. If
-  /// there are no ownership items, the OwnedCatalogItemIdsCount is 0 and
-  /// OwnedCatalogItemIds is null.
   external ffi.Pointer<EOS_Ecom_SandboxIdItemOwnership> SandboxIdItemOwnerships;
 
-  /// Number of ownership results are included in this callback
   @ffi.Uint32()
   external int SandboxIdItemOwnershipsCount;
 }
 
-/// Input parameters for the EOS_Ecom_QueryOwnershipBySandboxIds function.
 final class _tagEOS_Ecom_QueryOwnershipBySandboxIdsOptions extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_QUERYOWNERSHIPBYSANDBOXIDSOPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose ownership to query.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The array of Sandbox IDs to check for ownership.
   external ffi.Pointer<EOS_Ecom_SandboxId> SandboxIds;
 
-  /// The number of Sandbox IDs in the query.
   @ffi.Uint32()
   external int SandboxIdsCount;
 }
 
-/// Output parameters for the EOS_Ecom_QueryOwnership Function.
 final class _tagEOS_Ecom_QueryOwnershipCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryOwnership
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose ownership was queried
   external EOS_EpicAccountId LocalUserId;
 
-  /// List of catalog items and their ownership status
   external ffi.Pointer<EOS_Ecom_ItemOwnership> ItemOwnership;
 
-  /// Number of ownership results are included in this callback
   @ffi.Uint32()
   external int ItemOwnershipCount;
 }
 
-/// Input parameters for the EOS_Ecom_QueryOwnership function.
 final class _tagEOS_Ecom_QueryOwnershipOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_QUERYOWNERSHIP_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose ownership to query
   external EOS_EpicAccountId LocalUserId;
 
-  /// The array of Catalog Item IDs to check for ownership
   external ffi.Pointer<EOS_Ecom_CatalogItemId> CatalogItemIds;
 
-  /// The number of Catalog Item IDs to in the array
   @ffi.Uint32()
   external int CatalogItemIdCount;
 
-  /// Optional product namespace, if not the one specified during initialization
   external ffi.Pointer<ffi.Char> CatalogNamespace;
 }
 
-/// Output parameters for the EOS_Ecom_QueryOwnershipToken Function.
 final class _tagEOS_Ecom_QueryOwnershipTokenCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_QueryOwnershipToken
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user whose ownership token was queried
   external EOS_EpicAccountId LocalUserId;
 
-  /// Ownership token containing details about the catalog items queried
   external ffi.Pointer<ffi.Char> OwnershipToken;
 }
 
-/// Input parameters for the EOS_Ecom_QueryOwnershipToken function.
 final class _tagEOS_Ecom_QueryOwnershipTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_QUERYOWNERSHIPTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local user whose ownership token you want to
-  /// query
   external EOS_EpicAccountId LocalUserId;
 
-  /// The array of Catalog Item IDs to check for ownership, matching in number
-  /// to the CatalogItemIdCount
   external ffi.Pointer<EOS_Ecom_CatalogItemId> CatalogItemIds;
 
-  /// The number of catalog item IDs to query
   @ffi.Uint32()
   external int CatalogItemIdCount;
 
-  /// Optional product namespace, if not the one specified during initialization
   external ffi.Pointer<ffi.Char> CatalogNamespace;
 }
 
-/// Output parameters for the EOS_Ecom_RedeemEntitlements Function.
 final class _tagEOS_Ecom_RedeemEntitlementsCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, otherwise one of the error codes is returned. See eos_common.h
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Ecom_RedeemEntitlements
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user who has redeemed entitlements
   external EOS_EpicAccountId LocalUserId;
 
-  /// The number of redeemed Entitlements specified in the request.
   @ffi.Uint32()
   external int RedeemedEntitlementIdsCount;
 
-  /// The number of previously redeemed Entitlements specified in the request.
   @ffi.Uint32()
   external int PreviouslyRedeemedEntitlementIdsCount;
 
-  /// The number of invalid Entitlements specified in the request.
   @ffi.Uint32()
   external int InvalidEntitlementIdsCount;
 }
 
-/// Input parameters for the EOS_Ecom_RedeemEntitlements function.
 final class _tagEOS_Ecom_RedeemEntitlementsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_ECOM_REDEEMENTITLEMENTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user who is redeeming Entitlements
   external EOS_EpicAccountId LocalUserId;
 
-  /// The number of Entitlements to redeem
   @ffi.Uint32()
   external int EntitlementIdCount;
 
-  /// The array of Entitlements to redeem
   external ffi.Pointer<EOS_Ecom_EntitlementId> EntitlementIds;
 }
 
-/// Contains all owned catalog items for a sandbox ID. This structure is
-/// returned as part of the EOS_Ecom_QueryOwnershipBySandboxIdsCallbackInfo
-/// structure. Note: The SandboxID and CatalogItemId strings will not remain
-/// valid after EOS_Ecom_OnQueryOwnershipBySandboxIdsCallback, so a copy should
-/// be as needed.
 final class _tagEOS_Ecom_SandboxIdItemOwnership extends ffi.Struct {
-  /// SandboxId
   external EOS_Ecom_SandboxId SandboxId;
 
-  /// List of all owned catalog items for this SandboxId
   external ffi.Pointer<EOS_Ecom_CatalogItemId> OwnedCatalogItemIds;
 
-  /// Number of owned catalog items for this SandboxId
   @ffi.Uint32()
   external int OwnedCatalogItemIdsCount;
 }
 
-/// Input parameters for the EOS_Ecom_Transaction_CopyEntitlementByIndex
-/// function.
 final class _tagEOS_Ecom_Transaction_CopyEntitlementByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_TRANSACTION_COPYENTITLEMENTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of the entitlement to get
   @ffi.Uint32()
   external int EntitlementIndex;
 }
 
-/// Input parameters for the EOS_Ecom_Transaction_GetEntitlementsCount function.
 final class _tagEOS_Ecom_Transaction_GetEntitlementsCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_ECOM_TRANSACTION_GETENTITLEMENTSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_Friends_AcceptInvite Function.
 final class _tagEOS_Friends_AcceptInviteCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if an invite was
-  /// accepted, otherwise one of the error codes is returned. See eos_common.h
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that is passed into EOS_Friends_AcceptInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user who is accepting the friends list
-  /// invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who sent the local user a friends list
-  /// invitation
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_Friends_AcceptInvite function.
 final class _tagEOS_Friends_AcceptInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_ACCEPTINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user who is accepting the
-  /// friends list invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who sent the friends list invitation
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_Friends_AddNotifyBlockedUsersUpdate function.
 final class _tagEOS_Friends_AddNotifyBlockedUsersUpdateOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_FRIENDS_ADDNOTIFYBLOCKEDUSERSUPDATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Friends_AddNotifyFriendsUpdate function.
 final class _tagEOS_Friends_AddNotifyFriendsUpdateOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_ADDNOTIFYFRIENDSUPDATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Friends_GetBlockedUserAtIndex function.
 final class _tagEOS_Friends_GetBlockedUserAtIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_GETBLOCKEDUSERATINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose blocked users list is being queried.
   external EOS_EpicAccountId LocalUserId;
 
-  /// Index into the blocked users list. This value must be between 0 and
-  /// EOS_Friends_GetBlockedUsersCount-1 inclusively.
   @ffi.Int32()
   external int Index;
 }
 
-/// Input parameters for the EOS_Friends_GetBlockedUsersCount function.
 final class _tagEOS_Friends_GetBlockedUsersCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_GETBLOCKEDUSERSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose blocked users should be counted.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Friends_GetFriendAtIndex function.
 final class _tagEOS_Friends_GetFriendAtIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_GETFRIENDATINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose friend list is being queried
   external EOS_EpicAccountId LocalUserId;
 
-  /// Index into the friend list. This value must be between 0 and
-  /// EOS_Friends_GetFriendsCount-1 inclusively.
   @ffi.Int32()
   external int Index;
 }
 
-/// Input parameters for the EOS_Friends_GetFriendsCount function.
 final class _tagEOS_Friends_GetFriendsCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_GETFRIENDSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose friends should be counted
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Friends_GetStatus function.
 final class _tagEOS_Friends_GetStatusOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_GETSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged in user
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose friendship status with the local
-  /// user is being queried
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Structure containing information about a blocklist update.
 final class _tagEOS_Friends_OnBlockedUsersUpdateInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_Friends_AddNotifyBlockedUsersUpdate
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user who is receiving the update
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose blocked status is being updated.
   external EOS_EpicAccountId TargetUserId;
 
-  /// TargetUserId block status (blocked or not).
   @EOS_Bool()
   external int bBlocked;
 }
 
-/// Structure containing information about a friend status update.
 final class _tagEOS_Friends_OnFriendsUpdateInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_Friends_AddNotifyFriendsUpdate
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user who is receiving the update
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose status is being updated.
   external EOS_EpicAccountId TargetUserId;
 
-  /// The previous status of the user.
   @ffi.UnsignedInt()
   external int PreviousStatusAsInt;
 
@@ -19372,7 +16096,6 @@ final class _tagEOS_Friends_OnFriendsUpdateInfo extends ffi.Struct {
   set PreviousStatus(EOS_EFriendsStatus value) =>
       PreviousStatusAsInt = value.value;
 
-  /// The current status of the user.
   @ffi.UnsignedInt()
   external int CurrentStatusAsInt;
 
@@ -19382,249 +16105,159 @@ final class _tagEOS_Friends_OnFriendsUpdateInfo extends ffi.Struct {
       CurrentStatusAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Friends_QueryFriends Function. These
-/// parameters are received through the callback provided to
-/// EOS_Friends_QueryFriends
 final class _tagEOS_Friends_QueryFriendsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Friends_QueryFriends
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user whose friends were queried
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_Friends_QueryFriends function.
 final class _tagEOS_Friends_QueryFriendsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_QUERYFRIENDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user whose friends list you
-  /// want to retrieve
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Output parameters for the EOS_Friends_RejectInvite Function.
 final class _tagEOS_Friends_RejectInviteCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if an invite was
-  /// accepted, otherwise one of the error codes is returned. See eos_common.h
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that is passed into EOS_Friends_RejectInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user who is rejecting the friends list
-  /// invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who sent the friends list invitation
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_Friends_RejectInvite function.
 final class _tagEOS_Friends_RejectInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_REJECTINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user who is rejecting a
-  /// friends list invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who sent the friends list invitation
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Output parameters for the EOS_Friends_SendInvite API.
 final class _tagEOS_Friends_SendInviteCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if the invitation
-  /// was sent, otherwise one of the error codes is returned. See eos_common.h
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Friends_SendInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user who sent the friends list invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user to whom the friends list invitation was
-  /// sent
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_Friends_SendInvite function.
 final class _tagEOS_Friends_SendInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_FRIENDS_SENDINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user who is sending the
-  /// friends list invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who is receiving the friends list
-  /// invitation
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Options for initializing the Epic Online Services SDK.
 final class _tagEOS_InitializeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_INITIALIZE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A custom memory allocator, if desired.
   external EOS_AllocateMemoryFunc AllocateMemoryFunction;
 
-  /// A corresponding memory reallocator. If the AllocateMemoryFunction is
-  /// nulled, then this field must also be nulled.
   external EOS_ReallocateMemoryFunc ReallocateMemoryFunction;
 
-  /// A corresponding memory releaser. If the AllocateMemoryFunction is nulled,
-  /// then this field must also be nulled.
   external EOS_ReleaseMemoryFunc ReleaseMemoryFunction;
 
-  /// The name of the product using the Epic Online Services SDK.
   external ffi.Pointer<ffi.Char> ProductName;
 
-  /// Product version of the running application.
   external ffi.Pointer<ffi.Char> ProductVersion;
 
-  /// A reserved field that should always be nulled.
   external ffi.Pointer<ffi.Void> Reserved;
 
-  /// This field is for system specific initialization if any.
   external ffi.Pointer<ffi.Void> SystemInitializeOptions;
 
-  /// The thread affinity override values for each category of thread.
   external ffi.Pointer<EOS_Initialize_ThreadAffinity> OverrideThreadAffinity;
 }
 
-/// Options for initializing defining thread affinity for use by Epic Online
-/// Services SDK. Set the affinity to 0 to allow EOS SDK to use a platform
-/// specific default value.
 final class _tagEOS_Initialize_ThreadAffinity extends ffi.Struct {
-  /// API Version: Set this to EOS_INITIALIZE_THREADAFFINITY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Any thread related to network management that is not IO.
   @ffi.Uint64()
   external int NetworkWork;
 
-  /// Any thread that will interact with a storage device.
   @ffi.Uint64()
   external int StorageIo;
 
-  /// Any thread that will generate web socket IO.
   @ffi.Uint64()
   external int WebSocketIo;
 
-  /// Any thread that will generate IO related to P2P traffic and management.
   @ffi.Uint64()
   external int P2PIo;
 
-  /// Any thread that will generate http request IO.
   @ffi.Uint64()
   external int HttpRequestIo;
 
-  /// Any thread that will generate IO related to RTC traffic and management.
   @ffi.Uint64()
   external int RTCIo;
 
-  /// Main thread of the external overlay
   @ffi.Uint64()
   external int EmbeddedOverlayMainThread;
 
-  /// Worker threads of the external overlay
   @ffi.Uint64()
   external int EmbeddedOverlayWorkerThreads;
 
-  /// Any thread that process cryptography work
   @ffi.Uint64()
   external int CryptographyWork;
 }
 
-/// Data for the EOS_IntegratedPlatformOptionsContainer_Add function.
 final class _tagEOS_IntegratedPlatformOptionsContainer_AddOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORMOPTIONSCONTAINER_ADD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The integrated platform options to add.
   external ffi.Pointer<EOS_IntegratedPlatform_Options> Options;
 }
 
-/// Input parameters for the
-/// EOS_IntegratedPlatform_AddNotifyUserLoginStatusChanged function.
 final class _tagEOS_IntegratedPlatform_AddNotifyUserLoginStatusChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_ADDNOTIFYUSERLOGINSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_IntegratedPlatform_ClearUserPreLogoutCallback
-/// function.
 final class _tagEOS_IntegratedPlatform_ClearUserPreLogoutCallbackOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_CLEARUSERPRELOGOUTCALLBACK_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Data for the EOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainer
-/// function.
 final class _tagEOS_IntegratedPlatform_CreateIntegratedPlatformOptionsContainerOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_CREATEINTEGRATEDPLATFORMOPTIONSCONTAINER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_IntegratedPlatform_FinalizeDeferredUserLogout
-/// function.
 final class _tagEOS_IntegratedPlatform_FinalizeDeferredUserLogoutOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_FINALIZEDEFERREDUSERLOGOUT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The integrated platform this user belongs to.
   external EOS_IntegratedPlatformType PlatformType;
 
-  /// String version of the integrated platform-dependent user id.
   external ffi.Pointer<ffi.Char> LocalPlatformUserId;
 
-  /// The logged-in state the user is expected to be (EOS_LS_LoggedIn or
-  /// EOS_LS_NotLoggedIn). If the provided state does not match internal EOS
-  /// state, this function will return in failure. If the state is incorrect,
-  /// the application should wait and attempt to call the function again next
-  /// tick, after both updating its own state from the system and calling
-  /// EOS_Platform_Tick, allowing the SDK to update its state from the system as
-  /// well.
   @ffi.UnsignedInt()
   external int ExpectedLoginStatusAsInt;
 
@@ -19634,17 +16267,12 @@ final class _tagEOS_IntegratedPlatform_FinalizeDeferredUserLogoutOptions
       ExpectedLoginStatusAsInt = value.value;
 }
 
-/// Initialization options to use with EOS_Platform_Options for integrated
-/// platforms.
 final class _tagEOS_IntegratedPlatform_Options extends ffi.Struct {
-  /// API Version: Set this to EOS_INTEGRATEDPLATFORM_OPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The type to be initialized.
   external EOS_IntegratedPlatformType Type;
 
-  /// Identifies how to initialize the IntegratedPlatform.
   @ffi.UnsignedInt()
   external int FlagsAsInt;
 
@@ -19653,26 +16281,18 @@ final class _tagEOS_IntegratedPlatform_Options extends ffi.Struct {
   set Flags(EOS_EIntegratedPlatformManagementFlags value) =>
       FlagsAsInt = value.value;
 
-  /// Options specific to this integrated platform type. This parameter is
-  /// either required or set to NULL based on the platform type.
   external ffi.Pointer<ffi.Void> InitOptions;
 }
 
-/// Input parameters for the EOS_IntegratedPlatform_SetUserLoginStatus function.
 final class _tagEOS_IntegratedPlatform_SetUserLoginStatusOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_SETUSERLOGINSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The integrated platform this user belongs to.
   external EOS_IntegratedPlatformType PlatformType;
 
-  /// String version of the integrated platform-dependent user id.
   external ffi.Pointer<ffi.Char> LocalPlatformUserId;
 
-  /// The login status of the provided user
   @ffi.UnsignedInt()
   external int CurrentLoginStatusAsInt;
 
@@ -19682,73 +16302,42 @@ final class _tagEOS_IntegratedPlatform_SetUserLoginStatusOptions
       CurrentLoginStatusAsInt = value.value;
 }
 
-/// Input parameters for the EOS_IntegratedPlatform_SetUserPreLogoutCallback
-/// function.
 final class _tagEOS_IntegratedPlatform_SetUserPreLogoutCallbackOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_INTEGRATEDPLATFORM_SETUSERPRELOGOUTCALLBACK_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Required initialization options to use with EOS_IntegratedPlatform_Options
-/// for Steam. Steamworks API needs to be at least v1.13 Steam Sanitization
-/// requires at least v1.45 Starting Steamworks v1.58a onwards,
-/// SteamApiInterfaceVersionsArray is required when EOS_IPMF_LibraryManagedBySDK
-/// is set.
 final class _tagEOS_IntegratedPlatform_Steam_Options extends ffi.Struct {
-  /// API Version: Set this to EOS_INTEGRATEDPLATFORM_STEAM_OPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Usage of this parameter is dependent on the specified
-  /// EOS_EIntegratedPlatformManagementFlags.
   external ffi.Pointer<ffi.Char> OverrideLibraryPath;
 
-  /// Used to specify the major version of the Steam SDK your game is compiled
-  /// against, e.g.:
   @ffi.Uint32()
   external int SteamMajorVersion;
 
-  /// Used to specify the minor version of the Steam SDK your game is compiled
-  /// against, e.g.:
   @ffi.Uint32()
   external int SteamMinorVersion;
 
-  /// A pointer to a series of null terminated steam interface version names
-  /// supported by the current steam dll.
   external ffi.Pointer<ffi.Char> SteamApiInterfaceVersionsArray;
 
-  /// Size of the SteamApiInterfaceVersionsArray in bytes. Cannot exceed
-  /// EOS_INTEGRATEDPLATFORM_STEAM_MAX_STEAMAPIINTERFACEVERSIONSARRAY_SIZE.
   @ffi.Uint32()
   external int SteamApiInterfaceVersionsArrayBytes;
 }
 
-/// Data about which integrated platform and which user that had a login status
-/// change and what the login status changed to.
 final class _tagEOS_IntegratedPlatform_UserLoginStatusChangedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_IntegratedPlatform_AddNotifyUserLoginStatusChanged
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The integrated platform of the local platform user.
   external EOS_IntegratedPlatformType PlatformType;
 
-  /// String version of platform's user id.
   external ffi.Pointer<ffi.Char> LocalPlatformUserId;
 
-  /// The Epic Games Account ID associated with this Integrated Platform's User
-  /// (if there is one)
   external EOS_EpicAccountId AccountId;
 
-  /// The EOS Product User ID associated with this Integrated Platform's User
-  /// (if there is one)
   external EOS_ProductUserId ProductUserId;
 
-  /// The login status prior to this change.
   @ffi.UnsignedInt()
   external int PreviousLoginStatusAsInt;
 
@@ -19757,7 +16346,6 @@ final class _tagEOS_IntegratedPlatform_UserLoginStatusChangedCallbackInfo
   set PreviousLoginStatus(EOS_ELoginStatus value) =>
       PreviousLoginStatusAsInt = value.value;
 
-  /// The login status at the time of this notification.
   @ffi.UnsignedInt()
   external int CurrentLoginStatusAsInt;
 
@@ -19767,128 +16355,85 @@ final class _tagEOS_IntegratedPlatform_UserLoginStatusChangedCallbackInfo
       CurrentLoginStatusAsInt = value.value;
 }
 
-/// Data passed to the application in the
-/// EOS_IntegratedPlatform_OnUserPreLogoutCallback function. This contains which
-/// user and associated Integrated Platform that was detected as logged-out.
 final class _tagEOS_IntegratedPlatform_UserPreLogoutCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_IntegratedPlatform_SetUserPreLogoutCallback
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The integrated platform the local user logged-out of.
   external EOS_IntegratedPlatformType PlatformType;
 
-  /// String version of platform-dependent user id.
   external ffi.Pointer<ffi.Char> LocalPlatformUserId;
 
-  /// The Epic Games Account ID associated with this Integrated Platform's User
-  /// (if there is one)
   external EOS_EpicAccountId AccountId;
 
-  /// The EOS Product User ID associated with this Integrated Platform's User
-  /// (if there is one)
   external EOS_ProductUserId ProductUserId;
 }
 
-/// Input parameters for the EOS_KWS_AddNotifyPermissionsUpdateReceived
-/// function.
 final class _tagEOS_KWS_AddNotifyPermissionsUpdateReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_KWS_ADDNOTIFYPERMISSIONSUPDATERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_KWS_CopyPermissionByIndex function.
 final class _tagEOS_KWS_CopyPermissionByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_COPYPERMISSIONBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user whose permissions are being accessed
   external EOS_ProductUserId LocalUserId;
 
-  /// The index of the permission to get.
   @ffi.Uint32()
   external int Index;
 }
 
-/// Output parameters for the EOS_KWS_CreateUserOptions Function. These
-/// parameters are received through the callback provided to EOS_KWS_CreateUser
 final class _tagEOS_KWS_CreateUserCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_KWS_CreateUser
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user that created a KWS entry
   external EOS_ProductUserId LocalUserId;
 
-  /// KWS UserId created
   external ffi.Pointer<ffi.Char> KWSUserId;
 
-  /// Is this user a minor
   @EOS_Bool()
   external int bIsMinor;
 }
 
-/// Input parameters for the EOS_KWS_CreateUser function.
 final class _tagEOS_KWS_CreateUserOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_CREATEUSER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user creating a KWS entry
   external EOS_ProductUserId LocalUserId;
 
-  /// Date of birth in ISO8601 form (YYYY-MM-DD)
   external ffi.Pointer<ffi.Char> DateOfBirth;
 
-  /// Parent email
   external ffi.Pointer<ffi.Char> ParentEmail;
 }
 
-/// Input parameters for the EOS_KWS_GetPermissionByKey function.
 final class _tagEOS_KWS_GetPermissionByKeyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_GETPERMISSIONBYKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user getting permissions
   external EOS_ProductUserId LocalUserId;
 
-  /// Permission name to query
   external ffi.Pointer<ffi.Char> Key;
 }
 
-/// Input parameters for the EOS_KWS_GetPermissionsCount function.
 final class _tagEOS_KWS_GetPermissionsCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_GETPERMISSIONSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user whose permissions are being accessed
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Contains information about a KWS permission status.
 final class _tagEOS_KWS_PermissionStatus extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_PERMISSIONSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the permission
   external ffi.Pointer<ffi.Char> Name;
 
-  /// Status of the permission
   @ffi.UnsignedInt()
   external int StatusAsInt;
 
@@ -19897,277 +16442,178 @@ final class _tagEOS_KWS_PermissionStatus extends ffi.Struct {
   set Status(EOS_EKWSPermissionStatus value) => StatusAsInt = value.value;
 }
 
-/// Output parameters for the EOS_KWS_OnPermissionsUpdateReceivedCallback
-/// Function.
 final class _tagEOS_KWS_PermissionsUpdateReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_KWS_AddNotifyPermissionsUpdateReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Recipient Local user id
   external EOS_ProductUserId LocalUserId;
 
-  /// Recipient's associated KWS UserId
   external ffi.Pointer<ffi.Char> KWSUserId;
 
-  /// Date of birth in ISO8601 form (YYYY-MM-DD)
   external ffi.Pointer<ffi.Char> DateOfBirth;
 
-  /// Is this user a minor
   @EOS_Bool()
   external int bIsMinor;
 
-  /// Parent email. This value may be set to an empty string if the originally
-  /// registered email recipient declined to be the right person to give
-  /// consent.
   external ffi.Pointer<ffi.Char> ParentEmail;
 }
 
-/// Output parameters for the EOS_KWS_QueryAgeGate Function. These parameters
-/// are received through the callback provided to EOS_KWS_QueryAgeGate
 final class _tagEOS_KWS_QueryAgeGateCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_KWS_QueryAgeGate
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Country code determined for this request based on the local client's ip
-  /// address that the backend resolves
   external ffi.Pointer<ffi.Char> CountryCode;
 
-  /// Age of consent in the given country
   @ffi.Uint32()
   external int AgeOfConsent;
 }
 
-/// Input parameters for the EOS_KWS_QueryAgeGate function.
 final class _tagEOS_KWS_QueryAgeGateOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_QUERYAGEGATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_KWS_QueryPermissionsOptions Function. These
-/// parameters are received through the callback provided to
-/// EOS_KWS_QueryPermissions
 final class _tagEOS_KWS_QueryPermissionsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_KWS_QueryPermissions
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user querying their permissions
   external EOS_ProductUserId LocalUserId;
 
-  /// KWS UserId created
   external ffi.Pointer<ffi.Char> KWSUserId;
 
-  /// Date of birth in ISO8601 form (YYYY-MM-DD)
   external ffi.Pointer<ffi.Char> DateOfBirth;
 
-  /// Is this user a minor
   @EOS_Bool()
   external int bIsMinor;
 
-  /// Parent email. This value may be set to an empty string if the originally
-  /// registered email recipient declined to be the right person to give
-  /// consent.
   external ffi.Pointer<ffi.Char> ParentEmail;
 }
 
-/// Input parameters for the EOS_KWS_QueryPermissions function.
 final class _tagEOS_KWS_QueryPermissionsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_QUERYPERMISSIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user querying their permissions
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_KWS_RequestPermissionsOptions Function. These
-/// parameters are received through the callback provided to
-/// EOS_KWS_RequestPermissions
 final class _tagEOS_KWS_RequestPermissionsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_KWS_RequestPermissions
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user requesting new permissions
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_KWS_RequestPermissions function.
 final class _tagEOS_KWS_RequestPermissionsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_REQUESTPERMISSIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user requesting new permissions
   external EOS_ProductUserId LocalUserId;
 
-  /// The number of permissions to request, may not exceed
-  /// EOS_KWS_MAX_PERMISSIONS. Only new permissions need be included.
   @ffi.Uint32()
   external int PermissionKeyCount;
 
-  /// Names of the permissions to request (Setup with KWS)
   external ffi.Pointer<ffi.Pointer<ffi.Char>> PermissionKeys;
 }
 
-/// Output parameters for the EOS_KWS_UpdateParentEmailOptions Function. These
-/// parameters are received through the callback provided to
-/// EOS_KWS_UpdateParentEmail
 final class _tagEOS_KWS_UpdateParentEmailCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_KWS_UpdateParentEmail
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Local user updating their parental email
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_KWS_UpdateParentEmail function.
 final class _tagEOS_KWS_UpdateParentEmailOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_KWS_UPDATEPARENTEMAIL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Local user updating parental information
   external EOS_ProductUserId LocalUserId;
 
-  /// New parent email
   external ffi.Pointer<ffi.Char> ParentEmail;
 }
 
-/// Input parameters for the EOS_Leaderboards_CopyLeaderboardDefinitionByIndex
-/// function.
 final class _tagEOS_Leaderboards_CopyLeaderboardDefinitionByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDDEFINITIONBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the leaderboard definition to retrieve from the cache
   @ffi.Uint32()
   external int LeaderboardIndex;
 }
 
-/// Input parameters for the
-/// EOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardId function.
 final class _tagEOS_Leaderboards_CopyLeaderboardDefinitionByLeaderboardIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDDEFINITIONBYLEADERBOARDID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the leaderboard whose definition you want to copy from the cache
   external ffi.Pointer<ffi.Char> LeaderboardId;
 }
 
-/// Input parameters for the EOS_Leaderboards_CopyLeaderboardRecordByIndex
-/// function.
 final class _tagEOS_Leaderboards_CopyLeaderboardRecordByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDRECORDBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the leaderboard record to retrieve from the cache
   @ffi.Uint32()
   external int LeaderboardRecordIndex;
 }
 
-/// Input parameters for the EOS_Leaderboards_CopyLeaderboardRecordByUserId
-/// function.
 final class _tagEOS_Leaderboards_CopyLeaderboardRecordByUserIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDRECORDBYUSERID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Leaderboard data will be copied from the cache if it relates to the user
-  /// matching this Product User ID
   external EOS_ProductUserId UserId;
 }
 
-/// Input parameters for the EOS_Leaderboards_CopyLeaderboardUserScoreByIndex
-/// function.
 final class _tagEOS_Leaderboards_CopyLeaderboardUserScoreByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the sorted leaderboard user score to retrieve from the cache.
   @ffi.Uint32()
   external int LeaderboardUserScoreIndex;
 
-  /// Name of the stat used to rank the leaderboard.
   external ffi.Pointer<ffi.Char> StatName;
 }
 
-/// Input parameters for the EOS_Leaderboards_CopyLeaderboardUserScoreByUserId
-/// function.
 final class _tagEOS_Leaderboards_CopyLeaderboardUserScoreByUserIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_COPYLEADERBOARDUSERSCOREBYUSERID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to look for when copying leaderboard score data from
-  /// the cache
   external EOS_ProductUserId UserId;
 
-  /// The name of the stat that is used to rank this leaderboard
   external ffi.Pointer<ffi.Char> StatName;
 }
 
-/// Contains information about a single leaderboard definition
 final class _tagEOS_Leaderboards_Definition extends ffi.Struct {
-  /// API Version: Set this to EOS_LEADERBOARDS_DEFINITION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Unique ID to identify leaderboard.
   external ffi.Pointer<ffi.Char> LeaderboardId;
 
-  /// Name of stat used to rank leaderboard.
   external ffi.Pointer<ffi.Char> StatName;
 
-  /// Aggregation used to sort leaderboard.
   @ffi.UnsignedInt()
   external int AggregationAsInt;
 
@@ -20176,231 +16622,147 @@ final class _tagEOS_Leaderboards_Definition extends ffi.Struct {
   set Aggregation(EOS_ELeaderboardAggregation value) =>
       AggregationAsInt = value.value;
 
-  /// The POSIX timestamp for the start time, or
-  /// EOS_LEADERBOARDS_TIME_UNDEFINED.
   @ffi.Int64()
   external int StartTime;
 
-  /// The POSIX timestamp for the end time, or EOS_LEADERBOARDS_TIME_UNDEFINED.
   @ffi.Int64()
   external int EndTime;
 }
 
-/// Input parameters for the EOS_Leaderboards_GetLeaderboardDefinitionCount
-/// function.
 final class _tagEOS_Leaderboards_GetLeaderboardDefinitionCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_GETLEADERBOARDDEFINITIONCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Leaderboards_GetLeaderboardRecordCount
-/// function.
 final class _tagEOS_Leaderboards_GetLeaderboardRecordCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_GETLEADERBOARDRECORDCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Leaderboards_GetLeaderboardUserScoreCount
-/// function.
 final class _tagEOS_Leaderboards_GetLeaderboardUserScoreCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_GETLEADERBOARDUSERSCORECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of stat used to rank leaderboard.
   external ffi.Pointer<ffi.Char> StatName;
 }
 
-/// Contains information about a single leaderboard record
 final class _tagEOS_Leaderboards_LeaderboardRecord extends ffi.Struct {
-  /// API Version: Set this to EOS_LEADERBOARDS_LEADERBOARDRECORD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID associated with this record
   external EOS_ProductUserId UserId;
 
-  /// Sorted position on leaderboard
   @ffi.Uint32()
   external int Rank;
 
-  /// Leaderboard score
   @ffi.Int32()
   external int Score;
 
-  /// The latest display name seen for the user since they last time logged in.
-  /// This is empty if the user does not have a display name set.
   external ffi.Pointer<ffi.Char> UserDisplayName;
 }
 
-/// Contains information about a single leaderboard user score
 final class _tagEOS_Leaderboards_LeaderboardUserScore extends ffi.Struct {
-  /// API Version: Set this to EOS_LEADERBOARDS_LEADERBOARDUSERSCORE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user who got this score
   external EOS_ProductUserId UserId;
 
-  /// Leaderboard score
   @ffi.Int32()
   external int Score;
 }
 
-/// Data containing the result information for a query leaderboard definitions
-/// request.
 final class _tagEOS_Leaderboards_OnQueryLeaderboardDefinitionsCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Leaderboards_QueryLeaderboardDefinitions.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Data containing the result information for a query leaderboard ranks
-/// request.
 final class _tagEOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Leaderboards_QueryLeaderboardRanks.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Leaderboard ID for the leaderboard that was queried.
   external ffi.Pointer<ffi.Char> LeaderboardId;
 }
 
-/// Data containing the result information for a query leaderboard user scores
-/// request.
 final class _tagEOS_Leaderboards_OnQueryLeaderboardUserScoresCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Leaderboards_QueryLeaderboardUserScores.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Leaderboards_QueryLeaderboardDefinitions
-/// function. StartTime and EndTime are optional parameters, they can be used to
-/// limit the list of definitions to overlap the time window specified.
 final class _tagEOS_Leaderboards_QueryLeaderboardDefinitionsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_QUERYLEADERBOARDDEFINITIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// An optional POSIX timestamp for the leaderboard's start time, or
-  /// EOS_LEADERBOARDS_TIME_UNDEFINED
   @ffi.Int64()
   external int StartTime;
 
-  /// An optional POSIX timestamp for the leaderboard's end time, or
-  /// EOS_LEADERBOARDS_TIME_UNDEFINED
   @ffi.Int64()
   external int EndTime;
 
-  /// Product User ID for user who is querying definitions. Must be set when
-  /// using a client policy that requires a valid logged in user. Not used for
-  /// Dedicated Server where no user is available.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Leaderboards_QueryLeaderboardRanks function.
 final class _tagEOS_Leaderboards_QueryLeaderboardRanksOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the leaderboard whose information you want to retrieve.
   external ffi.Pointer<ffi.Char> LeaderboardId;
 
-  /// Product User ID for user who is querying ranks. Must be set when using a
-  /// client policy that requires a valid logged in user. Not used for Dedicated
-  /// Server where no user is available.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Leaderboards_QueryLeaderboardUserScores
-/// function.
 final class _tagEOS_Leaderboards_QueryLeaderboardUserScoresOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_QUERYLEADERBOARDUSERSCORES_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// An array of Product User IDs indicating the users whose scores you want to
-  /// retrieve
   external ffi.Pointer<EOS_ProductUserId> UserIds;
 
-  /// The number of users included in query
   @ffi.Uint32()
   external int UserIdsCount;
 
-  /// The stats to be collected, along with the sorting method to use when
-  /// determining rank order for each stat
   external ffi.Pointer<EOS_Leaderboards_UserScoresQueryStatInfo> StatInfo;
 
-  /// The number of stats to query
   @ffi.Uint32()
   external int StatInfoCount;
 
-  /// An optional POSIX timestamp, or EOS_LEADERBOARDS_TIME_UNDEFINED; results
-  /// will only include scores made after this time
   @ffi.Int64()
   external int StartTime;
 
-  /// An optional POSIX timestamp, or EOS_LEADERBOARDS_TIME_UNDEFINED; results
-  /// will only include scores made before this time
   @ffi.Int64()
   external int EndTime;
 
-  /// Product User ID for user who is querying user scores. Must be set when
-  /// using a client policy that requires a valid logged in user. Not used for
-  /// Dedicated Server where no user is available.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Contains information about a single stat to query with user scores.
 final class _tagEOS_Leaderboards_UserScoresQueryStatInfo extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LEADERBOARDS_USERSCORESQUERYSTATINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of the stat to query.
   external ffi.Pointer<ffi.Char> StatName;
 
-  /// Aggregation used to sort the cached user scores.
   @ffi.UnsignedInt()
   external int AggregationAsInt;
 
@@ -20410,134 +16772,94 @@ final class _tagEOS_Leaderboards_UserScoresQueryStatInfo extends ffi.Struct {
       AggregationAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyAttributeByIndex function.
 final class _tagEOS_LobbyDetails_CopyAttributeByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_COPYATTRIBUTEBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of the attribute to retrieve
   @ffi.Uint32()
   external int AttrIndex;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyAttributeByKey function.
 final class _tagEOS_LobbyDetails_CopyAttributeByKeyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_COPYATTRIBUTEBYKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the attribute
   external ffi.Pointer<ffi.Char> AttrKey;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyInfo function.
 final class _tagEOS_LobbyDetails_CopyInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_COPYINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyMemberAttributeByIndex
-/// function.
 final class _tagEOS_LobbyDetails_CopyMemberAttributeByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYDETAILS_COPYMEMBERATTRIBUTEBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the lobby member
   external EOS_ProductUserId TargetUserId;
 
-  /// The index of the attribute to copy
   @ffi.Uint32()
   external int AttrIndex;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyMemberAttributeByKey function.
 final class _tagEOS_LobbyDetails_CopyMemberAttributeByKeyOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYDETAILS_COPYMEMBERATTRIBUTEBYKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the lobby member
   external EOS_ProductUserId TargetUserId;
 
-  /// Name of the attribute to copy
   external ffi.Pointer<ffi.Char> AttrKey;
 }
 
-/// Input parameters for the EOS_LobbyDetails_CopyMemberInfo function.
 final class _tagEOS_LobbyDetails_CopyMemberInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_COPYMEMBERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the lobby member to copy.
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_LobbyDetails_GetAttributeCount function.
 final class _tagEOS_LobbyDetails_GetAttributeCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_GETATTRIBUTECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_LobbyDetails_GetLobbyOwner function.
 final class _tagEOS_LobbyDetails_GetLobbyOwnerOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_GETLOBBYOWNER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_LobbyDetails_GetMemberAttributeCount function.
 final class _tagEOS_LobbyDetails_GetMemberAttributeCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYDETAILS_GETMEMBERATTRIBUTECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the lobby member
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_LobbyDetails_GetMemberByIndex function.
 final class _tagEOS_LobbyDetails_GetMemberByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_GETMEMBERBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the member to retrieve
   @ffi.Uint32()
   external int MemberIndex;
 }
 
-/// Input parameters for the EOS_LobbyDetails_GetMemberCount function.
 final class _tagEOS_LobbyDetails_GetMemberCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_GETMEMBERCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Contains information about a single lobby.
 final class _tagEOS_LobbyDetails_Info extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_INFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Lobby ID
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the current owner of the lobby
   external EOS_ProductUserId LobbyOwnerUserId;
 
-  /// Permission level of the lobby
   @ffi.UnsignedInt()
   external int PermissionLevelAsInt;
 
@@ -20546,83 +16868,57 @@ final class _tagEOS_LobbyDetails_Info extends ffi.Struct {
   set PermissionLevel(EOS_ELobbyPermissionLevel value) =>
       PermissionLevelAsInt = value.value;
 
-  /// Current available space
   @ffi.Uint32()
   external int AvailableSlots;
 
-  /// Max allowed members in the lobby
   @ffi.Uint32()
   external int MaxMembers;
 
-  /// If true, users can invite others to this lobby
   @EOS_Bool()
   external int bAllowInvites;
 
-  /// The main indexed parameter for this lobby, can be any string (i.e.
-  /// "Region:GameMode")
   external ffi.Pointer<ffi.Char> BucketId;
 
-  /// Is host migration allowed
   @EOS_Bool()
   external int bAllowHostMigration;
 
-  /// Was a Real-Time Communication (RTC) room enabled at lobby creation?
   @EOS_Bool()
   external int bRTCRoomEnabled;
 
-  /// Is EOS_Lobby_JoinLobbyById allowed
   @EOS_Bool()
   external int bAllowJoinById;
 
-  /// Does rejoining after being kicked require an invite
   @EOS_Bool()
   external int bRejoinAfterKickRequiresInvite;
 
-  /// If true, this lobby will be associated with the local user's presence
-  /// information.
   @EOS_Bool()
   external int bPresenceEnabled;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the lobby. Platform IDs are found in the EOS header file
-  /// (eos_common.h), for example EOS_OPT_Epic. For some platforms the value
-  /// will be in the EOS Platform specific header file. If null, the lobby will
-  /// be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 }
 
-/// Contains information about a member of a lobby.
 final class _tagEOS_LobbyDetails_MemberInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYDETAILS_MEMBERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the lobby member.
   external EOS_ProductUserId UserId;
 
-  /// The platform of the lobby member.
   @EOS_OnlinePlatformType()
   external int Platform;
 
-  /// Does this member allow crossplay
   @EOS_Bool()
   external int bAllowsCrossplay;
 }
 
-/// Input parameters for the EOS_LobbyModification_AddAttribute function.
 final class _tagEOS_LobbyModification_AddAttributeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYMODIFICATION_ADDATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key/Value pair describing the attribute to add to the lobby
   external ffi.Pointer<EOS_Lobby_AttributeData> Attribute;
 
-  /// Is this attribute public or private to the lobby and its members
   @ffi.UnsignedInt()
   external int VisibilityAsInt;
 
@@ -20632,18 +16928,13 @@ final class _tagEOS_LobbyModification_AddAttributeOptions extends ffi.Struct {
       VisibilityAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbyModification_AddMemberAttribute function.
 final class _tagEOS_LobbyModification_AddMemberAttributeOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYMODIFICATION_ADDMEMBERATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key/Value pair describing the attribute to add to the lobby member
   external ffi.Pointer<EOS_Lobby_AttributeData> Attribute;
 
-  /// Is this attribute public or private to the rest of the lobby members
   @ffi.UnsignedInt()
   external int VisibilityAsInt;
 
@@ -20653,94 +16944,62 @@ final class _tagEOS_LobbyModification_AddMemberAttributeOptions
       VisibilityAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbyModification_RemoveAttribute function.
 final class _tagEOS_LobbyModification_RemoveAttributeOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYMODIFICATION_REMOVEATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the key
   external ffi.Pointer<ffi.Char> Key;
 }
 
-/// Input parameters for the EOS_LobbyModification_RemoveMemberAttribute
-/// function.
 final class _tagEOS_LobbyModification_RemoveMemberAttributeOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYMODIFICATION_REMOVEMEMBERATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the key
   external ffi.Pointer<ffi.Char> Key;
 }
 
-/// Input parameters for the EOS_LobbyModification_SetAllowedPlatformIdsOptions
-/// function.
 final class _tagEOS_LobbyModification_SetAllowedPlatformIdsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the lobby. Platform IDs are found in the EOS header file
-  /// (eos_common.h), for example EOS_OPT_Epic. For some platforms the value
-  /// will be in the EOS Platform specific header file. If null, the lobby will
-  /// be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 }
 
-/// Input parameters for the EOS_LobbyModification_SetBucketId function.
 final class _tagEOS_LobbyModification_SetBucketIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYMODIFICATION_SETBUCKETID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The new bucket id associated with the lobby
   external ffi.Pointer<ffi.Char> BucketId;
 }
 
-/// Input parameters for the EOS_LobbyModification_SetInvitesAllowed Function.
 final class _tagEOS_LobbyModification_SetInvitesAllowedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYMODIFICATION_SETINVITESALLOWED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// If true then invites can currently be sent for the associated lobby
   @EOS_Bool()
   external int bInvitesAllowed;
 }
 
-/// Input parameters for the EOS_LobbyModification_SetMaxMembers function.
 final class _tagEOS_LobbyModification_SetMaxMembersOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYMODIFICATION_SETMAXMEMBERS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// New maximum number of lobby members
   @ffi.Uint32()
   external int MaxMembers;
 }
 
-/// Input parameters for the EOS_LobbyModification_SetPermissionLevel function.
 final class _tagEOS_LobbyModification_SetPermissionLevelOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYMODIFICATION_SETPERMISSIONLEVEL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Permission level of the lobby
   @ffi.UnsignedInt()
   external int PermissionLevelAsInt;
 
@@ -20750,60 +17009,43 @@ final class _tagEOS_LobbyModification_SetPermissionLevelOptions
       PermissionLevelAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbySearch_CopySearchResultByIndex function.
 final class _tagEOS_LobbySearch_CopySearchResultByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBYSEARCH_COPYSEARCHRESULTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of the lobby to retrieve within the completed search query
   @ffi.Uint32()
   external int LobbyIndex;
 }
 
-/// Output parameters for the EOS_LobbySearch_Find function.
 final class _tagEOS_LobbySearch_FindCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_LobbySearch_Find
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_LobbySearch_Find function.
 final class _tagEOS_LobbySearch_FindOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_FIND_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user making the search request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_LobbySearch_GetSearchResultCount function.
 final class _tagEOS_LobbySearch_GetSearchResultCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_GETSEARCHRESULTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_LobbySearch_RemoveParameter function.
 final class _tagEOS_LobbySearch_RemoveParameterOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_REMOVEPARAMETER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search parameter key to remove from the search
   external ffi.Pointer<ffi.Char> Key;
 
-  /// Search comparison operation associated with the key to remove
   @ffi.UnsignedInt()
   external int ComparisonOpAsInt;
 
@@ -20812,37 +17054,27 @@ final class _tagEOS_LobbySearch_RemoveParameterOptions extends ffi.Struct {
   set ComparisonOp(EOS_EComparisonOp value) => ComparisonOpAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbySearch_SetLobbyId function.
 final class _tagEOS_LobbySearch_SetLobbyIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_SETLOBBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby to find
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_LobbySearch_SetMaxResults function.
 final class _tagEOS_LobbySearch_SetMaxResultsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_SETMAXRESULTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Maximum number of search results to return from the query
   @ffi.Uint32()
   external int MaxResults;
 }
 
-/// Input parameters for the EOS_LobbySearch_SetParameter function.
 final class _tagEOS_LobbySearch_SetParameterOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_SETPARAMETER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search parameter describing a key and a value to compare
   external ffi.Pointer<EOS_Lobby_AttributeData> Parameter;
 
-  /// The type of comparison to make against the search parameter
   @ffi.UnsignedInt()
   external int ComparisonOpAsInt;
 
@@ -20851,134 +17083,82 @@ final class _tagEOS_LobbySearch_SetParameterOptions extends ffi.Struct {
   set ComparisonOp(EOS_EComparisonOp value) => ComparisonOpAsInt = value.value;
 }
 
-/// Input parameters for the EOS_LobbySearch_SetTargetUserId function.
 final class _tagEOS_LobbySearch_SetTargetUserIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBYSEARCH_SETTARGETUSERID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search lobbies for given user by Product User ID, returning any lobbies
-  /// where this user is currently registered
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyJoinLobbyAccepted function.
 final class _tagEOS_Lobby_AddNotifyJoinLobbyAcceptedOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_ADDNOTIFYJOINLOBBYACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLeaveLobbyRequested function.
 final class _tagEOS_Lobby_AddNotifyLeaveLobbyRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLEAVELOBBYREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyInviteAccepted function.
 final class _tagEOS_Lobby_AddNotifyLobbyInviteAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYINVITEACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyInviteReceived function.
 final class _tagEOS_Lobby_AddNotifyLobbyInviteReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYINVITERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyInviteRejected function.
 final class _tagEOS_Lobby_AddNotifyLobbyInviteRejectedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYINVITEREJECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyMemberStatusReceived
-/// function.
 final class _tagEOS_Lobby_AddNotifyLobbyMemberStatusReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYMEMBERSTATUSRECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyMemberUpdateReceived
-/// function.
 final class _tagEOS_Lobby_AddNotifyLobbyMemberUpdateReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYMEMBERUPDATERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyLobbyUpdateReceived function.
 final class _tagEOS_Lobby_AddNotifyLobbyUpdateReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYLOBBYUPDATERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifyRTCRoomConnectionChanged
-/// function.
 final class _tagEOS_Lobby_AddNotifyRTCRoomConnectionChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYRTCROOMCONNECTIONCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby to receive RTC Room connection change notifications
-  /// for This is deprecated and no longer needed. The notification is raised
-  /// for any LobbyId or LocalUserId. If any filtering is required, the callback
-  /// struct (EOS_Lobby_RTCRoomConnectionChangedCallbackInfo) has both a LobbyId
-  /// and LocalUserId field.
   external EOS_LobbyId LobbyId_DEPRECATED;
 
-  /// The Product User ID of the local user in the lobby This is deprecated and
-  /// no longer needed. The notification is raised for any LobbyId or
-  /// LocalUserId. If any filtering is required, the callback struct
-  /// (EOS_Lobby_RTCRoomConnectionChangedCallbackInfo) has both a LobbyId and
-  /// LocalUserId field.
   external EOS_ProductUserId LocalUserId_DEPRECATED;
 }
 
-/// Input parameters for the EOS_Lobby_AddNotifySendLobbyNativeInviteRequested
-/// function.
 final class _tagEOS_Lobby_AddNotifySendLobbyNativeInviteRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_ADDNOTIFYSENDLOBBYNATIVEINVITEREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// An attribute and its visibility setting stored with a lobby. Used to store
-/// both lobby and lobby member data
 final class _tagEOS_Lobby_Attribute extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_ATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key/Value pair describing the attribute
   external ffi.Pointer<EOS_Lobby_AttributeData> Data;
 
-  /// Is this attribute public or private to the lobby and its members
   @ffi.UnsignedInt()
   external int VisibilityAsInt;
 
@@ -20988,18 +17168,14 @@ final class _tagEOS_Lobby_Attribute extends ffi.Struct {
       VisibilityAsInt = value.value;
 }
 
-/// Contains information about lobby and lobby member data
 final class _tagEOS_Lobby_AttributeData extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_ATTRIBUTEDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the lobby attribute
   external ffi.Pointer<ffi.Char> Key;
 
   external UnnamedUnion Value;
 
-  /// Type of value stored in the union
   @ffi.UnsignedInt()
   external int ValueTypeAsInt;
 
@@ -21008,78 +17184,53 @@ final class _tagEOS_Lobby_AttributeData extends ffi.Struct {
   set ValueType(EOS_EAttributeType value) => ValueTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Lobby_CopyLobbyDetailsHandleByInviteId
-/// function.
 final class _tagEOS_Lobby_CopyLobbyDetailsHandleByInviteIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_COPYLOBBYDETAILSHANDLEBYINVITEID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of an invitation to join the lobby
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Input parameters for the EOS_Lobby_CopyLobbyDetailsHandleByUiEventId
-/// function.
 final class _tagEOS_Lobby_CopyLobbyDetailsHandleByUiEventIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_LOBBY_COPYLOBBYDETAILSHANDLEBYUIEVENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// UI Event associated with the lobby
   @EOS_UI_EventId()
   external int UiEventId;
 }
 
-/// Input parameters for the EOS_Lobby_CopyLobbyDetailsHandle function.
 final class _tagEOS_Lobby_CopyLobbyDetailsHandleOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_COPYLOBBYDETAILSHANDLE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user making the request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_CreateLobby function.
 final class _tagEOS_Lobby_CreateLobbyCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_CreateLobby
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The new lobby's ID
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_CreateLobby function.
 final class _tagEOS_Lobby_CreateLobbyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_CREATELOBBY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user creating the lobby; this user will
-  /// automatically join the lobby as its owner
   external EOS_ProductUserId LocalUserId;
 
-  /// The maximum number of users who can be in the lobby at a time
   @ffi.Uint32()
   external int MaxLobbyMembers;
 
-  /// The initial permission level of the lobby
   @ffi.UnsignedInt()
   external int PermissionLevelAsInt;
 
@@ -21088,83 +17239,38 @@ final class _tagEOS_Lobby_CreateLobbyOptions extends ffi.Struct {
   set PermissionLevel(EOS_ELobbyPermissionLevel value) =>
       PermissionLevelAsInt = value.value;
 
-  /// If true, this lobby will be associated with the local user's presence
-  /// information. A user's presence can only be associated with one lobby at a
-  /// time. This affects the ability of the Social Overlay to show game related
-  /// actions to take in the user's social graph.
   @EOS_Bool()
   external int bPresenceEnabled;
 
-  /// Are members of the lobby allowed to invite others
   @EOS_Bool()
   external int bAllowInvites;
 
-  /// Bucket ID associated with the lobby
   external ffi.Pointer<ffi.Char> BucketId;
 
-  /// Is host migration allowed (will the lobby stay open if the original host
-  /// leaves?) NOTE: EOS_Lobby_PromoteMember is still allowed regardless of this
-  /// setting
   @EOS_Bool()
   external int bDisableHostMigration;
 
-  /// Creates a real-time communication (RTC) room for all members of this
-  /// lobby. All members of the lobby will automatically join the RTC room when
-  /// they connect to the lobby and they will automatically leave the RTC room
-  /// when they leave or are removed from the lobby. While the joining and
-  /// leaving of the RTC room is automatic, applications will still need to use
-  /// the EOS RTC interfaces to handle all other functionality for the room.
   @EOS_Bool()
   external int bEnableRTCRoom;
 
-  /// (Optional) Allows the local application to set local audio options for the
-  /// RTC Room if it is enabled. Set this to NULL if the RTC RTC room is
-  /// disabled or you would like to use the defaults.
   external ffi.Pointer<EOS_Lobby_LocalRTCOptions> LocalRTCOptions;
 
-  /// (Optional) Set to a globally unique value to override the backend
-  /// assignment If not specified the backend service will assign one to the
-  /// lobby. Do not mix and match override and non override settings. This value
-  /// can be of size [EOS_LOBBY_MIN_LOBBYIDOVERRIDE_LENGTH,
-  /// EOS_LOBBY_MAX_LOBBYIDOVERRIDE_LENGTH]
   external EOS_LobbyId LobbyId;
 
-  /// Is EOS_Lobby_JoinLobbyById allowed. This is provided to support cases
-  /// where an integrated platform's invite system is used. In these cases the
-  /// game should provide the lobby ID securely to the invited player. Such as
-  /// by attaching the lobby ID to the integrated platform's session data or
-  /// sending the lobby ID within the invite data.
   @EOS_Bool()
   external int bEnableJoinById;
 
-  /// Does rejoining after being kicked require an invite? When this is set, a
-  /// kicked player cannot return to the session even if the session was set
-  /// with EOS_LPL_PUBLICADVERTISED. When this is set, a player with invite
-  /// privileges must use EOS_Lobby_SendInvite to allow the kicked player to
-  /// return to the session.
   @EOS_Bool()
   external int bRejoinAfterKickRequiresInvite;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the session. Platform IDs are found in the EOS header file, e.g.
-  /// EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform
-  /// specific header file. If null, the lobby will be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 
-  /// This value indicates whether or not the lobby owner allows crossplay
-  /// interactions. If false, the lobby owner will be treated as allowing
-  /// crossplay. If it is set to true, AllowedPlatformIds must have a single
-  /// entry that matches the platform of the lobby owner.
   @EOS_Bool()
   external int bCrossplayOptOut;
 
-  /// If bEnableRTCRoom is true, this value indicates the action to take against
-  /// the RTC Room when joining the lobby. This may be used to indicate the
-  /// RTCRoom should be joined immediately or manually at a later time.
   @ffi.UnsignedInt()
   external int RTCRoomJoinActionTypeAsInt;
 
@@ -21174,222 +17280,144 @@ final class _tagEOS_Lobby_CreateLobbyOptions extends ffi.Struct {
       RTCRoomJoinActionTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Lobby_CreateLobbySearch function.
 final class _tagEOS_Lobby_CreateLobbySearchOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_CREATELOBBYSEARCH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Maximum number of results allowed from the search
   @ffi.Uint32()
   external int MaxResults;
 }
 
-/// Output parameters for the EOS_Lobby_DestroyLobby function.
 final class _tagEOS_Lobby_DestroyLobbyCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_DestroyLobby
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The destroyed lobby's ID
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_DestroyLobby function.
 final class _tagEOS_Lobby_DestroyLobbyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_DESTROYLOBBY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user requesting destruction of the lobby;
-  /// this user must currently own the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// The ID of the lobby to destroy
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_GetConnectString function.
 final class _tagEOS_Lobby_GetConnectStringOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_GETCONNECTSTRING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user requesting the connection string
-  /// generated from the lobby; this user must currently own the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// The ID of the lobby to generate a connection string for
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_GetInviteCount function.
 final class _tagEOS_Lobby_GetInviteCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_GETINVITECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user whose cached lobby invitations you
-  /// want to count
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Lobby_GetInviteIdByIndex function.
 final class _tagEOS_Lobby_GetInviteIdByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_GETINVITEIDBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who received the cached invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The index of the invitation ID to retrieve
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input parameters for the EOS_Lobby_GetRTCRoomName function.
 final class _tagEOS_Lobby_GetRTCRoomNameOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_GETRTCROOMNAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby to get the RTC Room name for
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user in the lobby
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_HardMuteMember function.
 final class _tagEOS_Lobby_HardMuteMemberCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_HardMuteMember
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the lobby member whose mute status has been updated
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Lobby_HardMuteMember function.
 final class _tagEOS_Lobby_HardMuteMemberOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_HARDMUTEMEMBER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user requesting the hard mute; this user
-  /// must be the lobby owner
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the lobby member to hard mute
   external EOS_ProductUserId TargetUserId;
 
-  /// TargetUserId hard mute status (mute on or off)
   @EOS_Bool()
   external int bHardMute;
 }
 
-/// Input parameters for the EOS_Lobby_IsRTCRoomConnected function.
 final class _tagEOS_Lobby_IsRTCRoomConnectedOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_ISRTCROOMCONNECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby to get the RTC Room name for
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user in the lobby
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_OnJoinLobbyAcceptedCallback Function.
 final class _tagEOS_Lobby_JoinLobbyAcceptedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyJoinLobbyAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who is joining
   external EOS_ProductUserId LocalUserId;
 
-  /// The UI Event associated with this Join Game event. This should be used
-  /// with EOS_Lobby_CopyLobbyDetailsHandleByUiEventId to get a handle to be
-  /// used when calling EOS_Lobby_JoinLobby.
   @EOS_UI_EventId()
   external int UiEventId;
 }
 
-/// Output parameters for the EOS_Lobby_JoinLobbyById function.
 final class _tagEOS_Lobby_JoinLobbyByIdCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_JoinLobbyById
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_JoinLobbyById function.
 final class _tagEOS_Lobby_JoinLobbyByIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_JOINLOBBYBYID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user joining the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// If true, this lobby will be associated with the user's presence
-  /// information. A user can only associate one lobby at a time with their
-  /// presence information. This affects the ability of the Social Overlay to
-  /// show game related actions to take in the user's social graph.
   @EOS_Bool()
   external int bPresenceEnabled;
 
-  /// (Optional) Set this value to override the default local options for the
-  /// RTC Room, if it is enabled for this lobby. Set this to NULL if your
-  /// application does not use the Lobby RTC Rooms feature, or if you would like
-  /// to use the default settings. This option is ignored if the specified lobby
-  /// does not have an RTC Room enabled and will not cause errors.
   external ffi.Pointer<EOS_Lobby_LocalRTCOptions> LocalRTCOptions;
 
-  /// This value indicates whether or not the local user allows crossplay
-  /// interactions. If it is false, the local user will be treated as allowing
-  /// crossplay.
   @EOS_Bool()
   external int bCrossplayOptOut;
 
-  /// For lobbies with the RTC Room feature enabled, this value indicates the
-  /// action to take against the RTC Room when joining the lobby. This may be
-  /// used to indicate the RTCRoom should be joined immediately or manually at a
-  /// later time.
   @ffi.UnsignedInt()
   external int RTCRoomJoinActionTypeAsInt;
 
@@ -21399,59 +17427,34 @@ final class _tagEOS_Lobby_JoinLobbyByIdOptions extends ffi.Struct {
       RTCRoomJoinActionTypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Lobby_JoinLobby function.
 final class _tagEOS_Lobby_JoinLobbyCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_JoinLobby
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_JoinLobby function.
 final class _tagEOS_Lobby_JoinLobbyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_JOINLOBBY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The handle of the lobby to join
   external EOS_HLobbyDetails LobbyDetailsHandle;
 
-  /// The Product User ID of the local user joining the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// If true, this lobby will be associated with the local user's presence
-  /// information. A user can only associate one lobby at a time with their
-  /// presence information. This affects the ability of the Social Overlay to
-  /// show game related actions to take in the user's social graph.
   @EOS_Bool()
   external int bPresenceEnabled;
 
-  /// (Optional) Set this value to override the default local options for the
-  /// RTC Room, if it is enabled for this lobby. Set this to NULL if your
-  /// application does not use the Lobby RTC Rooms feature, or if you would like
-  /// to use the default settings. This option is ignored if the specified lobby
-  /// does not have an RTC Room enabled and will not cause errors.
   external ffi.Pointer<EOS_Lobby_LocalRTCOptions> LocalRTCOptions;
 
-  /// This value indicates whether or not the local user allows crossplay
-  /// interactions. If it is false, the local user will be treated as allowing
-  /// crossplay.
   @EOS_Bool()
   external int bCrossplayOptOut;
 
-  /// For lobbies with the RTC Room feature enabled, this value indicates the
-  /// action to take against the RTC Room when joining the lobby. This may be
-  /// used to indicate the RTCRoom should be joined immediately or manually at a
-  /// later time.
   @ffi.UnsignedInt()
   external int RTCRoomJoinActionTypeAsInt;
 
@@ -21461,213 +17464,144 @@ final class _tagEOS_Lobby_JoinLobbyOptions extends ffi.Struct {
       RTCRoomJoinActionTypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Lobby_JoinRTCRoom function.
 final class _tagEOS_Lobby_JoinRTCRoomCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_JoinRTCRoom
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_JoinRTCRoom function.
 final class _tagEOS_Lobby_JoinRTCRoomOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_JOINRTCROOM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby to join the RTC Room of
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user in the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// Allows the local application to set local audio options for the RTC Room
-  /// if it is enabled. Only updates audio options when explicitly set; does not
-  /// provide defaults.
   external ffi.Pointer<EOS_Lobby_LocalRTCOptions> LocalRTCOptions;
 }
 
-/// Output parameters for the EOS_Lobby_KickMember function.
 final class _tagEOS_Lobby_KickMemberCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_KickMember
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_KickMember function.
 final class _tagEOS_Lobby_KickMemberOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_KICKMEMBER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user requesting the removal; this user
-  /// must be the lobby owner
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the lobby member to remove
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Lobby_LeaveLobby function.
 final class _tagEOS_Lobby_LeaveLobbyCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_LeaveLobby
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_LeaveLobby function.
 final class _tagEOS_Lobby_LeaveLobbyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_LEAVELOBBY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user leaving the lobby
   external EOS_ProductUserId LocalUserId;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Output parameters for the EOS_Lobby_OnLeaveLobbyRequestedCallback Function.
 final class _tagEOS_Lobby_LeaveLobbyRequestedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_OnLeaveLobbyRequestedCallback
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who received the leave lobby
-  /// notification.
   external EOS_ProductUserId LocalUserId;
 
-  /// Lobby ID associated with the leave lobby request.
   external EOS_LobbyId LobbyId;
 }
 
-/// Output parameters for the EOS_Lobby_LeaveRTCRoom function.
 final class _tagEOS_Lobby_LeaveRTCRoomCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_LeaveRTCRoom
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_LeaveRTCRoom function.
 final class _tagEOS_Lobby_LeaveRTCRoomOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_LEAVERTCROOM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby owning the RTC Room to leave
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user in the lobby
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_OnLobbyInviteAcceptedCallback Function.
 final class _tagEOS_Lobby_LobbyInviteAcceptedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyInviteAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The invite ID
   external ffi.Pointer<ffi.Char> InviteId;
 
-  /// The Product User ID of the local user who received the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 
-  /// Lobby ID that the user has been invited to
   external EOS_LobbyId LobbyId;
 }
 
-/// Output parameters for the EOS_Lobby_OnLobbyInviteReceivedCallback Function.
 final class _tagEOS_Lobby_LobbyInviteReceivedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyInviteReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the invitation
   external ffi.Pointer<ffi.Char> InviteId;
 
-  /// The Product User ID of the local user who received the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Lobby_OnLobbyInviteRejectedCallback Function.
 final class _tagEOS_Lobby_LobbyInviteRejectedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyInviteRejected
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The invite ID
   external ffi.Pointer<ffi.Char> InviteId;
 
-  /// The Product User ID of the local user who received the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 
-  /// Lobby ID that the user has been invited to
   external EOS_LobbyId LobbyId;
 }
 
-/// Output parameters for the EOS_Lobby_AddNotifyLobbyMemberStatusReceived
-/// function.
 final class _tagEOS_Lobby_LobbyMemberStatusReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyMemberStatusReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the lobby member
   external EOS_ProductUserId TargetUserId;
 
-  /// Latest status of the user
   @ffi.UnsignedInt()
   external int CurrentStatusAsInt;
 
@@ -21677,164 +17611,100 @@ final class _tagEOS_Lobby_LobbyMemberStatusReceivedCallbackInfo
       CurrentStatusAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Lobby_OnLobbyMemberUpdateReceivedCallback
-/// Function.
 final class _tagEOS_Lobby_LobbyMemberUpdateReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyMemberUpdateReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the lobby member
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Lobby_OnLobbyUpdateReceivedCallback Function.
 final class _tagEOS_Lobby_LobbyUpdateReceivedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyLobbyUpdateReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters to use with Lobby RTC Rooms.
 final class _tagEOS_Lobby_LocalRTCOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_LOCALRTCOPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Flags for the local user in this room. The default is 0 if this struct is
-  /// not specified.
   @ffi.Uint32()
   external int Flags;
 
-  /// Set to EOS_TRUE to enable Manual Audio Input. If manual audio input is
-  /// enabled, audio recording is not started and the audio buffers must be
-  /// passed manually using EOS_RTCAudio_SendAudio. The default is EOS_FALSE if
-  /// this struct is not specified.
   @EOS_Bool()
   external int bUseManualAudioInput;
 
-  /// Set to EOS_TRUE to enable Manual Audio Output. If manual audio output is
-  /// enabled, audio rendering is not started and the audio buffers must be
-  /// received with EOS_RTCAudio_AddNotifyAudioBeforeRender and rendered
-  /// manually. The default is EOS_FALSE if this struct is not specified.
   @EOS_Bool()
   external int bUseManualAudioOutput;
 
-  /// Set to EOS_TRUE to start the audio input device's stream as muted when
-  /// first connecting to the RTC room.
   @EOS_Bool()
   external int bLocalAudioDeviceInputStartsMuted;
 
-  /// Reserved field, should be nullptr by default
   external ffi.Pointer<ffi.Void> Reserved;
 }
 
-/// Input parameters for the EOS_Lobby_GetConnectString function.
 final class _tagEOS_Lobby_ParseConnectStringOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_PARSECONNECTSTRING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The connection string to parse
   external ffi.Pointer<ffi.Char> ConnectString;
 }
 
-/// Output parameters for the EOS_Lobby_PromoteMember function.
 final class _tagEOS_Lobby_PromoteMemberCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_PromoteMember
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby where the user was promoted
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_PromoteMember function.
 final class _tagEOS_Lobby_PromoteMemberOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_PROMOTEMEMBER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user making the request
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the member to promote to owner of the lobby
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Lobby_QueryInvites function.
 final class _tagEOS_Lobby_QueryInvitesCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_QueryInvites
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user that made the request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Lobby_QueryInvites function.
 final class _tagEOS_Lobby_QueryInvitesOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_QUERYINVITES_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user whose invitations you want to
-  /// retrieve
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_AddNotifyRTCRoomConnectionChanged
-/// function.
 final class _tagEOS_Lobby_RTCRoomConnectionChangedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Lobby_AddNotifyRTCRoomConnectionChanged
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby which had a RTC Room connection state change
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user who is in the lobby and registered
-  /// for notifications
   external EOS_ProductUserId LocalUserId;
 
-  /// The new connection state of the room
   @EOS_Bool()
   external int bIsConnected;
 
-  /// If bIsConnected is EOS_FALSE, this result will be the reason we were
-  /// disconnected. EOS_Success: The room was left locally. This may be because:
-  /// the associated lobby was Left or Destroyed, the connection to the lobby
-  /// was interrupted, or because the SDK is being shutdown. If the lobby
-  /// connection returns (lobby did not permanently go away), we will reconnect.
-  /// EOS_NoConnection: There was a network issue connecting to the server. We
-  /// will attempt to reconnect soon. EOS_RTC_UserKicked: The user has been
-  /// kicked by the server. We will not reconnect. EOS_RTC_UserBanned: The user
-  /// has been banned by the server. We will not reconnect. EOS_ServiceFailure:
-  /// A known error occurred during interaction with the server. We will attempt
-  /// to reconnect soon. EOS_UnexpectedError: Unexpected error. We will attempt
-  /// to reconnect soon.
   @ffi.UnsignedInt()
   external int DisconnectReasonAsInt;
 
@@ -21844,149 +17714,99 @@ final class _tagEOS_Lobby_RTCRoomConnectionChangedCallbackInfo
       DisconnectReasonAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Lobby_RejectInvite function.
 final class _tagEOS_Lobby_RejectInviteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_RejectInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the invitation being rejected
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Input parameters for the EOS_Lobby_RejectInvite function.
 final class _tagEOS_Lobby_RejectInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_REJECTINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby associated with the invitation
   external ffi.Pointer<ffi.Char> InviteId;
 
-  /// The Product User ID of the local user who is rejecting the invitation
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Lobby_SendInvite function.
 final class _tagEOS_Lobby_SendInviteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_SendInvite
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_SendInvite function.
 final class _tagEOS_Lobby_SendInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_SENDINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the lobby associated with the invitation
   external EOS_LobbyId LobbyId;
 
-  /// The Product User ID of the local user sending the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user receiving the invitation
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Lobby_OnSendLobbyNativeInviteRequestedCallback
-/// Function.
 final class _tagEOS_Lobby_SendLobbyNativeInviteRequestedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_Lobby_AddNotifySendLobbyNativeInviteRequested
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Identifies this event which will need to be acknowledged with
-  /// EOS_UI_AcknowledgeEventId().
   @EOS_UI_EventId()
   external int UiEventId;
 
-  /// The Product User ID of the local user who is inviting.
   external EOS_ProductUserId LocalUserId;
 
-  /// The Native Platform Account Type. If only a single integrated platform is
-  /// configured then this will always reference that platform.
   external EOS_IntegratedPlatformType TargetNativeAccountType;
 
-  /// The Native Platform Account ID of the target user being invited.
   external ffi.Pointer<ffi.Char> TargetUserNativeAccountId;
 
-  /// Lobby ID that the user is being invited to
   external EOS_LobbyId LobbyId;
 }
 
-/// Output parameters for the EOS_Lobby_UpdateLobby function.
 final class _tagEOS_Lobby_UpdateLobbyCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Lobby_UpdateLobby
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_UpdateLobbyModification function.
 final class _tagEOS_Lobby_UpdateLobbyModificationOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_UPDATELOBBYMODIFICATION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID of the local user making modifications. Must be the owner to modify
-  /// lobby data, but any lobby member can modify their own attributes.
   external EOS_ProductUserId LocalUserId;
 
-  /// The ID of the lobby
   external EOS_LobbyId LobbyId;
 }
 
-/// Input parameters for the EOS_Lobby_UpdateLobby function.
 final class _tagEOS_Lobby_UpdateLobbyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_LOBBY_UPDATELOBBY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Builder handle
   external EOS_HLobbyModification LobbyModificationHandle;
 }
 
-/// A structure representing a log message
 final class _tagEOS_LogMessage extends ffi.Struct {
-  /// A string representation of the log message category, encoded in UTF-8.
-  /// Only valid during the life of the callback, so copy the string if you need
-  /// it later.
   external ffi.Pointer<ffi.Char> Category;
 
-  /// The log message, encoded in UTF-8. Only valid during the life of the
-  /// callback, so copy the string if you need it later.
   external ffi.Pointer<ffi.Char> Message;
 
-  /// The log level associated with the message
   @ffi.UnsignedInt()
   external int LevelAsInt;
 
@@ -21994,13 +17814,10 @@ final class _tagEOS_LogMessage extends ffi.Struct {
   set Level(EOS_ELogLevel value) => LevelAsInt = value.value;
 }
 
-/// BeginPlayerSession.
 final class _tagEOS_Metrics_BeginPlayerSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_METRICS_BEGINPLAYERSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Account ID type that is set in the union.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -22011,10 +17828,8 @@ final class _tagEOS_Metrics_BeginPlayerSessionOptions extends ffi.Struct {
 
   external UnnamedUnion$4 AccountId;
 
-  /// The in-game display name for the user as UTF-8 string.
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// The user's game controller type.
   @ffi.UnsignedInt()
   external int ControllerTypeAsInt;
 
@@ -22023,22 +17838,15 @@ final class _tagEOS_Metrics_BeginPlayerSessionOptions extends ffi.Struct {
   set ControllerType(EOS_EUserControllerType value) =>
       ControllerTypeAsInt = value.value;
 
-  /// IP address of the game server hosting the game session. For a localhost
-  /// session, set to NULL.
   external ffi.Pointer<ffi.Char> ServerIp;
 
-  /// Optional, application-defined custom match session identifier. If the
-  /// identifier is not used, set to NULL.
   external ffi.Pointer<ffi.Char> GameSessionId;
 }
 
-/// EndPlayerSession.
 final class _tagEOS_Metrics_EndPlayerSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_METRICS_ENDPLAYERSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Account ID type that is set in the union.
   @ffi.UnsignedInt()
   external int AccountIdTypeAsInt;
 
@@ -22050,38 +17858,27 @@ final class _tagEOS_Metrics_EndPlayerSessionOptions extends ffi.Struct {
   external UnnamedUnion$5 AccountId;
 }
 
-/// EOS_Mod_Identifier is used to identify a mod.
 final class _tagEOS_Mod_Identifier extends ffi.Struct {
-  /// API Version: Set this to EOS_MOD_IDENTIFIER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product namespace id in which this mod item exists
   external ffi.Pointer<ffi.Char> NamespaceId;
 
-  /// Item id of the Mod
   external ffi.Pointer<ffi.Char> ItemId;
 
-  /// Artifact id of the Mod
   external ffi.Pointer<ffi.Char> ArtifactId;
 
-  /// Represent mod item title.
   external ffi.Pointer<ffi.Char> Title;
 
-  /// Represent mod item version.
   external ffi.Pointer<ffi.Char> Version;
 }
 
-/// Data for the EOS_Mods_CopyModInfo function.
 final class _tagEOS_Mods_CopyModInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_COPYMODINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user for which mods should be copied
   external EOS_EpicAccountId LocalUserId;
 
-  /// Type of the enumerated mod to copy
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -22090,24 +17887,17 @@ final class _tagEOS_Mods_CopyModInfoOptions extends ffi.Struct {
   set Type(EOS_EModEnumerationType value) => TypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Mods_EnumerateMods Function. These parameters
-/// are received through the callback provided to EOS_Mods_EnumerateMods
 final class _tagEOS_Mods_EnumerateModsCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if the enumeration
-  /// was successful, otherwise one of the error codes is returned.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Epic Account ID of the user for which mod enumeration was requested
   external EOS_EpicAccountId LocalUserId;
 
-  /// Context that is passed into EOS_Mods_EnumerateMods
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Type of the enumerated mods
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -22116,16 +17906,12 @@ final class _tagEOS_Mods_EnumerateModsCallbackInfo extends ffi.Struct {
   set Type(EOS_EModEnumerationType value) => TypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Mods_EnumerateMods Function.
 final class _tagEOS_Mods_EnumerateModsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_ENUMERATEMODS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user for which the mod should be enumerated
   external EOS_EpicAccountId LocalUserId;
 
-  /// Type of the mods to enumerate
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -22134,60 +17920,41 @@ final class _tagEOS_Mods_EnumerateModsOptions extends ffi.Struct {
   set Type(EOS_EModEnumerationType value) => TypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Mods_InstallMod Function. These parameters are
-/// received through the callback provided to EOS_Mods_InstallMod
 final class _tagEOS_Mods_InstallModCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if the installation
-  /// was successful, otherwise one of the error codes is returned.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Epic Account ID of the user for which mod installation was requested
   external EOS_EpicAccountId LocalUserId;
 
-  /// Context that is passed into EOS_Mods_InstallMod
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Mod for which installation was requested
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 }
 
-/// Input parameters for the EOS_Mods_InstallMod Function.
 final class _tagEOS_Mods_InstallModOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_INSTALLMOD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user for which the mod should be installed
   external EOS_EpicAccountId LocalUserId;
 
-  /// The mod to install
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 
-  /// Indicates whether the mod should be uninstalled after exiting the game or
-  /// not.
   @EOS_Bool()
   external int bRemoveAfterExit;
 }
 
-/// Data for the EOS_Mods_CopyModInfo function.
 final class _tagEOS_Mods_ModInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_MODINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The count of enumerated mods
   @ffi.Int32()
   external int ModsCount;
 
-  /// The array of enumerated mods or NULL if no such type of mods were
-  /// enumerated
   external ffi.Pointer<EOS_Mod_Identifier> Mods;
 
-  /// Type of the mods
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -22196,332 +17963,206 @@ final class _tagEOS_Mods_ModInfo extends ffi.Struct {
   set Type(EOS_EModEnumerationType value) => TypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_Mods_UninstallMod Function. These parameters
-/// are received through the callback provided to EOS_Mods_UninstallMod
 final class _tagEOS_Mods_UninstallModCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if the
-  /// uninstallation was successful, otherwise one of the error codes is
-  /// returned.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Epic Account ID of the user for which mod uninstallation was requested
   external EOS_EpicAccountId LocalUserId;
 
-  /// Context that is passed into EOS_Mods_UninstallMod
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Mod for which uninstallation was requested
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 }
 
-/// Input parameters for the EOS_Mods_UninstallMod Function.
 final class _tagEOS_Mods_UninstallModOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_UNINSTALLMOD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user for which the mod should be uninstalled
   external EOS_EpicAccountId LocalUserId;
 
-  /// The mod to uninstall
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 }
 
-/// Output parameters for the EOS_Mods_UpdateMod Function. These parameters are
-/// received through the callback provided to EOS_Mods_UpdateMod
 final class _tagEOS_Mods_UpdateModCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if the request to
-  /// update was successful, otherwise one of the error codes is returned.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Epic Account ID of the user for which mod update was requested
   external EOS_EpicAccountId LocalUserId;
 
-  /// Context that is passed into EOS_Mods_UpdateMod
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Mod for which update was requested
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 }
 
-/// Input parameters for the EOS_Mods_UpdateMod Function.
 final class _tagEOS_Mods_UpdateModOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_MODS_UPDATEMOD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user for which the mod should be updated
   external EOS_EpicAccountId LocalUserId;
 
-  /// The mod to update
   external ffi.Pointer<EOS_Mod_Identifier> Mod;
 }
 
-/// Structure containing information about who would like to accept a
-/// connection, and which connection.
 final class _tagEOS_P2P_AcceptConnectionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_ACCEPTCONNECTION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is accepting any pending or
-  /// future connections with RemoteUserId
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user who has either sent a connection
-  /// request or is expected to in the future
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID of the connection to accept on
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about what version of the
-/// EOS_P2P_AddNotifyIncomingPacketQueueFull function is supported.
 final class _tagEOS_P2P_AddNotifyIncomingPacketQueueFullOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_P2P_ADDNOTIFYINCOMINGPACKETQUEUEFULL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about who would like notifications about
-/// closed connections, and for which socket.
 final class _tagEOS_P2P_AddNotifyPeerConnectionClosedOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_ADDNOTIFYPEERCONNECTIONCLOSED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who would like notifications
   external EOS_ProductUserId LocalUserId;
 
-  /// The optional socket ID to listen for to be closed. If NULL, this function
-  /// handler will be called for all closed connections
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about which connections should be notified
 final class _tagEOS_P2P_AddNotifyPeerConnectionEstablishedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_P2P_ADDNOTIFYPEERCONNECTIONESTABLISHED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who would like to receive
-  /// notifications
   external EOS_ProductUserId LocalUserId;
 
-  /// The optional socket ID, used as a filter for established connections. If
-  /// NULL, this function handler will be called for all sockets
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about who would like notifications about
-/// interrupted connections, and for which socket.
 final class _tagEOS_P2P_AddNotifyPeerConnectionInterruptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_P2P_ADDNOTIFYPEERCONNECTIONINTERRUPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who would like notifications
   external EOS_ProductUserId LocalUserId;
 
-  /// An optional socket ID to filter interrupted connections on. If NULL, this
-  /// function handler will be called for all interrupted connections
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about who would like connection
-/// notifications, and about which socket.
 final class _tagEOS_P2P_AddNotifyPeerConnectionRequestOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_P2P_ADDNOTIFYPEERCONNECTIONREQUEST_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user who is listening for incoming connection
-  /// requests
   external EOS_ProductUserId LocalUserId;
 
-  /// The optional socket ID to listen for, used as a filter for incoming
-  /// connection requests; If NULL, incoming connection requests will not be
-  /// filtered
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about the packet queue to be cleared
 final class _tagEOS_P2P_ClearPacketQueueOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_CLEARPACKETQUEUE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user for whom we want to clear the queued
-  /// packets
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID to who (outgoing) or from who (incoming) packets are
-  /// queued
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket used for packets to be cleared
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about who would like to close a connection,
-/// and which connection.
 final class _tagEOS_P2P_CloseConnectionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_CLOSECONNECTION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who would like to close a previously
-  /// accepted connection (or decline a pending invite)
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user to disconnect from (or to reject a
-  /// pending invite from)
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID of the connection to close (or optionally NULL to not accept
-  /// any connection requests from the Remote User)
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about who would like to close connections,
-/// and by what socket ID
 final class _tagEOS_P2P_CloseConnectionsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_CLOSECONNECTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who would like to close all
-  /// connections that use a particular socket ID
   external EOS_ProductUserId LocalUserId;
 
-  /// The socket ID of the connections to close
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information needed to get previously queried NAT-types
 final class _tagEOS_P2P_GetNATTypeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_GETNATTYPE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about who would like to receive a packet.
 final class _tagEOS_P2P_GetNextReceivedPacketSizeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_GETNEXTRECEIVEDPACKETSIZE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is receiving the packet
   external EOS_ProductUserId LocalUserId;
 
-  /// An optional channel to request the data for. If NULL, we're retrieving the
-  /// size of the next packet on any channel.
   external ffi.Pointer<ffi.Uint8> RequestedChannel;
 }
 
-/// Structure containing information needed to get the current packet queue
-/// information.
 final class _tagEOS_P2P_GetPacketQueueInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_GETPACKETQUEUEINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about getting the configured port range
-/// settings.
 final class _tagEOS_P2P_GetPortRangeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_GETPORTRANGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about getting the relay control setting.
 final class _tagEOS_P2P_GetRelayControlOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_GETRELAYCONTROL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about an incoming connection request.
 final class _tagEOS_P2P_OnIncomingConnectionRequestInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_P2P_AddNotifyPeerConnectionRequest
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who is being requested to open a P2P
-  /// session with RemoteUserId
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user who requested a peer connection
-  /// with the local user
   external EOS_ProductUserId RemoteUserId;
 
-  /// The ID of the socket the Remote User wishes to communicate on
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about the packet queue's state and the
-/// incoming packet that would overflow the queue
 final class _tagEOS_P2P_OnIncomingPacketQueueFullInfo extends ffi.Struct {
-  /// Client-specified data passed into AddNotifyIncomingPacketQueueFull
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The maximum size in bytes the incoming packet queue is allowed to use
   @ffi.Uint64()
   external int PacketQueueMaxSizeBytes;
 
-  /// The current size in bytes the incoming packet queue is currently using
   @ffi.Uint64()
   external int PacketQueueCurrentSizeBytes;
 
-  /// The Product User ID of the local user who is receiving the packet that
-  /// would overflow the queue
   external EOS_ProductUserId OverflowPacketLocalUserId;
 
-  /// The channel the incoming packet is for
   @ffi.Uint8()
   external int OverflowPacketChannel;
 
-  /// The size in bytes of the incoming packet (and related metadata) that would
-  /// overflow the queue
   @ffi.Uint32()
   external int OverflowPacketSizeBytes;
 }
 
-/// Structure containing information about a connection being established
 final class _tagEOS_P2P_OnPeerConnectionEstablishedInfo extends ffi.Struct {
-  /// Client-specified data passed into
-  /// EOS_P2P_AddNotifyPeerConnectionEstablished
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who is being notified of a
-  /// connection being established
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user who this connection was with
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID of the connection being established
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 
-  /// Information if this is a new connection or reconnection
   @ffi.UnsignedInt()
   external int ConnectionTypeAsInt;
 
@@ -22530,7 +18171,6 @@ final class _tagEOS_P2P_OnPeerConnectionEstablishedInfo extends ffi.Struct {
   set ConnectionType(EOS_EConnectionEstablishedType value) =>
       ConnectionTypeAsInt = value.value;
 
-  /// What type of network connection is being used for this connection
   @ffi.UnsignedInt()
   external int NetworkTypeAsInt;
 
@@ -22540,36 +18180,25 @@ final class _tagEOS_P2P_OnPeerConnectionEstablishedInfo extends ffi.Struct {
       NetworkTypeAsInt = value.value;
 }
 
-/// Structure containing information about a connection that was interrupted.
 final class _tagEOS_P2P_OnPeerConnectionInterruptedInfo extends ffi.Struct {
-  /// Client-specified data passed into
-  /// EOS_P2P_AddNotifyPeerConnectionInterrupted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The local user who is being notified of a connection that was interrupted
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user who this connection was with
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID of the connection that was interrupted
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 }
 
-/// Structure containing information about the local network NAT type
 final class _tagEOS_P2P_OnQueryNATTypeCompleteInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// query, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_P2P_QueryNATType
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The queried NAT type
   @ffi.UnsignedInt()
   external int NATTypeAsInt;
 
@@ -22577,21 +18206,15 @@ final class _tagEOS_P2P_OnQueryNATTypeCompleteInfo extends ffi.Struct {
   set NATType(EOS_ENATType value) => NATTypeAsInt = value.value;
 }
 
-/// Structure containing information about a connection being closed.
 final class _tagEOS_P2P_OnRemoteConnectionClosedInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_P2P_AddNotifyPeerConnectionClosed
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The local user who is being notified of a connection being closed
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the remote user who this connection was with
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID of the connection being closed
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 
-  /// The reason the connection was closed (if known)
   @ffi.UnsignedInt()
   external int ReasonAsInt;
 
@@ -22600,98 +18223,64 @@ final class _tagEOS_P2P_OnRemoteConnectionClosedInfo extends ffi.Struct {
   set Reason(EOS_EConnectionClosedReason value) => ReasonAsInt = value.value;
 }
 
-/// Information related to the current state of the packet queues. It is
-/// possible for the current size to be larger than the maximum size if the
-/// maximum size changes or if the maximum queue size is set to
-/// EOS_P2P_MAX_QUEUE_SIZE_UNLIMITED.
 final class _tagEOS_P2P_PacketQueueInfo extends ffi.Struct {
-  /// The maximum size in bytes of the incoming packet queue
   @ffi.Uint64()
   external int IncomingPacketQueueMaxSizeBytes;
 
-  /// The current size in bytes of the incoming packet queue
   @ffi.Uint64()
   external int IncomingPacketQueueCurrentSizeBytes;
 
-  /// The current number of queued packets in the incoming packet queue
   @ffi.Uint64()
   external int IncomingPacketQueueCurrentPacketCount;
 
-  /// The maximum size in bytes of the outgoing packet queue
   @ffi.Uint64()
   external int OutgoingPacketQueueMaxSizeBytes;
 
-  /// The current size in bytes of the outgoing packet queue
   @ffi.Uint64()
   external int OutgoingPacketQueueCurrentSizeBytes;
 
-  /// The current amount of queued packets in the outgoing packet queue
   @ffi.Uint64()
   external int OutgoingPacketQueueCurrentPacketCount;
 }
 
-/// Structure containing information needed to query NAT-types
 final class _tagEOS_P2P_QueryNATTypeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_QUERYNATTYPE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Structure containing information about who would like to receive a packet,
-/// and how much data can be stored safely.
 final class _tagEOS_P2P_ReceivePacketOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_RECEIVEPACKET_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user who is receiving the packet
   external EOS_ProductUserId LocalUserId;
 
-  /// The maximum amount of data in bytes that can be safely copied to OutData
-  /// in the function call
   @ffi.Uint32()
   external int MaxDataSizeBytes;
 
-  /// An optional channel to request the data for. If NULL, we're retrieving the
-  /// next packet on any channel
   external ffi.Pointer<ffi.Uint8> RequestedChannel;
 }
 
-/// Structure containing information about the data being sent and to which
-/// player
 final class _tagEOS_P2P_SendPacketOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_SENDPACKET_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is sending this packet
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the Peer you would like to send a packet to
   external EOS_ProductUserId RemoteUserId;
 
-  /// The socket ID for data you are sending in this packet
   external ffi.Pointer<EOS_P2P_SocketId> SocketId;
 
-  /// Channel associated with this data
   @ffi.Uint8()
   external int Channel;
 
-  /// The size of the data to be sent to the RemoteUser
   @ffi.Uint32()
   external int DataLengthBytes;
 
-  /// The data to be sent to the RemoteUser
   external ffi.Pointer<ffi.Void> Data;
 
-  /// If false and we do not already have an established connection to the peer,
-  /// this data will be dropped
   @EOS_Bool()
   external int bAllowDelayedDelivery;
 
-  /// Sets the reliability of the delivery of this packet. The reliability can
-  /// be `EOS_PR_UnreliableUnordered`, `EOS_PR_ReliableUnordered`, or
-  /// `EOS_PR_ReliableOrdered`.
   @ffi.UnsignedInt()
   external int ReliabilityAsInt;
 
@@ -22700,60 +18289,36 @@ final class _tagEOS_P2P_SendPacketOptions extends ffi.Struct {
   set Reliability(EOS_EPacketReliability value) =>
       ReliabilityAsInt = value.value;
 
-  /// If set to EOS_TRUE, EOS_P2P_SendPacket will not automatically establish a
-  /// connection with the RemoteUserId and will require explicit calls to
-  /// EOS_P2P_AcceptConnection first whenever the connection is closed. If set
-  /// to EOS_FALSE, EOS_P2P_SendPacket will automatically accept and start the
-  /// connection any time it is called and the connection is not already open.
   @EOS_Bool()
   external int bDisableAutoAcceptConnection;
 }
 
-/// Structure containing information about new packet queue size settings.
 final class _tagEOS_P2P_SetPacketQueueSizeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_SETPACKETQUEUESIZE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ideal maximum amount of bytes the Incoming packet queue can consume
   @ffi.Uint64()
   external int IncomingPacketQueueMaxSizeBytes;
 
-  /// The ideal maximum amount of bytes the Outgoing packet queue can consume
   @ffi.Uint64()
   external int OutgoingPacketQueueMaxSizeBytes;
 }
 
-/// Structure containing information about new port range settings.
 final class _tagEOS_P2P_SetPortRangeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_SETPORTRANGE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ideal port to use for P2P traffic. The default value is 7777. If set
-  /// to 0, the OS will choose a port. If set to 0, MaxAdditionalPortsToTry must
-  /// be set to 0.
   @ffi.Uint16()
   external int Port;
 
-  /// The maximum amount of additional ports to try if Port is unavailable.
-  /// Ports will be tried from Port to Port + MaxAdditionalPortsToTry inclusive,
-  /// until one is available or we run out of ports. If no ports are available,
-  /// P2P connections will fail. The default value is 99.
   @ffi.Uint16()
   external int MaxAdditionalPortsToTry;
 }
 
-/// Structure containing information about new relay configurations.
 final class _tagEOS_P2P_SetRelayControlOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_SETRELAYCONTROL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The requested level of relay servers for P2P connections. This setting is
-  /// only applied to new P2P connections, or when existing P2P connections
-  /// reconnect during a temporary connectivity outage. Peers with an
-  /// incompatible setting to the local setting will not be able to connect.
   @ffi.UnsignedInt()
   external int RelayControlAsInt;
 
@@ -22762,35 +18327,21 @@ final class _tagEOS_P2P_SetRelayControlOptions extends ffi.Struct {
   set RelayControl(EOS_ERelayControl value) => RelayControlAsInt = value.value;
 }
 
-/// P2P Socket ID
 final class _tagEOS_P2P_SocketId extends ffi.Struct {
-  /// API Version: Set this to EOS_P2P_SOCKETID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A name for the connection. Must be a NULL-terminated string of between
-  /// 1-32 alpha-numeric characters (A-Z, a-z, 0-9, '-', '_', ' ', '+', '=',
-  /// '.')
   @ffi.Array.multi([33])
   external ffi.Array<ffi.Char> SocketName;
 }
 
-/// Client credentials.
 final class _tagEOS_Platform_ClientCredentials extends ffi.Struct {
-  /// Client ID of the service permissions entry. Set to NULL if no service
-  /// permissions are used. Max length is
-  /// EOS_PLATFORM_CLIENTCREDENTIALS_CLIENTID_MAX_LENGTH.
   external ffi.Pointer<ffi.Char> ClientId;
 
-  /// Client secret for accessing the set of permissions. Set to NULL if no
-  /// service permissions are used. Max length is
-  /// EOS_PLATFORM_CLIENTCREDENTIALS_CLIENTSECRET_MAX_LENGTH.
   external ffi.Pointer<ffi.Char> ClientSecret;
 }
 
-/// Output parameters for the EOS_Platform_GetDesktopCrossplayStatus function.
 final class _tagEOS_Platform_DesktopCrossplayStatusInfo extends ffi.Struct {
-  /// Status for the availability of desktop crossplay functionality.
   @ffi.UnsignedInt()
   external int StatusAsInt;
 
@@ -22798,115 +18349,63 @@ final class _tagEOS_Platform_DesktopCrossplayStatusInfo extends ffi.Struct {
       EOS_EDesktopCrossplayStatus.fromValue(StatusAsInt);
   set Status(EOS_EDesktopCrossplayStatus value) => StatusAsInt = value.value;
 
-  /// This field is set when the Status is EOS_DCS_ServiceStartFailed.
   @ffi.Int32()
   external int ServiceInitResult;
 }
 
-/// Input parameters for the EOS_Platform_GetDesktopCrossplayStatus function.
 final class _tagEOS_Platform_GetDesktopCrossplayStatusOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PLATFORM_GETDESKTOPCROSSPLAYSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Platform options for EOS_Platform_Create.
 final class _tagEOS_Platform_Options extends ffi.Struct {
-  /// API Version: Set this to EOS_PLATFORM_OPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A reserved field that should always be nulled.
   external ffi.Pointer<ffi.Void> Reserved;
 
-  /// The product ID for the running application, found on the dev portal. Max
-  /// length is EOS_PLATFORM_OPTIONS_PRODUCTID_MAX_LENGTH.
   external ffi.Pointer<ffi.Char> ProductId;
 
-  /// The sandbox ID for the running application, found on the dev portal. Max
-  /// length is EOS_PLATFORM_OPTIONS_SANDBOXID_MAX_LENGTH.
   external ffi.Pointer<ffi.Char> SandboxId;
 
-  /// Set of service permissions associated with the running application
   external EOS_Platform_ClientCredentials ClientCredentials;
 
-  /// Set this to EOS_FALSE if the application is running as a client with a
-  /// local user, otherwise set to EOS_TRUE (e.g. for a dedicated game server)
   @EOS_Bool()
   external int bIsServer;
 
-  /// Used by Player Data Storage and Title Storage. Must be null initialized if
-  /// unused. 256-bit Encryption Key for file encryption in hexadecimal format;
-  /// EOS_PLATFORM_OPTIONS_ENCRYPTIONKEY_LENGTH hex chars.
   external ffi.Pointer<ffi.Char> EncryptionKey;
 
-  /// The override country code to use for the logged in user.
-  /// (EOS_COUNTRYCODE_MAX_LENGTH)
   external ffi.Pointer<ffi.Char> OverrideCountryCode;
 
-  /// The override locale code to use for the logged in user. This follows ISO
-  /// 639. Supported locale codes: ar, da, de, en, en-GB, es-ES, es-MX, fi, fr,
-  /// it, ja, ko, nl, no, pl, pt-BR, ru, sv, th, tr, zh-Hans, zh-Hant.
-  /// (EOS_LOCALECODE_MAX_LENGTH)
   external ffi.Pointer<ffi.Char> OverrideLocaleCode;
 
-  /// The deployment ID for the running application, found on the dev portal.
-  /// Max length is EOS_PLATFORM_OPTIONS_DEPLOYMENTID_MAX_LENGTH.
   external ffi.Pointer<ffi.Char> DeploymentId;
 
-  /// Platform creation flags, e.g. EOS_PF_LOADING_IN_EDITOR. This is a
-  /// bitwise-or union of the defined flags.
   @ffi.Uint64()
   external int Flags;
 
-  /// Used by Player Data Storage and Title Storage. Must be null initialized if
-  /// unused. Cache directory path. Absolute path to the folder that is going to
-  /// be used for caching temporary data. The path is created if it's missing.
   external ffi.Pointer<ffi.Char> CacheDirectory;
 
-  /// A budget, measured in milliseconds, for EOS_Platform_Tick to do its work.
-  /// When the budget is met or exceeded (or if no work is available),
-  /// EOS_Platform_Tick will return. This allows your game to amortize the cost
-  /// of SDK work across multiple frames in the event that a lot of work is
-  /// queued for processing. Zero is interpreted as "perform all available
-  /// work".
   @ffi.Uint32()
   external int TickBudgetInMilliseconds;
 
-  /// RTC options. Setting to NULL will disable RTC features (e.g. voice)
   external ffi.Pointer<EOS_Platform_RTCOptions> RTCOptions;
 
-  /// A handle that contains all the options for setting up integrated
-  /// platforms. When set to NULL, the EOS Integrated Platform behavior for the
-  /// host platform will be disabled.
   external EOS_HIntegratedPlatformOptionsContainer
   IntegratedPlatformOptionsContainerHandle;
 
-  /// Pointer to EOS_"PLATFORM_NAME"_SystemSpecificOptions. This structure will
-  /// be located in "PLATFORM_NAME"/eos_"PLATFORM_NAME".h
   external ffi.Pointer<ffi.Void> SystemSpecificOptions;
 
-  /// Number of seconds for a task to wait for the network to become available
-  /// before timing out with an EOS_TimedOut error. This timeout period applies
-  /// when the network status is not EOS_NS_Online. Tasks that need the network
-  /// will queue for up to this timeout until EOS_Platform_SetNetworkStatus is
-  /// used to set the network status to online.
   external ffi.Pointer<ffi.Double> TaskNetworkTimeoutSeconds;
 }
 
-/// Platform RTC options.
 final class _tagEOS_Platform_RTCOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLATFORM_RTCOPTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// This field is for platform specific initialization if any.
   external ffi.Pointer<ffi.Void> PlatformSpecificOptions;
 
-  /// Configures RTC behavior upon entering to any background application
-  /// statuses
   @ffi.UnsignedInt()
   external int BackgroundModeAsInt;
 
@@ -22915,512 +18414,321 @@ final class _tagEOS_Platform_RTCOptions extends ffi.Struct {
   set BackgroundMode(EOS_ERTCBackgroundMode value) =>
       BackgroundModeAsInt = value.value;
 
-  /// Reserved field, should be nullptr by default
   external ffi.Pointer<ffi.Void> Reserved;
 }
 
-/// Input data for the CopyFileMetadataAtIndex function
 final class _tagEOS_PlayerDataStorage_CopyFileMetadataAtIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PLAYERDATASTORAGE_COPYFILEMETADATAATINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is requesting file metadata
   external EOS_ProductUserId LocalUserId;
 
-  /// The index to get data for
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input data for the CopyFileMetadataByFilename function
 final class _tagEOS_PlayerDataStorage_CopyFileMetadataByFilenameOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PLAYERDATASTORAGE_COPYFILEMETADATABYFILENAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is requesting file metadata
   external EOS_ProductUserId LocalUserId;
 
-  /// The file's name to get data for
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Structure containing the result of a delete cache operation
 final class _tagEOS_PlayerDataStorage_DeleteCacheCallbackInfo
     extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the delete cache request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input data for the EOS_TitleStorage_DeleteCache function
 final class _tagEOS_PlayerDataStorage_DeleteCacheOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_DELETECACHE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is deleting his cache
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Data containing the result information for a delete file request
 final class _tagEOS_PlayerDataStorage_DeleteFileCallbackInfo
     extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file deletion request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input data for the EOS_PlayerDataStorage_DeleteFile function
 final class _tagEOS_PlayerDataStorage_DeleteFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_DELETEFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who authorizes deletion of the file;
-  /// must be the file's owner
   external EOS_ProductUserId LocalUserId;
 
-  /// The name of the file to delete
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Data containing the result information for a duplicate file request
 final class _tagEOS_PlayerDataStorage_DuplicateFileCallbackInfo
     extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file duplicate request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input data for the EOS_PlayerDataStorage_DuplicateFile function
 final class _tagEOS_PlayerDataStorage_DuplicateFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_DUPLICATEFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who authorized the duplication of
-  /// the requested file; must be the original file's owner
   external EOS_ProductUserId LocalUserId;
 
-  /// The name of the existing file to duplicate
   external ffi.Pointer<ffi.Char> SourceFilename;
 
-  /// The name of the new file
   external ffi.Pointer<ffi.Char> DestinationFilename;
 }
 
-/// Metadata information for a specific file
 final class _tagEOS_PlayerDataStorage_FileMetadata extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_FILEMETADATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The total size of the file in bytes (Includes file header in addition to
-  /// file contents)
   @ffi.Uint32()
   external int FileSizeBytes;
 
-  /// The MD5 Hash of the entire file (including additional file header), in hex
-  /// digits
   external ffi.Pointer<ffi.Char> MD5Hash;
 
-  /// The file's name
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The POSIX timestamp when the file was saved last time or
-  /// EOS_PLAYERDATASTORAGE_TIME_UNDEFINED if the time is undefined. It will be
-  /// undefined after a file is written and uploaded at first before a query
-  /// operation is completed.
   @ffi.Int64()
   external int LastModifiedTime;
 
-  /// The size of data (payload) in file in unencrypted (original) form.
   @ffi.Uint32()
   external int UnencryptedDataSizeBytes;
 }
 
-/// Data containing the information about a file transfer in progress (or one
-/// that has completed)
 final class _tagEOS_PlayerDataStorage_FileTransferProgressCallbackInfo
     extends ffi.Struct {
-  /// Client-specified data passed into the file request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name of the file being transferred
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// Amount of bytes transferred so far in this request, out of
-  /// TotalFileSizeBytes
   @ffi.Uint32()
   external int BytesTransferred;
 
-  /// The total size of the file being transferred (Includes file header in
-  /// addition to file contents, can be slightly more than expected)
   @ffi.Uint32()
   external int TotalFileSizeBytes;
 }
 
-/// Input data for the EOS_PlayerDataStorage_GetFileMetadataCount function
 final class _tagEOS_PlayerDataStorage_GetFileMetadataCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PLAYERDATASTORAGE_GETFILEMETADATACOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is requesting file metadata
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Data containing information about a query file request
 final class _tagEOS_PlayerDataStorage_QueryFileCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file query request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Data containing information about a query file list request
 final class _tagEOS_PlayerDataStorage_QueryFileListCallbackInfo
     extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file query request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// A count of files that were found, if successful
   @ffi.Uint32()
   external int FileCount;
 }
 
-/// Input data for the EOS_PlayerDataStorage_QueryFileList function
 final class _tagEOS_PlayerDataStorage_QueryFileListOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_QUERYFILELIST_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who requested file metadata
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input data for the EOS_PlayerDataStorage_QueryFile function
 final class _tagEOS_PlayerDataStorage_QueryFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_QUERYFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user requesting file metadata
   external EOS_ProductUserId LocalUserId;
 
-  /// The name of the file being queried
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Data containing the result of a read file request
 final class _tagEOS_PlayerDataStorage_ReadFileCallbackInfo extends ffi.Struct {
-  /// The result code for the operation. EOS_Success: The request was
-  /// successful. EOS_Canceled: The request was canceled. EOS_TooManyRequests:
-  /// There are too many requests in progress for the local user at this time.
-  /// EOS_AlreadyPending: There is another requests in progress for the
-  /// specified file by this user. EOS_CacheDirectoryMissing: The cache
-  /// directory was not set when calling EOS_Platform_Create.
-  /// EOS_CacheDirectoryInvalid: The cache directory provided when calling
-  /// EOS_Platform_Create was invalid. EOS_PlayerDataStorage_UserThrottled:
-  /// There were too many requests to the Data Storage service recently by the
-  /// local user. The application must wait some time before trying again.
-  /// EOS_PlayerDataStorage_EncryptionKeyNotSet: The encryption key value was
-  /// not set when calling EOS_Platform_Create.
-  /// EOS_PlayerDataStorage_FileCorrupted: The downloaded or cached file was
-  /// corrupted or invalid in some way. What exactly is wrong with the file is
-  /// returned in the logs (potentially retryable). EOS_InvalidState: The read
-  /// operation is not allowed (e.g. when application is suspended).
-  /// EOS_UnexpectedError: An unexpected error occurred either downloading, or
-  /// reading the downloaded file. This most commonly means there were file IO
-  /// issues such as: permission issues, disk is full, etc. (potentially
-  /// retryable)
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file read request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The filename of the file that has been finished reading
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Data containing data for a chunk of a file being read
 final class _tagEOS_PlayerDataStorage_ReadFileDataCallbackInfo
     extends ffi.Struct {
-  /// Client-specified data passed into the file request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name being read
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The total file size of the file being read
   @ffi.Uint32()
   external int TotalFileSizeBytes;
 
-  /// Is this chunk the last chunk of data?
   @EOS_Bool()
   external int bIsLastChunk;
 
-  /// The length of DataChunk in bytes that can be safely read
   @ffi.Uint32()
   external int DataChunkLengthBytes;
 
-  /// Pointer to the start of data to be read
   external ffi.Pointer<ffi.Void> DataChunk;
 }
 
-/// Input data for the EOS_PlayerDataStorage_ReadFile function
 final class _tagEOS_PlayerDataStorage_ReadFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_READFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is reading the requested file
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name to read; this file must already exist
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The maximum amount of data in bytes should be available to read in a
-  /// single EOS_PlayerDataStorage_OnReadFileDataCallback call
   @ffi.Uint32()
   external int ReadChunkLengthBytes;
 
-  /// Callback function that handles data as it comes in, and can stop the
-  /// transfer early
   external EOS_PlayerDataStorage_OnReadFileDataCallback ReadFileDataCallback;
 
-  /// Optional callback function to be informed of download progress, if the
-  /// file is not already locally cached; if provided, this will be called at
-  /// least once before completion if the request is successfully started
   external EOS_PlayerDataStorage_OnFileTransferProgressCallback
   FileTransferProgressCallback;
 }
 
-/// The result information for a request to write data to a file
 final class _tagEOS_PlayerDataStorage_WriteFileCallbackInfo extends ffi.Struct {
-  /// The result code for the operation. EOS_Success: The request was
-  /// successful. EOS_Canceled: The request was canceled. EOS_TooManyRequests:
-  /// There are too many requests in progress for the local user at this time.
-  /// EOS_AlreadyPending: There is another requests in progress for the
-  /// specified file by this user. EOS_CacheDirectoryMissing: The cache
-  /// directory was not set when calling EOS_Platform_Create.
-  /// EOS_CacheDirectoryInvalid: The cache directory provided when calling
-  /// EOS_Platform_Create was invalid. EOS_PlayerDataStorage_UserThrottled:
-  /// There were too many requests to the Data Storage service recently by the
-  /// local user. The application must wait some time before trying again.
-  /// EOS_PlayerDataStorage_EncryptionKeyNotSet: The encryption key value was
-  /// not set when calling EOS_Platform_Create. EOS_InvalidState: The read
-  /// operation is not allowed (e.g. when application is suspended).
-  /// EOS_UnexpectedError: An unexpected error occurred either downloading, or
-  /// reading the downloaded file. This most commonly means there were file IO
-  /// issues such as: permission issues, disk is full, etc. (potentially
-  /// retryable)
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file write request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name that is being written to
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Data containing data for a chunk of a file being written
 final class _tagEOS_PlayerDataStorage_WriteFileDataCallbackInfo
     extends ffi.Struct {
-  /// Client-specified data passed into the file write request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name that is being written to
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The maximum amount of data in bytes that can be written safely to
-  /// DataBuffer
   @ffi.Uint32()
   external int DataBufferLengthBytes;
 }
 
-/// Input data for the EOS_PlayerDataStorage_WriteFile function
 final class _tagEOS_PlayerDataStorage_WriteFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PLAYERDATASTORAGE_WRITEFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is writing the requested file to
-  /// the cloud
   external EOS_ProductUserId LocalUserId;
 
-  /// The name of the file to write; if this file already exists, the contents
-  /// will be replaced if the write request completes successfully
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// Requested maximum amount of data (in bytes) that can be written to the
-  /// file per tick
   @ffi.Uint32()
   external int ChunkLengthBytes;
 
-  /// Callback function that provides chunks of data to be written into the
-  /// requested file
   external EOS_PlayerDataStorage_OnWriteFileDataCallback WriteFileDataCallback;
 
-  /// Optional callback function to inform the application of upload progress;
-  /// will be called at least once if set
   external EOS_PlayerDataStorage_OnFileTransferProgressCallback
   FileTransferProgressCallback;
 }
 
-/// Data for identifying which data records should be deleted.
 final class _tagEOS_PresenceModification_DataRecordId extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCEMODIFICATION_DATARECORDID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The key to be deleted from the data record
   external ffi.Pointer<ffi.Char> Key;
 }
 
-/// Data for the EOS_PresenceModification_DeleteData function.
 final class _tagEOS_PresenceModification_DeleteDataOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCEMODIFICATION_DELETEDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The count of data keys to delete
   @ffi.Int32()
   external int RecordsCount;
 
-  /// The pointer to start of a sequential array
   external ffi.Pointer<EOS_PresenceModification_DataRecordId> Records;
 }
 
-/// Data for the EOS_PresenceModification_SetData function.
 final class _tagEOS_PresenceModification_SetDataOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCEMODIFICATION_SETDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The count of records to set
   @ffi.Int32()
   external int RecordsCount;
 
-  /// The pointer to start of a sequential array of Presence DataRecords
   external ffi.Pointer<EOS_Presence_DataRecord> Records;
 }
 
-/// Data for the EOS_PresenceModification_SetJoinInfo function.
 final class _tagEOS_PresenceModification_SetJoinInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCEMODIFICATION_SETJOININFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The string which will be advertised as this player's join info. An
-  /// application is expected to freely define the meaning of this string to use
-  /// for connecting to an active game session. The string should not exceed
-  /// EOS_PRESENCEMODIFICATION_JOININFO_MAX_LENGTH in length. This affects the
-  /// ability of the Social Overlay to show game related actions to take in the
-  /// player's social graph.
   external ffi.Pointer<ffi.Char> JoinInfo;
 }
 
-/// Data for the EOS_PresenceModification_SetRawRichText API.
 final class _tagEOS_PresenceModification_SetRawRichTextOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The status of the user
   external ffi.Pointer<ffi.Char> RichText;
 }
 
-/// Data for the EOS_PresenceModification_SetStatus function.
 final class _tagEOS_PresenceModification_SetStatusOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCEMODIFICATION_SETSTATUS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The status of the user
   @ffi.UnsignedInt()
   external int StatusAsInt;
 
@@ -23429,20 +18737,15 @@ final class _tagEOS_PresenceModification_SetStatusOptions extends ffi.Struct {
   set Status(EOS_Presence_EStatus value) => StatusAsInt = value.value;
 }
 
-/// Data for the EOS_PresenceModification_SetTemplateData API.
 final class _tagEOS_PresenceModification_SetTemplateDataOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCEMODIFICATION_SETTEMPLATEDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key for the named template parameter
   external ffi.Pointer<ffi.Char> Key;
 
   external UnnamedUnion$1 Value;
 
-  /// Type stored in the union
   @ffi.UnsignedInt()
   external int ValueTypeAsInt;
 
@@ -23452,114 +18755,74 @@ final class _tagEOS_PresenceModification_SetTemplateDataOptions
       ValueTypeAsInt = value.value;
 }
 
-/// Data for the EOS_PresenceModification_SetTemplateId function.
 final class _tagEOS_PresenceModification_SetTemplateIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCEMODIFICATION_SETTEMPLATEID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The RichPresence Template ID. Setting this value will prevent
-  /// SetRawRichText from being used on this handle
   external ffi.Pointer<ffi.Char> TemplateId;
 }
 
-/// Input parameters for the EOS_Presence_AddNotifyJoinGameAccepted function.
 final class _tagEOS_Presence_AddNotifyJoinGameAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCE_ADDNOTIFYJOINGAMEACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Data for the EOS_Presence_AddNotifyOnPresenceChanged function.
 final class _tagEOS_Presence_AddNotifyOnPresenceChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCE_ADDNOTIFYONPRESENCECHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Data for the EOS_Presence_CopyPresence function.
 final class _tagEOS_Presence_CopyPresenceOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_COPYPRESENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user making the request
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose cached presence data you want to
-  /// copy from the cache
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Data for the EOS_Presence_CreatePresenceModification function.
 final class _tagEOS_Presence_CreatePresenceModificationOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PRESENCE_CREATEPRESENCEMODIFICATION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user making the request
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// An individual presence data record that belongs to a EOS_Presence_Info
-/// object. This object is released when its parent EOS_Presence_Info object is
-/// released.
 final class _tagEOS_Presence_DataRecord extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_DATARECORD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of this data
   external ffi.Pointer<ffi.Char> Key;
 
-  /// The value of this data
   external ffi.Pointer<ffi.Char> Value;
 }
 
-/// Data for the EOS_Presence_GetJoinInfo function.
 final class _tagEOS_Presence_GetJoinInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_GETJOININFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The local user's Epic Account ID
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID to query for join info; this value must either be a
-  /// logged-in local user, or a friend of that user
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Data for the EOS_Presence_HasPresence function.
 final class _tagEOS_Presence_HasPresenceOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_HASPRESENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user making the request
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose cached presence data you want to
-  /// locate
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// All the known presence information for a specific user. This object must be
-/// released by calling EOS_Presence_Info_Release.
 final class _tagEOS_Presence_Info extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_INFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The status of the user
   @ffi.UnsignedInt()
   external int StatusAsInt;
 
@@ -23567,125 +18830,81 @@ final class _tagEOS_Presence_Info extends ffi.Struct {
       EOS_Presence_EStatus.fromValue(StatusAsInt);
   set Status(EOS_Presence_EStatus value) => StatusAsInt = value.value;
 
-  /// The Epic Account ID of the user
   external EOS_EpicAccountId UserId;
 
-  /// The product ID that the user is logged in from
   external ffi.Pointer<ffi.Char> ProductId;
 
-  /// The version of the product the user is logged in from
   external ffi.Pointer<ffi.Char> ProductVersion;
 
-  /// The platform of that the user is logged in from
   external ffi.Pointer<ffi.Char> Platform;
 
-  /// Rich text of the user.
   external ffi.Pointer<ffi.Char> RichText;
 
-  /// The count of records available
   @ffi.Int32()
   external int RecordsCount;
 
-  /// The first data record, or NULL if RecordsCount is not at least 1
   external ffi.Pointer<EOS_Presence_DataRecord> Records;
 
-  /// The user-facing name for the product the user is logged in from
   external ffi.Pointer<ffi.Char> ProductName;
 
-  /// The integrated platform that the user is logged in with
   external ffi.Pointer<ffi.Char> IntegratedPlatform;
 }
 
-/// Output parameters for the EOS_Presence_OnJoinGameAcceptedCallback Function.
 final class _tagEOS_Presence_JoinGameAcceptedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_Presence_AddNotifyJoinGameAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Join Info custom game-data string to use to join the target user. Set
-  /// to a null pointer to delete the value.
   external ffi.Pointer<ffi.Char> JoinInfo;
 
-  /// The Epic Account ID of the user who accepted the invitation
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who sent the invitation
   external EOS_EpicAccountId TargetUserId;
 
-  /// If the value is not EOS_UI_EVENTID_INVALID then it must be passed back to
-  /// the SDK using EOS_UI_AcknowledgeEventId. This should be done after
-  /// attempting to join the game and either succeeding or failing to connect.
-  /// This is necessary to allow the Social Overlay UI to manage the `Join`
-  /// button.
   @EOS_UI_EventId()
   external int UiEventId;
 }
 
-/// Data containing which users presence has changed
 final class _tagEOS_Presence_PresenceChangedCallbackInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_Presence_AddNotifyOnPresenceChanged
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user who is being informed for
-  /// PresenceUserId's presence change
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user who had their presence changed
   external EOS_EpicAccountId PresenceUserId;
 }
 
-/// The result meta-data for a presence query.
 final class _tagEOS_Presence_QueryPresenceCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// query, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_Presence_QueryPresence
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user who made this request
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose presence was potentially queried
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Data for the EOS_Presence_QueryPresence function
 final class _tagEOS_Presence_QueryPresenceOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_QUERYPRESENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user making the request
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the user whose presence data you want to retrieve;
-  /// this value must be either the user making the request, or a friend of that
-  /// user
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// The result meta-data from setting a user's presence.
 final class _tagEOS_Presence_SetPresenceCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned if presence was
-  /// successfully set, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_Presence_SetPresence
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local user that had their presence set
   external EOS_EpicAccountId LocalUserId;
 
-  /// Result code for the Rich presence operation. EOS_Success is returned if
-  /// the Rich presence was successfully set, other code indicates an error.
   @ffi.UnsignedInt()
   external int RichPresenceResultCodeAsInt;
 
@@ -23695,562 +18914,374 @@ final class _tagEOS_Presence_SetPresenceCallbackInfo extends ffi.Struct {
       RichPresenceResultCodeAsInt = value.value;
 }
 
-/// Data for the EOS_Presence_SetPresence function.
 final class _tagEOS_Presence_SetPresenceOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PRESENCE_SETPRESENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local, logged-in user making the request
   external EOS_EpicAccountId LocalUserId;
 
-  /// The handle to the presence update
   external EOS_HPresenceModification PresenceModificationHandle;
 }
 
-/// Input parameters for the EOS_ProgressionSnapshot_AddProgression function.
 final class _tagEOS_ProgressionSnapshot_AddProgressionOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PROGRESSIONSNAPSHOT_ADDPROGRESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Snapshot Id received via a EOS_ProgressionSnapshot_BeginSnapshot
-  /// function.
   @ffi.Uint32()
   external int SnapshotId;
 
-  /// The key in a key/value pair of progression entry
   external ffi.Pointer<ffi.Char> Key;
 
-  /// The value in a key/value pair of progression entry
   external ffi.Pointer<ffi.Char> Value;
 }
 
-/// Input parameters for the EOS_ProgressionSnapshot_BeginSnapshot function.
 final class _tagEOS_ProgressionSnapshot_BeginSnapshotOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_PROGRESSIONSNAPSHOT_BEGINSNAPSHOT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user to whom the key/value pair belong
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_ProgressionSnapshot_DeleteSnapshot Function.
 final class _tagEOS_ProgressionSnapshot_DeleteSnapshotCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Product User ID of the local user to whom the key/value pair belong
   external EOS_ProductUserId LocalUserId;
 
-  /// Context that was passed into EOS_ProgressionSnapshot_SubmitSnapshot.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_ProgressionSnapshot_DeleteSnapshot function.
 final class _tagEOS_ProgressionSnapshot_DeleteSnapshotOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PROGRESSIONSNAPSHOT_DELETESNAPSHOT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user to whom the key/value pair belong
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_ProgressionSnapshot_EndSnapshot function.
 final class _tagEOS_ProgressionSnapshot_EndSnapshotOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_PROGRESSIONSNAPSHOT_ENDSNAPSHOT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Snapshot Id received via a EOS_ProgressionSnapshot_BeginSnapshot
-  /// function.
   @ffi.Uint32()
   external int SnapshotId;
 }
 
-/// Output parameters for the EOS_ProgressionSnapshot_SubmitSnapshot Function.
 final class _tagEOS_ProgressionSnapshot_SubmitSnapshotCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// The Snapshot Id used in the Submit function.
   @ffi.Uint32()
   external int SnapshotId;
 
-  /// Context that was passed into EOS_ProgressionSnapshot_SubmitSnapshot.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_ProgressionSnapshot_SubmitSnapshot function.
 final class _tagEOS_ProgressionSnapshot_SubmitSnapshotOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_PROGRESSIONSNAPSHOT_SUBMITSNAPSHOT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Snapshot Id received via a EOS_ProgressionSnapshot_BeginSnapshot
-  /// function.
   @ffi.Uint32()
   external int SnapshotId;
 }
 
-/// Input parameters for the EOS_RTCAdmin_CopyUserTokenByIndex function.
 final class _tagEOS_RTCAdmin_CopyUserTokenByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_COPYUSERTOKENBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Index of the user token to retrieve from the cache.
   @ffi.Uint32()
   external int UserTokenIndex;
 
-  /// Query identifier received as part of a previous query.
   @ffi.Uint32()
   external int QueryId;
 }
 
-/// Input parameters for the EOS_RTCAdmin_CopyUserTokenByUserId function.
 final class _tagEOS_RTCAdmin_CopyUserTokenByUserIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_COPYUSERTOKENBYUSERID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose user token we're copying.
   external EOS_ProductUserId TargetUserId;
 
-  /// Query identifier received as part of a previous query.
   @ffi.Uint32()
   external int QueryId;
 }
 
-/// Data containing the result information for a kick participant request.
 final class _tagEOS_RTCAdmin_KickCompleteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the kick request
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_RTCAdmin_Kick function.
 final class _tagEOS_RTCAdmin_KickOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_KICK_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Room name to kick the participant from
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// Product User ID of the participant to kick from the room
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Data containing the result information for a query join room token request.
 final class _tagEOS_RTCAdmin_QueryJoinRoomTokenCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_RTCAdmin_QueryJoinRoomToken.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Room the request was made for.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// URL passed to backend to join room.
   external ffi.Pointer<ffi.Char> ClientBaseUrl;
 
-  /// If the query completed successfully, this contains an identifier that
-  /// should be used to retrieve the tokens. This identifier is only valid for
-  /// the duration of the callback.
   @ffi.Uint32()
   external int QueryId;
 
-  /// How many token received as result of the query
   @ffi.Uint32()
   external int TokenCount;
 }
 
-/// Input parameters for the EOS_RTCAdmin_QueryJoinRoomToken function.
 final class _tagEOS_RTCAdmin_QueryJoinRoomTokenOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_QUERYJOINROOMTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID for local user who is querying join room tokens.
   external EOS_ProductUserId LocalUserId;
 
-  /// Room name to request a token for.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// An array of Product User IDs indicating the users to retrieve a token for.
   external ffi.Pointer<EOS_ProductUserId> TargetUserIds;
 
-  /// The number of users included in the query.
   @ffi.Uint32()
   external int TargetUserIdsCount;
 
-  /// Array of IP Addresses, one for each of the users we're querying tokens
-  /// for. There should be TargetUserIdsCount Ip Addresses, you can set an entry
-  /// to NULL if not known. If TargetUserIpAddresses is set to NULL IP Addresses
-  /// will be ignored. IPv4 format: "0.0.0.0" IPv6 format: "0:0:0:0:0:0:0:0"
   external ffi.Pointer<ffi.Pointer<ffi.Char>> TargetUserIpAddresses;
 }
 
-/// Data containing the result information for a hard mute request.
 final class _tagEOS_RTCAdmin_SetParticipantHardMuteCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the hard mute request
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_RTCAdmin_SetParticipantHardMute function.
 final class _tagEOS_RTCAdmin_SetParticipantHardMuteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_SETPARTICIPANTHARDMUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Room to kick the participant from
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// Product User ID of the participant to hard mute for every participant in
-  /// the room.
   external EOS_ProductUserId TargetUserId;
 
-  /// Hard mute status (Mute on or off)
   @EOS_Bool()
   external int bMute;
 }
 
-/// Contains information about a collection of user tokens for joining a room.
 final class _tagEOS_RTCAdmin_UserToken extends ffi.Struct {
-  /// API Version: Set this to EOS_RTCADMIN_USERTOKEN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user who owns this user token.
   external EOS_ProductUserId ProductUserId;
 
-  /// Access token to enable a user to join a room
   external ffi.Pointer<ffi.Char> Token;
 }
 
-/// This struct is used to call EOS_RTC_AddNotifyDisconnected.
 final class _tagEOS_RTC_AddNotifyDisconnectedOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_ADDNOTIFYDISCONNECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room this event is registered on.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is used to call EOS_RTC_AddNotifyParticipantStatusChanged.
 final class _tagEOS_RTC_AddNotifyParticipantStatusChangedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_RTC_ADDNOTIFYPARTICIPANTSTATUSCHANGED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room this event is registered on.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// Input parameters for the EOS_RTC_AddNotifyRoomBeforeJoin function.
 final class _tagEOS_RTC_AddNotifyRoomBeforeJoinOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_ADDNOTIFYROOMBEFOREJOIN_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// This struct is used to call EOS_RTC_AddNotifyRoomStatisticsUpdated.
 final class _tagEOS_RTC_AddNotifyRoomStatisticsUpdatedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_RTC_ADDNOTIFYROOMSTATISTICSUPDATED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room this event is registered on.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is passed in with a call to EOS_RTC_OnBlockParticipantCallback.
 final class _tagEOS_RTC_BlockParticipantCallbackInfo extends ffi.Struct {
-  /// This returns: EOS_Success if the channel was successfully blocked.
-  /// EOS_UnexpectedError otherwise.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_RTC_BlockParticipant.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the users should be blocked on.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// The Product User ID of the participant being blocked
   external EOS_ProductUserId ParticipantId;
 
-  /// The block state that should have been set
   @EOS_Bool()
   external int bBlocked;
 }
 
-/// This struct is passed in with a call to EOS_RTC_BlockParticipant.
 final class _tagEOS_RTC_BlockParticipantOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_BLOCKPARTICIPANT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the users should be blocked on.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// Product User ID of the participant to block
   external EOS_ProductUserId ParticipantId;
 
-  /// Block or unblock the participant
   @EOS_Bool()
   external int bBlocked;
 }
 
-/// This struct is passed in with a call to EOS_RTC_AddNotifyDisconnected
-/// registered event.
 final class _tagEOS_RTC_DisconnectedCallbackInfo extends ffi.Struct {
-  /// This returns: EOS_Success The room was left cleanly. EOS_NoConnection:
-  /// There was a network issue connecting to the server (retryable).
-  /// EOS_RTC_UserKicked: The user has been kicked by the server (retryable).
-  /// EOS_ServiceFailure: A known error occurred during interaction with the
-  /// server (retryable). EOS_UnexpectedError Unexpected error (retryable).
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_RTC_AddNotifyDisconnected.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room associated with this event.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is passed in with a call to EOS_RTC_OnJoinRoomCallback.
 final class _tagEOS_RTC_JoinRoomCallbackInfo extends ffi.Struct {
-  /// This returns: EOS_Success if the channel was successfully joined.
-  /// EOS_NoConnection: unable to connect to RTC servers (retryable).
-  /// EOS_InvalidAuth: if the token is invalid (not retryable).
-  /// EOS_RTC_TooManyParticipants: if the room cannot accept more participants
-  /// (not retryable). EOS_AccessDenied: if the room name belongs to the Lobby
-  /// voice system (not retryable). EOS_UnexpectedError otherwise (retryable).
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_RTC_JoinRoom.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the user was trying to join.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// The room option items count.
   @ffi.Uint32()
   external int RoomOptionsCount;
 
-  /// The room option items.
   external ffi.Pointer<EOS_RTC_Option> RoomOptions;
 }
 
-/// This struct is used to call EOS_RTC_JoinRoom.
 final class _tagEOS_RTC_JoinRoomOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_JOINROOM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The product user id of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the user would like to join.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// The room the user would like to join.
   external ffi.Pointer<ffi.Char> ClientBaseUrl;
 
-  /// Authorization credential token to join the room.
   external ffi.Pointer<ffi.Char> ParticipantToken;
 
-  /// The participant id used to join the room. If set to NULL the LocalUserId
-  /// will be used instead.
   external EOS_ProductUserId ParticipantId;
 
-  /// Join room flags, e.g. EOS_RTC_JOINROOMFLAGS_ENABLE_ECHO. This is a
-  /// bitwise-or union of the defined flags.
   @ffi.Uint32()
   external int Flags;
 
-  /// Enable or disable Manual Audio Input. If manual audio input is enabled
-  /// audio recording is not started and the audio buffers must be passed
-  /// manually using EOS_RTCAudio_SendAudio.
   @EOS_Bool()
   external int bManualAudioInputEnabled;
 
-  /// Enable or disable Manual Audio Output. If manual audio output is enabled
-  /// audio rendering is not started and the audio buffers must be received with
-  /// EOS_RTCAudio_AddNotifyAudioBeforeRender and rendered manually.
   @EOS_Bool()
   external int bManualAudioOutputEnabled;
 }
 
-/// This struct is passed in with a call to EOS_RTC_OnLeaveRoomCallback.
 final class _tagEOS_RTC_LeaveRoomCallbackInfo extends ffi.Struct {
-  /// This returns: EOS_Success if the channel was successfully left.
-  /// EOS_AccessDenied if the room name belongs to the Lobby voice system.
-  /// EOS_UnexpectedError otherwise.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into EOS_RTC_LeaveRoomOptions.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the user was trying to leave.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is used to call EOS_RTC_LeaveRoom.
 final class _tagEOS_RTC_LeaveRoomOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_LEAVEROOM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the user requesting to leave the room
   external EOS_ProductUserId LocalUserId;
 
-  /// The room to leave.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is used to get information about a specific option.
 final class _tagEOS_RTC_Option extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_OPTION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The unique key of the option. The max size of the string is
-  /// EOS_RTC_OPTION_KEY_MAXCHARCOUNT.
   external ffi.Pointer<ffi.Char> Key;
 
-  /// The value of the option. The max size of the string is
-  /// EOS_RTC_OPTION_VALUE_MAXCHARCOUNT.
   external ffi.Pointer<ffi.Char> Value;
 }
 
-/// This struct is used to get information about a specific participant metadata
-/// item.
 final class _tagEOS_RTC_ParticipantMetadata extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_PARTICIPANTMETADATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The unique key of this metadata item. The max size of the string is
-  /// EOS_RTC_PARTICIPANTMETADATA_KEY_MAXCHARCOUNT.
   external ffi.Pointer<ffi.Char> Key;
 
-  /// The value of this metadata item. The max size of the string is
-  /// EOS_RTC_PARTICIPANTMETADATA_VALUE_MAXCHARCOUNT.
   external ffi.Pointer<ffi.Char> Value;
 }
 
-/// This struct is passed in with a call to
-/// EOS_RTC_AddNotifyParticipantStatusChanged registered event.
 final class _tagEOS_RTC_ParticipantStatusChangedCallbackInfo
     extends ffi.Struct {
-  /// Client-specified data passed into
-  /// EOS_RTC_AddNotifyParticipantStatusChanged.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room associated with this event.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// The participant whose status changed.
   external EOS_ProductUserId ParticipantId;
 
-  /// What status change occurred
   @ffi.UnsignedInt()
   external int ParticipantStatusAsInt;
 
@@ -24259,117 +19290,74 @@ final class _tagEOS_RTC_ParticipantStatusChangedCallbackInfo
   set ParticipantStatus(EOS_ERTCParticipantStatus value) =>
       ParticipantStatusAsInt = value.value;
 
-  /// The participant metadata items count. This is only set for the first
-  /// notification where ParticipantStatus is EOS_RTCPS_Joined. Subsequent
-  /// notifications such as when bParticipantInBlocklist changes will not
-  /// contain any metadata.
   @ffi.Uint32()
   external int ParticipantMetadataCount;
 
-  /// The participant metadata items. This is only set for the first
-  /// notification where ParticipantStatus is EOS_RTCPS_Joined. Subsequent
-  /// notifications such as when bParticipantInBlocklist changes will not
-  /// contain any metadata.
   external ffi.Pointer<EOS_RTC_ParticipantMetadata> ParticipantMetadata;
 
-  /// The participant's block list status, if ParticipantStatus is
-  /// EOS_RTCPS_Joined. This is set to true if the participant is in any of the
-  /// local user's applicable block lists, such Epic block list or any of the
-  /// current platform's block lists. It can be used to detect when an internal
-  /// automatic RTC block is applied because of trust and safety restrictions.
   @EOS_Bool()
   external int bParticipantInBlocklist;
 }
 
-/// This struct is passed in with a call to EOS_RTC_AddNotifyRoomBeforeJoin
-/// registered event.
 final class _tagEOS_RTC_RoomBeforeJoinCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_RTC_AddNotifyRoomBeforeJoin
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room associated with this event.
   external ffi.Pointer<ffi.Char> RoomName;
 }
 
-/// This struct is passed in with a call to
-/// EOS_RTC_AddNotifyRoomStatisticsUpdated registered event.
 final class _tagEOS_RTC_RoomStatisticsUpdatedInfo extends ffi.Struct {
-  /// Client-specified data passed into EOS_RTC_AddNotifyRoomStatisticsUpdated.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room associated with this event.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// Statistics in JSON format
   external ffi.Pointer<ffi.Char> Statistic;
 }
 
-/// This struct is used to call EOS_RTC_SetRoomSetting
 final class _tagEOS_RTC_SetRoomSettingOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_SETROOMSETTING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user trying to request this operation.
   external EOS_ProductUserId LocalUserId;
 
-  /// The room the setting will be applied to.
   external ffi.Pointer<ffi.Char> RoomName;
 
-  /// Setting that should be set.
   external ffi.Pointer<ffi.Char> SettingName;
 
-  /// Value to set the setting to.
   external ffi.Pointer<ffi.Char> SettingValue;
 }
 
-/// This struct is used to call EOS_RTC_SetSetting
 final class _tagEOS_RTC_SetSettingOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_RTC_SETSETTING_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Setting that should be set.
   external ffi.Pointer<ffi.Char> SettingName;
 
-  /// Value to set the setting to.
   external ffi.Pointer<ffi.Char> SettingValue;
 }
 
-/// Output parameters for the EOS_Reports_SendPlayerBehaviorReport function.
 final class _tagEOS_Reports_SendPlayerBehaviorReportCompleteCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Reports_SendPlayerBehaviorReport.
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Reports_SendPlayerBehaviorReport function.
 final class _tagEOS_Reports_SendPlayerBehaviorReportOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_REPORTS_SENDPLAYERBEHAVIORREPORT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the reporting player
   external EOS_ProductUserId ReporterUserId;
 
-  /// Product User ID of the reported player.
   external EOS_ProductUserId ReportedUserId;
 
-  /// Category for the player report.
   @ffi.UnsignedInt()
   external int CategoryAsInt;
 
@@ -24377,63 +19365,42 @@ final class _tagEOS_Reports_SendPlayerBehaviorReportOptions extends ffi.Struct {
       EOS_EPlayerReportsCategory.fromValue(CategoryAsInt);
   set Category(EOS_EPlayerReportsCategory value) => CategoryAsInt = value.value;
 
-  /// Optional plain text string associated with the report as UTF-8 encoded
-  /// null-terminated string.
   external ffi.Pointer<ffi.Char> Message;
 
-  /// Optional JSON string associated with the report as UTF-8 encoded
-  /// null-terminated string. This is intended as a way to associate arbitrary
-  /// structured context information with a report.
   external ffi.Pointer<ffi.Char> Context;
 }
 
-/// Input parameters for the EOS_Sanctions_CopyPlayerSanctionByIndex function
 final class _tagEOS_Sanctions_CopyPlayerSanctionByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SANCTIONS_COPYPLAYERSANCTIONBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the user whose active sanctions are to be copied
   external EOS_ProductUserId TargetUserId;
 
-  /// Index of the sanction to retrieve from the cache
   @ffi.Uint32()
   external int SanctionIndex;
 }
 
-/// Output parameters for the
-/// EOS_Sanctions_CreatePlayerSanctionAppealCallbackInfo function.
 final class _tagEOS_Sanctions_CreatePlayerSanctionAppealCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sanctions_CreatePlayerSanctionAppeal.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// A unique identifier for the specific sanction that was appealed
   external ffi.Pointer<ffi.Char> ReferenceId;
 }
 
-/// Input parameters for the EOS_Sanctions_CreatePlayerSanctionAppeal function.
 final class _tagEOS_Sanctions_CreatePlayerSanctionAppealOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SANCTIONS_CREATEPLAYERSANCTIONAPPEAL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user sending their own sanction appeal.
   external EOS_ProductUserId LocalUserId;
 
-  /// Reason code for the appeal.
   @ffi.UnsignedInt()
   external int ReasonAsInt;
 
@@ -24441,91 +19408,62 @@ final class _tagEOS_Sanctions_CreatePlayerSanctionAppealOptions
       EOS_ESanctionAppealReason.fromValue(ReasonAsInt);
   set Reason(EOS_ESanctionAppealReason value) => ReasonAsInt = value.value;
 
-  /// A unique identifier for the specific sanction
   external ffi.Pointer<ffi.Char> ReferenceId;
 }
 
-/// Input parameters for the EOS_Sanctions_GetPlayerSanctionCount function.
 final class _tagEOS_Sanctions_GetPlayerSanctionCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SANCTIONS_GETPLAYERSANCTIONCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the user whose sanction count should be returned
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Contains information about a single player sanction.
 final class _tagEOS_Sanctions_PlayerSanction extends ffi.Struct {
-  /// API Version: Set this to EOS_SANCTIONS_PLAYERSANCTION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The POSIX timestamp when the sanction was placed
   @ffi.Int64()
   external int TimePlaced;
 
-  /// The action associated with this sanction
   external ffi.Pointer<ffi.Char> Action;
 
-  /// The POSIX timestamp when the sanction will expire. If the sanction is
-  /// permanent, this will be 0.
   @ffi.Int64()
   external int TimeExpires;
 
-  /// A unique identifier for this specific sanction
   external ffi.Pointer<ffi.Char> ReferenceId;
 }
 
-/// Output parameters for the EOS_Sanctions_QueryActivePlayerSanctions function.
 final class _tagEOS_Sanctions_QueryActivePlayerSanctionsCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sanctions_QueryActivePlayerSanctions.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Target Product User ID that was passed to
-  /// EOS_Sanctions_QueryActivePlayerSanctions.
   external EOS_ProductUserId TargetUserId;
 
-  /// The Product User ID of the local user who initiated this request, if
-  /// applicable.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Sanctions_QueryActivePlayerSanctions API.
 final class _tagEOS_Sanctions_QueryActivePlayerSanctionsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SANCTIONS_QUERYACTIVEPLAYERSANCTIONS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the user whose active sanctions are to be retrieved.
   external EOS_ProductUserId TargetUserId;
 
-  /// The Product User ID of the local user who initiated this request.
-  /// Dedicated servers should set this to null.
   external EOS_ProductUserId LocalUserId;
 }
 
-/// An attribution value and its advertisement setting stored with a session.
 final class _tagEOS_SessionDetails_Attribute extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONDETAILS_ATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key/Value pair describing the attribute
   external ffi.Pointer<EOS_Sessions_AttributeData> Data;
 
-  /// Is this attribution advertised with the backend or simply stored locally
   @ffi.UnsignedInt()
   external int AdvertisementTypeAsInt;
 
@@ -24535,102 +19473,64 @@ final class _tagEOS_SessionDetails_Attribute extends ffi.Struct {
       AdvertisementTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_SessionDetails_CopyInfo function.
 final class _tagEOS_SessionDetails_CopyInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONDETAILS_COPYINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_SessionDetails_CopySessionAttributeByIndex
-/// function.
 final class _tagEOS_SessionDetails_CopySessionAttributeByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of the attribute to retrieve
   @ffi.Uint32()
   external int AttrIndex;
 }
 
-/// Input parameters for the EOS_SessionDetails_CopySessionAttributeByKey
-/// function.
 final class _tagEOS_SessionDetails_CopySessionAttributeByKeyOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONDETAILS_COPYSESSIONATTRIBUTEBYKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of the key to get the session attribution for
   external ffi.Pointer<ffi.Char> AttrKey;
 }
 
-/// Input parameters for the EOS_SessionDetails_GetSessionAttributeCount
-/// function.
 final class _tagEOS_SessionDetails_GetSessionAttributeCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONDETAILS_GETSESSIONATTRIBUTECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Internal details about a session, found on both active sessions and within
-/// search results
 final class _tagEOS_SessionDetails_Info extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONDETAILS_INFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Session ID assigned by the backend service
   external ffi.Pointer<ffi.Char> SessionId;
 
-  /// IP address of this session as visible by the backend service
   external ffi.Pointer<ffi.Char> HostAddress;
 
-  /// Number of remaining open spaces on the session (NumPublicConnections -
-  /// RegisteredPlayers
   @ffi.Uint32()
   external int NumOpenPublicConnections;
 
-  /// Reference to the additional settings associated with this session
   external ffi.Pointer<EOS_SessionDetails_Settings> Settings;
 
-  /// The Product User ID of the session owner. Null if the session is not owned
-  /// by a user.
   external EOS_ProductUserId OwnerUserId;
 
-  /// The client id of the session owner. Null if the session is not owned by a
-  /// server. The session is owned by a server if
-  /// EOS_Platform_Options::bIsServer is EOS_TRUE.
   external ffi.Pointer<ffi.Char> OwnerServerClientId;
 }
 
-/// Common settings associated with a single session
 final class _tagEOS_SessionDetails_Settings extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONDETAILS_SETTINGS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The main indexed parameter for this session, can be any string (i.e.
-  /// "Region:GameMode")
   external ffi.Pointer<ffi.Char> BucketId;
 
-  /// Number of total players allowed in the session
   @ffi.Uint32()
   external int NumPublicConnections;
 
-  /// Are players allowed to join the session while it is in the "in progress"
-  /// state
   @EOS_Bool()
   external int bAllowJoinInProgress;
 
-  /// Permission level describing allowed access to the session when joining or
-  /// searching for the session
   @ffi.UnsignedInt()
   external int PermissionLevelAsInt;
 
@@ -24639,36 +19539,24 @@ final class _tagEOS_SessionDetails_Settings extends ffi.Struct {
   set PermissionLevel(EOS_EOnlineSessionPermissionLevel value) =>
       PermissionLevelAsInt = value.value;
 
-  /// Are players allowed to send invites for the session
   @EOS_Bool()
   external int bInvitesAllowed;
 
-  /// Are sanctioned players allowed to join - sanctioned players will be
-  /// rejected if set to true
   @EOS_Bool()
   external int bSanctionsEnabled;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the session. Platform IDs are found in the EOS header file, e.g.
-  /// EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform
-  /// specific header file. If null, the session will be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 }
 
-/// Input parameters for the EOS_SessionModification_AddAttribute function.
 final class _tagEOS_SessionModification_AddAttributeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONMODIFICATION_ADDATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Key/Value pair describing the attribute to add to the session
   external ffi.Pointer<EOS_Sessions_AttributeData> SessionAttribute;
 
-  /// Is this attribution advertised with the backend or simply stored locally
   @ffi.UnsignedInt()
   external int AdvertisementTypeAsInt;
 
@@ -24678,110 +19566,72 @@ final class _tagEOS_SessionModification_AddAttributeOptions extends ffi.Struct {
       AdvertisementTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_SessionModification_RemoveAttribute function.
 final class _tagEOS_SessionModification_RemoveAttributeOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_REMOVEATTRIBUTE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Session attribute to remove from the session
   external ffi.Pointer<ffi.Char> Key;
 }
 
-/// Input parameters for the EOS_SessionModification_SetAllowedPlatformIds
-/// function.
 final class _tagEOS_SessionModification_SetAllowedPlatformIdsOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_SETALLOWEDPLATFORMIDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the session. Platform IDs are found in the EOS header file, e.g.
-  /// EOS_OPT_Epic. For some platforms, the value will be in the EOS Platform
-  /// specific header file. If null, the session will be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 }
 
-/// Input parameters for the EOS_SessionModification_SetBucketId function.
 final class _tagEOS_SessionModification_SetBucketIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONMODIFICATION_SETBUCKETID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The new bucket id associated with the session
   external ffi.Pointer<ffi.Char> BucketId;
 }
 
-/// Input parameters for the EOS_SessionModification_SetHostAddress function.
 final class _tagEOS_SessionModification_SetHostAddressOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_SETHOSTADDRESS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// A string representing the host address for the session, its meaning is up
-  /// to the application
   external ffi.Pointer<ffi.Char> HostAddress;
 }
 
-/// Input parameters for the EOS_SessionModification_SetInvitesAllowed function.
 final class _tagEOS_SessionModification_SetInvitesAllowedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_SETINVITESALLOWED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// If true then invites can currently be sent for the associated session
   @EOS_Bool()
   external int bInvitesAllowed;
 }
 
-/// Input parameters for the EOS_SessionModification_SetJoinInProgressAllowed
-/// function.
 final class _tagEOS_SessionModification_SetJoinInProgressAllowedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_SETJOININPROGRESSALLOWED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Does the session allow join in progress
   @EOS_Bool()
   external int bAllowJoinInProgress;
 }
 
-/// Input parameters for the EOS_SessionModification_SetMaxPlayers function.
 final class _tagEOS_SessionModification_SetMaxPlayersOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONMODIFICATION_SETMAXPLAYERS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Max number of players to allow in the session
   @ffi.Uint32()
   external int MaxPlayers;
 }
 
-/// Input parameters for the EOS_SessionModification_SetPermissionLevel
-/// function.
 final class _tagEOS_SessionModification_SetPermissionLevelOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONMODIFICATION_SETPERMISSIONLEVEL_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Permission level to set on the session
   @ffi.UnsignedInt()
   external int PermissionLevelAsInt;
 
@@ -24791,62 +19641,44 @@ final class _tagEOS_SessionModification_SetPermissionLevelOptions
       PermissionLevelAsInt = value.value;
 }
 
-/// Input parameters for the EOS_SessionSearch_CopySearchResultByIndex function.
 final class _tagEOS_SessionSearch_CopySearchResultByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONSEARCH_COPYSEARCHRESULTBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The index of the session to retrieve within the completed search query
   @ffi.Uint32()
   external int SessionIndex;
 }
 
-/// Output parameters for the EOS_SessionSearch_Find function.
 final class _tagEOS_SessionSearch_FindCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_SessionSearch_Find
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_SessionSearch_Find function.
 final class _tagEOS_SessionSearch_FindOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_FIND_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who is searching
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_SessionSearch_GetSearchResultCount function.
 final class _tagEOS_SessionSearch_GetSearchResultCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONSEARCH_GETSEARCHRESULTCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_SessionSearch_RemoveParameter function.
 final class _tagEOS_SessionSearch_RemoveParameterOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_REMOVEPARAMETER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search parameter key to remove from the search
   external ffi.Pointer<ffi.Char> Key;
 
-  /// Search comparison operation associated with the key to remove
   @ffi.UnsignedInt()
   external int ComparisonOpAsInt;
 
@@ -24855,28 +19687,20 @@ final class _tagEOS_SessionSearch_RemoveParameterOptions extends ffi.Struct {
   set ComparisonOp(EOS_EComparisonOp value) => ComparisonOpAsInt = value.value;
 }
 
-/// Input parameters for the EOS_SessionSearch_SetMaxResults function.
 final class _tagEOS_SessionSearch_SetMaxResultsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_SETMAXSEARCHRESULTS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Maximum number of search results returned with this query, may not exceed
-  /// EOS_SESSIONS_MAX_SEARCH_RESULTS
   @ffi.Uint32()
   external int MaxSearchResults;
 }
 
-/// Input parameters for the EOS_SessionSearch_SetParameter function.
 final class _tagEOS_SessionSearch_SetParameterOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_SETPARAMETER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search parameter describing a key and a value to compare
   external ffi.Pointer<EOS_Sessions_AttributeData> Parameter;
 
-  /// The type of comparison to make against the search parameter
   @ffi.UnsignedInt()
   external int ComparisonOpAsInt;
 
@@ -24885,98 +19709,64 @@ final class _tagEOS_SessionSearch_SetParameterOptions extends ffi.Struct {
   set ComparisonOp(EOS_EComparisonOp value) => ComparisonOpAsInt = value.value;
 }
 
-/// Input parameters for the EOS_SessionSearch_SetSessionId function.
 final class _tagEOS_SessionSearch_SetSessionIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_SETSESSIONID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Search sessions for a specific session ID, returning at most one session
   external ffi.Pointer<ffi.Char> SessionId;
 }
 
-/// Input parameters for the EOS_SessionSearch_SetTargetUserId function.
 final class _tagEOS_SessionSearch_SetTargetUserIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONSEARCH_SETTARGETUSERID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to find; return any sessions where the user matching
-  /// this ID is currently registered
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Sessions_AddNotifyJoinSessionAccepted function.
 final class _tagEOS_Sessions_AddNotifyJoinSessionAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYJOINSESSIONACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Sessions_AddNotifyLeaveSessionRequested
-/// function.
 final class _tagEOS_Sessions_AddNotifyLeaveSessionRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYLEAVESESSIONREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the
-/// EOS_Sessions_AddNotifySendSessionNativeInviteRequested function.
 final class _tagEOS_Sessions_AddNotifySendSessionNativeInviteRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYSENDSESSIONNATIVEINVITEREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Sessions_AddNotifySessionInviteAccepted
-/// function.
 final class _tagEOS_Sessions_AddNotifySessionInviteAcceptedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYSESSIONINVITEACCEPTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Sessions_AddNotifySessionInviteReceived
-/// function.
 final class _tagEOS_Sessions_AddNotifySessionInviteReceivedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYSESSIONINVITERECEIVED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_Sessions_AddNotifySessionInviteRejected
-/// function.
 final class _tagEOS_Sessions_AddNotifySessionInviteRejectedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_ADDNOTIFYSESSIONINVITEREJECTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Contains information about both session and search parameter attribution
 final class _tagEOS_Sessions_AttributeData extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_ATTRIBUTEDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session attribute
   external ffi.Pointer<ffi.Char> Key;
 
   external UnnamedUnion$2 Value;
 
-  /// Type of value stored in the union
   @ffi.UnsignedInt()
   external int ValueTypeAsInt;
 
@@ -24985,1054 +19775,698 @@ final class _tagEOS_Sessions_AttributeData extends ffi.Struct {
   set ValueType(EOS_EAttributeType value) => ValueTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_Sessions_CopyActiveSessionHandle function.
 final class _tagEOS_Sessions_CopyActiveSessionHandleOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_COPYACTIVESESSIONHANDLE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session for which to retrieve a session handle
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Input parameters for the EOS_Sessions_CopySessionHandleByInviteId function.
 final class _tagEOS_Sessions_CopySessionHandleByInviteIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_COPYSESSIONHANDLEBYINVITEID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Invite ID for which to retrieve a session handle
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Input parameters for the EOS_Sessions_CopySessionHandleByUiEventId function.
 final class _tagEOS_Sessions_CopySessionHandleByUiEventIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_COPYSESSIONHANDLEBYUIEVENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// UI Event associated with the session
   @EOS_UI_EventId()
   external int UiEventId;
 }
 
-/// Input parameters for the EOS_Sessions_CopySessionHandleForPresence function.
 final class _tagEOS_Sessions_CopySessionHandleForPresenceOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_COPYSESSIONHANDLEFORPRESENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user associated with the session
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Sessions_CreateSessionModification function.
 final class _tagEOS_Sessions_CreateSessionModificationOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_CREATESESSIONMODIFICATION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to create
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// Bucket ID associated with the session
   external ffi.Pointer<ffi.Char> BucketId;
 
-  /// Maximum number of players allowed in the session
   @ffi.Uint32()
   external int MaxPlayers;
 
-  /// The Product User ID of the local user associated with the session
   external EOS_ProductUserId LocalUserId;
 
-  /// Determines whether or not this session should be the one associated with
-  /// the local user's presence information. If true, this session will be
-  /// associated with presence. Only one session at a time can have this flag
-  /// true. This affects the ability of the Social Overlay to show game related
-  /// actions to take in the user's social graph.
   @EOS_Bool()
   external int bPresenceEnabled;
 
-  /// Optional session id - set to a globally unique value to override the
-  /// backend assignment If not specified the backend service will assign one to
-  /// the session. Do not mix and match. This value can be of size
-  /// [EOS_SESSIONMODIFICATION_MIN_SESSIONIDOVERRIDE_LENGTH,
-  /// EOS_SESSIONMODIFICATION_MAX_SESSIONIDOVERRIDE_LENGTH]
   external ffi.Pointer<ffi.Char> SessionId;
 
-  /// If true, sanctioned players can neither join nor register with this
-  /// session and, in the case of join, will return EOS_EResult code
-  /// EOS_Sessions_PlayerSanctioned
   @EOS_Bool()
   external int bSanctionsEnabled;
 
-  /// Array of platform IDs indicating the player platforms allowed to register
-  /// with the session. Platform IDs are found in the EOS header file
-  /// (eos_common.h), for example EOS_OPT_Epic. For some platforms the value
-  /// will be in the EOS Platform specific header file. If null, the session
-  /// will be unrestricted.
   external ffi.Pointer<ffi.Uint32> AllowedPlatformIds;
 
-  /// Number of platform IDs in the array
   @ffi.Uint32()
   external int AllowedPlatformIdsCount;
 }
 
-/// Input parameters for the EOS_Sessions_CreateSessionSearch function.
 final class _tagEOS_Sessions_CreateSessionSearchOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_CREATESESSIONSEARCH_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Max number of results to return
   @ffi.Uint32()
   external int MaxSearchResults;
 }
 
-/// Output parameters for the EOS_Sessions_DestroySession function.
 final class _tagEOS_Sessions_DestroySessionCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_DestroySession
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_DestroySession function.
 final class _tagEOS_Sessions_DestroySessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_DESTROYSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to destroy
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Input parameters for the EOS_Sessions_DumpSessionState function.
 final class _tagEOS_Sessions_DumpSessionStateOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_DUMPSESSIONSTATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Output parameters for the EOS_Sessions_EndSession function.
 final class _tagEOS_Sessions_EndSessionCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_EndSession
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_EndSession function.
 final class _tagEOS_Sessions_EndSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_ENDSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to set as no long in progress
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Input parameters for the EOS_Sessions_GetInviteCount function.
 final class _tagEOS_Sessions_GetInviteCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_GETINVITECOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who has one or more invitations in
-  /// the cache
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Sessions_GetInviteIdByIndex function.
 final class _tagEOS_Sessions_GetInviteIdByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_GETINVITEIDBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user who has an invitation in the cache
   external EOS_ProductUserId LocalUserId;
 
-  /// Index of the invite ID to retrieve
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input parameters for the EOS_Sessions_IsUserInSession function.
 final class _tagEOS_Sessions_IsUserInSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_ISUSERINSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Active session name to search within
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// Product User ID to search for in the session
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the EOS_Sessions_OnJoinSessionAcceptedCallback
-/// function.
 final class _tagEOS_Sessions_JoinSessionAcceptedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Sessions_AddNotifyJoinSessionAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID for the user who initialized the game
   external EOS_ProductUserId LocalUserId;
 
-  /// The UI Event associated with this Join Game event. This should be used
-  /// with EOS_Sessions_CopySessionHandleByUiEventId to get a handle to be used
-  /// when calling EOS_Sessions_JoinSession.
   @EOS_UI_EventId()
   external int UiEventId;
 }
 
-/// Output parameters for the EOS_Sessions_JoinSession function.
 final class _tagEOS_Sessions_JoinSessionCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_JoinSession
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_JoinSession function.
 final class _tagEOS_Sessions_JoinSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_JOINSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to create after joining session
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// Session handle to join
   external EOS_HSessionDetails SessionHandle;
 
-  /// The Product User ID of the local user who is joining the session
   external EOS_ProductUserId LocalUserId;
 
-  /// Determines whether or not this session should be the one associated with
-  /// the local user's presence information. If true, this session will be
-  /// associated with presence. Only one session at a time can have this flag
-  /// true. This affects the ability of the Social Overlay to show game related
-  /// actions to take in the user's social graph.
   @EOS_Bool()
   external int bPresenceEnabled;
 }
 
-/// Output parameters for the EOS_Sessions_OnLeaveSessionRequestedCallback
-/// Function.
 final class _tagEOS_Sessions_LeaveSessionRequestedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Sessions_OnLeaveSessionRequestedCallback
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the local user who received the leave session
-  /// notification.
   external EOS_ProductUserId LocalUserId;
 
-  /// Name of the session associated with the leave session request.
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Output parameters for the EOS_Sessions_QueryInvites function.
 final class _tagEOS_Sessions_QueryInvitesCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_QueryInvites
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User of the local user who made the request
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input parameters for the EOS_Sessions_QueryInvites function.
 final class _tagEOS_Sessions_QueryInvitesOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_QUERYINVITES_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID to query for invitations
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Output parameters for the EOS_Sessions_RegisterPlayers function.
 final class _tagEOS_Sessions_RegisterPlayersCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_RegisterPlayers
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The players that were successfully registered
   external ffi.Pointer<EOS_ProductUserId> RegisteredPlayers;
 
-  /// The number of players successfully registered
   @ffi.Uint32()
   external int RegisteredPlayersCount;
 
-  /// The players that failed to register because they are sanctioned
   external ffi.Pointer<EOS_ProductUserId> SanctionedPlayers;
 
-  /// The number of players that failed to register because they are sanctioned
   @ffi.Uint32()
   external int SanctionedPlayersCount;
 }
 
-/// Input parameters for the EOS_Sessions_RegisterPlayers function.
 final class _tagEOS_Sessions_RegisterPlayersOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_REGISTERPLAYERS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session for which to register players
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// Array of players to register with the session
   external ffi.Pointer<EOS_ProductUserId> PlayersToRegister;
 
-  /// Number of players in the array
   @ffi.Uint32()
   external int PlayersToRegisterCount;
 }
 
-/// Output parameters for the EOS_Sessions_RejectInvite function.
 final class _tagEOS_Sessions_RejectInviteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_RejectInvite
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_RejectInvite function.
 final class _tagEOS_Sessions_RejectInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_REJECTINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user rejecting the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The invite ID to reject
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Output parameters for the EOS_Sessions_SendInvite function.
 final class _tagEOS_Sessions_SendInviteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_SendInvite
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_SendInvite function.
 final class _tagEOS_Sessions_SendInviteOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_SENDINVITE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session associated with the invite
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// The Product User ID of the local user sending the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User of the remote user receiving the invitation
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Output parameters for the
-/// EOS_Sessions_OnSendSessionNativeInviteRequestedCallback Function.
 final class _tagEOS_Sessions_SendSessionNativeInviteRequestedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into
-  /// EOS_Sessions_AddNotifySendSessionNativeInviteRequested
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Identifies this event which will need to be acknowledged with
-  /// EOS_UI_AcknowledgeEventId().
   @EOS_UI_EventId()
   external int UiEventId;
 
-  /// The Product User ID of the local user who is inviting.
   external EOS_ProductUserId LocalUserId;
 
-  /// The Native Platform Account Type. If only a single integrated platform is
-  /// configured then this will always reference that platform.
   external EOS_IntegratedPlatformType TargetNativeAccountType;
 
-  /// The Native Platform Account ID of the target user being invited.
   external ffi.Pointer<ffi.Char> TargetUserNativeAccountId;
 
-  /// Session ID that the user is being invited to
   external ffi.Pointer<ffi.Char> SessionId;
 }
 
-/// Output parameters for the EOS_Sessions_OnSessionInviteAcceptedCallback
-/// function.
 final class _tagEOS_Sessions_SessionInviteAcceptedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Sessions_AddNotifySessionInviteAccepted
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Session ID that should be used for joining
   external ffi.Pointer<ffi.Char> SessionId;
 
-  /// The Product User ID of the user who accepted the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 
-  /// Invite ID that was accepted
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Output parameters for the EOS_Sessions_OnSessionInviteReceivedCallback
-/// function.
 final class _tagEOS_Sessions_SessionInviteReceivedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Sessions_AddNotifySessionInviteReceived
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who received the invite
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 
-  /// Invite ID used to retrieve the actual session details
   external ffi.Pointer<ffi.Char> InviteId;
 }
 
-/// Output parameters for the EOS_Sessions_OnSessionInviteRejectedCallback
-/// function.
 final class _tagEOS_Sessions_SessionInviteRejectedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_Sessions_AddNotifySessionInviteRejected
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The invite ID
   external ffi.Pointer<ffi.Char> InviteId;
 
-  /// The Product User ID of the local user who rejected the invitation
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID of the user who sent the invitation
   external EOS_ProductUserId TargetUserId;
 
-  /// Optional session ID
   external ffi.Pointer<ffi.Char> SessionId;
 }
 
-/// Output parameters for the EOS_Sessions_StartSession function.
 final class _tagEOS_Sessions_StartSessionCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_StartSession
   external ffi.Pointer<ffi.Void> ClientData;
 }
 
-/// Input parameters for the EOS_Sessions_StartSession function.
 final class _tagEOS_Sessions_StartSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_STARTSESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to set in progress
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Output parameters for the EOS_Sessions_UnregisterPlayers function.
 final class _tagEOS_Sessions_UnregisterPlayersCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_UnregisterPlayers
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The players that successfully unregistered
   external ffi.Pointer<EOS_ProductUserId> UnregisteredPlayers;
 
-  /// The number of players that successfully unregistered
   @ffi.Uint32()
   external int UnregisteredPlayersCount;
 }
 
-/// Input parameters for the EOS_Sessions_UnregisterPlayers function.
 final class _tagEOS_Sessions_UnregisterPlayersOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_UNREGISTERPLAYERS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session for which to unregister players
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// Array of players to unregister from the session
   external ffi.Pointer<EOS_ProductUserId> PlayersToUnregister;
 
-  /// Number of players in the array
   @ffi.Uint32()
   external int PlayersToUnregisterCount;
 }
 
-/// Output parameters for the EOS_Sessions_UpdateSession function.
 final class _tagEOS_Sessions_UpdateSessionCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Sessions_UpdateSession
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Name of the session that was created/modified
   external ffi.Pointer<ffi.Char> SessionName;
 
-  /// ID of the session that was created/modified
   external ffi.Pointer<ffi.Char> SessionId;
 }
 
-/// Input parameters for the EOS_Sessions_UpdateSessionModification function.
 final class _tagEOS_Sessions_UpdateSessionModificationOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_SESSIONS_UPDATESESSIONMODIFICATION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the session to update
   external ffi.Pointer<ffi.Char> SessionName;
 }
 
-/// Input parameters for the EOS_Sessions_UpdateSession function.
 final class _tagEOS_Sessions_UpdateSessionOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_SESSIONS_UPDATESESSION_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Builder handle
   external EOS_HSessionModification SessionModificationHandle;
 }
 
-/// Input parameters for the EOS_Stats_CopyStatByIndex function.
 final class _tagEOS_Stats_CopyStatByIndexOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_COPYSTATBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user who owns the stat
   external EOS_ProductUserId TargetUserId;
 
-  /// Index of the stat to retrieve from the cache
   @ffi.Uint32()
   external int StatIndex;
 }
 
-/// Input parameters for the EOS_Stats_CopyStatByName function.
 final class _tagEOS_Stats_CopyStatByNameOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_COPYSTATBYNAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the user who owns the stat
   external EOS_ProductUserId TargetUserId;
 
-  /// Name of the stat to retrieve from the cache
   external ffi.Pointer<ffi.Char> Name;
 }
 
-/// Input parameters for the EOS_Stats_GetStatsCount function.
 final class _tagEOS_Stats_GetStatCountOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_GETSTATSCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID for the user whose stats are being counted
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Contains information about a single stat to ingest.
 final class _tagEOS_Stats_IngestData extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_INGESTDATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The name of the stat to ingest.
   external ffi.Pointer<ffi.Char> StatName;
 
-  /// The amount to ingest the stat.
   @ffi.Int32()
   external int IngestAmount;
 }
 
-/// Data containing the result information for an ingest stat request.
 final class _tagEOS_Stats_IngestStatCompleteCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Stats_IngestStat.
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID for the user requesting the ingest
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID for the user whose stat is being ingested
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Stats_IngestStat function.
 final class _tagEOS_Stats_IngestStatOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_INGESTSTAT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user requesting the ingest. Set to null
-  /// for dedicated server.
   external EOS_ProductUserId LocalUserId;
 
-  /// Stats to ingest.
   external ffi.Pointer<EOS_Stats_IngestData> Stats;
 
-  /// The number of stats to ingest, may not exceed EOS_STATS_MAX_INGEST_STATS.
   @ffi.Uint32()
   external int StatsCount;
 
-  /// The Product User ID for the user whose stat is being ingested.
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Data containing the result information for querying a player's stats
-/// request.
 final class _tagEOS_Stats_OnQueryStatsCompleteCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_Stats_QueryStats
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Product User ID of the user who initiated this request
   external EOS_ProductUserId LocalUserId;
 
-  /// The Product User ID whose stats which were retrieved
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Input parameters for the EOS_Stats_QueryStats function.
 final class _tagEOS_Stats_QueryStatsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_QUERYSTATS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Product User ID of the local user requesting the stats. Set to null
-  /// for dedicated server.
   external EOS_ProductUserId LocalUserId;
 
-  /// If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for start
-  /// time (Optional - set to EOS_STATS_TIME_UNDEFINED to ignore this
-  /// parameter).
   @ffi.Int64()
   external int StartTime;
 
-  /// If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for end
-  /// time (Optional - set to EOS_STATS_TIME_UNDEFINED to ignore this
-  /// parameter).
   @ffi.Int64()
   external int EndTime;
 
-  /// An array of stat names to query for (Optional - set to nullptr to query
-  /// for all stats).
   external ffi.Pointer<ffi.Pointer<ffi.Char>> StatNames;
 
-  /// The number of stat names included in query (Optional - set to 0 when
-  /// querying for all stats), may not exceed EOS_STATS_MAX_QUERY_STATS.
   @ffi.Uint32()
   external int StatNamesCount;
 
-  /// The Product User ID for the user whose stats are being retrieved
   external EOS_ProductUserId TargetUserId;
 }
 
-/// Contains information about a single player stat.
 final class _tagEOS_Stats_Stat extends ffi.Struct {
-  /// API Version: Set this to EOS_STATS_STAT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Name of the stat.
   external ffi.Pointer<ffi.Char> Name;
 
-  /// If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for start
-  /// time.
   @ffi.Int64()
   external int StartTime;
 
-  /// If not EOS_STATS_TIME_UNDEFINED then this is the POSIX timestamp for end
-  /// time.
   @ffi.Int64()
   external int EndTime;
 
-  /// Current value for the stat.
   @ffi.Int32()
   external int Value;
 }
 
-/// Input data for the CopyFileMetadataAtIndex function
 final class _tagEOS_TitleStorage_CopyFileMetadataAtIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_TITLESTORAGE_COPYFILEMETADATAATINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is requesting file metadata
-  /// (optional)
   external EOS_ProductUserId LocalUserId;
 
-  /// The index to get data for
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input data for the CopyFileMetadataByFilename function
 final class _tagEOS_TitleStorage_CopyFileMetadataByFilenameOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_TITLESTORAGE_COPYFILEMETADATABYFILENAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is requesting file metadata
-  /// (optional)
   external EOS_ProductUserId LocalUserId;
 
-  /// The file's name to get data for
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Structure containing the result of a delete cache operation
 final class _tagEOS_TitleStorage_DeleteCacheCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the delete cache request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Input data for the EOS_TitleStorage_DeleteCache function
 final class _tagEOS_TitleStorage_DeleteCacheOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_DELETECACHE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is deleting his cache (optional)
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Metadata information for a specific file
 final class _tagEOS_TitleStorage_FileMetadata extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_FILEMETADATA_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The total size of the file in bytes (Includes file header in addition to
-  /// file contents).
   @ffi.Uint32()
   external int FileSizeBytes;
 
-  /// The MD5 Hash of the entire file (including additional file header), in hex
-  /// digits
   external ffi.Pointer<ffi.Char> MD5Hash;
 
-  /// The file's name
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The size of data (payload) in file in unencrypted (original) form.
   @ffi.Uint32()
   external int UnencryptedDataSizeBytes;
 }
 
-/// Structure containing the information about a file transfer in progress (or
-/// one that has completed)
 final class _tagEOS_TitleStorage_FileTransferProgressCallbackInfo
     extends ffi.Struct {
-  /// Client-specified data passed into the file request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name of the file being transferred
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// Amount of bytes transferred so far in this request, out of
-  /// TotalFileSizeBytes
   @ffi.Uint32()
   external int BytesTransferred;
 
-  /// The total size of the file being transferred (Includes file header in
-  /// addition to file contents, can be slightly more than expected)
   @ffi.Uint32()
   external int TotalFileSizeBytes;
 }
 
-/// Input data for the EOS_TitleStorage_GetFileMetadataCount function
 final class _tagEOS_TitleStorage_GetFileMetadataCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_GETFILEMETADATACOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is requesting file metadata
-  /// (optional)
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Structure containing information about a query file request
 final class _tagEOS_TitleStorage_QueryFileCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file query request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 }
 
-/// Structure containing information about a query file list request
 final class _tagEOS_TitleStorage_QueryFileListCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file query request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 
-  /// A count of files that were found, if successful
   @ffi.Uint32()
   external int FileCount;
 }
 
-/// Input data for the EOS_TitleStorage_QueryFileList function
 final class _tagEOS_TitleStorage_QueryFileListOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_QUERYFILELIST_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who requested file metadata (optional)
   external EOS_ProductUserId LocalUserId;
 
-  /// List of tags to use for lookup.
   external ffi.Pointer<ffi.Pointer<ffi.Char>> ListOfTags;
 
-  /// Number of tags specified in ListOfTags
   @ffi.Uint32()
   external int ListOfTagsCount;
 }
 
-/// Input data for the EOS_TitleStorage_QueryFile function
 final class _tagEOS_TitleStorage_QueryFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_QUERYFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user requesting file metadata (optional)
   external EOS_ProductUserId LocalUserId;
 
-  /// The requested file's name
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Structure containing the result of a read file request
 final class _tagEOS_TitleStorage_ReadFileCallbackInfo extends ffi.Struct {
-  /// Result code for the operation. EOS_Success is returned for a successful
-  /// request, other codes indicate an error
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Client-specified data passed into the file read request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 
-  /// The filename of the file that has been finished reading
   external ffi.Pointer<ffi.Char> Filename;
 }
 
-/// Structure containing data for a chunk of a file being read
 final class _tagEOS_TitleStorage_ReadFileDataCallbackInfo extends ffi.Struct {
-  /// Client-specified data passed into the file request
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// Product User ID of the local user who initiated this request (optional,
-  /// will only be present in case it was provided during operation start)
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name being read
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The total file size of the file being read
   @ffi.Uint32()
   external int TotalFileSizeBytes;
 
-  /// Is this chunk the last chunk of data?
   @EOS_Bool()
   external int bIsLastChunk;
 
-  /// The length of DataChunk in bytes that can be safely read
   @ffi.Uint32()
   external int DataChunkLengthBytes;
 
-  /// Pointer to the start of data to be read
   external ffi.Pointer<ffi.Void> DataChunk;
 }
 
-/// Input data for the EOS_TitleStorage_ReadFile function
 final class _tagEOS_TitleStorage_ReadFileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_TITLESTORAGE_READFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Product User ID of the local user who is reading the requested file
-  /// (optional)
   external EOS_ProductUserId LocalUserId;
 
-  /// The file name to read; this file must already exist
   external ffi.Pointer<ffi.Char> Filename;
 
-  /// The maximum amount of data in bytes should be available to read in a
-  /// single EOS_TitleStorage_OnReadFileDataCallback call
   @ffi.Uint32()
   external int ReadChunkLengthBytes;
 
-  /// Callback function to handle copying read data
   external EOS_TitleStorage_OnReadFileDataCallback ReadFileDataCallback;
 
-  /// Optional callback function to be informed of download progress, if the
-  /// file is not already locally cached. If set, this will be called at least
-  /// once before completion if the request is successfully started
   external EOS_TitleStorage_OnFileTransferProgressCallback
   FileTransferProgressCallback;
 }
 
-/// Input parameters for the EOS_UI_AcknowledgeEventId.
 final class _tagEOS_UI_AcknowledgeEventIdOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_ACKNOWLEDGEEVENTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The ID being acknowledged.
   @EOS_UI_EventId()
   external int UiEventId;
 
-  /// The result to use for the acknowledgment. When acknowledging
-  /// EOS_Presence_JoinGameAcceptedCallbackInfo this should be the result code
-  /// from the JoinSession call.
   @ffi.UnsignedInt()
   external int ResultAsInt;
 
@@ -26040,38 +20474,27 @@ final class _tagEOS_UI_AcknowledgeEventIdOptions extends ffi.Struct {
   set Result(EOS_EResult value) => ResultAsInt = value.value;
 }
 
-/// Input parameters for the EOS_UI_AddNotifyDisplaySettingsUpdated function.
 final class _tagEOS_UI_AddNotifyDisplaySettingsUpdatedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_UI_ADDNOTIFYDISPLAYSETTINGSUPDATED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_UI_AddNotifyMemoryMonitor function.
 final class _tagEOS_UI_AddNotifyMemoryMonitorOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_ADDNOTIFYMEMORYMONITOR_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_UI_AddNotifyOnScreenKeyboardRequested function.
 final class _tagEOS_UI_AddNotifyOnScreenKeyboardRequestedOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_UI_ADDNOTIFYONSCREENKEYBOARDREQUESTED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_UI_ConfigureOnScreenKeyboard function.
 final class _tagEOS_UI_ConfigureOnScreenKeyboardOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_CONFIGUREONSCREENKEYBOARD_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The behavior of the on screen keyboard.
   @ffi.UnsignedInt()
   external int BehaviorAsInt;
 
@@ -26080,117 +20503,78 @@ final class _tagEOS_UI_ConfigureOnScreenKeyboardOptions extends ffi.Struct {
   set Behavior(EOS_UI_EOnScreenKeyboardBehavior value) =>
       BehaviorAsInt = value.value;
 
-  /// Whether to enable device checks. When enabled, the overlay will use a
-  /// number of heuristics based on the device's configuration to determine
-  /// whether an on screen keyboard should be requested. When disabled, on
-  /// screen keyboards will always be requested regardless of device
-  /// configuration. Note, by setting environment variable "EOS_OVERLAY_OSK" to
-  /// 0, on screen keyboard requests will always fail, and by setting it to 1,
-  /// device checks will always succeed.
   @EOS_Bool()
   external int bIsDeviceChecksEnabled;
 }
 
-/// Input parameters for the EOS_UI_GetFriendsExclusiveInput function.
 final class _tagEOS_UI_GetFriendsExclusiveInputOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_GETFRIENDSEXCLUSIVEINPUT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose overlay is being checked.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_UI_GetFriendsVisible function.
 final class _tagEOS_UI_GetFriendsVisibleOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_GETFRIENDSVISIBLE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose overlay is being checked.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_UI_GetToggleFriendsButton function.
 final class _tagEOS_UI_GetToggleFriendsButtonOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_GETTOGGLEFRIENDSBUTTON_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Input parameters for the EOS_UI_GetToggleFriendsKey function.
 final class _tagEOS_UI_GetToggleFriendsKeyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_GETTOGGLEFRIENDSKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_UI_HideFriends function.
 final class _tagEOS_UI_HideFriendsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UI_HideFriends
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user whose friend list is being shown.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_UI_HideFriends function.
 final class _tagEOS_UI_HideFriendsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_HIDEFRIENDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose friend list is being shown.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_UI_IsSocialOverlayPaused function.
 final class _tagEOS_UI_IsSocialOverlayPausedOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_ISSOCIALOVERLAYPAUSED_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// A structure representing a memory monitoring message.
 final class _tagEOS_UI_MemoryMonitorCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_UI_AddNotifyMemoryMonitor
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// This field is for system specific memory monitor report.
   external ffi.Pointer<ffi.Void> SystemMemoryMonitorReport;
 }
 
-/// Output parameters for the EOS_UI_AddNotifyDisplaySettingsUpdated function.
 final class _tagEOS_UI_OnDisplaySettingsUpdatedCallbackInfo extends ffi.Struct {
-  /// Context that was passed into EOS_UI_AddNotifyDisplaySettingsUpdated
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// True when any portion of the overlay is visible.
   @EOS_Bool()
   external int bIsVisible;
 
-  /// True when the overlay has switched to exclusive input mode. While in
-  /// exclusive input mode, no keyboard or mouse input will be sent to the game.
   @EOS_Bool()
   external int bIsExclusiveInput;
 }
 
-/// Output parameters for the EOS_UI_AddNotifyOnScreenKeyboardRequested
-/// function.
 final class _tagEOS_UI_OnScreenKeyboardRequestedCallbackInfo
     extends ffi.Struct {
-  /// Context that was passed into EOS_UI_AddNotifyOnScreenKeyboardRequested
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The type of on screen keyboard being requested.
   @ffi.UnsignedInt()
   external int TypeAsInt;
 
@@ -26199,97 +20583,70 @@ final class _tagEOS_UI_OnScreenKeyboardRequestedCallbackInfo
   set Type(EOS_UI_EOnScreenKeyboardType value) => TypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_UI_ShowBlockPlayer function.
 final class _tagEOS_UI_OnShowBlockPlayerCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UI_ShowBlockPlayer
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Online Services Account ID of the user who requested the block.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user who was to be blocked.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Output parameters for the EOS_UI_ShowReportPlayer function.
 final class _tagEOS_UI_OnShowReportPlayerCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UI_ShowReportPlayer
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Online Services Account ID of the user who requested the Report.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user who was to be Reported.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_UI_PauseSocialOverlay function.
 final class _tagEOS_UI_PauseSocialOverlayOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_PAUSESOCIALOVERLAY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The desired bIsPaused state of the overlay.
   @EOS_Bool()
   external int bIsPaused;
 }
 
-/// Parameters for the EOS_UI_PrePresent function.
 final class _tagEOS_UI_PrePresentOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_PREPRESENT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Platform specific data.
   external ffi.Pointer<ffi.Void> PlatformSpecificData;
 }
 
-/// A rectangle.
 final class _tagEOS_UI_Rect extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_RECT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Left coordinate.
   @ffi.Int32()
   external int X;
 
-  /// Top coordinate.
   @ffi.Int32()
   external int Y;
 
-  /// Width.
   @ffi.Uint32()
   external int Width;
 
-  /// Height.
   @ffi.Uint32()
   external int Height;
 }
 
-/// Input parameters for the EOS_UI_ReportInputState function.
 final class _tagEOS_UI_ReportInputStateOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_REPORTINPUTSTATE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Flags to identify the current buttons which are pressed.
   @ffi.UnsignedInt()
   external int ButtonDownFlagsAsInt;
 
@@ -26298,66 +20655,44 @@ final class _tagEOS_UI_ReportInputStateOptions extends ffi.Struct {
   set ButtonDownFlags(EOS_UI_EInputStateButtonFlags value) =>
       ButtonDownFlagsAsInt = value.value;
 
-  /// Whether the current platform and configuration uses the right face button
-  /// as the default accept button. When this flag is true, the right face
-  /// button is the accept action, and the down face button is the cancel
-  /// action. When this flag is false, the right face button is the cancel
-  /// action, and the down face button is the accept action.
   @EOS_Bool()
   external int bAcceptIsFaceButtonRight;
 
-  /// The current state of the mouse button.
   @EOS_Bool()
   external int bMouseButtonDown;
 
-  /// The current x-position of the mouse.
   @ffi.Uint32()
   external int MousePosX;
 
-  /// The current y-position of the mouse.
   @ffi.Uint32()
   external int MousePosY;
 
-  /// The gamepad or player index
   @ffi.Uint32()
   external int GamepadIndex;
 
-  /// Left analog stick horizontal movement in [-1, 1]. Negative for left,
-  /// positive for right
   @ffi.Float()
   external double LeftStickX;
 
-  /// Left analog stick vertical movement in [-1, 1]. Negative for up, positive
-  /// for down
   @ffi.Float()
   external double LeftStickY;
 
-  /// Right analog stick horizontal movement in [-1, 1]. Negative for left,
-  /// positive for right
   @ffi.Float()
   external double RightStickX;
 
-  /// Right analog stick vertical movement in [-1, 1]. Negative for up, positive
-  /// for down
   @ffi.Float()
   external double RightStickY;
 
-  /// Left trigger analog value in [0, 1]
   @ffi.Float()
   external double LeftTrigger;
 
-  /// Right trigger analog value in [0, 1]
   @ffi.Float()
   external double RightTrigger;
 }
 
-/// Input parameters for the EOS_UI_SetDisplayPreference function.
 final class _tagEOS_UI_SetDisplayPreferenceOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SETDISPLAYPREFERENCE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// Preference for notification pop-up locations.
   @ffi.UnsignedInt()
   external int NotificationLocationAsInt;
 
@@ -26367,15 +20702,10 @@ final class _tagEOS_UI_SetDisplayPreferenceOptions extends ffi.Struct {
       NotificationLocationAsInt = value.value;
 }
 
-/// Input parameters for the EOS_UI_SetToggleFriendsButton function.
 final class _tagEOS_UI_SetToggleFriendsButtonOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SETTOGGLEFRIENDSBUTTON_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The button combination to toggle the friends-list page. It can be any
-  /// combination of the following buttons (which can include the left or right
-  /// shoulder buttons (EOS_UISBF_LeftShoulder or EOS_UISBF_RightShoulder)):
   @ffi.UnsignedInt()
   external int ButtonCombinationAsInt;
 
@@ -26385,15 +20715,10 @@ final class _tagEOS_UI_SetToggleFriendsButtonOptions extends ffi.Struct {
       ButtonCombinationAsInt = value.value;
 }
 
-/// Input parameters for the EOS_UI_SetToggleFriendsKey function.
 final class _tagEOS_UI_SetToggleFriendsKeyOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SETTOGGLEFRIENDSKEY_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The new key combination which will be used to toggle the friends overlay.
-  /// The combination can be any set of modifiers and one key. A value of
-  /// EOS_UIK_None will cause the key to revert to the default.
   @ffi.Int()
   external int KeyCombinationAsInt;
 
@@ -26403,221 +20728,142 @@ final class _tagEOS_UI_SetToggleFriendsKeyOptions extends ffi.Struct {
       KeyCombinationAsInt = value.value;
 }
 
-/// Parameters for the EOS_UI_ShowBlockPlayer function.
 final class _tagEOS_UI_ShowBlockPlayerOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SHOWBLOCKPLAYER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Online Services Account ID of the user who is requesting the
-  /// Block.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user whose is being Blocked.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Output parameters for the EOS_UI_ShowFriends function.
 final class _tagEOS_UI_ShowFriendsCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UI_ShowFriends
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the user whose friend list is being shown.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Input parameters for the EOS_UI_ShowFriends function.
 final class _tagEOS_UI_ShowFriendsOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SHOWFRIENDS_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user whose friend list is being shown.
   external EOS_EpicAccountId LocalUserId;
 }
 
-/// Output parameters for the EOS_UI_ShowNativeProfile function.
 final class _tagEOS_UI_ShowNativeProfileCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UI_ShowNativeProfile
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Online Services Account ID of the user who requested the profile.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user who was to have a profile
-  /// shown.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Parameters for the EOS_UI_ShowNativeProfile function.
 final class _tagEOS_UI_ShowNativeProfileOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SHOWNATIVEPROFILE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Online Services Account ID of the user who is requesting the
-  /// profile.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user whose profile is being
-  /// requested.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Parameters for the EOS_UI_ShowReportPlayer function.
 final class _tagEOS_UI_ShowReportPlayerOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_UI_SHOWREPORTPLAYER_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Online Services Account ID of the user who is requesting the
-  /// Report.
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Online Services Account ID of the user whose is being Reported.
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// A structure that contains the user information. These structures are created
-/// by EOS_UserInfo_CopyUserInfo and must be passed to EOS_UserInfo_Release.
 final class _tagEOS_UserInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_COPYUSERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user
   external EOS_EpicAccountId UserId;
 
-  /// The name of the owner's country. This may be null
   external ffi.Pointer<ffi.Char> Country;
 
-  /// The display name (un-sanitized). This may be null
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// The ISO 639 language code for the user's preferred language. This may be
-  /// null
   external ffi.Pointer<ffi.Char> PreferredLanguage;
 
-  /// A nickname/alias for the target user assigned by the local user. This may
-  /// be null
   external ffi.Pointer<ffi.Char> Nickname;
 
-  /// The raw display name (sanitized). This may be null
   external ffi.Pointer<ffi.Char> DisplayNameSanitized;
 }
 
-/// A structure that contains the user information. These structures are created
-/// by EOS_UserInfo_CopyBestDisplayName or
-/// EOS_UserInfo_CopyBestDisplayNameWithPlatform and must be passed to
-/// EOS_UserInfo_BestDisplayName_Release.
 final class _tagEOS_UserInfo_BestDisplayName extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_BESTDISPLAYNAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the user
   external EOS_EpicAccountId UserId;
 
-  /// The display name (un-sanitized). This may be null
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// The raw display name (sanitized). This may be null
   external ffi.Pointer<ffi.Char> DisplayNameSanitized;
 
-  /// A nickname/alias for the target user assigned by the local user. This may
-  /// be null
   external ffi.Pointer<ffi.Char> Nickname;
 
-  /// The platform type for the user which corresponds to the display name
   @EOS_OnlinePlatformType()
   external int PlatformType;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyBestDisplayName function.
 final class _tagEOS_UserInfo_CopyBestDisplayNameOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_COPYBESTDISPLAYNAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyBestDisplayNameWithPlatform
-/// function.
 final class _tagEOS_UserInfo_CopyBestDisplayNameWithPlatformOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_COPYBESTDISPLAYNAMEWITHPLATFORM_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 
-  /// The platform type of the player whose information is being retrieved
   @EOS_OnlinePlatformType()
   external int TargetPlatformType;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyExternalUserInfoByAccountId
-/// function.
 final class _tagEOS_UserInfo_CopyExternalUserInfoByAccountIdOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_COPYEXTERNALUSERINFOBYACCOUNTID_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 
-  /// The external account ID associated with the (external) user info to
-  /// retrieve from the cache; cannot be null
   external ffi.Pointer<ffi.Char> AccountId;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyExternalUserInfoByAccountType
-/// function.
 final class _tagEOS_UserInfo_CopyExternalUserInfoByAccountTypeOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_COPYEXTERNALUSERINFOBYACCOUNTTYPE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 
-  /// Account type of the external user info to retrieve from the cache
   @ffi.UnsignedInt()
   external int AccountTypeAsInt;
 
@@ -26627,45 +20873,32 @@ final class _tagEOS_UserInfo_CopyExternalUserInfoByAccountTypeOptions
       AccountTypeAsInt = value.value;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyExternalUserInfoByIndex function.
 final class _tagEOS_UserInfo_CopyExternalUserInfoByIndexOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_COPYEXTERNALUSERINFOBYINDEX_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 
-  /// Index of the external user info to retrieve from the cache
   @ffi.Uint32()
   external int Index;
 }
 
-/// Input parameters for the EOS_UserInfo_CopyUserInfo function.
 final class _tagEOS_UserInfo_CopyUserInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_COPYUSERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Contains information about a single external user info.
 final class _tagEOS_UserInfo_ExternalUserInfo extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_EXTERNALUSERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The type of the external account
   @ffi.UnsignedInt()
   external int AccountTypeAsInt;
 
@@ -26674,99 +20907,69 @@ final class _tagEOS_UserInfo_ExternalUserInfo extends ffi.Struct {
   set AccountType(EOS_EExternalAccountType value) =>
       AccountTypeAsInt = value.value;
 
-  /// The ID of the external account. Can be null
   external ffi.Pointer<ffi.Char> AccountId;
 
-  /// The display name of the external account (un-sanitized). Can be null
   external ffi.Pointer<ffi.Char> DisplayName;
 
-  /// The display name of the external account (sanitized). Can be null
   external ffi.Pointer<ffi.Char> DisplayNameSanitized;
 }
 
-/// Input parameters for the EOS_UserInfo_GetExternalUserInfoCount function.
 final class _tagEOS_UserInfo_GetExternalUserInfoCountOptions
     extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_GETEXTERNALUSERINFOCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_UserInfo_GetLocalPlatformType function.
 final class _tagEOS_UserInfo_GetLocalPlatformTypeOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_GETLOCALPLATFORMTYPE_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 }
 
-/// Output parameters for the EOS_UserInfo_QueryUserInfoByDisplayName Function.
 final class _tagEOS_UserInfo_QueryUserInfoByDisplayNameCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UserInfo_QueryUserInfoByDisplayName
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 
-  /// Display name (un-sanitized) of the player being queried. This memory is
-  /// only valid during the scope of the callback.
   external ffi.Pointer<ffi.Char> DisplayName;
 }
 
-/// Input parameters for the EOS_UserInfo_QueryUserInfoByDisplayName function.
 final class _tagEOS_UserInfo_QueryUserInfoByDisplayNameOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_QUERYUSERINFOBYDISPLAYNAME_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// Raw display name (un-sanitized) of the player being queried
   external ffi.Pointer<ffi.Char> DisplayName;
 }
 
-/// Output parameters for the EOS_UserInfo_QueryUserInfoByExternalAccount
-/// Function.
 final class _tagEOS_UserInfo_QueryUserInfoByExternalAccountCallbackInfo
     extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UserInfo_QueryUserInfoByExternalAccount
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local player who requested the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// External account id of the user whose information has been retrieved
   external ffi.Pointer<ffi.Char> ExternalAccountId;
 
-  /// Account type of the external account id
   @ffi.UnsignedInt()
   external int AccountTypeAsInt;
 
@@ -26775,26 +20978,18 @@ final class _tagEOS_UserInfo_QueryUserInfoByExternalAccountCallbackInfo
   set AccountType(EOS_EExternalAccountType value) =>
       AccountTypeAsInt = value.value;
 
-  /// Account ID of the player whose information has been retrieved
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_UserInfo_QueryUserInfoByExternalAccount
-/// function.
 final class _tagEOS_UserInfo_QueryUserInfoByExternalAccountOptions
     extends ffi.Struct {
-  /// API Version: Set this to
-  /// EOS_USERINFO_QUERYUSERINFOBYEXTERNALACCOUNT_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// External account ID of the user whose information is being retrieved
   external ffi.Pointer<ffi.Char> ExternalAccountId;
 
-  /// Account type of the external user info to query
   @ffi.UnsignedInt()
   external int AccountTypeAsInt;
 
@@ -26804,35 +20999,25 @@ final class _tagEOS_UserInfo_QueryUserInfoByExternalAccountOptions
       AccountTypeAsInt = value.value;
 }
 
-/// Output parameters for the EOS_UserInfo_QueryUserInfo Function.
 final class _tagEOS_UserInfo_QueryUserInfoCallbackInfo extends ffi.Struct {
-  /// The EOS_EResult code for the operation. EOS_Success indicates that the
-  /// operation succeeded; other codes indicate errors.
   @ffi.UnsignedInt()
   external int ResultCodeAsInt;
 
   EOS_EResult get ResultCode => EOS_EResult.fromValue(ResultCodeAsInt);
   set ResultCode(EOS_EResult value) => ResultCodeAsInt = value.value;
 
-  /// Context that was passed into EOS_UserInfo_QueryUserInfo
   external ffi.Pointer<ffi.Void> ClientData;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 }
 
-/// Input parameters for the EOS_UserInfo_QueryUserInfo function.
 final class _tagEOS_UserInfo_QueryUserInfoOptions extends ffi.Struct {
-  /// API Version: Set this to EOS_USERINFO_QUERYUSERINFO_API_LATEST.
   @ffi.Int32()
   external int ApiVersion;
 
-  /// The Epic Account ID of the local player requesting the information
   external EOS_EpicAccountId LocalUserId;
 
-  /// The Epic Account ID of the player whose information is being retrieved
   external EOS_EpicAccountId TargetUserId;
 }

@@ -20,6 +20,16 @@ redistribute. In particular:
   cache into *your* project at setup time. To ship a product you must obtain and
   distribute the native library under your own Steamworks agreement. See
   `packages/unified_game_services_steam/README.md`.
+- **The Epic Online Services SDK is not included here.** The EOS SDK (headers,
+  libraries, and their documentation text) is distributed by Epic under its own
+  license and is not redistributable; `.eos-sdk/` is gitignored and never
+  committed. The committed FFI bindings
+  (`packages/unified_game_services_epic/lib/src/eos_bindings.dart`) describe
+  only the functional API surface (symbol names, signatures, struct layouts,
+  constants) needed for interoperability and deliberately contain **no**
+  documentation text from Epic's headers (ffigen runs with `comments: false`).
+  To build and ship a product you must obtain the EOS SDK and runtime library
+  under your own Epic developer agreement.
 
 ## Trademarks
 

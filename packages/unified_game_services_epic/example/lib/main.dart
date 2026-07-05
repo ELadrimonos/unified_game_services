@@ -23,7 +23,9 @@ class EosExampleApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF0F0F1A),
         cardTheme: CardThemeData(
           color: const Color(0xFF1A1A2E),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           elevation: 4,
         ),
       ),
@@ -58,15 +60,19 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
   late final _fields = <String, TextEditingController>{
     'EOS_PRODUCT_ID': TextEditingController(text: _envOrNull('EOS_PRODUCT_ID')),
     'EOS_SANDBOX_ID': TextEditingController(text: _envOrNull('EOS_SANDBOX_ID')),
-    'EOS_DEPLOYMENT_ID':
-        TextEditingController(text: _envOrNull('EOS_DEPLOYMENT_ID')),
+    'EOS_DEPLOYMENT_ID': TextEditingController(
+      text: _envOrNull('EOS_DEPLOYMENT_ID'),
+    ),
     'EOS_CLIENT_ID': TextEditingController(text: _envOrNull('EOS_CLIENT_ID')),
-    'EOS_CLIENT_SECRET':
-        TextEditingController(text: _envOrNull('EOS_CLIENT_SECRET')),
+    'EOS_CLIENT_SECRET': TextEditingController(
+      text: _envOrNull('EOS_CLIENT_SECRET'),
+    ),
     'EOS_DEV_AUTH_HOST': TextEditingController(
-        text: _envOrNull('EOS_DEV_AUTH_HOST') ?? 'localhost:20304'),
-    'EOS_DEV_AUTH_CRED':
-        TextEditingController(text: _envOrNull('EOS_DEV_AUTH_CRED')),
+      text: _envOrNull('EOS_DEV_AUTH_HOST') ?? 'localhost:20304',
+    ),
+    'EOS_DEV_AUTH_CRED': TextEditingController(
+      text: _envOrNull('EOS_DEV_AUTH_CRED'),
+    ),
     'EOS_SDK_DIR': TextEditingController(text: _envOrNull('EOS_SDK_DIR')),
   };
 
@@ -116,9 +122,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
         devAuthHost: _fieldOrNull('EOS_DEV_AUTH_HOST'),
         devAuthCredentialName: _fieldOrNull('EOS_DEV_AUTH_CRED'),
         libraryPath: _sdkLibraryPath(),
-        achievementIds: {
-          'TEST': 'TEST_ACHIEVEMENT'
-        }
+        achievementIds: {'TEST': 'TEST_ACHIEVEMENT'},
       );
 
       final player = await _provider!.signIn();
@@ -179,7 +183,9 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             content: Text('🏆 "${achievement.title}" unlocked!'),
             backgroundColor: const Color(0xFF00D4FF).withOpacity(0.9),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         );
       }
@@ -210,10 +216,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: switch (_appState) {
-          _AppState.idle   => _buildIdle(),
+          _AppState.idle => _buildIdle(),
           _AppState.signingIn => _buildLoading('Signing in to Epic Games...'),
-          _AppState.ready  => _buildDashboard(),
-          _AppState.error  => _buildError(),
+          _AppState.ready => _buildDashboard(),
+          _AppState.error => _buildError(),
         },
       ),
     );
@@ -230,18 +236,26 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 16),
-              const Icon(Icons.sports_esports,
-                  size: 64, color: Color(0xFF00D4FF)),
+              const Icon(
+                Icons.sports_esports,
+                size: 64,
+                color: Color(0xFF00D4FF),
+              ),
               const SizedBox(height: 12),
-              const Text('EOS Flutter Test',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2)),
+              const Text(
+                'EOS Flutter Test',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
               const SizedBox(height: 24),
-              const Text('Credentials (Dev Portal)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Credentials (Dev Portal)',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               _formField('EOS_PRODUCT_ID', 'Product ID'),
               _formField('EOS_SANDBOX_ID', 'Sandbox ID'),
@@ -249,8 +263,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               _formField('EOS_CLIENT_ID', 'Client ID'),
               _formField('EOS_CLIENT_SECRET', 'Client Secret', obscure: true),
               const SizedBox(height: 16),
-              const Text('Developer Auth Tool (real EAS login)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Developer Auth Tool (real EAS login)',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 4),
               const Text(
                 'Empty → anonymous Device ID login (no real profile or friends).',
@@ -262,8 +278,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               const SizedBox(height: 16),
               const Text('SDK', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              _formField('EOS_SDK_DIR',
-                  'EOS_SDK_DIR path (empty = dylib on PATH/rpath)'),
+              _formField(
+                'EOS_SDK_DIR',
+                'EOS_SDK_DIR path (empty = dylib on PATH/rpath)',
+              ),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: _signIn,
@@ -324,8 +342,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
             const SizedBox(height: 16),
-            const Text('Sign-in error',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text(
+              'Sign-in error',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
@@ -372,9 +392,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               onPressed: _loadingAchievements ? null : _loadAchievements,
               icon: _loadingAchievements
                   ? const SizedBox(
-                width: 20, height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(Icons.refresh),
             ),
           ],
@@ -386,7 +407,9 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
         // Achievement list
         if (_loadingAchievements && _achievements.isEmpty)
           const SliverFillRemaining(
-            child: Center(child: CircularProgressIndicator(color: Color(0xFF00D4FF))),
+            child: Center(
+              child: CircularProgressIndicator(color: Color(0xFF00D4FF)),
+            ),
           )
         else if (_achievements.isEmpty)
           SliverFillRemaining(
@@ -394,11 +417,16 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.emoji_events_outlined,
-                      size: 64, color: Colors.white.withOpacity(0.3)),
+                  Icon(
+                    Icons.emoji_events_outlined,
+                    size: 64,
+                    color: Colors.white.withOpacity(0.3),
+                  ),
                   const SizedBox(height: 12),
-                  Text('No achievements available',
-                      style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                  Text(
+                    'No achievements available',
+                    style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  ),
                 ],
               ),
             ),
@@ -429,8 +457,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             children: [
               const Icon(Icons.people_alt, color: Color(0xFF00D4FF), size: 20),
               const SizedBox(width: 8),
-              const Text('Epic Friends',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Epic Friends',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const Spacer(),
               FilledButton.tonalIcon(
                 onPressed: _loadingFriends ? null : _loadFriends,
@@ -438,7 +468,8 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
                     ? const SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2))
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : const Icon(Icons.download, size: 18),
                 label: const Text('Load'),
               ),
@@ -450,14 +481,19 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               child: Text(
                 _friendsError!,
                 style: const TextStyle(
-                    color: Colors.redAccent, fontSize: 12, fontFamily: 'monospace'),
+                  color: Colors.redAccent,
+                  fontSize: 12,
+                  fontFamily: 'monospace',
+                ),
               ),
             )
           else if (_friends.isEmpty && !_loadingFriends)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('No friends loaded.',
-                  style: TextStyle(color: Colors.white38, fontSize: 12)),
+              child: Text(
+                'No friends loaded.',
+                style: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
             )
           else
             ..._friends.map(
@@ -470,9 +506,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
                   child: Icon(Icons.person, size: 18, color: Color(0xFF00D4FF)),
                 ),
                 title: Text(f.displayName),
-                subtitle: Text(f.id,
-                    style:
-                        const TextStyle(fontFamily: 'monospace', fontSize: 10)),
+                subtitle: Text(
+                  f.id,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 10),
+                ),
               ),
             ),
           const Divider(height: 24),
@@ -500,24 +537,33 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               CircleAvatar(
                 radius: 24,
                 backgroundColor: const Color(0xFF00D4FF).withOpacity(0.2),
-                child: const Icon(Icons.person, color: Color(0xFF00D4FF), size: 28),
+                child: const Icon(
+                  Icons.person,
+                  color: Color(0xFF00D4FF),
+                  size: 28,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_player?.displayName ?? 'Connected player',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(
+                      _player?.displayName ?? 'Connected player',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     Text(
                       _player != null
                           ? '${_player!.id.substring(0, 8)}...${_player!.id.substring(_player!.id.length - 6)}'
                           : '—',
                       style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          color: Color(0xFF00D4FF)),
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        color: Color(0xFF00D4FF),
+                      ),
                     ),
                   ],
                 ),
@@ -568,19 +614,23 @@ class _AchievementCard extends StatelessWidget {
             children: [
               // Icon / trophy
               Container(
-                width: 52, height: 52,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
                   color: accent.withOpacity(0.1),
                   shape: BoxShape.circle,
-                  border: Border.all(color: accent.withOpacity(0.4), width: 1.5),
+                  border: Border.all(
+                    color: accent.withOpacity(0.4),
+                    width: 1.5,
+                  ),
                 ),
-                child: achievement.iconUrl != null ?
-                    Image.network(achievement.iconUrl!)
+                child: achievement.iconUrl != null
+                    ? Image.network(achievement.iconUrl!)
                     : Icon(
-                  unlocked ? Icons.emoji_events : Icons.lock_outline,
-                  color: accent,
-                  size: 26,
-                ),
+                        unlocked ? Icons.emoji_events : Icons.lock_outline,
+                        color: accent,
+                        size: 26,
+                      ),
               ),
               const SizedBox(width: 16),
 
@@ -601,20 +651,26 @@ class _AchievementCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         achievement.description ?? 'No description',
-                        style: const TextStyle(color: Colors.white38, fontSize: 12),
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    if (achievement.unlockedAt != null) ... [
+                    if (achievement.unlockedAt != null) ...[
                       const SizedBox(height: 4),
                       Text(
                         achievement.unlockedAt!.toUtc().toString(),
-                        style: const TextStyle(color: Colors.white38, fontSize: 10),
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 10,
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ]
+                    ],
                   ],
                 ),
               ),
@@ -645,7 +701,9 @@ class _StatusChip extends StatelessWidget {
             : Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: unlocked ? const Color(0xFFFFD700).withOpacity(0.5) : Colors.white12,
+          color: unlocked
+              ? const Color(0xFFFFD700).withOpacity(0.5)
+              : Colors.white12,
         ),
       ),
       child: Text(
@@ -670,10 +728,18 @@ class _StatBadge extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(value,
-            style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF00D4FF))),
-        Text(label, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF00D4FF),
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white38, fontSize: 11),
+        ),
       ],
     );
   }

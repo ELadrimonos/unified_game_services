@@ -29,6 +29,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     Map<String, String>? achievementIds,
   }) => throw UnsupportedError(_kWebError);
 
+  @override
   Future<void> dispose() => throw UnsupportedError(_kWebError);
 
   Future<void> clearAchievement(String achievementId) =>

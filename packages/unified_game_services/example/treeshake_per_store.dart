@@ -60,7 +60,10 @@ Future<void> main() async {
   // build without --define=ENABLE_STEAM=true drops it entirely (desktop-only).
   if (kEnableSteam) {
     providers.add(
-      SteamProvider(appId: 480, achievementIds: {'first_win': 'ACH_WIN_ONE_GAME'}),
+      SteamProvider(
+        appId: 480,
+        achievementIds: {'first_win': 'ACH_WIN_ONE_GAME'},
+      ),
     );
   }
 

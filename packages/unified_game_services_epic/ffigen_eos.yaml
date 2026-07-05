@@ -46,6 +46,8 @@ unnamed-enums:
 preamble: |
   // GENERATED — do not edit by hand. Regenerate with ffigen_eos.yaml.
   // ignore_for_file: type=lint, unused_element, unused_field, camel_case_types, non_constant_identifier_names, constant_identifier_names, library_private_types_in_public_api
-comments:
-  style: any
-  length: brief
+# Doc comments are disabled on purpose: the EOS headers are EULA-gated and
+# their Doxygen prose is Epic's copyrighted text — it must not be reproduced
+# in this (MIT-licensed, publishable) file. Only the functional API surface
+# (names, signatures, struct layouts, constants) is emitted.
+comments: false

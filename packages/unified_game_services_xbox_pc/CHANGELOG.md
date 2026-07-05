@@ -1,3 +1,6 @@
-## 1.0.0
+# Changelog
 
-- Initial version.
+## 0.1.0
+
+- Research placeholder — no provider implemented yet (`publish_to: none`).
+  The Microsoft GDK is license-gated; see the README for the integration plan.

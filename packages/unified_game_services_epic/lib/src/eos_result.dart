@@ -38,6 +38,7 @@ GameServiceException? mapEosResult(int code, String op) {
     case EosResult.timedOut:
     case EosResult.tooManyRequests:
     case EosResult.operationWillRetry:
+    case EosResult.serviceFailure:
       return NetworkException('EOS $op: network error (code $code).');
     case EosResult.invalidCredentials:
     case EosResult.invalidAuth:

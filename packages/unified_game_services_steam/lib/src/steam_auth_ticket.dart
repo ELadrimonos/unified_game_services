@@ -35,5 +35,6 @@ class SteamAuthTicket {
   }
 
   @override
-  String toString() => 'SteamAuthTicket(handle: $handle, ${bytes.length} bytes)';
+  String toString() =>
+      'SteamAuthTicket(handle: $handle, ${bytes.length} bytes)';
 }

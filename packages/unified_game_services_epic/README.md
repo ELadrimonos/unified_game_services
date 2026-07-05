@@ -57,19 +57,24 @@ license-gated and not redistributable):
    `encryptionKey` for cloud save). Never commit `clientSecret`.
 
 ```dart
-final provider = EpicProvider(
-  credentials: EpicCredentials(
-    productId: '…', sandboxId: '…', deploymentId: '…',
-    clientId: '…', clientSecret: '…',
+final services = UnifiedGameServices(providers: [
+  EpicProvider(
+    credentials: EpicCredentials(
+      productId: '…', sandboxId: '…', deploymentId: '…',
+      clientId: '…', clientSecret: '…',
+    ),
   ),
-);
-UnifiedGameServicesPlatform.instance = provider; // or EpicProvider.registerWith(...)
+]);
 
-await provider.signIn();                                   // anonymous Device ID → PUID
-await provider.unlockAchievement('ACHIEVEMENT_ID');
-await provider.submitScore(leaderboardId: 'STAT_NAME', score: 100);
-await provider.getAchievements();                          // read path (definitions + state)
+await services.signIn();                                   // anonymous Device ID → PUID
+await services.unlockAchievement('ACHIEVEMENT_ID');
+await services.submitScore(leaderboardId: 'STAT_NAME', score: 100);
+await services.getAchievements();                          // read path (definitions + state)
 ```
+
+(Or register globally with `EpicProvider.registerWith(...)` — it takes the same
+parameters as the constructor — and construct `UnifiedGameServices()` with no
+arguments.)
 
 ## Sign-in: anonymous vs Epic Account Services (EAS)
 

@@ -35,9 +35,13 @@ class _CbResult {
 
 /// Epic Online Services provider, backed by the EOS C SDK via dart:ffi.
 class EpicProvider extends UnifiedGameServicesPlatform {
+  /// [launchArgs] — pass `main()`'s arguments to auto-extract the Epic
+  /// Launcher exchange code (`-AUTH_PASSWORD=...`); an explicit [exchangeCode]
+  /// takes precedence.
   EpicProvider({
     required this.credentials,
-    this.exchangeCode,
+    String? exchangeCode,
+    List<String>? launchArgs,
     this.devAuthHost,
     this.devAuthCredentialName,
     this.libraryPath,
@@ -45,7 +49,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     bool debugLogging = false,
     super.leaderboardIds,
     super.achievementIds,
-  }) {
+  }) : exchangeCode = exchangeCode ?? _extractExchangeCode(launchArgs) {
     // EOS is desktop-only. dart:ffi compiles on Android/iOS, but the EOS
     // runtime lib does not exist there — fail fast with a clear message
     // instead of a cryptic DynamicLibrary.open error later.
@@ -504,18 +508,30 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
   }
 
-  /// @param launchArgs Pass main() arguments to extract Epic Launcher's EAS token
+  /// Registers an [EpicProvider] as the active platform. Mirrors the
+  /// constructor's parameters; [launchArgs] — pass `main()`'s arguments to
+  /// auto-extract the Epic Launcher exchange code (`-AUTH_PASSWORD=...`).
   static void registerWith({
     required EpicCredentials credentials,
-    String? libraryPath,
+    String? exchangeCode,
     List<String>? launchArgs,
+    String? devAuthHost,
+    String? devAuthCredentialName,
+    String? libraryPath,
+    Duration tickInterval = const Duration(milliseconds: 100),
+    bool debugLogging = false,
     Map<String, String>? leaderboardIds,
     Map<String, String>? achievementIds,
   }) {
     UnifiedGameServicesPlatform.instance = EpicProvider(
       credentials: credentials,
+      exchangeCode: exchangeCode,
+      launchArgs: launchArgs,
+      devAuthHost: devAuthHost,
+      devAuthCredentialName: devAuthCredentialName,
       libraryPath: libraryPath,
-      exchangeCode: _extractExchangeCode(launchArgs),
+      tickInterval: tickInterval,
+      debugLogging: debugLogging,
       leaderboardIds: leaderboardIds,
       achievementIds: achievementIds,
     );
@@ -633,6 +649,17 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
 
     _eos = eos;
+
+    // Background pump: EOS callbacks (notifications, late completions) only
+    // fire inside EOS_Platform_Tick, so tick continuously — not just while a
+    // _track call is in flight.
+    _pump = Timer.periodic(tickInterval, (_) {
+      final platform = _platform;
+      if (platform != null && platform != nullptr) {
+        eos.EOS_Platform_Tick(platform);
+      }
+    });
+
     return eos;
   }
 
@@ -660,12 +687,15 @@ class EpicProvider extends UnifiedGameServicesPlatform {
       if (_eos != null && _platform != null) {
         _eos!.EOS_Platform_Tick(_platform!);
       }
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future.delayed(tickInterval);
     }
 
     if (!completer.isCompleted) {
-      _pending.remove(token);
-      calloc.free(tokenPtr);
+      // The native operation may still be in flight: its callback owns the
+      // token memory and is the only place allowed to free it. Leave the
+      // _pending entry in place so a late callback finds its completer,
+      // frees tokenPtr, and completes into the void — removing/freeing here
+      // would make that late callback read freed memory and double-free.
       if (treatTimeoutAsSuccess) {
         // For CreateDeviceId, a timeout most likely means the device id
         // already exists, so treat it as EOS_DuplicateNotAllowed (24).
@@ -788,13 +818,15 @@ class EpicProvider extends UnifiedGameServicesPlatform {
         ),
       );
       _log('🔐 [EOS] Login result: ${res.code}');
-      if (res.code == EosResult.invalidUser) {
-        throw const SignInFailedException(
-          'EOS_Connect_Login needs EOS_Connect_CreateUser for first-time login.',
-        );
+      if (res.code == EosResult.invalidUser &&
+          res.continuanceToken != null &&
+          res.continuanceToken != nullptr) {
+        // First-time login with this Device ID: create the Connect user.
+        _localUserId = await _createConnectUser(eos, res.continuanceToken!);
+      } else {
+        checkEosResult(res.code, 'EOS_Connect_Login');
+        _localUserId = res.localUserId;
       }
-      checkEosResult(res.code, 'EOS_Connect_Login');
-      _localUserId = res.localUserId;
       _puid = _productUserIdToString(eos, _localUserId);
       _log('🔐 [EOS] Logged in as PUID: $_puid');
     } finally {
@@ -2054,6 +2086,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   DateTime _now() => DateTime.now();
 
+  @override
   Future<void> dispose() async {
     _pump?.cancel();
     _pump = null;

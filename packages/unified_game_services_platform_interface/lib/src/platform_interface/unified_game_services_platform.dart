@@ -225,4 +225,12 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Returns the signed-in player's friends.
   Future<List<PlayerProfile>> getFriends() =>
       throw UnimplementedError('getFriends() has not been implemented.');
+
+  // ─── Lifecycle ───────────────────────────────────────────────────────────
+
+  /// Releases any resources the provider holds (timers, HTTP clients, native
+  /// SDK handles, event streams). Safe to call more than once. The default
+  /// implementation is a no-op so providers without resources need not
+  /// override it.
+  Future<void> dispose() async {}
 }

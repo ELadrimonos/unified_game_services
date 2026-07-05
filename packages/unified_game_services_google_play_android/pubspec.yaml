@@ -5,7 +5,7 @@ name: unified_game_services_google_play_android
 # platform but only RUNS on Android (the Play Games SDK loads only there).
 resolution: workspace
 description: Native Google Play Games provider for unified_game_services via the Play Games v2 Java SDK over package:jni (pure Dart, no Flutter). Android only; fires native achievement/leaderboard UI.
-version: 0.0.1
+version: 0.1.0
 publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
 
@@ -26,7 +26,7 @@ environment:
 dependencies:
   # jnigen 0.16.0 generates against the jni 1.0.0 API (`.object<T>()`).
   jni: ^1.0.0
-  unified_game_services_platform_interface: ^0.0.1
+  unified_game_services_platform_interface: ^0.1.0
 
 screenshots:
   - path: screenshot.png

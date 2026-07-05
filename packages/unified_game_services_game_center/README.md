@@ -41,20 +41,25 @@ capability is pure Dart, but the surrounding environment is the host's job.
 ## Usage
 
 ```dart
+import 'package:unified_game_services/unified_game_services.dart';
 import 'package:unified_game_services_game_center/unified_game_services_game_center.dart';
-import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
-GameCenterProvider.registerWith(
-  leaderboardIds: {'global': 'com.example.game.highscores'},
-  achievementIds: {'first_win': 'com.example.game.firstwin'},
-);
-final services = UnifiedGameServicesPlatform.instance;
+final services = UnifiedGameServices(providers: [
+  GameCenterProvider(
+    leaderboardIds: {'global': 'com.example.game.highscores'},
+    achievementIds: {'first_win': 'com.example.game.firstwin'},
+  ),
+]);
 
 final player = await services.signIn();
 await services.unlockAchievement('first_win');
 await services.submitScore(leaderboardId: 'global', score: 4200);
 final board = await services.getLeaderboard('global', maxResults: 10);
 ```
+
+(Or register globally with `GameCenterProvider.registerWith(...)` and construct
+`UnifiedGameServices()` with no arguments — both styles work with every
+provider.)
 
 See [`example/`](example/) for a complete sample.
 

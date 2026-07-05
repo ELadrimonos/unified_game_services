@@ -21,9 +21,10 @@ void main() {
         GameCapability.achievements,
         GameCapability.leaderboards,
         GameCapability.stats,
+        GameCapability.friends,
+        GameCapability.presence,
+        GameCapability.cloudSave,
       });
-      expect(provider.supports(GameCapability.cloudSave), isFalse);
-      expect(provider.supports(GameCapability.friends), isFalse);
     });
 
     test('registerWith installs itself as the active platform', () {

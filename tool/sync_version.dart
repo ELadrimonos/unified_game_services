@@ -24,19 +24,22 @@ void main(List<String> args) {
     exit(1);
   }
 
-  final pubspecs = Directory('${root.path}/packages')
-      .listSync()
-      .whereType<Directory>()
-      .map((d) => File('${d.path}/pubspec.yaml'))
-      .where((f) => f.existsSync())
-      .toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  final pubspecs =
+      Directory('${root.path}/packages')
+          .listSync()
+          .whereType<Directory>()
+          .map((d) => File('${d.path}/pubspec.yaml'))
+          .where((f) => f.existsSync())
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
 
   // Collect every workspace package name so we can rewrite internal deps.
   final names = <String>{};
   for (final f in pubspecs) {
-    final m = RegExp(r'^name:\s*(\S+)', multiLine: true)
-        .firstMatch(f.readAsStringSync());
+    final m = RegExp(
+      r'^name:\s*(\S+)',
+      multiLine: true,
+    ).firstMatch(f.readAsStringSync());
     if (m != null) names.add(m.group(1)!);
   }
 
@@ -54,8 +57,10 @@ void main(List<String> args) {
     // Internal dependency constraints: `  <pkg>: ^x.y.z` (skip path: deps).
     for (final name in names) {
       updated = updated.replaceAllMapped(
-        RegExp('^(\\s+)' + RegExp.escape(name) + r':\s*\^?\d[^\n]*$',
-            multiLine: true),
+        RegExp(
+          '^(\\s+)' + RegExp.escape(name) + r':\s*\^?\d[^\n]*$',
+          multiLine: true,
+        ),
         (m) => '${m.group(1)}$name: ^$master',
       );
     }
@@ -76,7 +81,9 @@ void main(List<String> args) {
     stderr.writeln('check failed: package versions out of sync with VERSION');
     exit(1);
   }
-  stdout.writeln(changed
-      ? (check ? 'out of sync' : 'all packages synced to $master')
-      : 'already synced to $master');
+  stdout.writeln(
+    changed
+        ? (check ? 'out of sync' : 'all packages synced to $master')
+        : 'already synced to $master',
+  );
 }

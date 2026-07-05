@@ -19,6 +19,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   EpicProvider({
     required this.credentials,
     this.exchangeCode,
+    List<String>? launchArgs,
     this.devAuthHost,
     this.devAuthCredentialName,
     this.libraryPath,
@@ -43,11 +44,17 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   static void registerWith({
     required EpicCredentials credentials,
-    String? libraryPath,
+    String? exchangeCode,
     List<String>? launchArgs,
+    String? devAuthHost,
+    String? devAuthCredentialName,
+    String? libraryPath,
+    Duration tickInterval = const Duration(milliseconds: 100),
+    bool debugLogging = false,
     Map<String, String>? leaderboardIds,
     Map<String, String>? achievementIds,
   }) => throw UnsupportedError(_kWebError);
 
+  @override
   Future<void> dispose() => throw UnsupportedError(_kWebError);
 }

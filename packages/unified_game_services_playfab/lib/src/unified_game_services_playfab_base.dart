@@ -77,6 +77,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     bool createAccount = true,
     http.Client? httpClient,
     Map<String, String>? leaderboardIds,
+    Map<String, String>? achievementIds,
   }) {
     UnifiedGameServicesPlatform.instance = PlayFabProvider(
       titleId: titleId,
@@ -85,6 +86,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
       createAccount: createAccount,
       httpClient: httpClient,
       leaderboardIds: leaderboardIds,
+      achievementIds: achievementIds,
     );
   }
 
@@ -373,6 +375,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   /// Closes the HTTP client and events stream.
+  @override
   Future<void> dispose() async {
     _client.close();
     await _events.close();

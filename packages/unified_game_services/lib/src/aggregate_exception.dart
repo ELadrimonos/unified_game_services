@@ -8,7 +8,7 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 /// rolled back.
 class AggregateGameServiceException extends GameServiceException {
   AggregateGameServiceException(this.operation, this.errors)
-      : super('$operation failed on ${errors.length} provider(s).');
+    : super('$operation failed on ${errors.length} provider(s).');
 
   /// Name of the fan-out operation (e.g. `unlockAchievement`).
   final String operation;
