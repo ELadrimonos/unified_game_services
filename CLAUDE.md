@@ -125,9 +125,16 @@ typed accessor:
 
 Pure-Dart-reachable providers ship first:
 
-- **Steam** — Steamworks C API via `dart:ffi`.
+- **Steam** — Steamworks C API via `dart:ffi`. Desktop-only: the entry point
+  conditional-exports a web stub (`if (dart.library.io)`) so importing it never
+  breaks a web build (stub throws `UnsupportedError`), and the real ctor throws
+  on Android/iOS — consumers no longer need the example's wiring for web-safety.
 - **GameJolt** — REST API.
-- **Epic** — EOS C SDK via `dart:ffi` (**SDK-first, not REST**). Unlike Google
+- **Epic** — EOS C SDK via `dart:ffi` (**SDK-first, not REST**). Desktop-only:
+  the entry point conditional-exports a web `EpicProvider` stub
+  (`if (dart.library.io)`; `EpicCredentials` stays available everywhere) so a web
+  build never breaks (stub throws `UnsupportedError`), and the real ctor throws
+  on Android/iOS. Unlike Google
   Play (REST is the primary tier), the EOS **Web API does not expose
   achievements/leaderboards/stats/cloud-save/presence over REST** — those are
   SDK-only; REST surfaces just friends(read) + display-name lookups. So the real

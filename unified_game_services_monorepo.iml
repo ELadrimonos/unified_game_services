@@ -6,6 +6,30 @@
       <excludeFolder url="file://$MODULE_DIR$/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/example/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/example/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_android/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_flutter/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_rest/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_rest/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_google_play_rest/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_playfab/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_playfab/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_playfab/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_xbox_pc/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_xbox_pc/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/unified_game_services_xbox_pc/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Dart SDK" level="project" />

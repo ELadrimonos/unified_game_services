@@ -46,6 +46,16 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     super.leaderboardIds,
     super.achievementIds,
   }) {
+    // EOS is desktop-only. dart:ffi compiles on Android/iOS, but the EOS
+    // runtime lib does not exist there — fail fast with a clear message
+    // instead of a cryptic DynamicLibrary.open error later.
+    if (Platform.isAndroid || Platform.isIOS) {
+      throw UnsupportedError(
+        'EpicProvider is desktop-only (EOS C SDK via dart:ffi) and cannot run '
+        'on Android/iOS. Do not register it in a mobile build. See the package '
+        'README.',
+      );
+    }
     EpicProvider.debugLogging = debugLogging;
   }
 

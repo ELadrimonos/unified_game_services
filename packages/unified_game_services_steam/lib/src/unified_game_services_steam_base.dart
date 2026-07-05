@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io' show Platform;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -29,7 +30,18 @@ export 'steam_auth_ticket.dart';
 /// Steam delivers async results through a callback pump; this provider drives
 /// it with a periodic [Timer] calling `runFrame`.
 class SteamProvider extends UnifiedGameServicesPlatform {
-  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds});
+  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
+    // Steam is desktop-only. dart:ffi compiles on Android/iOS, but the
+    // Steamworks runtime lib does not exist there — fail fast with a clear
+    // message instead of a cryptic DynamicLibrary.open error later.
+    if (Platform.isAndroid || Platform.isIOS) {
+      throw UnsupportedError(
+        'SteamProvider is desktop-only (Steamworks via dart:ffi) and cannot '
+        'run on Android/iOS. Do not register it in a mobile build. See the '
+        'package README.',
+      );
+    }
+  }
 
   /// Optional Steam application id. If omitted, a `steam_appid.txt` file must
   /// be present.

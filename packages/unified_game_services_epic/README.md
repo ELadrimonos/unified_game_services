@@ -5,6 +5,22 @@ Epic Online Services (EOS) provider for
 backed by the **EOS C SDK via pure-Dart `dart:ffi`**. Desktop only
 (Windows/macOS/Linux).
 
+## Platform support — desktop only
+
+EOS is `dart:ffi`, so it runs **only on Windows, macOS and Linux** — **not** on
+Android, iOS or web. Build each store target for the platform it ships on.
+
+| Platform | Behaviour |
+|----------|-----------|
+| Windows / macOS / Linux | Full support. |
+| Web | The package entry point exports an **inert `EpicProvider` stub** on web (`if (dart.library.io)` selects the real FFI provider). Importing the package never breaks `flutter build web` / `dart compile js`, but the constructor throws `UnsupportedError` — do **not** register Epic on web. `EpicCredentials` stays available everywhere. |
+| Android / iOS | `dart:ffi` compiles, but the EOS runtime lib does not exist there, so the constructor throws `UnsupportedError` — do **not** register Epic on mobile. |
+
+To keep the FFI code out of a mobile/web bundle entirely (not just inert), use a
+per-platform entry point that never imports this package for those targets — see
+the [per-store builds section](https://pub.dev/packages/unified_game_services#per-store-builds-steam-only-epic-only-)
+in the facade README.
+
 ## Why SDK-first (not REST)
 
 Unlike the Google Play provider — where the REST Games API is the primary
