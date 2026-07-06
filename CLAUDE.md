@@ -163,18 +163,18 @@ Pure-Dart-reachable providers ship first:
   CopyLeaderboardRecordByIndex; `getPlayerScore` scans the top-100 ranks page —
   a dedicated QueryLeaderboardUserScores path is a TODO). `debugLogging: true`
   (constructor) toggles verbose FFI traces, off by default. **Runtime-verified on
-  macOS** via the Dev Auth Tool (real display name + friends list). **Gaps:**
-  cloud save (`EOS_HPlayerDataStorage`) and presence (`EOS_HPresence`) — the
-  hand-authored stub ships neither interface's function wrappers, so both await a
-  bindings regen; **no avatar** (the C SDK exposes none —
-  `PlayerProfile.avatarUrl` stays null). EAS also requires
+  macOS** via the Dev Auth Tool (real display name + friends list). Plus
+  **cloud save** (`EOS_HPlayerDataStorage`: `saveData`/`loadData`/`listSaves`/
+  `deleteData`) and **rich presence** (`EOS_HPresence`: `setPresence`) — both now
+  wired via the EOS PDS bindings. **Gaps:** **no avatar** (the C SDK exposes
+  none — `PlayerProfile.avatarUrl` stays null); `getPlayerScore` scans the
+  top-100 ranks page (dedicated `QueryLeaderboardUserScores` path is a TODO).
+  EAS also requires
   **Dev Portal config**: an Epic Account Services Application with the client
   associated + scopes (else `EOS_InvalidRequest` 1012). Capabilities advertised:
-  achievements, leaderboards, stats, **friends**.
-  `lib/src/eos_bindings.dart` is **hand-authored** (so the package compiles
-  without the license-gated headers); the Auth/UserInfo/Friends interfaces are
-  wired here (the three `EOS_Friends_*` function wrappers were **added by hand** —
-  the stub shipped only their option/callback structs). Struct offsets +
+  achievements, leaderboards, stats, **friends, presence, cloudSave**.
+  `lib/src/eos_bindings.dart` is **ffigen-generated** (regenerated to resolve a
+  legality issue — no license-gated headers committed). Struct offsets +
   `*_API_LATEST` constants are **unverified** (work at runtime for exercised
   paths) — regen with `tool/regenerate_bindings.sh` (needs `EOS_SDK_DIR`;
   `melos run epic:gen`) for verified ffigen output. SDK headers/libs are NOT
