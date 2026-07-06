@@ -363,6 +363,7 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   /// Closes the HTTP client and events stream, stopping any session heartbeat.
+  @override
   Future<void> dispose() async {
     _heartbeat?.cancel();
     _heartbeat = null;

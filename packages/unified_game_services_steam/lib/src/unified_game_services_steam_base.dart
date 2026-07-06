@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io' show Platform;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -29,7 +30,18 @@ export 'steam_auth_ticket.dart';
 /// Steam delivers async results through a callback pump; this provider drives
 /// it with a periodic [Timer] calling `runFrame`.
 class SteamProvider extends UnifiedGameServicesPlatform {
-  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds});
+  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
+    // Steam is desktop-only. dart:ffi compiles on Android/iOS, but the
+    // Steamworks runtime lib does not exist there — fail fast with a clear
+    // message instead of a cryptic DynamicLibrary.open error later.
+    if (Platform.isAndroid || Platform.isIOS) {
+      throw UnsupportedError(
+        'SteamProvider is desktop-only (Steamworks via dart:ffi) and cannot '
+        'run on Android/iOS. Do not register it in a mobile build. See the '
+        'package README.',
+      );
+    }
+  }
 
   /// Optional Steam application id. If omitted, a `steam_appid.txt` file must
   /// be present.
@@ -96,6 +108,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// internal resources; skipping it makes Steam log teardown warnings such as
   /// "Trying to close low level socket support, but we still have sockets
   /// open!" when the process exits.
+  @override
   Future<void> dispose() async {
     _pump?.cancel();
     _pump = null;
@@ -572,12 +585,13 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     final client = _ensureInit();
     final completer = Completer<SteamAuthTicket>();
 
-    int request(Pointer<Utf8> id) => client.steamUser.getAuthTicketForWebApi(id);
+    int request(Pointer<Utf8> id) =>
+        client.steamUser.getAuthTicketForWebApi(id);
     final handle = identity == null
         ? request(nullptr)
         : _withUtf8(identity, request);
 
-    if (handle == 0 /* k_HAuthTicketInvalid */) {
+    if (handle == 0 /* k_HAuthTicketInvalid */ ) {
       return Future.error(
         const PlatformOperationException(
           'Steam refused the Web API auth ticket request.',
@@ -644,11 +658,14 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     int callId,
     R Function(Pointer<T>) onOk,
   ) {
+    final client = _ensureInit();
     final completer = Completer<R>();
-    _ensureInit().registerCallResult<T>(
+    late final sw.CallResult<T> callResult;
+    callResult = client.registerCallResult<T>(
       asyncCallId: callId,
       cb: (Pointer<T> data, bool hasFailed) {
         if (completer.isCompleted) return;
+        client.unregisterCallResult(callResult: callResult);
         if (hasFailed) {
           completer.completeError(
             const PlatformOperationException('Steam async call failed.'),
@@ -662,7 +679,15 @@ class SteamProvider extends UnifiedGameServicesPlatform {
         }
       },
     );
-    return completer.future;
+    // Steam may never deliver the result (offline, invalid handle, client
+    // gone); without a timeout every caller would hang forever.
+    return completer.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {
+        client.unregisterCallResult(callResult: callResult);
+        throw const NetworkException('Steam async call timed out.');
+      },
+    );
   }
 
   void _emit(GameServiceEvent event) {

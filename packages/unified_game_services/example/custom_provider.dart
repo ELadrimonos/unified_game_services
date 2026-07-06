@@ -73,9 +73,9 @@ class SupabaseGameProvider extends UnifiedGameServicesPlatform {
   // Declare only what your backend actually does.
   @override
   Set<GameCapability> get capabilities => const {
-        GameCapability.achievements,
-        GameCapability.leaderboards,
-      };
+    GameCapability.achievements,
+    GameCapability.leaderboards,
+  };
 
   @override
   Future<PlayerProfile?> getCurrentPlayer() async {
@@ -95,11 +95,13 @@ class SupabaseGameProvider extends UnifiedGameServicesPlatform {
   Future<List<Achievement>> getAchievements() async {
     final rows = await backend.achievements(playerId);
     return rows
-        .map((r) => Achievement(
-              id: '${r['achievement_id']}',
-              title: '${r['title']}',
-              isUnlocked: r['unlocked_at'] != null,
-            ))
+        .map(
+          (r) => Achievement(
+            id: '${r['achievement_id']}',
+            title: '${r['title']}',
+            isUnlocked: r['unlocked_at'] != null,
+          ),
+        )
         .toList();
   }
 
@@ -111,8 +113,7 @@ class SupabaseGameProvider extends UnifiedGameServicesPlatform {
   Future<void> submitScore({
     required String leaderboardId,
     required int score,
-  }) =>
-      backend.addScore(leaderboardId, playerId, score);
+  }) => backend.addScore(leaderboardId, playerId, score);
 
   @override
   Future<Leaderboard> getLeaderboard(
@@ -125,14 +126,16 @@ class SupabaseGameProvider extends UnifiedGameServicesPlatform {
     final entries = <LeaderboardEntry>[];
     for (var i = 0; i < rows.length; i++) {
       final r = rows[i];
-      entries.add(LeaderboardEntry(
-        rank: i + 1,
-        score: r['score'] as int,
-        player: PlayerProfile(
-          id: '${r['player_id']}',
-          displayName: '${r['display_name']}',
+      entries.add(
+        LeaderboardEntry(
+          rank: i + 1,
+          score: r['score'] as int,
+          player: PlayerProfile(
+            id: '${r['player_id']}',
+            displayName: '${r['display_name']}',
+          ),
         ),
-      ));
+      );
     }
     return Leaderboard(id: leaderboardId, entries: entries);
   }
@@ -152,32 +155,39 @@ class InMemoryBackend implements GameBackend {
 
   @override
   Future<List<Map<String, Object?>>> achievements(String playerId) async => [
-        {
-          'achievement_id': 'first_win',
-          'title': 'First Win',
-          'unlocked_at':
-              _unlocked.contains('first_win') ? '2026-01-01T00:00:00Z' : null,
-        },
-      ];
+    {
+      'achievement_id': 'first_win',
+      'title': 'First Win',
+      'unlocked_at': _unlocked.contains('first_win')
+          ? '2026-01-01T00:00:00Z'
+          : null,
+    },
+  ];
 
   @override
   Future<void> unlock(String playerId, String achievementId) async =>
       _unlocked.add(achievementId);
 
   @override
-  Future<void> addScore(String leaderboardId, String playerId, int score) async =>
-      _scores.add({
-        'leaderboard': leaderboardId,
-        'player_id': playerId,
-        'display_name': _players[playerId]?['display_name'],
-        'score': score,
-      });
+  Future<void> addScore(
+    String leaderboardId,
+    String playerId,
+    int score,
+  ) async => _scores.add({
+    'leaderboard': leaderboardId,
+    'player_id': playerId,
+    'display_name': _players[playerId]?['display_name'],
+    'score': score,
+  });
 
   @override
   Future<List<Map<String, Object?>>> topScores(
-      String leaderboardId, int limit) async {
-    final rows = _scores.where((s) => s['leaderboard'] == leaderboardId).toList()
-      ..sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
+    String leaderboardId,
+    int limit,
+  ) async {
+    final rows =
+        _scores.where((s) => s['leaderboard'] == leaderboardId).toList()
+          ..sort((a, b) => (b['score'] as int).compareTo(a['score'] as int));
     return rows.take(limit).toList();
   }
 }
@@ -185,8 +195,10 @@ class InMemoryBackend implements GameBackend {
 // ─── 4. Use it — alone or unified with Steam/GameJolt ────────────────────────
 
 Future<void> main() async {
-  final supabase =
-      SupabaseGameProvider(backend: InMemoryBackend(), playerId: 'p1');
+  final supabase = SupabaseGameProvider(
+    backend: InMemoryBackend(),
+    playerId: 'p1',
+  );
 
   // Unify with other providers. In a real app, e.g.:
   //   providers: [supabase, SteamProvider(appId: 480)]

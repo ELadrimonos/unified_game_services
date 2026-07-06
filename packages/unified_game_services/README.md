@@ -100,6 +100,79 @@ Back the API with your own database/service by extending
 [`example/custom_provider.dart`](example/custom_provider.dart) for a complete
 template (illustrated with Supabase).
 
+### Per-store builds (Steam-only, Epic-only, …)
+
+Want a Steam-only build and an Epic-only build — and don't care about Google
+Play in the Steam one? You don't need Flutter flavors. This is a federated
+plugin: the facade only fans out to the providers you **register at runtime**, so
+"Steam-only" just means "register only `SteamProvider`". A provider you never
+construct never runs.
+
+The one thing that genuinely differs per store is the **native runtime lib**.
+Steam/Epic/GameCenter reach the OS over FFI, so the host ships a platform lib
+(`steam_api64.dll`/`libsteam_api.dylib` + `steam_appid.txt`;
+`EOSSDK-Win64-Shipping.dll`/`libEOSSDK-Mac-Shipping.dylib`). These are large,
+license-gated, and not cross-redistributable — that, not the Dart code, is the
+real reason to split builds. Google Play is REST (no native lib), so leaving it
+out of a Steam build costs nothing: just don't register it.
+
+Strategies, cheapest first:
+
+1. **Runtime switch** — one binary, pick the store via `--define`:
+   `dart run --define=STORE=epic example/per_store_builds.dart`. Simplest;
+   unused Dart deps still ship. Fine for dev.
+2. **`const bool.fromEnvironment` guards** — one entry point, but the FFI
+   providers are **tree-shaken out** of builds that don't opt in. A `const` flag
+   makes the branch a compile-time constant; unset → const-`false` → the
+   compiler proves the provider unreachable and drops its whole `dart:ffi`
+   closure:
+   ```dart
+   const kEnableSteam = bool.fromEnvironment('ENABLE_STEAM');
+   if (kEnableSteam) providers.add(SteamProvider(appId: 480)); // only reference
+   ```
+   `dart compile exe … --define=ENABLE_STEAM=true` includes it; a plain
+   `flutter build appbundle` (flag unset) removes it. **Reference each FFI
+   provider only inside its guard** — a single reference outside re-anchors the
+   symbol and defeats the shake. This is the closest thing to "automatic per-
+   platform" (Dart has no OS-conditional import), verified: toggling the flags
+   changed a compiled binary by ~260 KB of FFI closure.
+3. **Entry points** — `bin/main_steam.dart` + `bin/main_epic.dart`, each
+   importing only its provider. Dart tree-shaking drops the other's code.
+   Recommended for pure-Dart/CLI targets; package the matching native lib per
+   build.
+4. **Flutter flavors / separate app packages** — real dependency + asset
+   separation. Use when a Flutter app must bundle only one store's native lib +
+   credentials per variant.
+
+Examples: [`example/per_store_builds.dart`](example/per_store_builds.dart)
+(strategy 1, doubles as a strategy-3 entry point) and
+[`example/treeshake_per_store.dart`](example/treeshake_per_store.dart)
+(strategy 2, single entry point + tree-shaking).
+
+#### Steam/Epic are desktop-only
+
+The FFI providers (Steam, Epic) run **only on desktop** (Windows/macOS/Linux) —
+never mobile or web. You don't have to guard them manually:
+
+- **Web** — each FFI package exports an **inert stub** (`if (dart.library.io)`),
+  so importing it never breaks `flutter build web` / `dart compile js`;
+  constructing it throws `UnsupportedError`.
+- **Mobile (Android/iOS)** — `dart:ffi` compiles, but the constructor throws
+  `UnsupportedError` (the native runtime lib isn't there). The native libs are
+  **never auto-bundled** — nothing ships to a mobile/web build automatically.
+
+The stub/runtime guards keep bad builds from crashing cryptically, but a runtime
+gate does **not** tree-shake — the FFI **Dart** is still compiled into a mobile
+bundle as dead code. Dart has no OS-conditional import to drop it automatically;
+to exclude it, make the symbol unreachable at compile time with a
+`const bool.fromEnvironment` guard (strategy 2 above — the closest to automatic)
+or a per-platform entry point that never imports Steam/Epic (strategy 3/4).
+
+**Respect third-party redistributables.** The Steamworks / EOS runtime libs are
+license-gated and not cross-redistributable — ship each only under your own
+Steam/Epic agreement, bundle it only in the matching desktop build, and **never
+commit it** to source control.
+
 ## Related packages
 
 | Package | Role |
@@ -107,6 +180,7 @@ template (illustrated with Supabase).
 | `unified_game_services` | This package — the app-facing facade. |
 | `unified_game_services_platform_interface` | Shared contract + models (for provider authors). |
 | `unified_game_services_steam` | Steam provider (FFI). |
+| `unified_game_services_epic` | Epic Online Services provider (FFI). |
 | `unified_game_services_gamejolt` | GameJolt provider (REST). |
 
 ## License

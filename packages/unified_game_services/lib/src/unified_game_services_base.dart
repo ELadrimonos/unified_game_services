@@ -29,11 +29,11 @@ class UnifiedGameServices {
   /// If [providers] is null or empty, the currently registered
   /// [UnifiedGameServicesPlatform.instance] is used (single-provider mode).
   UnifiedGameServices({List<UnifiedGameServicesPlatform>? providers})
-      : providers = List.unmodifiable(
-          (providers == null || providers.isEmpty)
-              ? [UnifiedGameServicesPlatform.instance]
-              : providers,
-        );
+    : providers = List.unmodifiable(
+        (providers == null || providers.isEmpty)
+            ? [UnifiedGameServicesPlatform.instance]
+            : providers,
+      );
 
   /// The providers this facade operates over, in priority order.
   final List<UnifiedGameServicesPlatform> providers;
@@ -76,31 +76,28 @@ class UnifiedGameServices {
   /// The current player from [from] (defaults to [primary]).
   Future<PlayerProfile?> getCurrentPlayer({
     UnifiedGameServicesPlatform? from,
-  }) =>
-      (from ?? primary).getCurrentPlayer();
+  }) => (from ?? primary).getCurrentPlayer();
 
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// Achievements from [from] (defaults to [primary]).
   Future<List<Achievement>> getAchievements({
     UnifiedGameServicesPlatform? from,
-  }) =>
-      (from ?? primary).getAchievements();
+  }) => (from ?? primary).getAchievements();
 
   /// Unlocks an achievement on every provider that supports achievements.
   Future<void> unlockAchievement(String achievementId) => _fanOut(
-        GameCapability.achievements,
-        'unlockAchievement',
-        (p) => p.unlockAchievement(achievementId),
-      );
+    GameCapability.achievements,
+    'unlockAchievement',
+    (p) => p.unlockAchievement(achievementId),
+  );
 
   /// Adds incremental progress on every provider that supports achievements.
-  Future<void> incrementAchievement(String achievementId, int steps) =>
-      _fanOut(
-        GameCapability.achievements,
-        'incrementAchievement',
-        (p) => p.incrementAchievement(achievementId, steps),
-      );
+  Future<void> incrementAchievement(String achievementId, int steps) => _fanOut(
+    GameCapability.achievements,
+    'incrementAchievement',
+    (p) => p.incrementAchievement(achievementId, steps),
+  );
 
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
@@ -108,12 +105,11 @@ class UnifiedGameServices {
   Future<void> submitScore({
     required String leaderboardId,
     required int score,
-  }) =>
-      _fanOut(
-        GameCapability.leaderboards,
-        'submitScore',
-        (p) => p.submitScore(leaderboardId: leaderboardId, score: score),
-      );
+  }) => _fanOut(
+    GameCapability.leaderboards,
+    'submitScore',
+    (p) => p.submitScore(leaderboardId: leaderboardId, score: score),
+  );
 
   /// Fetches a leaderboard from [from] (defaults to [primary]).
   Future<Leaderboard> getLeaderboard(
@@ -122,29 +118,25 @@ class UnifiedGameServices {
     LeaderboardCollection collection = LeaderboardCollection.global,
     int maxResults = 25,
     UnifiedGameServicesPlatform? from,
-  }) =>
-      (from ?? primary).getLeaderboard(
-        leaderboardId,
-        timeScope: timeScope,
-        collection: collection,
-        maxResults: maxResults,
-      );
+  }) => (from ?? primary).getLeaderboard(
+    leaderboardId,
+    timeScope: timeScope,
+    collection: collection,
+    maxResults: maxResults,
+  );
 
   // ─── Stats ───────────────────────────────────────────────────────────────
 
   /// Sets a stat on every provider that supports stats.
-  Future<void> setStat(String key, num value) => _fanOut(
-        GameCapability.stats,
-        'setStat',
-        (p) => p.setStat(key, value),
-      );
+  Future<void> setStat(String key, num value) =>
+      _fanOut(GameCapability.stats, 'setStat', (p) => p.setStat(key, value));
 
   /// Increments a stat on every provider that supports stats.
   Future<void> incrementStat(String key, {num by = 1}) => _fanOut(
-        GameCapability.stats,
-        'incrementStat',
-        (p) => p.incrementStat(key, by: by),
-      );
+    GameCapability.stats,
+    'incrementStat',
+    (p) => p.incrementStat(key, by: by),
+  );
 
   /// Reads a stat from [from] (defaults to [primary]).
   Future<Stat?> getStat(String key, {UnifiedGameServicesPlatform? from}) =>
@@ -154,39 +146,37 @@ class UnifiedGameServices {
 
   /// Writes a save to every provider that supports cloud save.
   Future<void> saveData(String slot, Uint8List data) => _fanOut(
-        GameCapability.cloudSave,
-        'saveData',
-        (p) => p.saveData(slot, data),
-      );
+    GameCapability.cloudSave,
+    'saveData',
+    (p) => p.saveData(slot, data),
+  );
 
   /// Loads a save from [from] (defaults to [primary]).
-  Future<CloudSave?> loadData(String slot, {
+  Future<CloudSave?> loadData(
+    String slot, {
     UnifiedGameServicesPlatform? from,
-  }) =>
-      (from ?? primary).loadData(slot);
+  }) => (from ?? primary).loadData(slot);
 
   // ─── Presence ──────────────────────────────────────────────────────────────
 
   /// Publishes presence on every provider that supports it.
   Future<void> setPresence(RichPresence presence) => _fanOut(
-        GameCapability.presence,
-        'setPresence',
-        (p) => p.setPresence(presence),
-      );
+    GameCapability.presence,
+    'setPresence',
+    (p) => p.setPresence(presence),
+  );
 
   /// Clears presence on every provider that supports it.
   Future<void> clearPresence() => _fanOut(
-        GameCapability.presence,
-        'clearPresence',
-        (p) => p.clearPresence(),
-      );
+    GameCapability.presence,
+    'clearPresence',
+    (p) => p.clearPresence(),
+  );
 
   // ─── Friends ─────────────────────────────────────────────────────────────
 
   /// Friends from [from] (defaults to [primary]).
-  Future<List<PlayerProfile>> getFriends({
-    UnifiedGameServicesPlatform? from,
-  }) =>
+  Future<List<PlayerProfile>> getFriends({UnifiedGameServicesPlatform? from}) =>
       (from ?? primary).getFriends();
 
   // ─── Fan-out helpers ─────────────────────────────────────────────────────
@@ -200,18 +190,25 @@ class UnifiedGameServices {
     String operation,
     Future<void> Function(UnifiedGameServicesPlatform) op,
   ) async {
-    final targets =
-        providers.where((p) => p.supports(capability)).toList(growable: false);
+    final targets = providers
+        .where((p) => p.supports(capability))
+        .toList(growable: false);
     if (targets.isEmpty) throw CapabilityNotSupportedException(capability);
     await _runAll(operation, targets, op);
   }
+
+  /// Disposes every provider (timers, HTTP clients, native SDK handles).
+  ///
+  /// Call once the facade is no longer needed. Throws
+  /// [AggregateGameServiceException] if any provider's dispose fails; the
+  /// remaining providers are still disposed.
+  Future<void> dispose() => _fanOutAll('dispose', (p) => p.dispose());
 
   /// Runs [op] on every provider, best-effort (not capability-gated).
   Future<void> _fanOutAll(
     String operation,
     Future<void> Function(UnifiedGameServicesPlatform) op,
-  ) =>
-      _runAll(operation, providers, op);
+  ) => _runAll(operation, providers, op);
 
   Future<void> _runAll(
     String operation,
@@ -219,13 +216,15 @@ class UnifiedGameServices {
     Future<void> Function(UnifiedGameServicesPlatform) op,
   ) async {
     final errors = <Object>[];
-    await Future.wait(targets.map((p) async {
-      try {
-        await op(p);
-      } catch (e) {
-        errors.add(e);
-      }
-    }));
+    await Future.wait(
+      targets.map((p) async {
+        try {
+          await op(p);
+        } catch (e) {
+          errors.add(e);
+        }
+      }),
+    );
     if (errors.isNotEmpty) {
       throw AggregateGameServiceException(operation, errors);
     }

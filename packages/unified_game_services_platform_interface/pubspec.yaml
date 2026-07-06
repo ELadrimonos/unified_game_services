@@ -1,8 +1,24 @@
 name: unified_game_services_platform_interface
 resolution: workspace
 description: Shared platform interface for unified_game_services — models, events, capabilities and the base contract every provider implements (pure Dart).
-version: 0.0.1
+version: 0.1.0
 repository: https://github.com/ELadrimonos/unified_game_services
+
+topics:
+  - game-services
+  - achievements
+  - leaderboards
+  - platform-interface
+  - gamedev
+
+# Pure Dart (models + contract only) — runs everywhere.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ^3.12.0

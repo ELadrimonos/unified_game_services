@@ -1,0 +1,63 @@
+name: unified_demo
+description: "Flutter demo of the unified_game_services facade fanning out to multiple providers (GameJolt, Steam, Google Play, Epic) — each registered only on the environments where it can run."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The app-facing facade. Re-exports the whole platform_interface (models,
+  # events, capabilities, exceptions) so this is the only interface import.
+  unified_game_services:
+    path: ../
+
+  # Providers. Steam + Epic are dart:ffi (desktop only) and are imported behind
+  # a `dart.library.io` conditional so they never enter a web build. GameJolt
+  # (REST) and the Google Play Flutter adapter (native on Android, REST else)
+  # run everywhere.
+  unified_game_services_gamejolt:
+    path: ../../unified_game_services_gamejolt
+  unified_game_services_steam:
+    path: ../../unified_game_services_steam
+  unified_game_services_epic:
+    path: ../../unified_game_services_epic
+  unified_game_services_google_play_flutter:
+    path: ../../unified_game_services_google_play_flutter
+
+  shared_preferences: ^2.3.0
+  cupertino_icons: ^1.0.8
+
+# Standalone (NOT a pub-workspace member) so the example resolves on its own.
+# The in-repo packages are unpublished, so pin every transitive sibling to its
+# path here.
+dependency_overrides:
+  unified_game_services:
+    path: ../
+  unified_game_services_platform_interface:
+    path: ../../unified_game_services_platform_interface
+  unified_game_services_gamejolt:
+    path: ../../unified_game_services_gamejolt
+  unified_game_services_steam:
+    path: ../../unified_game_services_steam
+  unified_game_services_epic:
+    path: ../../unified_game_services_epic
+  unified_game_services_google_play_flutter:
+    path: ../../unified_game_services_google_play_flutter
+  unified_game_services_google_play:
+    path: ../../unified_game_services_google_play
+  unified_game_services_google_play_android:
+    path: ../../unified_game_services_google_play_android
+  unified_game_services_google_play_rest:
+    path: ../../unified_game_services_google_play_rest
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

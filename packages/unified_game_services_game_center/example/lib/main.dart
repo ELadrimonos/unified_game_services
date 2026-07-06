@@ -19,10 +19,10 @@ class GameCenterExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Game Center Example',
-        theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-        home: const HomePage(),
-      );
+    title: 'Game Center Example',
+    theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+    home: const HomePage(),
+  );
 }
 
 class HomePage extends StatefulWidget {
@@ -58,47 +58,51 @@ class _HomePageState extends State<HomePage> {
   // 1. Present GameKit's native sign-in window (host-side), then resolve the
   //    Dart-side player through the provider.
   Future<void> _authenticate() => _run('authenticate', () async {
-        final ok = await GameCenterNative.authenticate();
-        _say(ok ? 'OS authenticated' : 'OS sign-in window shown — retry once done');
-        if (!ok) return;
-        _player = await _services.signIn();
-        _say(_player == null
-            ? 'signIn() returned null'
-            : 'Signed in as ${_player!.displayName} (${_player!.id})');
-      });
+    final ok = await GameCenterNative.authenticate();
+    _say(ok ? 'OS authenticated' : 'OS sign-in window shown — retry once done');
+    if (!ok) return;
+    _player = await _services.signIn();
+    _say(
+      _player == null
+          ? 'signIn() returned null'
+          : 'Signed in as ${_player!.displayName} (${_player!.id})',
+    );
+  });
 
   // 2. Present the native Game Center dashboard window.
   Future<void> _showDashboard() =>
       _run('dashboard', () => GameCenterNative.showDashboard());
 
   Future<void> _unlock() => _run('unlock', () async {
-        await _services.unlockAchievement('first_win');
-        _say('Unlocked first_win');
-      });
+    await _services.unlockAchievement('first_win');
+    _say('Unlocked first_win');
+  });
 
   Future<void> _submitScore() => _run('submitScore', () async {
-        await _services.submitScore(leaderboardId: 'global', score: 4200);
-        _say('Submitted 4200 to global');
-      });
+    await _services.submitScore(leaderboardId: 'global', score: 4200);
+    _say('Submitted 4200 to global');
+  });
 
   Future<void> _loadLeaderboard() => _run('leaderboard', () async {
-        final board = await _services.getLeaderboard('global', maxResults: 10);
-        _say('Leaderboard global — ${board.entries.length} entries:');
-        for (final e in board.entries) {
-          _say('  #${e.rank} ${e.player.displayName} — ${e.formattedScore ?? e.score}');
-        }
-      });
+    final board = await _services.getLeaderboard('global', maxResults: 10);
+    _say('Leaderboard global — ${board.entries.length} entries:');
+    for (final e in board.entries) {
+      _say(
+        '  #${e.rank} ${e.player.displayName} — ${e.formattedScore ?? e.score}',
+      );
+    }
+  });
 
   Future<void> _loadAchievements() => _run('achievements', () async {
-        final list = await _services.getAchievements();
-        _say('Achievements — ${list.length}:');
-        for (final a in list) {
-          final state = a.isUnlocked
-              ? 'unlocked'
-              : '${a.currentSteps}/${a.totalSteps}';
-          _say('  ${a.id} — $state');
-        }
-      });
+    final list = await _services.getAchievements();
+    _say('Achievements — ${list.length}:');
+    for (final a in list) {
+      final state = a.isUnlocked
+          ? 'unlocked'
+          : '${a.currentSteps}/${a.totalSteps}';
+      _say('  ${a.id} — $state');
+    }
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +162,10 @@ class _HomePageState extends State<HomePage> {
                       itemCount: _log.length,
                       itemBuilder: (_, i) => Text(
                         _log[i],
-                        style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 13,
+                        ),
                       ),
                     ),
             ),

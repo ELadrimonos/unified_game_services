@@ -17,6 +17,23 @@ dependency.
 | friends | `ISteamFriends` |
 | presence | `ISteamFriends` rich presence |
 
+## Platform support — desktop only
+
+Steam is backed by `dart:ffi`, so it runs **only on Windows, macOS and Linux**.
+It is **not** supported on Android, iOS or web — build each store target for the
+platform it ships on.
+
+| Platform | Behaviour |
+|----------|-----------|
+| Windows / macOS / Linux | Full support. |
+| Web | The package entry point exports an **inert stub** on web (`if (dart.library.io)` selects the real FFI provider). Importing the package never breaks `flutter build web` / `dart compile js`, but every member throws `UnsupportedError` — do **not** register Steam on web. |
+| Android / iOS | `dart:ffi` compiles, but the Steamworks runtime lib does not exist there, so the constructor throws `UnsupportedError` — do **not** register Steam on mobile. |
+
+To keep the FFI code out of a mobile/web bundle entirely (not just inert), use a
+per-platform entry point that never imports this package for those targets — see
+the [per-store builds section](https://pub.dev/packages/unified_game_services#per-store-builds-steam-only-epic-only-)
+in the facade README.
+
 ## Native library — not bundled (important)
 
 Steam is **not zero-config**, and this is inherent to Steamworks, not this
@@ -55,6 +72,12 @@ For a shipped build, distribute the native lib with your app (next to the
 executable) under your own Steamworks agreement, and bake the app id into code
 (`SteamProvider(appId: …)`, which calls `RestartAppIfNecessary`). **Do not ship
 `steam_appid.txt`** — it is a development-only override.
+
+**Never commit the native lib (`steam_api64.dll` / `libsteam_api.dylib` /
+`libsteam_api.so`) or `steam_appid.txt` to source control.** Valve's license
+does not permit redistributing the SDK; each build copies the redistributable
+out of the local pub cache and ships it under your own Steamworks agreement.
+(This repo keeps them `.gitignore`d for exactly this reason.)
 
 ### Cross-platform bindings
 

@@ -42,26 +42,29 @@ Future<void> openInBrowser(Uri url) async {
   }
 }
 
-/// Serves the first loopback request, extracts `?code=`, and replies with a
-/// small "you can close this tab" page.
+/// Serves loopback requests until the OAuth redirect arrives, extracts
+/// `?code=`, and replies with a small "you can close this tab" page.
+///
+/// Requests carrying neither `code` nor `error` (e.g. the browser probing
+/// `/favicon.ico` before the redirect lands) get a 404 and are ignored —
+/// they must not abort the sign-in.
 Future<String> _awaitRedirect(HttpServer server) async {
   await for (final request in server) {
     final params = request.uri.queryParameters;
     final code = params['code'];
     final error = params['error'];
+    if (code == null && error == null) {
+      request.response.statusCode = 404;
+      await request.response.close();
+      continue;
+    }
     final response = request.response
       ..statusCode = 200
       ..headers.contentType = ContentType.html;
-    if (code != null) {
-      response.write(_donePage);
-      await response.close();
-      return code;
-    }
     response.write(_donePage);
     await response.close();
-    throw SignInFailedException(
-      'OAuth consent did not return a code${error != null ? ' (error: $error)' : ''}.',
-    );
+    if (code != null) return code;
+    throw SignInFailedException('OAuth consent denied (error: $error).');
   }
   throw const SignInFailedException('OAuth redirect server closed early.');
 }

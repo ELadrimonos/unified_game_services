@@ -1,6 +1,7 @@
-import 'package:unified_game_services_xbox_pc/unified_game_services_xbox_pc.dart';
-
+// The Xbox-on-PC (GDK) provider is a research placeholder — nothing to run
+// yet. See the package README for status.
 void main() {
-  var awesome = Awesome();
-  print('awesome: ${awesome.isAwesome}');
+  print(
+    'unified_game_services_xbox_pc is not implemented yet (research stage).',
+  );
 }

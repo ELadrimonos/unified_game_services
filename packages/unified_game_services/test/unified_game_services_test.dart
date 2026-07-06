@@ -44,8 +44,10 @@ class FakeProvider extends UnifiedGameServicesPlatform
   Future<void> unlockAchievement(String id) => _record('unlock:$id');
 
   @override
-  Future<void> submitScore({required String leaderboardId, required int score}) =>
-      _record('score:$leaderboardId:$score');
+  Future<void> submitScore({
+    required String leaderboardId,
+    required int score,
+  }) => _record('score:$leaderboardId:$score');
 
   @override
   Future<List<Achievement>> getAchievements() async {
@@ -65,10 +67,12 @@ void main() {
     });
 
     test('supports is any-provider; supportsEverywhere is all', () {
-      final services = UnifiedGameServices(providers: [
-        FakeProvider(name: 'a', caps: {GameCapability.achievements}),
-        FakeProvider(name: 'b', caps: {GameCapability.leaderboards}),
-      ]);
+      final services = UnifiedGameServices(
+        providers: [
+          FakeProvider(name: 'a', caps: {GameCapability.achievements}),
+          FakeProvider(name: 'b', caps: {GameCapability.leaderboards}),
+        ],
+      );
       expect(services.supports(GameCapability.achievements), isTrue);
       expect(services.supportsEverywhere(GameCapability.achievements), isFalse);
     });
@@ -86,32 +90,38 @@ void main() {
       expect(b.calls, contains('score:lb:10'));
     });
 
-    test('write throws CapabilityNotSupported when nobody supports it',
-        () async {
-      final services =
-          UnifiedGameServices(providers: [FakeProvider(name: 'a')]);
-      expect(
-        () => services.unlockAchievement('x'),
-        throwsA(isA<CapabilityNotSupportedException>()),
-      );
-    });
+    test(
+      'write throws CapabilityNotSupported when nobody supports it',
+      () async {
+        final services = UnifiedGameServices(
+          providers: [FakeProvider(name: 'a')],
+        );
+        expect(
+          () => services.unlockAchievement('x'),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+      },
+    );
 
-    test('partial fan-out failure throws AggregateGameServiceException',
-        () async {
-      final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
-      final b = FakeProvider(
+    test(
+      'partial fan-out failure throws AggregateGameServiceException',
+      () async {
+        final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
+        final b = FakeProvider(
           name: 'b',
           caps: {GameCapability.achievements},
-          failOn: {'unlock:x'});
-      final services = UnifiedGameServices(providers: [a, b]);
+          failOn: {'unlock:x'},
+        );
+        final services = UnifiedGameServices(providers: [a, b]);
 
-      await expectLater(
-        services.unlockAchievement('x'),
-        throwsA(isA<AggregateGameServiceException>()),
-      );
-      // The op was still attempted on the healthy provider.
-      expect(a.calls, contains('unlock:x'));
-    });
+        await expectLater(
+          services.unlockAchievement('x'),
+          throwsA(isA<AggregateGameServiceException>()),
+        );
+        // The op was still attempted on the healthy provider.
+        expect(a.calls, contains('unlock:x'));
+      },
+    );
 
     test('reads come from the primary provider by default', () async {
       final a = FakeProvider(name: 'a');
@@ -158,12 +168,23 @@ void main() {
 
       final received = <String>[];
       final sub = services.events.listen(
-          (e) => received.add((e as ScoreSubmittedEvent).leaderboardId));
+        (e) => received.add((e as ScoreSubmittedEvent).leaderboardId),
+      );
 
       a.controller.add(
-          ScoreSubmittedEvent(leaderboardId: 'from-a', score: 1, timestamp: DateTime.now()));
+        ScoreSubmittedEvent(
+          leaderboardId: 'from-a',
+          score: 1,
+          timestamp: DateTime.now(),
+        ),
+      );
       b.controller.add(
-          ScoreSubmittedEvent(leaderboardId: 'from-b', score: 2, timestamp: DateTime.now()));
+        ScoreSubmittedEvent(
+          leaderboardId: 'from-b',
+          score: 2,
+          timestamp: DateTime.now(),
+        ),
+      );
       await Future<void>.delayed(Duration.zero);
 
       expect(received, containsAll(['from-a', 'from-b']));

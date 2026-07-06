@@ -241,6 +241,7 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   /// Closes the HTTP client and the events stream.
+  @override
   Future<void> dispose() async {
     _client.close();
     await _events.close();

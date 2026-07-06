@@ -125,9 +125,61 @@ typed accessor:
 
 Pure-Dart-reachable providers ship first:
 
-- **Steam** — Steamworks C API via `dart:ffi`.
+- **Steam** — Steamworks C API via `dart:ffi`. Desktop-only: the entry point
+  conditional-exports a web stub (`if (dart.library.io)`) so importing it never
+  breaks a web build (stub throws `UnsupportedError`), and the real ctor throws
+  on Android/iOS — consumers no longer need the example's wiring for web-safety.
 - **GameJolt** — REST API.
-- **Epic** — EOS REST / C SDK.
+- **Epic** — EOS C SDK via `dart:ffi` (**SDK-first, not REST**). Desktop-only:
+  the entry point conditional-exports a web `EpicProvider` stub
+  (`if (dart.library.io)`; `EpicCredentials` stays available everywhere) so a web
+  build never breaks (stub throws `UnsupportedError`), and the real ctor throws
+  on Android/iOS. Unlike Google
+  Play (REST is the primary tier), the EOS **Web API does not expose
+  achievements/leaderboards/stats/cloud-save/presence over REST** — those are
+  SDK-only; REST surfaces just friends(read) + display-name lookups. So the real
+  Epic provider is the FFI/C-SDK tier — same "host supplies the runtime" shape as
+  Steam/GameCenter: the host ships the EOS runtime lib (`EOSSDK-Win64-Shipping.dll`
+  / `libEOSSDK-Mac-Shipping.dylib` / `libEOSSDK-Linux-Shipping.so`) and supplies
+  `EpicCredentials` (ProductId/SandboxId/DeploymentId/ClientId/ClientSecret +
+  optional EncryptionKey, all from the Dev Portal; secret never committed). EOS
+  calls are async, completing inside `EOS_Platform_Tick` (pumped on a `Timer`);
+  completions correlate to Futures by the `ClientData` token via a static
+  `Pointer.fromFunction` callback. **Implemented:** three sign-in methods —
+  anonymous Device ID, `EOS_LCT_Developer` (Dev Auth Tool: pass `devAuthHost`
+  `host:port` + `devAuthCredentialName`), and `EOS_LCT_ExchangeCode` (Epic
+  Launcher, via `launchArgs`/`exchangeCode`). EAS runs the full **Auth → Connect**
+  flow (`EOS_Auth_Login` → `EOS_Auth_CopyUserAuthToken` → `EOS_Connect_Login`
+  `EOS_ECT_EPIC`, incl. `EOS_Connect_CreateUser` on first login). After an EAS
+  login: **real profile** (`getCurrentPlayer` display name via
+  `EOS_UserInfo_QueryUserInfo`/`CopyUserInfo`) and **friends** (`getFriends` via
+  `EOS_Friends_QueryFriends`/`GetFriendsCount`/`GetFriendAtIndex`). Plus
+  `unlockAchievement`, the achievements **read path** (`getAchievements`:
+  QueryDefinitions + QueryPlayerAchievements + CopyPlayerAchievementByIndex),
+  stat ingest (`setStat`/`incrementStat`/`submitScore` — EOS leaderboards
+  aggregate a backing stat), the **stats read path** (`getStats`/`getStat`:
+  QueryStats + CopyStatByIndex) and the **leaderboards read path**
+  (`getLeaderboard`/`getPlayerScore`: QueryLeaderboardRanks +
+  CopyLeaderboardRecordByIndex; `getPlayerScore` scans the top-100 ranks page —
+  a dedicated QueryLeaderboardUserScores path is a TODO). `debugLogging: true`
+  (constructor) toggles verbose FFI traces, off by default. **Runtime-verified on
+  macOS** via the Dev Auth Tool (real display name + friends list). Plus
+  **cloud save** (`EOS_HPlayerDataStorage`: `saveData`/`loadData`/`listSaves`/
+  `deleteData`) and **rich presence** (`EOS_HPresence`: `setPresence`) — both now
+  wired via the EOS PDS bindings. **Gaps:** **no avatar** (the C SDK exposes
+  none — `PlayerProfile.avatarUrl` stays null); `getPlayerScore` scans the
+  top-100 ranks page (dedicated `QueryLeaderboardUserScores` path is a TODO).
+  EAS also requires
+  **Dev Portal config**: an Epic Account Services Application with the client
+  associated + scopes (else `EOS_InvalidRequest` 1012). Capabilities advertised:
+  achievements, leaderboards, stats, **friends, presence, cloudSave**.
+  `lib/src/eos_bindings.dart` is **ffigen-generated** (regenerated to resolve a
+  legality issue — no license-gated headers committed). Struct offsets +
+  `*_API_LATEST` constants are **unverified** (work at runtime for exercised
+  paths) — regen with `tool/regenerate_bindings.sh` (needs `EOS_SDK_DIR`;
+  `melos run epic:gen`) for verified ffigen output. SDK headers/libs are NOT
+  redistributable — never committed (`.eos-sdk/` gitignored), same posture as
+  Steamworks/GameKit.
 - **Google Play Games** — three-package `android_*` family. Implemented today:
   `unified_game_services_google_play_rest`, the cross-platform REST tier (Games API
   v1, `games.googleapis.com/games/v1`, over `package:http`). Advertises

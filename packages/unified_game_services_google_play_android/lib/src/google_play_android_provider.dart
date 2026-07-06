@@ -181,9 +181,45 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  // ─── Reads (pending the jnigen Task<T> fix) ────────────────────────────────
+  //
+  // The Play Games v2 read path returns `Task<T>` objects that jnigen 0.16.0
+  // cannot yet generate, so reads are explicitly unsupported here: they throw
+  // [CapabilityNotSupportedException] (per the interface contract) instead of
+  // falling through to the base `UnimplementedError`. Serve reads from
+  // `unified_game_services_google_play_rest` alongside this provider.
+
+  static Never _readsUnsupported(GameCapability capability) {
+    throw CapabilityNotSupportedException(
+      capability,
+      cause:
+          'The Play Games v2 JNI read path is pending (jnigen Task<T> gap); '
+          'use unified_game_services_google_play_rest for reads.',
+    );
+  }
+
+  @override
+  Future<List<Achievement>> getAchievements() async =>
+      _readsUnsupported(GameCapability.achievements);
+
+  @override
+  Future<Leaderboard> getLeaderboard(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    LeaderboardCollection collection = LeaderboardCollection.global,
+    int maxResults = 25,
+  }) async => _readsUnsupported(GameCapability.leaderboards);
+
+  @override
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async => _readsUnsupported(GameCapability.leaderboards);
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   /// Closes the events stream. (JNI client refs are released per call.)
+  @override
   Future<void> dispose() async {
     await _events.close();
   }

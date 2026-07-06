@@ -1,16 +1,9 @@
-import 'package:unified_game_services_xbox_pc/unified_game_services_xbox_pc.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('A group of tests', () {
-    final awesome = Awesome();
-
-    setUp(() {
-      // Additional setup goes here.
-    });
-
-    test('First Test', () {
-      expect(awesome.isAwesome, isTrue);
-    });
+  test('placeholder — no provider implemented yet', () {
+    // The Xbox-on-PC (GDK) provider is a research placeholder; this test
+    // exists so `dart test` passes while the package ships no code.
+    expect(true, isTrue);
   });
 }

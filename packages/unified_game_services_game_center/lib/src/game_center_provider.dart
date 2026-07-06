@@ -100,6 +100,7 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
   Stream<GameServiceEvent> get events => _events.stream;
 
   /// Releases the events stream.
+  @override
   Future<void> dispose() async {
     await _events.close();
   }
@@ -161,7 +162,13 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
           }
           // Otherwise: a non-terminal callback; wait for the next one.
         });
-    return completer.future;
+    // Longer limit than reads: the OS may take a while to resolve the
+    // authentication state at launch.
+    return _withGameKitTimeout(
+      completer.future,
+      'signIn',
+      limit: const Duration(seconds: 60),
+    );
   }
 
   @override
@@ -332,46 +339,53 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     _requireSignedIn();
     final board = await _loadLeaderboard(resolveLeaderboardId(leaderboardId));
     final completer = Completer<Leaderboard>();
+    // The NSRange struct is passed by value, so it can be freed as soon as
+    // the call returns — even before the completion handler fires. Freeing
+    // here (instead of inside the handler) also covers the paths where the
+    // call throws synchronously or GameKit never invokes the handler.
     final range = pkg_ffi.calloc<objc.NSRange>()
       ..ref.location = 1
       ..ref.length = maxResults < 1 ? 1 : maxResults;
-    board.loadEntriesForPlayerScope(
-      _playerScope(collection),
-      timeScope: _timeScope(timeScope),
-      range: range.ref,
-      completionHandler:
-          ObjCBlock_ffiVoid_GKLeaderboardEntry_NSArray_NSInteger_NSError.fromFunction(
-            (
-              GKLeaderboardEntry localEntry,
-              objc.NSArray? entries,
-              int totalCount,
-              objc.NSError? error,
-            ) {
-              pkg_ffi.calloc.free(range);
-              if (completer.isCompleted) return;
-              if (error != null) {
-                completer.completeError(_mapError(error, 'getLeaderboard'));
-                return;
-              }
-              final rows = <LeaderboardEntry>[
-                if (entries != null)
-                  for (final obj in entries.asDart())
-                    _entryOf(GKLeaderboardEntry.as(obj)),
-              ];
-              completer.complete(
-                Leaderboard(
-                  id: leaderboardId,
-                  displayName: board.title?.toDartString(),
-                  timeScope: timeScope,
-                  collection: collection,
-                  entries: rows,
-                  playerEntry: _maybeEntryOf(localEntry),
-                ),
-              );
-            },
-          ),
-    );
-    return completer.future;
+    try {
+      board.loadEntriesForPlayerScope(
+        _playerScope(collection),
+        timeScope: _timeScope(timeScope),
+        range: range.ref,
+        completionHandler:
+            ObjCBlock_ffiVoid_GKLeaderboardEntry_NSArray_NSInteger_NSError.fromFunction(
+              (
+                GKLeaderboardEntry localEntry,
+                objc.NSArray? entries,
+                int totalCount,
+                objc.NSError? error,
+              ) {
+                if (completer.isCompleted) return;
+                if (error != null) {
+                  completer.completeError(_mapError(error, 'getLeaderboard'));
+                  return;
+                }
+                final rows = <LeaderboardEntry>[
+                  if (entries != null)
+                    for (final obj in entries.asDart())
+                      _entryOf(GKLeaderboardEntry.as(obj)),
+                ];
+                completer.complete(
+                  Leaderboard(
+                    id: leaderboardId,
+                    displayName: board.title?.toDartString(),
+                    timeScope: timeScope,
+                    collection: collection,
+                    entries: rows,
+                    playerEntry: _maybeEntryOf(localEntry),
+                  ),
+                );
+              },
+            ),
+      );
+    } finally {
+      pkg_ffi.calloc.free(range);
+    }
+    return _withGameKitTimeout(completer.future, 'getLeaderboard');
   }
 
   @override
@@ -441,6 +455,23 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
 
   // ─── Async / error plumbing ────────────────────────────────────────────────
 
+  /// Defensive timeout for GameKit completions: if the host's run loop is not
+  /// pumped (or GameKit silently drops a handler) the future would otherwise
+  /// hang forever.
+  Future<T> _withGameKitTimeout<T>(
+    Future<T> future,
+    String op, {
+    Duration limit = const Duration(seconds: 30),
+  }) {
+    return future.timeout(
+      limit,
+      onTimeout: () => throw PlatformOperationException(
+        '$op timed out after ${limit.inSeconds}s — is the main run loop being '
+        'pumped? (GameKit completion handlers need a live run loop.)',
+      ),
+    );
+  }
+
   /// Runs a GameKit call whose completion handler is `(NSArray?, NSError?)`.
   Future<objc.NSArray> _loadArray(
     void Function(
@@ -471,7 +502,7 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
         }
       }),
     );
-    return completer.future;
+    return _withGameKitTimeout(completer.future, op);
   }
 
   /// Runs a GameKit call whose completion handler is `(NSError?)`.
@@ -491,7 +522,7 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
         }
       }),
     );
-    return completer.future;
+    return _withGameKitTimeout(completer.future, op);
   }
 
   /// Maps an `NSError` from `GKErrorDomain` onto the unified exception types.

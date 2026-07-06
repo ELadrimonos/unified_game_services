@@ -1,6 +1,11 @@
-/// Support for doing something awesome.
+/// The shared contract every `unified_game_services` provider implements:
+/// the [UnifiedGameServicesPlatform] base class, plus the models, capability
+/// set, event hierarchy, and normalized exceptions all providers share.
 ///
-/// More dartdocs go here.
+/// App developers usually depend on `unified_game_services` (the facade) and
+/// one or more provider packages instead of this package directly; provider
+/// authors extend [UnifiedGameServicesPlatform] and override the operations
+/// their service supports.
 library;
 
 export 'src/models/models.dart';

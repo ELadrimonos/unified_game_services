@@ -75,6 +75,14 @@ melos:
       packageFilters:
         scope: unified_game_services_steam
 
+    epic:gen:
+      description: >
+        Regenerate the EOS C SDK bindings for the Epic provider. Needs the
+        license-gated EOS SDK: set EOS_SDK_DIR to the extracted SDK root.
+      run: ./tool/regenerate_bindings.sh
+      packageFilters:
+        scope: unified_game_services_epic
+
     gamejolt:smoke:
       description: >
         Live smoke test against the real GameJolt API. Needs GAMEJOLT_GAME_ID,
