@@ -1,407 +1,87 @@
 # Unified Game Services
 
-A multi-platform abstraction layer for game services that unifies achievements,
-leaderboards, stats, cloud save, user profiles, and rich presence behind a
-single Dart API.
+A multi-platform abstraction layer for game services — achievements,
+leaderboards, stats, cloud save, player profiles, friends and rich presence —
+behind a single Dart API.
 
-> **Pure Dart, no Flutter.** Every package targets the Dart SDK, so the library
-> runs in plain Dart apps, CLIs, servers, and any Dart framework — Flutter
-> included, but not required.
+> **Pure Dart, no Flutter.** No package here depends on Flutter (`plugin_platform_interface`
+> is fine — it's pure Dart itself). One sanctioned exception:
+> `unified_game_services_google_play_flutter`, a Flutter-only adapter for
+> plug-and-play Activity resolution. Everything else runs in plain Dart apps,
+> CLIs, servers, and custom game engines — Flutter included, but never required.
 
-## Goals
+Start with the app-facing facade:
+[`packages/unified_game_services`](packages/unified_game_services) — its
+README covers install, usage, per-store builds, and Flutter desktop flavors.
 
-- A single API across multiple platforms.
-- Modular, federated-plugin architecture.
-- Works on mobile, desktop, and [console?](https://fluorite.game/).
-- Easy integration for Dart developers.
-- Extensible to new providers without touching the core.
+## Packages
 
----
+| Package | What it is | Status |
+|---|---|---|
+| `unified_game_services` | App-facing facade — multi-provider fan-out | ✅ |
+| `unified_game_services_platform_interface` | Shared contract + models (for provider authors) | ✅ |
+| `unified_game_services_steam` | Steam (Steamworks via FFI), desktop only | ✅ runtime-verified (macOS) |
+| `unified_game_services_epic` | Epic Online Services (EOS C SDK via FFI), desktop only | ✅ runtime-verified (macOS); leaderboard `getPlayerScore` scans top-100 only |
+| `unified_game_services_game_center` | Apple Game Center (GameKit via Objective-C FFI), macOS/iOS | ⚠️ implemented, not yet runtime-verified (needs a paid Apple Developer account + Game Center–enabled App Store Connect record) |
+| `unified_game_services_gamejolt` | GameJolt (REST Game API v1.2) | ✅ verified with tests + live |
+| `unified_game_services_playfab` | PlayFab (REST Client API) | ✅ verified with tests |
+| `unified_game_services_google_play_rest` | Google Play Games via REST — cross-platform, achievements + leaderboards only | ✅ verified with tests |
+| `unified_game_services_google_play_android` | Google Play Games via the on-device Play Games v2 Java SDK (JNI), Android only | ✅ writes verified on-device; reads blocked on a jnigen `Task<T>` generics bug |
+| `unified_game_services_google_play` | Auto-selects native on Android, REST elsewhere (incl. web) | ✅ |
+| `unified_game_services_google_play_flutter` | Flutter adapter — auto-resolves the Android `Activity`, zero wiring | ✅ verified (native sign-in overlay + `flutter build web`) |
+| `unified_game_services_xbox_pc` | Xbox on PC (Microsoft GDK) | 📋 research placeholder, not implemented |
 
-## Project status
+`games_services` (the popular Flutter plugin) isn't used as a dependency
+anywhere here — it requires Flutter + platform channels, which violates the
+pure-Dart constraint above.
 
-| Module | Status |
-|---------|---------|
-| Core API | ✅ Implemented (interface + multi-provider facade) |
-| Achievements | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| Leaderboards | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| Stats | ✅ Implemented (Steam, PlayFab, Epic) |
-| Cloud Save | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| User Profiles | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| Friends | ✅ Implemented (Steam, GameJolt, PlayFab, Epic) |
-| Rich Presence | ✅ Implemented (Steam, Epic) |
-| Steam | ✅ Implemented (pure Dart, FFI `steamworks`) — runtime-verified on macOS |
-| GameJolt | ✅ Implemented (pure Dart, REST Game API v1.2) — verified with tests + live |
-| Epic Online Services | ✅ Implemented (pure Dart, EOS C SDK via FFI) — EAS login + real profile + friends + achievements, runtime-verified on macOS |
-| PlayFab | ✅ Implemented (pure Dart, REST Client API) — verified with tests |
-| Google Play Games (rest) | ✅ Implemented (pure Dart, REST Games API v1 + OAuth) — achievements + leaderboards, verified with tests |
-| Google Play Games (android) | ✅ Implemented (Play Games Services native SDK via package:jni) |
-| Google Play Games | ✅ Implemented (auto-selects native on Android, REST elsewhere) |
-| Google Play Games (flutter) | ✅ Implemented (Flutter adapter — auto-resolves the Activity via jni_flutter for plug-and-play) |
-| Apple Game Center | ⚠️ Implemented, unverified (pure Dart, FFI GameKit via `objective_c`) — auth + achievements + leaderboards, macOS/iOS; runtime auth needs a paid Apple Developer account + an App Store Connect record with Game Center enabled, not yet available for live testing |
-| Xbox on PC (GDK) | 📋 Research |
-| Huawei Game Service | 📋 Research |
-
-> **Core constraint:** no package depends on Flutter. That is why
-> [`games_services`](https://pub.dev/packages/games_services) is not used (it
-> requires Flutter + platform channels). The MVP covers the providers reachable
-> from pure Dart. Google Play Games currently ships as three packages: `unified_game_services_google_play_rest` (REST Games API v1 + OAuth 2.0, achievements + leaderboards), `unified_game_services_google_play_android` (native Play Games Services integration via `package:jni`), and `unified_game_services_google_play`, a convenience provider that automatically selects the native implementation on Android and the REST implementation elsewhere. Game Center is implemented in pure Dart via `dart:ffi` + `package:objective_c` against GameKit (macOS/iOS) — auth + achievements + leaderboards.
-
-
----
-
-## Vision
-
-Today Dart/Flutter has standalone solutions for some platforms, but there is no
-unified interface that lets you write a single implementation and ship it across
-multiple ecosystems.
-
-This project sets out to solve that.
+## Usage
 
 ```dart
-final gameServices = UnifiedGameServices();
+import 'package:unified_game_services/unified_game_services.dart';
+import 'package:unified_game_services_steam/unified_game_services_steam.dart';
+import 'package:unified_game_services_gamejolt/unified_game_services_gamejolt.dart';
 
-await gameServices.unlockAchievement(
-  'first_win',
-);
-
-await gameServices.submitScore(
-  leaderboardId: 'global_score',
-  score: 1500,
-);
-```
-
-The same call will work over:
-
-- Google Play Games
-- Apple Game Center
-- Steam
-- Epic Games Store
-- GameJolt
-- PlayFab (Microsoft's cross-platform backend; distinct from native Xbox Live)
-- Xbox on PC (Microsoft GDK; console variant TBD)
-- Other future or custom providers
-
----
-
-## Architecture
-
-```text
-unified_game_services
-│
-├── core
-│   ├── achievements
-│   ├── leaderboards
-│   ├── stats
-│   ├── profiles
-│   ├── cloud_save
-│   └── presence
-│
-├── providers
-│   ├── android_rest        # Google Play Games (REST, all platforms)
-│   ├── android_native      # Google Play Games (Play Games v2 Java SDK, Android)
-│   ├── android             # auto: native on Android, REST elsewhere
-│   ├── game_center
-│   ├── steam
-│   ├── epic
-│   ├── playfab
-│   ├── xbox_pc
-│   ├── gamejolt
-│   └── huawei
-│
-└── platform_interfaces
-```
-
----
-
-## Recommended monorepo
-
-```text
-packages/
-│
-├── unified_game_services
-├── unified_game_services_platform_interface
-├── unified_game_services_google_play_rest
-├── unified_game_services_google_play_android
-├── unified_game_services_google_play
-├── unified_game_services_google_play_flutter
-├── unified_game_services_game_center
-├── unified_game_services_steam
-├── unified_game_services_epic
-├── unified_game_services_gamejolt
-├── unified_game_services_playfab
-├── unified_game_services_xbox_pc
-└── examples/
-```
-
----
-
-## Roadmap
-
-### Phase 1 — Core
-
-**Goal**
-
-Build the base API without depending on any platform.
-
-**Tasks**
-
-- Define `GameProvider`.
-- Define `Achievement`.
-- Define `Leaderboard`.
-- Define `PlayerProfile`.
-- Define `Stat`.
-- Define `CloudSave`.
-- Define `RichPresence`.
-- Define common exceptions.
-- Define the capabilities system.
-
-### Phase 2 — Achievements
-
-**Initial API**
-
-```dart
-await services.unlockAchievement(
-  'achievement_id',
-);
-```
-
-**Features**
-
-- Unlock achievement.
-- Incremental achievements.
-- Get progress.
-- Get full listing.
-- Change events.
-
-### Phase 3 — Leaderboards
-
-**Initial API**
-
-```dart
-await services.submitScore(
-  leaderboardId: 'global',
-  score: 1000,
-);
-```
-
-**Features**
-
-- Submit score.
-- Get global top.
-- Get personal score.
-- Get ranking.
-- Get friends' scores.
-
-### Phase 4 — Stats
-
-**Initial API**
-
-```dart
-await services.setStat(
-  key: 'kills',
-  value: 150,
-);
-```
-
-**Features**
-
-- Read stats.
-- Update stats.
-- Increment stats.
-- Automatic sync.
-
-### Phase 5 — Profiles
-
-**Initial API**
-
-```dart
-final player = await services.getCurrentPlayer();
-```
-
-**Features**
-
-- User ID.
-- Display name.
-- Avatar.
-- Online status.
-- Friends.
-
-### Phase 6 — Rich Presence
-
-**Initial API**
-
-```dart
-await services.setPresence(
-  state: 'Playing Ranked',
-);
-```
-
-**Features**
-
-- Custom state.
-- Session time.
-- Current activity.
-- Invitations.
-
-### Phase 7 — Cloud Save
-
-**Initial API**
-
-```dart
-await services.saveData(
-  slot: 'profile',
-  data: bytes,
-);
-```
-
-**Features**
-
-- Remote save.
-- Versioning.
-- Conflict resolution.
-- Offline sync.
-
----
-
-## Capabilities system
-
-Each platform supports different features.
-
-```dart
-if (services.supports(
-  GameCapability.cloudSave,
-)) {
-  ...
-}
-```
-
-Planned capabilities:
-
-```dart
-enum GameCapability {
-  achievements,
-  leaderboards,
-  stats,
-  cloudSave,
-  friends,
-  presence,
-  multiplayer,
-}
-```
-
----
-
-## Multi-provider
-
-Lets you publish to several platforms at once.
-
-```dart
 final services = UnifiedGameServices(
   providers: [
-    SteamProvider(),
-    EpicProvider(),
-    GameJoltProvider(),
+    SteamProvider(appId: 480),
+    GameJoltProvider(
+      gameId: '…',
+      privateKey: '…',
+      username: '…',
+      userToken: '…',
+    ),
   ],
 );
+
+await services.signIn();
+await services.unlockAchievement('first_win'); // fans out to every capable provider
+await services.submitScore(leaderboardId: 'global', score: 1500);
 ```
 
-Operations fan out to every capable provider.
+See the [facade README](packages/unified_game_services/README.md) for
+capability gating, custom providers, multi-provider fan-out semantics, and
+per-store build strategies.
 
----
+## Development
 
-## Events
+This is a [melos](https://melos.invertase.dev/) workspace.
 
-```dart
-services.events.listen(
-  (event) {
-    print(event);
-  },
-);
+```sh
+dart pub get                 # bootstrap (Flutter SDK on PATH required — see below)
+melos run analyze            # dart analyze --fatal-infos, all packages
+melos run format-check        # dart format --set-exit-if-changed .
+melos run test                # dart test in packages that have a test/ dir
 ```
 
-Planned events:
+`unified_game_services_google_play_flutter` depends on `flutter` + `jni_flutter`,
+so root bootstrap needs the Flutter SDK on `PATH` even though every other
+package stays pure Dart. Provider-specific codegen (Steamworks, EOS, GameKit, Play Games JNI bindings)
+needs the matching vendor SDK — see each provider's README; Steam and Epic
+have `melos run steam:gen` / `melos run epic:gen`, Game Center and
+Google Play Android use their own `tool/regenerate_bindings.sh` directly.
 
-- AchievementUnlocked
-- ScoreSubmitted
-- StatUpdated
-- PresenceChanged
-- UserSignedIn
-
----
-
-## Testing
-
-### Core
-
-- Unit tests
-- Mock providers
-
-### Providers
-
-- Integration tests
-- Fake SDKs
-- Cross-platform CI
-
----
-
-## Future expansions
-
-### Multiplayer
-
-```dart
-await services.inviteFriend();
-```
-
-### Matchmaking
-
-```dart
-await services.findMatch();
-```
-
-### Anti-cheat
-
-Optional system for compatible providers.
-
-### Analytics
-
-```dart
-await services.trackEvent(
-  'boss_defeated',
-);
-```
-
----
-
-## Recommended MVP
-
-### Core
-
-- Base architecture.
-- Achievements.
-- Leaderboards.
-
-### Providers
-
-- Google Play Games.
-- Apple Game Center.
-- Steam.
-
-### Publishing
-
-- Documentation.
-- Full example.
-- Tests.
-- CI.
-
----
-
-## End goal
-
-Become the standard Dart/Flutter solution for game services — write a single
-integration and deploy it over any game-distribution ecosystem.
-
----
+Contributor and architecture details live in [`CLAUDE.md`](CLAUDE.md).
 
 ## License & credits
 
@@ -412,12 +92,9 @@ endorsed by any platform vendor (Valve, Game Jolt, Epic Games, Microsoft,
 Google, Apple). All trademarks belong to their respective owners and are used
 only to identify the service each provider integrates with.
 
-The repository bundles **no vendor SDK or native binary** that it lacks
-permission to redistribute. In particular, the Steamworks SDK is **not**
-redistributed: the Steam provider is a wrapper over the
-[`steamworks`](https://github.com/aeb-dev/steamworks) FFI bindings
-(BSD-3-Clause), and Valve's native library is copied out of your own `pub`
-cache when you set up the project.
+The repository bundles **no vendor SDK or native binary** it lacks permission
+to redistribute — Steamworks, EOS, GameKit and the Play Games SDK are all
+supplied by the host application at build/runtime, never committed here.
 
-Third-party credits, trademark notices, and the Steamworks SDK redistribution
-terms: see [`NOTICE.md`](NOTICE.md).
+Third-party credits, trademark notices, and SDK redistribution terms: see
+[`NOTICE.md`](NOTICE.md).

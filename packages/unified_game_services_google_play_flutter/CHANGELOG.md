@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-Initial release (not yet published to pub.dev).
+Initial release.
 
 - Flutter adapter for the Google Play Games family: one call
   (`GooglePlayGamesFlutter.registerWith` / `.create`) auto-resolves the

@@ -6,7 +6,6 @@ name: unified_game_services_google_play_android
 resolution: workspace
 description: Native Google Play Games provider via the Play Games v2 Java SDK over package:jni (pure Dart, no Flutter). Android only; fires native achievement/leaderboard UI.
 version: 0.1.0
-publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
 
 topics:
@@ -29,7 +28,7 @@ dependencies:
   unified_game_services_platform_interface: ^0.1.0
 
 screenshots:
-  - path: screenshot.png
+  - path: screenshot.webp
     description: Code example showcasing on-device capabilities
 
 dev_dependencies:

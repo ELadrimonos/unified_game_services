@@ -1,7 +1,7 @@
 # unified_game_services
 
 One Dart API for game services — achievements, leaderboards, stats, cloud save,
-profiles and presence — across many providers (Steam, GameJolt, and your own
+profiles and presence — across many providers (Steam, Epic, GameJolt, and your own
 custom backends), with **no dependency on Flutter**.
 
 Write your integration once and publish to several platforms at the same time.
@@ -173,21 +173,93 @@ license-gated and not cross-redistributable — ship each only under your own
 Steam/Epic agreement, bundle it only in the matching desktop build, and **never
 commit it** to source control.
 
+#### Flutter desktop flavors (Windows/macOS/Linux)
+
+If your app is a **Flutter desktop app** wanting a Steam build and an Epic
+build from one codebase, know that Flutter's `--flavor` flag is not first-class
+on Windows/Linux the way it is on Android (Gradle product flavors) or
+iOS/macOS (Xcode schemes + `.xcconfig`). Recommended setup per platform:
+
+- **macOS** — real flavor support: add an Xcode scheme + `.xcconfig` per store
+  (mirrors the iOS flavor recipe), then bundle the matching native lib
+  (`libsteam_api.dylib` / `libEOSSDK-Mac-Shipping.dylib`) into that scheme's
+  `Resources` via an Xcode "Copy Files" build phase, gated per configuration.
+- **Windows/Linux** — no native flavor mechanism. Use strategy 3 from above
+  instead: one `lib/main_steam.dart` / `lib/main_epic.dart` entry point per
+  store, built with `flutter build windows --target=lib/main_steam.dart` (same
+  for `linux`). Copy the matching native lib next to the built executable as a
+  post-build step in your CI/release script (`steam_api64.dll` +
+  `steam_appid.txt` alongside `Runner.exe`; `EOSSDK-Win64-Shipping.dll`
+  likewise) — Flutter's build output doesn't know about these, so this step is
+  always manual regardless of flavor tooling.
+- **CI matrix** — the cleanest way to produce all store variants is a CI job
+  matrix over `{store} × {os}`, each running the platform-appropriate build
+  above and attaching the correct native lib as a release asset. Don't try to
+  ship every store's native lib in a single "universal" build — that's exactly
+  the redistribution problem called out above.
+
 ## Related packages
 
-| Package | Role |
-|---------|------|
-| `unified_game_services` | This package — the app-facing facade. |
-| `unified_game_services_platform_interface` | Shared contract + models (for provider authors). |
-| `unified_game_services_steam` | Steam provider (FFI). |
-| `unified_game_services_epic` | Epic Online Services provider (FFI). |
-| `unified_game_services_gamejolt` | GameJolt provider (REST). |
+| Package | Role | Platforms |
+|---------|------|-----------|
+| `unified_game_services` | This package — the app-facing facade. | all |
+| `unified_game_services_platform_interface` | Shared contract + models (for provider authors). | all |
+| `unified_game_services_steam` | Steam provider (Steamworks via FFI). | desktop |
+| `unified_game_services_epic` | Epic Online Services provider (EOS C SDK via FFI). | desktop |
+| `unified_game_services_game_center` | Apple Game Center provider (GameKit via Objective-C FFI). | macOS, iOS |
+| `unified_game_services_gamejolt` | GameJolt provider (REST). | all |
+| `unified_game_services_playfab` | PlayFab provider (REST). | all |
+| `unified_game_services_google_play_rest` | Google Play Games via REST — cross-platform, achievements + leaderboards. | all |
+| `unified_game_services_google_play_android` | Google Play Games via the on-device Play Games v2 Java SDK (`package:jni`) — native write UI. | Android |
+| `unified_game_services_google_play` | Auto-selects native on Android, REST elsewhere (incl. web). Pure Dart. | all |
+| `unified_game_services_google_play_flutter` | Flutter adapter for the above — auto-resolves the Android `Activity`, zero wiring. | all (Flutter apps) |
+| `unified_game_services_xbox_pc` | Xbox on PC (GDK) — research placeholder, not implemented yet, not published. | — |
+
+Picking a Google Play tier:
+
+- **`unified_game_services_google_play_rest`** alone — you don't need native
+  write UI at all (e.g. a CLI, server, or an engine that only reads/writes over
+  REST). No native dependency, works everywhere.
+- **`unified_game_services_google_play_flutter`** — you're a Flutter app and
+  want zero wiring: it auto-resolves the Android `Activity` for you (via
+  `jni_flutter`) and falls back to REST off Android. The one Flutter-only
+  package in the family — pulls in `flutter` + `jni_flutter` (needs the Flutter
+  SDK on `PATH` for `melos bootstrap`, see `CLAUDE.md`).
+- **`unified_game_services_google_play`** directly — same auto-selecting
+  behavior (native on Android, REST elsewhere), but *you* supply the
+  `activityResolver`. Use this from **any** host, Flutter or not, that either
+  (a) isn't Flutter and has its own way to obtain the Android `Activity`
+  jobject, or (b) is Flutter but wants to avoid the `jni_flutter` dependency
+  (and its Flutter-SDK-on-`PATH` bootstrap requirement) and resolve the
+  `Activity` some other way.
+- **`unified_game_services_google_play_android`** directly — you want the
+  native tier only, Android-exclusive, with no REST fallback at all (e.g. an
+  Android-only game engine host).
+
+## Troubleshooting & further reading
+
+Each provider's own README covers its setup gotchas in depth — check there
+first if a provider misbehaves:
+
+- **Steam**: native lib not found / `steam_appid.txt` missing → see
+  `unified_game_services_steam`'s README setup section; requires a running
+  Steam client for most calls.
+- **Epic**: `EOS_InvalidRequest` (1012) on sign-in → missing Epic Account
+  Services scopes in the Dev Portal; see `unified_game_services_epic`'s README
+  "Host responsibilities" section.
+- **Google Play**: `401`/token refresh loops → check `access_type=offline` +
+  `prompt=consent` on the OAuth strategy; see
+  `unified_game_services_google_play_rest`'s README auth section.
+- **Any provider**: catch `GameServiceException` subtypes
+  (`NotSignedIn`, `SignInFailed`, `CapabilityNotSupported`, `Network`,
+  `PlatformOperation`) rather than a bare `catch (e)` — they tell you which
+  layer failed.
 
 ## License
 
 MIT — see the [LICENSE](LICENSE) file.
 
 This is an independent, unofficial library, not affiliated with or endorsed by
-any platform vendor. Third-party credits, trademark notices, and the Steamworks
-SDK redistribution terms are in the repository's `NOTICE.md`.
+any platform vendor. Third-party credits, trademark notices, and SDK
+redistribution terms are in the repository's `NOTICE.md`.
 

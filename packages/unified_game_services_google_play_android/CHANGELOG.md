@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-Initial release (not yet published to pub.dev).
+Initial release.
 
 - Native Google Play Games provider via the Play Games v2 Java SDK over
   `package:jni` (pure Dart, no Flutter). Android only.

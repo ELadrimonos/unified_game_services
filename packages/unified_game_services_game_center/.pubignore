@@ -2,3 +2,6 @@
 .DS_Store
 build/
 *.log
+example/ios/
+example/macos/
+example/pubspec.lock

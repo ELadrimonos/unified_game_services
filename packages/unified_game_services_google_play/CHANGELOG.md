@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-Initial release (not yet published to pub.dev).
+Initial release.
 
 - Auto-selecting Google Play Games factory: native Play Games v2 SDK on
   Android, REST elsewhere — including web (`package:jni` stays behind a
