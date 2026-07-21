@@ -1,0 +1,6 @@
+*.iml
+.DS_Store
+build/
+*.log
+*.dylib
+steam_appid.txt

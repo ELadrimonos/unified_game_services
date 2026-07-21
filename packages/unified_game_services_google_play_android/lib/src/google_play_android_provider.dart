@@ -42,6 +42,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     required JObject Function() activityResolver,
     super.leaderboardIds,
     super.achievementIds,
+    // ignore: prefer_initializing_formals
   }) : _activityResolver = activityResolver {
     PlayGamesSdk.initialize(_activityResolver());
   }

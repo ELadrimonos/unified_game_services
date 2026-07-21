@@ -149,28 +149,29 @@ provider pumps on a `Timer`. Completions are correlated to Dart `Future`s by the
   page (top 100) for the local player; a player below that is not found
   (a dedicated `QueryLeaderboardUserScores` path is a TODO).
 
+- **Cloud save** (`EOS_HPlayerDataStorage`) — `saveData` / `loadData` /
+  `listSaves` / `deleteData`.
+- **Presence** (`EOS_HPresence`) — `setPresence`.
+
 **Not implemented yet (documented gaps):**
-- **Cloud save** (`EOS_HPlayerDataStorage`) and **presence** (`EOS_HPresence`)
-  — the hand-authored bindings ship neither interface's function wrappers, so
-  these await a `melos run epic:gen` regen against your SDK. Not advertised.
 - **No avatar** — the SDK does not expose one (`PlayerProfile.avatarUrl` is
   always null).
+- `getPlayerScore` scans the top-100 ranks page rather than using a dedicated
+  `QueryLeaderboardUserScores` path (TODO).
 
 ### Debug logging
 
 Pass `debugLogging: true` to `EpicProvider(...)` to print verbose FFI/EOS traces
 (callback firing, result codes, the EOS native log). Off by default.
 
-### Bindings are hand-authored — verify before shipping
+### Bindings are ffigen-generated — struct offsets unverified
 
-`lib/src/eos_bindings.dart` is a **hand-authored** minimal FFI binding written
-from the public EOS API reference, so the package compiles without the
-license-gated headers. The Auth, UserInfo and Friends interfaces used by the EAS
-flow are wired up here (the three `EOS_Friends_*` function wrappers were added by
-hand, as the generated stub shipped only their option/callback structs). Struct
+`lib/src/eos_bindings.dart` is **ffigen-generated** from the public EOS API
+reference, so the package compiles without the license-gated headers. Struct
 field offsets and the `*_API_LATEST` ApiVersion constants are
 **version-sensitive and unverified** — they work at runtime for the exercised
-paths, but before shipping, regenerate against your downloaded SDK:
+paths, but before shipping, regenerate against your downloaded SDK for
+verified output:
 
 ```sh
 EOS_SDK_DIR=/path/to/EOS-SDK ./tool/regenerate_bindings.sh
@@ -178,10 +179,8 @@ EOS_SDK_DIR=/path/to/EOS-SDK ./tool/regenerate_bindings.sh
 melos run epic:gen
 ```
 
-This replaces the hand-authored file with ffigen output matching your exact SDK
-version (and is the path to fill in the read-path gap). The SDK headers/libs are
-**not** committed (`.eos-sdk/` is gitignored) — same posture as the Steamworks
-and GameKit bindings in this repo.
+The SDK headers/libs are **not** committed (`.eos-sdk/` is gitignored) — same
+posture as the Steamworks and GameKit bindings in this repo.
 
 ## License
 

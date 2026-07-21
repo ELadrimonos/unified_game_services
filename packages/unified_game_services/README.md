@@ -20,10 +20,10 @@ Pure Dart, so it runs in Flutter apps, CLIs, servers and game engines alike.
 
 ```yaml
 dependencies:
-  unified_game_services: ^1.0.0
+  unified_game_services: ^0.1.0
   # plus the provider(s) you need:
-  unified_game_services_steam: ^1.0.0
-  unified_game_services_gamejolt: ^1.0.0
+  unified_game_services_steam: ^0.1.0
+  unified_game_services_gamejolt: ^0.1.0
 ```
 
 This package re-exports the shared models, capabilities, events and exceptions,

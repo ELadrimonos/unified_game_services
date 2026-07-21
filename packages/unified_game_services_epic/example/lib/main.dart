@@ -181,7 +181,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('🏆 "${achievement.title}" unlocked!'),
-            backgroundColor: const Color(0xFF00D4FF).withOpacity(0.9),
+            backgroundColor: const Color(0xFF00D4FF).withValues(alpha: 0.9),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -326,7 +326,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
         children: [
           const CircularProgressIndicator(color: Color(0xFF00D4FF)),
           const SizedBox(height: 24),
-          Text(message, style: TextStyle(color: Colors.white.withOpacity(0.7))),
+          Text(
+            message,
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+          ),
         ],
       ),
     );
@@ -350,7 +353,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.red.shade900.withOpacity(0.3),
+                color: Colors.red.shade900.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -420,12 +423,14 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
                   Icon(
                     Icons.emoji_events_outlined,
                     size: 64,
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'No achievements available',
-                    style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
                   ),
                 ],
               ),
@@ -536,7 +541,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: const Color(0xFF00D4FF).withOpacity(0.2),
+                backgroundColor: const Color(0xFF00D4FF).withValues(alpha: 0.2),
                 child: const Icon(
                   Icons.person,
                   color: Color(0xFF00D4FF),
@@ -617,10 +622,10 @@ class _AchievementCard extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.1),
+                  color: accent.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: accent.withOpacity(0.4),
+                    color: accent.withValues(alpha: 0.4),
                     width: 1.5,
                   ),
                 ),
@@ -697,12 +702,12 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: unlocked
-            ? const Color(0xFFFFD700).withOpacity(0.15)
-            : Colors.white.withOpacity(0.05),
+            ? const Color(0xFFFFD700).withValues(alpha: 0.15)
+            : Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: unlocked
-              ? const Color(0xFFFFD700).withOpacity(0.5)
+              ? const Color(0xFFFFD700).withValues(alpha: 0.5)
               : Colors.white12,
         ),
       ),

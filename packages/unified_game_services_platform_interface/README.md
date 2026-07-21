@@ -29,7 +29,7 @@ Pure Dart, no Flutter dependency.
 
 ```yaml
 dependencies:
-  unified_game_services_platform_interface: ^1.0.0
+  unified_game_services_platform_interface: ^0.1.0
 
 dev_dependencies:
   build_runner: ^2.4.13

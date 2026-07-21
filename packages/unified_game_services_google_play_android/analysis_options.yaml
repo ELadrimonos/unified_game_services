@@ -19,9 +19,11 @@ include: package:lints/recommended.yaml
 #   rules:
 #     - camel_case_types
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+analyzer:
+  exclude:
+    # jnigen-generated bindings — regenerate via tool/regenerate_bindings.sh,
+    # don't hand-edit or lint.
+    - lib/src/playgames_bindings.dart
 
 # For more information about the core and recommended set of lints, see
 # https://dart.dev/go/core-lints

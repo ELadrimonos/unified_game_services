@@ -90,8 +90,8 @@ per-platform bindings with [`tool/README.md`](tool/README.md) and a
 
 ```yaml
 dependencies:
-  unified_game_services: ^1.0.0
-  unified_game_services_steam: ^1.0.0
+  unified_game_services: ^0.1.0
+  unified_game_services_steam: ^0.1.0
 ```
 
 ## Usage

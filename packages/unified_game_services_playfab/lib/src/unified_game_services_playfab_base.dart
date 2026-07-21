@@ -26,6 +26,8 @@ import 'playfab_client.dart';
 /// advertised and the achievement operations are left throwing
 /// `UnimplementedError`. Rich presence and multiplayer are likewise omitted.
 class PlayFabProvider extends UnifiedGameServicesPlatform {
+  /// Creates a provider for the given [titleId], signing in via
+  /// `LoginWithCustomID` with the app-chosen [customId].
   PlayFabProvider({
     required String titleId,
     required this.customId,

@@ -22,8 +22,8 @@ are not advertised. Online presence is available as a provider-specific
 
 ```yaml
 dependencies:
-  unified_game_services: ^1.0.0
-  unified_game_services_gamejolt: ^1.0.0
+  unified_game_services: ^0.1.0
+  unified_game_services_gamejolt: ^0.1.0
 ```
 
 ## Credentials

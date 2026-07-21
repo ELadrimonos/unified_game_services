@@ -17,6 +17,9 @@ dependencies:
     path: ../../unified_game_services_platform_interface
   cupertino_icons: ^1.0.8
 
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
 # --- ESTO ES LO QUE SOLUCIONA EL CONFLICTO ---
 dependency_overrides:
   unified_game_services_platform_interface:

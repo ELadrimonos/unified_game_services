@@ -17,6 +17,9 @@ import 'gamejolt_client.dart';
 /// tables), cloud save (data store) and friends. GameJolt has no numeric stats
 /// or rich-presence text API, so those capabilities are not advertised.
 class GameJoltProvider extends UnifiedGameServicesPlatform {
+  /// Creates a provider from raw GameJolt credentials (`gameId` +
+  /// `privateKey` from the game's dashboard, `username` + `userToken` from
+  /// the signed-in player).
   GameJoltProvider({
     required String gameId,
     required String privateKey,

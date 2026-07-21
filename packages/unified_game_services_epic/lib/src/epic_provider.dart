@@ -72,6 +72,8 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     if (debugLogging) print(message);
   }
 
+  /// Epic Launcher exchange code for `EOS_LCT_ExchangeCode` login; extracted
+  /// from the constructor's `launchArgs` if not passed explicitly.
   final String? exchangeCode;
 
   /// Epic Developer Authentication Tool endpoint, e.g. `localhost:6300`. When
@@ -83,8 +85,16 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   /// The credential name registered in the Developer Authentication Tool.
   final String? devAuthCredentialName;
 
+  /// Dev Portal credentials (ProductId/SandboxId/DeploymentId/ClientId/
+  /// ClientSecret).
   final EpicCredentials credentials;
+
+  /// Explicit path to the EOS runtime library. When null, the platform
+  /// default (e.g. `libEOSSDK-Mac-Shipping.dylib`) is resolved from the
+  /// executable's directory.
   final String? libraryPath;
+
+  /// How often `EOS_Platform_Tick` is pumped to drive async EOS completions.
   final Duration tickInterval;
 
   EosBindings? _eos;
