@@ -70,7 +70,8 @@ Needs the Android SDK (for `android.jar`), a JDK ≤ 21 (the ASM summarizer), an
 network access to Google's Maven. The script resolves the Play Games aar +
 transitive deps, extracts each `classes.jar`, and runs jnigen against that
 classpath. Keep the runtime `jni` dependency aligned with the jnigen version
-(jnigen 0.16.0 → jni 1.0.0).
+(jnigen 1.x → jni ^1.0.3; committed bindings were generated with jnigen
+0.16.0 and not yet regenerated).
 
 ## License
 

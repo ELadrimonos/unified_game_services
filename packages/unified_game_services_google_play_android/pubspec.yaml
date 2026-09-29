@@ -25,7 +25,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
-  # jnigen 0.16.0 generates against the jni 1.0.0 API (`.object<T>()`).
+  # Keep jni aligned with jnigen (jnigen 1.x → jni ^1.0.3). Committed bindings
+  # were generated with jnigen 0.16.0 against the jni 1.0.0 API (`.object<T>()`).
   jni: ^1.0.3
   unified_game_services_platform_interface: ^0.1.0
 

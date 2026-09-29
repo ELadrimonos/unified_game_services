@@ -212,7 +212,7 @@ Pure-Dart-reachable providers ship first:
   `tasks.Task`/`Tasks`, so they're excluded and `Task`-returning methods are
   opaque `JObject` — confirming sign-in / current-player / list reads await a
   jnigen generics fix or a hand-written JNI `Tasks.await`. Keep the runtime
-  `jni` aligned with jnigen (jnigen 0.16.0 → jni 1.0.0). **Runtime-verified on a
+  `jni` aligned with jnigen (jnigen 1.x → jni ^1.0.3; committed bindings still generated with 0.16.0). **Runtime-verified on a
   Flutter Android host** (`example/`): `signIn()` fires the native Play Games
   sign-in overlay, proving the JNI path reaches the live SDK (VM/Activity wiring
   + bindings work). The example is a Flutter app that *consumes* the pure-Dart
