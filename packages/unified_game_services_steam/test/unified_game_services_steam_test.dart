@@ -1,5 +1,8 @@
+import 'package:steamworks/steamworks.dart' as sw;
 import 'package:test/test.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
+import 'package:unified_game_services_steam/src/unified_game_services_steam_base.dart'
+    show mapSteamInitError;
 import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 
 // NOTE: Operations are not exercised here — they require the Steam client,
@@ -34,6 +37,31 @@ void main() {
     test('signOut is unsupported on Steam', () {
       final provider = SteamProvider(appId: 480);
       expect(provider.signOut, throwsA(isA<PlatformOperationException>()));
+    });
+  });
+
+  group('mapSteamInitError', () {
+    test('restart-needed becomes SteamRestartRequiredException', () {
+      final error = sw.SteamRestartAppIfNecessaryError();
+      final mapped = mapSteamInitError(error);
+      expect(mapped, isA<SteamRestartRequiredException>());
+      expect(mapped, isA<SignInFailedException>());
+      expect(mapped.cause, same(error));
+    });
+
+    test('init error keeps the native message', () {
+      final mapped = mapSteamInitError(
+        sw.SteamInitializationError(message: 'Steam is not running'),
+      );
+      expect(mapped, isA<SignInFailedException>());
+      expect(mapped, isNot(isA<SteamRestartRequiredException>()));
+      expect(mapped.message, contains('Steam is not running'));
+    });
+
+    test('unknown errors fall back to a generic sign-in failure', () {
+      final mapped = mapSteamInitError(StateError('boom'));
+      expect(mapped, isA<SignInFailedException>());
+      expect(mapped.message, 'Failed to initialize Steam.');
     });
   });
 }

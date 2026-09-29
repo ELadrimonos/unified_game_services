@@ -109,6 +109,29 @@ await services.submitScore(leaderboardId: 'Feet Traveled', score: 1500);
 final board = await services.getLeaderboard('Feet Traveled');
 ```
 
+### Handling init failures
+
+`signIn()` (first call initializes Steam) maps native init errors to
+`SignInFailedException`, keeping the native message and the original error in
+`cause`. One case is special: if the game was not launched through the Steam
+client, Steam relaunches it and asks this process to quit
+(`SteamAPI_RestartAppIfNecessary`). That surfaces as
+`SteamRestartRequiredException` (a `SignInFailedException` subclass, Steam-only,
+not part of the unified interface). The provider never calls `exit()` itself —
+do it in your app:
+
+```dart
+try {
+  await services.signIn();
+} on SteamRestartRequiredException {
+  // Steam is already relaunching the game; flush state, then quit.
+  exit(0);
+} on SignInFailedException catch (e) {
+  // e.g. Steam client not running, missing steam_appid.txt.
+  print(e.message);
+}
+```
+
 ### Steam-specific API
 
 Beyond the unified API (reach via

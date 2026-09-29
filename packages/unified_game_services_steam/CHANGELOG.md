@@ -12,6 +12,10 @@ Initial release.
 - Steam-specific account-linking API: `getSteamId64()`,
   `getWebApiAuthTicket()` (returns `SteamAuthTicket`) and `cancelAuthTicket()`
   for backend verification via the Steam Web API `AuthenticateUserTicket`.
+- Init errors from `steamworks` are mapped: `SteamInitializationError` keeps its
+  native message in `SignInFailedException`; `SteamRestartAppIfNecessaryError`
+  becomes `SteamRestartRequiredException` (Steam-specific, extends
+  `SignInFailedException`). Requires `steamworks ^0.4.10`.
 - All Steam async call-results carry a 10s timeout so operations fail with
   `NetworkException` instead of hanging when Steam never replies.
 - `dart run unified_game_services_steam:setup` copies the Steamworks

@@ -4,12 +4,31 @@ import 'dart:io' show Platform;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
+import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:steamworks/steamworks.dart' as sw;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 import 'steam_auth_ticket.dart';
+import 'steam_exceptions.dart';
 
 export 'steam_auth_ticket.dart';
+export 'steam_exceptions.dart';
+
+/// Maps an error thrown by `SteamClient.init` to a [GameServiceException].
+@visibleForTesting
+GameServiceException mapSteamInitError(Object error) => switch (error) {
+  sw.SteamRestartAppIfNecessaryError() => SteamRestartRequiredException(
+    'Steam is relaunching the app; this process must exit.',
+    error,
+  ),
+  sw.SteamInitializationError(:final message) => SignInFailedException(
+    message.isEmpty
+        ? 'Failed to initialize Steam.'
+        : 'Failed to initialize Steam: $message',
+    error,
+  ),
+  _ => SignInFailedException('Failed to initialize Steam.', error),
+};
 
 /// Steam provider backed by the pure-Dart [`steamworks`](https://pub.dev/packages/steamworks)
 /// FFI wrapper of the Steamworks SDK.
@@ -90,7 +109,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     try {
       sw.SteamClient.init(appId: appId);
     } catch (e) {
-      throw SignInFailedException('Failed to initialize Steam.', e);
+      throw mapSteamInitError(e);
     }
     final client = sw.SteamClient.instance;
     _client = client;

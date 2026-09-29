@@ -10,3 +10,4 @@ library;
 
 export 'src/steam_provider_web.dart'
     if (dart.library.io) 'src/unified_game_services_steam_base.dart';
+export 'src/steam_exceptions.dart';
