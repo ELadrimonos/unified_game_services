@@ -3,6 +3,8 @@ resolution: workspace
 description: Apple Game Center provider for unified_game_services, backed by GameKit via pure-Dart Objective-C FFI (package:objective_c). macOS/iOS only.
 version: 0.1.0
 repository: https://github.com/ELadrimonos/unified_game_services
+homepage: https://gameservices.aprimo.dev
+documentation: https://docs.gameservices.aprimo.dev/game_center
 
 topics:
   - game-services

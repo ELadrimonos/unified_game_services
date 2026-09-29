@@ -3,6 +3,8 @@ resolution: workspace
 description: GameJolt provider for unified_game_services, using the GameJolt Game API v1.2 (pure Dart, REST).
 version: 0.1.0
 repository: https://github.com/ELadrimonos/unified_game_services
+homepage: https://gameservices.aprimo.dev
+documentation: https://docs.gameservices.aprimo.dev/gamejolt
 
 topics:
   - game-services

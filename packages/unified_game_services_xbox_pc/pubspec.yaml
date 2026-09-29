@@ -5,6 +5,8 @@ version: 0.1.0
 # Research placeholder — no provider code yet; do not publish until implemented.
 publish_to: none
 repository: https://github.com/ELadrimonos/unified_game_services
+homepage: https://gameservices.aprimo.dev
+documentation: https://docs.gameservices.aprimo.dev/xbox_pc
 
 topics:
   - game-services
