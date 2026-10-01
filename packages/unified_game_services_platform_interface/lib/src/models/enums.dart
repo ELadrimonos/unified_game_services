@@ -1,12 +1,7 @@
-import 'package:dart_mappable/dart_mappable.dart';
-
-part 'enums.mapper.dart';
-
 /// The time window a leaderboard query is scoped to.
 ///
 /// Not every provider supports every scope; unsupported scopes typically fall
 /// back to [allTime].
-@MappableEnum()
 enum LeaderboardTimeScope {
   /// All scores ever submitted.
   allTime,
@@ -19,7 +14,6 @@ enum LeaderboardTimeScope {
 }
 
 /// The set of players a leaderboard query is restricted to.
-@MappableEnum()
 enum LeaderboardCollection {
   /// Every player on the platform.
   global,
@@ -29,7 +23,6 @@ enum LeaderboardCollection {
 }
 
 /// How a leaderboard ranks scores.
-@MappableEnum()
 enum LeaderboardOrder {
   /// Higher scores rank better (e.g. points).
   highToLow,

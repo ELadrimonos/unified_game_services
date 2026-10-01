@@ -32,9 +32,6 @@ steam_appid.txt
 *.dylib
 *.so
 
-# Generated dart_mappable code is committed on purpose (consumers should not
-# need build_runner). Do NOT ignore *.mapper.dart.
-
 # JetBrains IDE project files
 *.iml
 .idea/

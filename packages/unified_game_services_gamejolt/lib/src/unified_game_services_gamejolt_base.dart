@@ -17,6 +17,9 @@ import 'gamejolt_client.dart';
 /// tables), cloud save (data store) and friends. GameJolt has no numeric stats
 /// or rich-presence text API, so those capabilities are not advertised.
 class GameJoltProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'gamejolt';
+
   /// Creates a provider from raw GameJolt credentials (`gameId` +
   /// `privateKey` from the game's dashboard, `username` + `userToken` from
   /// the signed-in player).
@@ -58,27 +61,6 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   bool _signedIn = false;
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [GameJoltProvider] as the active platform implementation.
-  static void registerWith({
-    required String gameId,
-    required String privateKey,
-    required String username,
-    required String userToken,
-    http.Client? httpClient,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = GameJoltProvider(
-      gameId: gameId,
-      privateKey: privateKey,
-      username: username,
-      userToken: userToken,
-      httpClient: httpClient,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   /// Credentials shared by user-scoped requests.
   Map<String, String?> get _auth => {

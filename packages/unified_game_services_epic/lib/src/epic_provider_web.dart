@@ -12,10 +12,13 @@ const String _kWebError =
 /// The real provider is `dart:ffi` (EOS C SDK) and cannot compile to JS, so the
 /// package entry point conditional-exports this stub on web
 /// (`if (dart.library.io)` selects the real one). It mirrors the public
-/// constructor + [registerWith] so consumer code that references [EpicProvider]
+/// constructor so consumer code that references [EpicProvider]
 /// still type-checks on web; construction throws [UnsupportedError] because EOS
 /// cannot run there.
 class EpicProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'epic';
+
   EpicProvider({
     required this.credentials,
     this.exchangeCode,
@@ -41,19 +44,6 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   /// Matches the real static toggle so referencing `EpicProvider.debugLogging`
   /// still resolves on web.
   static bool debugLogging = false;
-
-  static void registerWith({
-    required EpicCredentials credentials,
-    String? exchangeCode,
-    List<String>? launchArgs,
-    String? devAuthHost,
-    String? devAuthCredentialName,
-    String? libraryPath,
-    Duration tickInterval = const Duration(milliseconds: 100),
-    bool debugLogging = false,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) => throw UnsupportedError(_kWebError);
 
   @override
   Future<void> dispose() => throw UnsupportedError(_kWebError);

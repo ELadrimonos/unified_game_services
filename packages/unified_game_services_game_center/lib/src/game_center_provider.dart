@@ -39,6 +39,9 @@ import 'gamekit_bindings.dart';
 /// advertised; cloud save (`GKSavedGame`) and friends are deferred to a later
 /// iteration.
 class GameCenterProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'game_center';
+
   GameCenterProvider({super.leaderboardIds, super.achievementIds});
 
   /// `GKErrorDomain` and friends. Instantiated against the dlopen'd framework
@@ -48,17 +51,6 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
 
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [GameCenterProvider] as the active platform implementation.
-  static void registerWith({
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = GameCenterProvider(
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   /// Loads GameKit into the process so its Obj-C classes are registered.
   ///

@@ -29,7 +29,7 @@ save** (lives in Google Drive appdata — a separate API + scope), **friends** a
 **presence**.
 
 Provider-specific extras (off the unified interface, reach via
-`UnifiedGameServicesPlatform.getInstance<GooglePlayGamesProvider>()`):
+`GameServices.provider<GooglePlayGamesProvider>()`):
 `setAchievementStepsAtLeast()`, `recordEvent()`.
 
 ## Authentication

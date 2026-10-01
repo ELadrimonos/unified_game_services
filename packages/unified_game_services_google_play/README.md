@@ -31,20 +31,21 @@ import 'package:unified_game_services_google_play/unified_game_services_google_p
 
 // On Android: pass an activityResolver (invoked fresh before each native call).
 // Elsewhere: pass an AuthStrategy.
-GooglePlayGames.registerWith(
+final provider = GooglePlayGames.create(
   activityResolver: () => androidActivity,         // Android only
   auth: LoopbackOAuthStrategy(clientId: '<id>'),   // desktop/CLI/server
   achievementIds: {'first_win': 'CgkI...'},
   leaderboardIds: {'global': 'CgkI...'},
 );
+GameServices.initialize(providers: [provider]);
 
 // Same unified calls regardless of platform:
-final games = UnifiedGameServices();
+final games = GameServices.instance;
 await games.unlockAchievement('first_win');        // native toast on Android
 await games.submitScore(leaderboardId: 'global', score: 1500);
 ```
 
-`GooglePlayGames.create(...)` returns the provider without registering it.
+`GooglePlayGames.create(...)` returns the provider; hand it to `GameServices.initialize`.
 `GooglePlayGames.usesNative` reports the current platform's choice.
 
 ## Note on the selection

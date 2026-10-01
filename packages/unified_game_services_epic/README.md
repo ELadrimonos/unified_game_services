@@ -72,9 +72,8 @@ await services.submitScore(leaderboardId: 'STAT_NAME', score: 100);
 await services.getAchievements();                          // read path (definitions + state)
 ```
 
-(Or register globally with `EpicProvider.registerWith(...)` — it takes the same
-parameters as the constructor — and construct `UnifiedGameServices()` with no
-arguments.)
+(Or make it the global facade with `GameServices.initialize(providers:
+[EpicProvider(...)])` and use `GameServices.instance` anywhere.)
 
 ## Sign-in: anonymous vs Epic Account Services (EAS)
 
@@ -107,7 +106,7 @@ final friends = await provider.getFriends();
 
 In production the Epic Launcher passes the exchange code on the command line
 (`-AUTH_PASSWORD=…`); forward `main()`'s arguments via
-`EpicProvider.registerWith(launchArgs: args)`.
+`EpicProvider(launchArgs: args, …)`.
 
 > **EAS needs Dev Portal setup.** The Auth interface requires an **Epic Account
 > Services Application** with completed Brand settings and the **Client

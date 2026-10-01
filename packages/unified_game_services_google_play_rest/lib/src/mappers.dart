@@ -2,7 +2,7 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 /// Pure transforms from Google Play Games REST JSON to the unified models.
 ///
-/// Kept as free functions (no `dart_mappable` codegen) because GPG field names
+/// Kept as free functions (no codegen) because GPG field names
 /// differ from the unified model and several fields are int64 values encoded as
 /// strings.
 

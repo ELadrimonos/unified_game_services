@@ -14,6 +14,10 @@ const _credentials = EpicCredentials(
 );
 
 void main() {
+  test('providerId is the stable id "epic"', () {
+    expect(EpicProvider(credentials: _credentials).providerId, 'epic');
+  });
+
   group('EpicProvider', () {
     test('declares the capabilities it implements', () {
       final provider = EpicProvider(credentials: _credentials);
@@ -27,11 +31,9 @@ void main() {
       });
     });
 
-    test('registerWith installs itself as the active platform', () {
-      EpicProvider.registerWith(credentials: _credentials);
-      expect(UnifiedGameServicesPlatform.instance, isA<EpicProvider>());
+    test('keeps the credentials it was built with', () {
       expect(
-        UnifiedGameServicesPlatform.getInstance<EpicProvider>().credentials,
+        EpicProvider(credentials: _credentials).credentials,
         same(_credentials),
       );
     });

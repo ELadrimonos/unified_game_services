@@ -49,6 +49,9 @@ GameServiceException mapSteamInitError(Object error) => switch (error) {
 /// Steam delivers async results through a callback pump; this provider drives
 /// it with a periodic [Timer] calling `runFrame`.
 class SteamProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'steam';
+
   SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
     // Steam is desktop-only. dart:ffi compiles on Android/iOS, but the
     // Steamworks runtime lib does not exist there — fail fast with a clear
@@ -73,19 +76,6 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   Timer? _pump;
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [SteamProvider] as the active platform implementation.
-  static void registerWith({
-    int? appId,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = SteamProvider(
-      appId: appId,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   @override
   Set<GameCapability> get capabilities => const {
@@ -271,7 +261,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
 
   /// Clears a single unlocked achievement (Steam `ClearAchievement`). Useful
   /// for re-testing. Reach it via
-  /// `UnifiedGameServicesPlatform.getInstance<SteamProvider>()`.
+  /// `GameServices.provider<SteamProvider>()`.
   Future<void> clearAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
     final stats = _ensureInit().steamUserStats;
@@ -577,7 +567,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   //
   // These members exist only on [SteamProvider] and are absent from
   // [UnifiedGameServicesPlatform]. Reach them via
-  // `UnifiedGameServicesPlatform.getInstance<SteamProvider>()`.
+  // `GameServices.provider<SteamProvider>()`.
 
   /// The signed-in user's 64-bit Steam ID
   /// (`SteamUser()->GetSteamID().ConvertToUint64()`).

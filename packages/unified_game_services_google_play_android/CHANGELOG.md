@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+- **Breaking:** removed `GooglePlayAndroidProvider.registerWith(...)`; construct the provider (`GooglePlayAndroidProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
+- Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
+
 ## 0.1.0
 
 Initial release.

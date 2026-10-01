@@ -35,6 +35,9 @@ class _CbResult {
 
 /// Epic Online Services provider, backed by the EOS C SDK via dart:ffi.
 class EpicProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'epic';
+
   /// [launchArgs] — pass `main()`'s arguments to auto-extract the Epic
   /// Launcher exchange code (`-AUTH_PASSWORD=...`); an explicit [exchangeCode]
   /// takes precedence.
@@ -516,35 +519,6 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     } catch (e, s) {
       _log('🔥 [FFI FATAL] _onDeleteFileComplete: $e\n$s');
     }
-  }
-
-  /// Registers an [EpicProvider] as the active platform. Mirrors the
-  /// constructor's parameters; [launchArgs] — pass `main()`'s arguments to
-  /// auto-extract the Epic Launcher exchange code (`-AUTH_PASSWORD=...`).
-  static void registerWith({
-    required EpicCredentials credentials,
-    String? exchangeCode,
-    List<String>? launchArgs,
-    String? devAuthHost,
-    String? devAuthCredentialName,
-    String? libraryPath,
-    Duration tickInterval = const Duration(milliseconds: 100),
-    bool debugLogging = false,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = EpicProvider(
-      credentials: credentials,
-      exchangeCode: exchangeCode,
-      launchArgs: launchArgs,
-      devAuthHost: devAuthHost,
-      devAuthCredentialName: devAuthCredentialName,
-      libraryPath: libraryPath,
-      tickInterval: tickInterval,
-      debugLogging: debugLogging,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
   }
 
   @override

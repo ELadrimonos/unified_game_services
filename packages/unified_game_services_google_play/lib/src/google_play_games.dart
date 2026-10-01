@@ -56,20 +56,4 @@ abstract final class GooglePlayGames {
       achievementIds: achievementIds,
     );
   }
-
-  /// Creates the platform-appropriate provider and registers it as the active
-  /// [UnifiedGameServicesPlatform.instance].
-  static void registerWith({
-    Object Function()? activityResolver,
-    AuthStrategy? auth,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = create(
-      activityResolver: activityResolver,
-      auth: auth,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 }

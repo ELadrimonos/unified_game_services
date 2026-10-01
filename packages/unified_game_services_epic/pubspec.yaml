@@ -1,7 +1,7 @@
 name: unified_game_services_epic
 resolution: workspace
 description: Epic Online Services (EOS) provider for unified_game_services, backed by the EOS C SDK via pure-Dart dart:ffi. Desktop only.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/ELadrimonos/unified_game_services
 homepage: https://gameservices.aprimo.dev
 documentation: https://docs.gameservices.aprimo.dev/epic
@@ -24,7 +24,7 @@ environment:
 
 dependencies:
   ffi: ^2.1.4
-  unified_game_services_platform_interface: ^0.1.0
+  unified_game_services_platform_interface: ^0.2.0
 
 dev_dependencies:
   ffigen: ^21.0.0-dev.0

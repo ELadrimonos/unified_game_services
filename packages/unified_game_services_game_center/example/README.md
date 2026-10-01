@@ -22,7 +22,7 @@ Flutter app is the harness that lets you actually see the windows.
 
 Split of responsibilities:
 
-- **Pure-Dart provider** (`UnifiedGameServicesPlatform.instance`) — sign-in
+- **Pure-Dart provider** (`GameCenterProvider`) — sign-in
   state, achievements, leaderboards, score submission, player profile. Over FFI.
 - **Host method channel** `game_center_example/native` (`lib/game_center_native.dart`
   ↔ `macos/Runner/MainFlutterWindow.swift`, `ios/Runner/AppDelegate.swift`) —
@@ -45,7 +45,7 @@ Game Center–enabled app in App Store Connect.
    achievement and leaderboard ids used in `lib/main.dart`:
    - achievement `com.example.game.firstwin` (unified key `first_win`)
    - leaderboard `com.example.game.highscores` (unified key `global`)
-   Swap these for your own ids in the `GameCenterProvider.registerWith(...)` call.
+   Swap these for your own ids in the `GameCenterProvider(...)` constructor in `lib/main.dart`.
 
 Deployment targets are bumped to macOS 11.0 / iOS 14.0 — `GKGameCenterViewController(state:)`
 requires them.

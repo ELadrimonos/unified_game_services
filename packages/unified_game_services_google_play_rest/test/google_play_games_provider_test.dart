@@ -40,6 +40,13 @@ GooglePlayGamesProvider providerWith(
 }
 
 void main() {
+  test('providerId is the stable id "google_play_rest"', () {
+    expect(
+      providerWith(MockClient((_) async => http.Response('', 200))).providerId,
+      'google_play_rest',
+    );
+  });
+
   group('GooglePlayGamesProvider', () {
     test('declares achievements + leaderboards only', () {
       final p = providerWith(mock(const {}).client);

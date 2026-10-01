@@ -1,14 +1,11 @@
-import 'package:dart_mappable/dart_mappable.dart';
-
-part 'player_profile.mapper.dart';
+import '../internal/equality.dart';
 
 /// A player as represented by a game service provider.
 ///
 /// A profile is identity only; scores live on [LeaderboardEntry] and stats on
 /// [Stat]. Fields beyond [id] and [displayName] are optional because providers
 /// expose different amounts of data.
-@MappableClass()
-class PlayerProfile with PlayerProfileMappable {
+class PlayerProfile {
   /// Provider-scoped unique identifier for the player.
   final String id;
 
@@ -30,6 +27,12 @@ class PlayerProfile with PlayerProfileMappable {
   /// Provider-specific fields with no unified equivalent.
   final Map<String, dynamic> extra;
 
+  /// [UnifiedGameServicesPlatform.providerId] of the provider this came from.
+  ///
+  /// Set by the `UnifiedGameServices` facade on reads; `null` when the object
+  /// was built by a provider or by hand.
+  final String? providerId;
+
   const PlayerProfile({
     required this.id,
     required this.displayName,
@@ -38,5 +41,61 @@ class PlayerProfile with PlayerProfileMappable {
     this.title,
     this.isFriend,
     this.extra = const {},
+    this.providerId,
   });
+
+  /// Returns a copy with the given fields replaced.
+  ///
+  /// A `null` argument keeps the current value, so a field cannot be reset to
+  /// `null` through this method; build a new instance for that.
+  PlayerProfile copyWith({
+    String? id,
+    String? displayName,
+    String? avatarUrl,
+    bool? isOnline,
+    String? title,
+    bool? isFriend,
+    Map<String, dynamic>? extra,
+    String? providerId,
+  }) => PlayerProfile(
+    id: id ?? this.id,
+    displayName: displayName ?? this.displayName,
+    avatarUrl: avatarUrl ?? this.avatarUrl,
+    isOnline: isOnline ?? this.isOnline,
+    title: title ?? this.title,
+    isFriend: isFriend ?? this.isFriend,
+    extra: extra ?? this.extra,
+    providerId: providerId ?? this.providerId,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlayerProfile &&
+          other.id == id &&
+          other.displayName == displayName &&
+          other.avatarUrl == avatarUrl &&
+          other.isOnline == isOnline &&
+          other.title == title &&
+          other.isFriend == isFriend &&
+          mapEquals(other.extra, extra) &&
+          other.providerId == providerId;
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    displayName,
+    avatarUrl,
+    isOnline,
+    title,
+    isFriend,
+    mapHash(extra),
+    providerId,
+  );
+
+  @override
+  String toString() =>
+      'PlayerProfile(id: $id, displayName: $displayName, '
+      'avatarUrl: $avatarUrl, isOnline: $isOnline, title: $title, '
+      'isFriend: $isFriend, extra: $extra, providerId: $providerId)';
 }

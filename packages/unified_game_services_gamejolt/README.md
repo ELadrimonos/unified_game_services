@@ -58,8 +58,8 @@ final board = await services.getLeaderboard('654321');
 ### Provider-specific: sessions
 
 GameJolt sessions track online presence (playing + active/idle). Reach them via
-`UnifiedGameServicesPlatform.getInstance<GameJoltProvider>()` or
-`services.provider<GameJoltProvider>()`:
+`GameServices.provider<GameJoltProvider>()` (or
+`services.provider<GameJoltProvider>()` on a standalone facade):
 
 ```dart
 final gj = services.provider<GameJoltProvider>()!;

@@ -63,26 +63,31 @@ extends. Conventions:
   **only** the operations it supports — adding a method is non-breaking.
 - Each provider declares `Set<GameCapability> get capabilities`. Gate calls with
   `supports(cap)`; unsupported ops should throw `CapabilityNotSupportedException`.
-- `UnsupportedUnifiedGameServices` is the default instance (supports nothing).
+- Each provider declares a stable `String get providerId` (`steam`, `epic`,
+  `game_center`, `google_play_rest`, `google_play_android`, `gamejolt`,
+  `playfab`); never derive it from `runtimeType`. There is no global platform
+  instance: providers are handed to the facade.
 - Errors are normalized into the `GameServiceException` hierarchy
   (`NotSignedIn`, `SignInFailed`, `CapabilityNotSupported`, `Network`,
   `PlatformOperation`).
 - Events are a `sealed GameServiceEvent` hierarchy (switch exhaustively).
 
-## Serialization: dart_mappable (code-gen)
+## Models: hand-written immutable classes
 
-Models use **`dart_mappable`** — not manual `toJson`/hand-rolled `==`/`copyWith`.
+Models and events are plain Dart classes (no code generation, no
+serialization contract).
 
-- Each model is its own library file with `part 'x.mapper.dart';` and
-  `@MappableClass()` (`@MappableEnum()` for enums). The mixin supplies
-  `toMap`/`toJson`/`copyWith`/`==`/`hashCode`/`toString`.
-- `models.dart` re-exports the model files (it is **not** a `part`-of library).
-- After editing any model, regenerate:
-  `cd packages/unified_game_services_platform_interface && dart run build_runner build`
-- `.mapper.dart` files are generated; they are committed so consumers don't need
-  build_runner.
-- `Uint8List` has no native JSON mapper — `CloudSave` stores `List<int>` + exposes a
-  `Uint8List bytes` getter. Follow that pattern for binary payloads.
+- Each model has a `const` ctor, `final` fields, `copyWith`, `==`, `hashCode`
+  and `toString`. `copyWith` uses `param ?? this.field`, so it cannot reset a
+  field to `null`.
+- List/Map fields compare deeply via the private helpers in
+  `lib/src/internal/equality.dart` (not exported).
+- Do **not** add `toJson`/`fromJson`; if a provider needs wire formats it keeps
+  them in its own mapping code (e.g. `google_play_rest/lib/src/mappers.dart`).
+- `models.dart` re-exports the model files. Adding a field means updating the
+  ctor, `copyWith`, `==`, `hashCode` and `toString` by hand.
+- Binary payloads: `CloudSave` stores `List<int>` + exposes a `Uint8List bytes`
+  getter. Follow that pattern.
 
 ## Commands (melos)
 
@@ -116,10 +121,10 @@ Rule of thumb: prefer unifying, but never shoehorn. Example: GameJolt
 behind `GameCapability.presence`. A dev using the facade gets portability; a dev
 holding a `GameJoltProvider` gets everything GameJolt offers.
 
-Reach provider-specific members without keeping the registered reference via the
-typed accessor:
-`UnifiedGameServicesPlatform.getInstance<GameJoltProvider>().openSession()`
-(throwing) or `tryGetInstance<T>()` (nullable).
+The global lives on the facade: `GameServices.initialize(providers: [...])`
+sets `GameServices.instance` (`maybeInstance` nullable, `reset()` for
+tests); there is no `registerWith` on providers. Reach provider-specific
+members with `GameServices.provider<GameJoltProvider>()`.
 
 ## Provider scope (MVP)
 
@@ -240,8 +245,8 @@ Pure-Dart-reachable providers ship first:
 
   **`unified_game_services_google_play_flutter` (built):** the sanctioned Flutter
   adapter (depends on `flutter` + `jni_flutter`; see the hard-constraint
-  exception above). One call — `GooglePlayGamesFlutter.registerWith(...)` /
-  `.create(...)` (same `<Type>.registerWith` idiom as every other provider) —
+  exception above). One call — `GooglePlayGamesFlutter.create(...)` (hand the result to
+  `GameServices.initialize`) —
   auto-resolves the Android `Activity` from the
   running Flutter engine (`androidActivity(PlatformDispatcher.instance.engineId!)`,
   wrapped into the `activityResolver` the factory needs) so app devs never touch
@@ -285,7 +290,7 @@ Pure-Dart-reachable providers ship first:
 1. Implement the subset of `UnifiedGameServicesPlatform` the provider supports.
 2. Declare accurate `capabilities`.
 3. Map native/SDK errors to `GameServiceException` subtypes.
-4. Register via `UnifiedGameServicesPlatform.instance = ...`, or just pass an
+4. Hand it to `GameServices.initialize(providers: [...])` (global), or pass an
    instance to `UnifiedGameServices(providers: [...])`.
 5. Keep it pure Dart (see constraint above).
 

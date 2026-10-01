@@ -17,9 +17,8 @@ Pure Dart, no Flutter dependency.
   Methods default to throwing `UnimplementedError`, so a provider overrides only
   what it supports.
 - **Models** — `Achievement`, `Leaderboard`/`LeaderboardEntry`, `PlayerProfile`,
-  `Stat`, `CloudSave`, `RichPresence`. Serialization via
-  [`dart_mappable`](https://pub.dev/packages/dart_mappable)
-  (`toMap`/`toJson`/`copyWith`/equality for free).
+  `Stat`, `CloudSave`, `RichPresence`. Hand-written immutable value classes
+  with `copyWith`, `==`, `hashCode` and `toString`; no serialization contract.
 - **`GameCapability`** — the capability enum used for feature gating.
 - **Events** — a sealed `GameServiceEvent` hierarchy.
 - **Exceptions** — `GameServiceException` and subtypes (`NotSignedIn`,
@@ -29,11 +28,7 @@ Pure Dart, no Flutter dependency.
 
 ```yaml
 dependencies:
-  unified_game_services_platform_interface: ^0.1.0
-
-dev_dependencies:
-  build_runner: ^2.4.13
-  dart_mappable_builder: ^4.3.0
+  unified_game_services_platform_interface: ^0.2.0
 ```
 
 ## Writing a provider
@@ -43,6 +38,9 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 class MyProvider extends UnifiedGameServicesPlatform {
   @override
+  String get providerId => 'my_provider'; // stable, snake_case, never changes
+
+  @override
   Set<GameCapability> get capabilities => const {GameCapability.achievements};
 
   @override
@@ -51,8 +49,8 @@ class MyProvider extends UnifiedGameServicesPlatform {
   }
 }
 
-// Register it, or pass it to UnifiedGameServices(providers: [...]).
-UnifiedGameServicesPlatform.instance = MyProvider();
+// Hand it to the facade (global instance or a standalone one):
+GameServices.initialize(providers: [MyProvider()]);
 ```
 
 Guidelines:
@@ -63,16 +61,7 @@ Guidelines:
 3. Map platform/SDK errors onto the `GameServiceException` hierarchy.
 4. Put non-portable, provider-specific features as extra public members (not on
    the interface). Apps reach them with
-   `UnifiedGameServicesPlatform.getInstance<MyProvider>()`.
-
-If you add or change a model, regenerate the `dart_mappable` code:
-
-```sh
-dart run build_runner build
-```
-
-(Generated `*.mapper.dart` files are committed so consumers don't need
-`build_runner`.)
+   `GameServices.provider<MyProvider>()`.
 
 ## License
 

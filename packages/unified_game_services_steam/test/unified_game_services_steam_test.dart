@@ -9,6 +9,10 @@ import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 // the Steamworks native library, and a logged-in user, none of which exist in
 // CI. These tests cover only what is verifiable without the native runtime.
 void main() {
+  test('providerId is the stable id "steam"', () {
+    expect(SteamProvider(appId: 480).providerId, 'steam');
+  });
+
   group('SteamProvider', () {
     test('declares the capabilities it implements', () {
       final provider = SteamProvider(appId: 480);
@@ -21,11 +25,6 @@ void main() {
         GameCapability.presence,
       });
       expect(provider.supports(GameCapability.multiplayer), isFalse);
-    });
-
-    test('registerWith installs itself as the active platform', () {
-      SteamProvider.registerWith(appId: 480);
-      expect(UnifiedGameServicesPlatform.instance, isA<SteamProvider>());
     });
 
     test('is not signed in before init', () async {

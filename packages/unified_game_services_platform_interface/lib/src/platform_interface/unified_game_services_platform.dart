@@ -3,7 +3,9 @@ part of 'platform_interface.dart';
 /// The interface every game service provider implements.
 ///
 /// Concrete providers (Google Play Games, Game Center, Steam, Epic, Xbox PC,
-/// GameJolt, …) extend this class and register themselves via [instance].
+/// GameJolt, …) extend this class, call `super()`, and are handed to
+/// `GameServices.initialize(providers: [...])` (or the
+/// `UnifiedGameServices` constructor).
 ///
 /// Methods are grouped by [GameCapability]. The base class provides default
 /// implementations that throw [UnimplementedError], so a provider only needs
@@ -56,43 +58,16 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static UnifiedGameServicesPlatform _instance =
-      UnsupportedUnifiedGameServices();
+  // ─── Identity ────────────────────────────────────────────────────────────
 
-  /// The currently registered provider.
-  static UnifiedGameServicesPlatform get instance => _instance;
-
-  /// Registers [instance] as the active provider.
+  /// A stable, lowercase `snake_case` identifier for this provider
+  /// (e.g. `steam`, `epic`, `game_center`, `google_play`, `gamejolt`).
   ///
-  /// Platform implementations should set this in their `registerWith` method.
-  static set instance(UnifiedGameServicesPlatform instance) {
-    PlatformInterface.verifyToken(instance, _token);
-    _instance = instance;
-  }
-
-  /// Returns the active provider cast to the concrete type [T].
-  ///
-  /// Use this to reach a provider's provider-specific API (e.g.
-  /// `UnifiedGameServicesPlatform.getInstance<GameJoltProvider>().openSession()`)
-  /// without holding a reference to the instance you registered.
-  ///
-  /// Throws [StateError] if the active provider is not a [T] — typically
-  /// because that provider was never registered.
-  static T getInstance<T extends UnifiedGameServicesPlatform>() {
-    final current = _instance;
-    if (current is T) return current;
-    throw StateError(
-      'Active game services provider is ${current.runtimeType}, not $T. '
-      'Register $T (via its registerWith()) before calling getInstance<$T>().',
-    );
-  }
-
-  /// Like [getInstance], but returns `null` instead of throwing when the active
-  /// provider is not a [T].
-  static T? tryGetInstance<T extends UnifiedGameServicesPlatform>() {
-    final current = _instance;
-    return current is T ? current : null;
-  }
+  /// It is part of the public contract: it must never change across versions
+  /// and must not be derived from `runtimeType`. The facade uses it to report
+  /// per-provider outcomes. Distinct implementations of the same store (e.g.
+  /// the Google Play REST and Android tiers) share one id.
+  String get providerId;
 
   // ─── Capabilities ────────────────────────────────────────────────────────
 

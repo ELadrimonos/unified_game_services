@@ -83,11 +83,16 @@ Future<void> main() async {
   await services.signIn();
 
   if (services.supports(GameCapability.achievements)) {
-    await services.unlockAchievement(kFirstWin);
-    stdout.writeln('Unlocked "$kFirstWin".');
+    final r = await services.unlockAchievement(kFirstWin);
+    stdout.writeln('Unlocked "$kFirstWin" on ${r.successfulProviders}.');
   }
   if (services.supports(GameCapability.leaderboards)) {
-    await services.submitScore(leaderboardId: kHighScore, score: 1500);
-    stdout.writeln('Submitted 1500 to "$kHighScore".');
+    final r = await services.submitScore(
+      leaderboardId: kHighScore,
+      score: 1500,
+    );
+    stdout.writeln(
+      'Submitted 1500 to "$kHighScore" on ${r.successfulProviders}.',
+    );
   }
 }

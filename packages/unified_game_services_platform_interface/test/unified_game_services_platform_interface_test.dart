@@ -1,12 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:test/test.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 class _FakeProviderA extends UnifiedGameServicesPlatform
-    with MockPlatformInterfaceMixin {}
-
-class _FakeProviderB extends UnifiedGameServicesPlatform
-    with MockPlatformInterfaceMixin {}
+    with MockPlatformInterfaceMixin {
+  @override
+  String get providerId => 'fake_a';
+}
 
 void main() {
   group('Achievement', () {
@@ -27,77 +29,125 @@ void main() {
     });
   });
 
-  group('dart_mappable serialization', () {
-    test('PlayerProfile round-trips through a map', () {
-      const profile = PlayerProfile(
-        id: 'p1',
-        displayName: 'Ada',
-        isOnline: true,
-      );
-      final copy = PlayerProfileMapper.fromMap(profile.toMap());
-      expect(copy, profile);
+  group('value semantics', () {
+    test('PlayerProfile == / hashCode compare fields, incl. extra deeply', () {
+      const a = PlayerProfile(id: 'p1', displayName: 'Ada', extra: {'k': 1});
+      const b = PlayerProfile(id: 'p1', displayName: 'Ada', extra: {'k': 1});
+      const c = PlayerProfile(id: 'p1', displayName: 'Ada', extra: {'k': 2});
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(c));
     });
 
-    test('Leaderboard round-trips with nested entries', () {
-      final board = Leaderboard(
+    test('PlayerProfile.copyWith replaces only the given fields', () {
+      const p = PlayerProfile(id: 'p1', displayName: 'Ada', isOnline: true);
+      final q = p.copyWith(providerId: 'steam', displayName: 'Grace');
+      expect(q.id, 'p1');
+      expect(q.displayName, 'Grace');
+      expect(q.isOnline, isTrue);
+      expect(q.providerId, 'steam');
+      expect(p.providerId, isNull);
+    });
+
+    test('copyWith cannot reset a field to null (documented)', () {
+      const p = PlayerProfile(id: 'p1', displayName: 'Ada', avatarUrl: 'u');
+      expect(p.copyWith(avatarUrl: null).avatarUrl, 'u');
+    });
+
+    test('Leaderboard compares entries deeply', () {
+      Leaderboard board(int score) => Leaderboard(
         id: 'global',
-        entries: const [
+        entries: [
           LeaderboardEntry(
             rank: 1,
-            player: PlayerProfile(id: 'p1', displayName: 'Ada'),
-            score: 1500,
+            player: const PlayerProfile(id: 'p1', displayName: 'Ada'),
+            score: score,
           ),
         ],
       );
-      final copy = LeaderboardMapper.fromJson(board.toJson());
-      expect(copy.entries.single.player.displayName, 'Ada');
-      expect(copy.entries.single.score, 1500);
+      expect(board(10), board(10));
+      expect(board(10).hashCode, board(10).hashCode);
+      expect(board(10), isNot(board(11)));
+      expect(board(10).entries.single.displayScore, '10');
     });
 
-    test('GameServiceEvent decodes via its discriminator', () {
-      final event = AchievementUnlockedEvent(
-        achievement: const Achievement(id: 'a', title: 'A', isUnlocked: true),
-        timestamp: DateTime.utc(2026),
+    test('CloudSave compares payload bytes and exposes bytes/slot', () {
+      const meta = CloudSaveMetadata(slot: 's1');
+      final a = CloudSave.fromBytes(
+        metadata: meta,
+        bytes: Uint8List.fromList([1, 2, 3]),
       );
-      final decoded = GameServiceEventMapper.fromJson(event.toJson());
-      expect(decoded, isA<AchievementUnlockedEvent>());
+      const b = CloudSave(metadata: meta, data: [1, 2, 3]);
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(b.copyWith(data: [1, 2, 4])));
+      expect(a.slot, 's1');
+      expect(a.bytes, isA<Uint8List>());
+      expect(a.bytes, [1, 2, 3]);
+      expect(a.toString(), contains('3 bytes'));
+    });
+
+    test('Stat, RichPresence and Achievement support == and copyWith', () {
+      expect(const Stat(key: 'k', value: 1), const Stat(key: 'k', value: 1));
+      expect(const Stat(key: 'k', value: 1).copyWith(value: 2).value, 2);
+      expect(
+        const RichPresence(state: 'x', partySize: 2),
+        const RichPresence(state: 'x', partySize: 2),
+      );
+      expect(
+        const Achievement(id: 'a', title: 'A').copyWith(isUnlocked: true),
+        const Achievement(id: 'a', title: 'A', isUnlocked: true),
+      );
+    });
+
+    test('toString includes the type and field values', () {
+      expect(
+        const Stat(key: 'kills', value: 3).toString(),
+        allOf(contains('Stat'), contains('kills'), contains('3')),
+      );
+    });
+
+    test('events compare by value and switch exhaustively', () {
+      final t = DateTime.utc(2026);
+      final a = AchievementUnlockedEvent(
+        achievement: const Achievement(id: 'a', title: 'A', isUnlocked: true),
+        timestamp: t,
+      );
+      final b = AchievementUnlockedEvent(
+        achievement: const Achievement(id: 'a', title: 'A', isUnlocked: true),
+        timestamp: t,
+      );
+      expect(a, b);
+      expect(a.hashCode, b.hashCode);
+      expect(
+        UserSignedOutEvent(timestamp: t),
+        UserSignedOutEvent(timestamp: t),
+      );
+      expect(PresenceChangedEvent(timestamp: t).presence, isNull);
+
+      String kind(GameServiceEvent e) => switch (e) {
+        UserSignedInEvent() => 'in',
+        UserSignedOutEvent() => 'out',
+        AchievementUnlockedEvent() => 'ach',
+        ScoreSubmittedEvent() => 'score',
+        StatUpdatedEvent() => 'stat',
+        PresenceChangedEvent() => 'presence',
+      };
+      expect(kind(a), 'ach');
     });
   });
 
   group('UnifiedGameServicesPlatform', () {
-    test('default provider supports nothing and throws on use', () {
-      final platform = UnifiedGameServicesPlatform.instance;
+    test('a provider supports only what it advertises', () {
+      final platform = _FakeProviderA();
       expect(platform.supports(GameCapability.achievements), isFalse);
       expect(platform.signIn, throwsUnimplementedError);
     });
+  });
 
-    test('getInstance returns the active provider cast to its type', () {
-      final provider = _FakeProviderA();
-      UnifiedGameServicesPlatform.instance = provider;
-      expect(
-        UnifiedGameServicesPlatform.getInstance<_FakeProviderA>(),
-        same(provider),
-      );
-    });
-
-    test('getInstance throws when the active provider is a different type', () {
-      UnifiedGameServicesPlatform.instance = _FakeProviderA();
-      expect(
-        UnifiedGameServicesPlatform.getInstance<_FakeProviderB>,
-        throwsStateError,
-      );
-    });
-
-    test('tryGetInstance returns null for a mismatched type', () {
-      UnifiedGameServicesPlatform.instance = _FakeProviderA();
-      expect(
-        UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderB>(),
-        isNull,
-      );
-      expect(
-        UnifiedGameServicesPlatform.tryGetInstance<_FakeProviderA>(),
-        isNotNull,
-      );
+  group('providerId', () {
+    test('is exposed by implementations', () {
+      expect(_FakeProviderA().providerId, 'fake_a');
     });
   });
 }

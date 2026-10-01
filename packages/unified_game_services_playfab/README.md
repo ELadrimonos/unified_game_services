@@ -45,10 +45,12 @@ await provider.submitScore(leaderboardId: 'high', score: 4200);
 final board = await provider.getLeaderboard('high');
 ```
 
-Register it as the active provider instead of holding the reference:
+Make it the global facade instead of holding the reference:
 
 ```dart
-PlayFabProvider.registerWith(titleId: 'ABCD1', customId: 'stable-player-id');
+GameServices.initialize(providers: [
+  PlayFabProvider(titleId: 'ABCD1', customId: 'stable-player-id'),
+]);
 ```
 
 ### Auth

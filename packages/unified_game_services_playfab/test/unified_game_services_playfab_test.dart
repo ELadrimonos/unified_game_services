@@ -44,6 +44,13 @@ PlayFabProvider providerWith(MockClient client) => PlayFabProvider.withClient(
 );
 
 void main() {
+  test('providerId is the stable id "playfab"', () {
+    expect(
+      providerWith(MockClient((_) async => http.Response('', 200))).providerId,
+      'playfab',
+    );
+  });
+
   group('capabilities', () {
     test(
       'advertises stats/leaderboards/cloudSave/friends, not achievements',

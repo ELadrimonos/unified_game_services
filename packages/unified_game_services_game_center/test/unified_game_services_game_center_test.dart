@@ -3,6 +3,10 @@ import 'package:unified_game_services_game_center/unified_game_services_game_cen
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 void main() {
+  test('providerId is the stable id "game_center"', () {
+    expect(GameCenterProvider().providerId, 'game_center');
+  });
+
   // These tests don't touch GameKit (no FFI / dlopen), so they run on any
   // platform. Live auth/achievement/leaderboard calls require a signed
   // macOS/iOS app bundle and are not exercised here.

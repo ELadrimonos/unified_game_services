@@ -27,6 +27,9 @@ import 'mappers.dart';
 /// host draws its own UI. (A future `unified_game_services_google_play_android`
 /// provider routes those through the Java SDK for native UX.)
 class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'google_play_rest';
+
   GooglePlayGamesProvider({
     required AuthStrategy auth,
     http.Client? httpClient,
@@ -56,21 +59,6 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
   final Random _nonce = Random();
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [GooglePlayGamesProvider] as the active platform.
-  static void registerWith({
-    required AuthStrategy auth,
-    http.Client? httpClient,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = GooglePlayGamesProvider(
-      auth: auth,
-      httpClient: httpClient,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   @override
   Set<GameCapability> get capabilities => const {
@@ -155,7 +143,7 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
 
   /// Provider-specific (not part of the unified interface): sets an incremental
   /// achievement to at least [steps] total, never decreasing it. Reach via
-  /// `getInstance<GooglePlayGamesProvider>()`.
+  /// `GameServices.provider<GooglePlayGamesProvider>()`.
   Future<void> setAchievementStepsAtLeast(
     String achievementId,
     int steps,
@@ -230,7 +218,7 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
   /// Provider-specific (not part of the unified interface): records [steps] of
   /// progress against a Play Games **event** (`POST /events`). Events are
   /// increment-only counters, distinct from the unified stats concept. Reach
-  /// via `getInstance<GooglePlayGamesProvider>()`.
+  /// via `GameServices.provider<GooglePlayGamesProvider>()`.
   Future<void> recordEvent(String eventId, int steps) async {
     await _client.post(
       '/events',

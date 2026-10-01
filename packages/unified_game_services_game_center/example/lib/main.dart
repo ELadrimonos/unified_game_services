@@ -4,13 +4,14 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 import 'game_center_native.dart';
 
+// Pure-Dart provider over GameKit FFI. Map unified keys to your Game Center
+// ids (configured in App Store Connect for the app's bundle id).
+final GameCenterProvider _provider = GameCenterProvider(
+  leaderboardIds: {'global': 'com.example.game.highscores'},
+  achievementIds: {'first_win': 'com.example.game.firstwin'},
+);
+
 void main() {
-  // Pure-Dart provider over GameKit FFI. Map unified keys to your Game Center
-  // ids (configured in App Store Connect for the app's bundle id).
-  GameCenterProvider.registerWith(
-    leaderboardIds: {'global': 'com.example.game.highscores'},
-    achievementIds: {'first_win': 'com.example.game.firstwin'},
-  );
   runApp(const GameCenterExampleApp());
 }
 
@@ -37,8 +38,7 @@ class _HomePageState extends State<HomePage> {
   PlayerProfile? _player;
   bool _busy = false;
 
-  UnifiedGameServicesPlatform get _services =>
-      UnifiedGameServicesPlatform.instance;
+  UnifiedGameServicesPlatform get _services => _provider;
 
   void _say(String msg) => setState(() => _log.insert(0, msg));
 

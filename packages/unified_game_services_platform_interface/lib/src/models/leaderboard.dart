@@ -1,13 +1,9 @@
-import 'package:dart_mappable/dart_mappable.dart';
-
+import '../internal/equality.dart';
 import 'enums.dart';
 import 'player_profile.dart';
 
-part 'leaderboard.mapper.dart';
-
 /// A single ranked row in a [Leaderboard].
-@MappableClass()
-class LeaderboardEntry with LeaderboardEntryMappable {
+class LeaderboardEntry {
   /// 1-based rank of this entry within the queried scope.
   final int rank;
 
@@ -35,11 +31,47 @@ class LeaderboardEntry with LeaderboardEntryMappable {
 
   /// [formattedScore] if present, otherwise the raw score as a string.
   String get displayScore => formattedScore ?? score.toString();
+
+  /// Returns a copy with the given fields replaced.
+  ///
+  /// A `null` argument keeps the current value, so a field cannot be reset to
+  /// `null` through this method; build a new instance for that.
+  LeaderboardEntry copyWith({
+    int? rank,
+    PlayerProfile? player,
+    int? score,
+    String? formattedScore,
+    DateTime? achievedAt,
+  }) => LeaderboardEntry(
+    rank: rank ?? this.rank,
+    player: player ?? this.player,
+    score: score ?? this.score,
+    formattedScore: formattedScore ?? this.formattedScore,
+    achievedAt: achievedAt ?? this.achievedAt,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LeaderboardEntry &&
+          other.rank == rank &&
+          other.player == player &&
+          other.score == score &&
+          other.formattedScore == formattedScore &&
+          other.achievedAt == achievedAt;
+
+  @override
+  int get hashCode =>
+      Object.hash(rank, player, score, formattedScore, achievedAt);
+
+  @override
+  String toString() =>
+      'LeaderboardEntry(rank: $rank, player: $player, score: $score, '
+      'formattedScore: $formattedScore, achievedAt: $achievedAt)';
 }
 
 /// A leaderboard and a page of its ranked entries.
-@MappableClass()
-class Leaderboard with LeaderboardMappable {
+class Leaderboard {
   /// Provider-scoped unique identifier.
   final String id;
 
@@ -61,6 +93,12 @@ class Leaderboard with LeaderboardMappable {
   /// The signed-in player's own entry, if available and outside [entries].
   final LeaderboardEntry? playerEntry;
 
+  /// [UnifiedGameServicesPlatform.providerId] of the provider this came from.
+  ///
+  /// Set by the `UnifiedGameServices` facade on reads; `null` when the object
+  /// was built by a provider or by hand.
+  final String? providerId;
+
   const Leaderboard({
     required this.id,
     this.displayName,
@@ -69,5 +107,62 @@ class Leaderboard with LeaderboardMappable {
     this.collection = LeaderboardCollection.global,
     this.entries = const [],
     this.playerEntry,
+    this.providerId,
   });
+
+  /// Returns a copy with the given fields replaced.
+  ///
+  /// A `null` argument keeps the current value, so a field cannot be reset to
+  /// `null` through this method; build a new instance for that.
+  Leaderboard copyWith({
+    String? id,
+    String? displayName,
+    LeaderboardOrder? order,
+    LeaderboardTimeScope? timeScope,
+    LeaderboardCollection? collection,
+    List<LeaderboardEntry>? entries,
+    LeaderboardEntry? playerEntry,
+    String? providerId,
+  }) => Leaderboard(
+    id: id ?? this.id,
+    displayName: displayName ?? this.displayName,
+    order: order ?? this.order,
+    timeScope: timeScope ?? this.timeScope,
+    collection: collection ?? this.collection,
+    entries: entries ?? this.entries,
+    playerEntry: playerEntry ?? this.playerEntry,
+    providerId: providerId ?? this.providerId,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Leaderboard &&
+          other.id == id &&
+          other.displayName == displayName &&
+          other.order == order &&
+          other.timeScope == timeScope &&
+          other.collection == collection &&
+          listEquals(other.entries, entries) &&
+          other.playerEntry == playerEntry &&
+          other.providerId == providerId;
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    displayName,
+    order,
+    timeScope,
+    collection,
+    listHash(entries),
+    playerEntry,
+    providerId,
+  );
+
+  @override
+  String toString() =>
+      'Leaderboard(id: $id, displayName: $displayName, order: $order, '
+      'timeScope: $timeScope, collection: $collection, '
+      'entries: ${entries.length}, playerEntry: $playerEntry, '
+      'providerId: $providerId)';
 }

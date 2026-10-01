@@ -16,7 +16,7 @@ import 'playgames_bindings.dart';
 /// ## Host requirements (the engine/app embedding Dart on Android)
 /// 1. A running ART VM with `package:jni` initialized against it (the host
 ///    hands the `JavaVM*`/`JNIEnv` to JNI on startup).
-/// 2. An `activityResolver` (passed to [registerWith] / the constructor) that
+/// 2. An `activityResolver` (passed to the constructor) that
 ///    returns the current `Activity` jobject (from `ANativeActivity.clazz` or
 ///    the engine's activity). It is invoked fresh before each native call so a
 ///    volatile activity (e.g. Flutter's, which goes stale on rotation) is never
@@ -38,6 +38,9 @@ import 'playgames_bindings.dart';
 /// (`unified_game_services_google_play_rest`); this provider's role is
 /// native-UX writes.
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'google_play_android';
+
   GooglePlayAndroidProvider({
     required JObject Function() activityResolver,
     super.leaderboardIds,
@@ -63,22 +66,6 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [GooglePlayAndroidProvider] as the active platform.
-  ///
-  /// [activityResolver] returns the host Android `Activity` jobject; it is
-  /// invoked fresh before each native call (see [_activityResolver]).
-  static void registerWith({
-    required JObject Function() activityResolver,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = GooglePlayAndroidProvider(
-      activityResolver: activityResolver,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   @override
   Set<GameCapability> get capabilities => const {

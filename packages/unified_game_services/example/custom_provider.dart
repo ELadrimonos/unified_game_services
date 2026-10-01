@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // How to write a CUSTOM provider (e.g. backed by your own Supabase database)
 // and unify it with the built-in providers (Steam, GameJolt, …).
 //
@@ -69,6 +70,10 @@ class SupabaseGameProvider extends UnifiedGameServicesPlatform {
 
   final GameBackend backend;
   final String playerId;
+
+  // Stable id reported in MultiProviderOperationResult. Never change it.
+  @override
+  String get providerId => 'supabase';
 
   // Declare only what your backend actually does.
   @override
@@ -205,11 +210,19 @@ Future<void> main() async {
   // A score then writes to BOTH your DB and Steam in one call.
   final services = UnifiedGameServices(providers: [supabase]);
 
-  final player = await services.signIn();
+  await services.signIn();
+  final player = await services.getCurrentPlayer();
   print('Player: ${player?.displayName}');
 
-  await services.unlockAchievement('first_win'); // fan-out to capable providers
-  await services.submitScore(leaderboardId: 'global', score: 1500);
+  // Writes fan out to capable providers and return per-provider outcomes.
+  await services.unlockAchievement('first_win');
+  final result = await services.submitScore(
+    leaderboardId: 'global',
+    score: 1500,
+  );
+  for (final r in result.failed) {
+    print('${r.providerId} failed: ${r.error}');
+  }
   await services.submitScore(leaderboardId: 'global', score: 900);
 
   for (final a in await services.getAchievements()) {

@@ -1,7 +1,7 @@
 name: unified_game_services_google_play_rest
 resolution: workspace
 description: Google Play Games provider for unified_game_services over the REST Games API v1 (pure Dart, no Flutter). Achievements + leaderboards.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/ELadrimonos/unified_game_services
 homepage: https://gameservices.aprimo.dev
 documentation: https://docs.gameservices.aprimo.dev/google_play_rest
@@ -30,7 +30,7 @@ environment:
 dependencies:
   crypto: ^3.0.6
   http: ^1.2.0
-  unified_game_services_platform_interface: ^0.1.0
+  unified_game_services_platform_interface: ^0.2.0
 
 dev_dependencies:
   args: ^2.6.0

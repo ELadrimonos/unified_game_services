@@ -6,15 +6,25 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 /// API; concrete providers (Google Play, Game Center, Steam, Epic, Xbox PC,
 /// GameJolt) implement [UnifiedGameServicesPlatform].
 void main() {
-  final platform = UnifiedGameServicesPlatform.instance;
+  final platform = _ExampleProvider();
 
   if (platform.supports(GameCapability.achievements)) {
     platform.unlockAchievement('first_win');
   }
 
-  // Models are dart_mappable-backed: free JSON, copyWith, equality, toString.
+  // Models are immutable value objects: copyWith, ==, hashCode, toString.
   const profile = PlayerProfile(id: 'p1', displayName: 'Ada');
-  final json = profile.toJson();
-  final restored = PlayerProfileMapper.fromJson(json);
-  print('restored == profile: ${restored == profile}');
+  final tagged = profile.copyWith(providerId: 'steam');
+  print('same player: ${tagged.id == profile.id}, equal: ${tagged == profile}');
+}
+
+class _ExampleProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'example';
+
+  @override
+  Set<GameCapability> get capabilities => const {GameCapability.achievements};
+
+  @override
+  Future<void> unlockAchievement(String achievementId) async {}
 }

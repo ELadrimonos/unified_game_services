@@ -38,6 +38,13 @@ const _ok = {
 };
 
 void main() {
+  test('providerId is the stable id "gamejolt"', () {
+    expect(
+      providerWith(MockClient((_) async => http.Response('', 200))).providerId,
+      'gamejolt',
+    );
+  });
+
   group('GameJoltClient.signedUri', () {
     final client = GameJoltClient(gameId: '42', privateKey: 'priv');
 

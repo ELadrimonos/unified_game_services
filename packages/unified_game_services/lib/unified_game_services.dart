@@ -8,5 +8,6 @@ library;
 
 export 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
-export 'src/aggregate_exception.dart';
+export 'src/game_services.dart';
+export 'src/multi_provider_result.dart';
 export 'src/unified_game_services_base.dart';

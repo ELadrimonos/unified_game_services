@@ -33,8 +33,7 @@ const _spacewarLeaderboards = ['Feet Traveled', 'Quickest Win'];
 Future<void> main() async {
   stdout.writeln('=== Steam (Spacewar 480) live integration ===\n');
 
-  SteamProvider.registerWith(appId: 480);
-  final steam = UnifiedGameServicesPlatform.getInstance<SteamProvider>();
+  final steam = SteamProvider(appId: 480);
 
   stdout.write('Initializing Steam… ');
   final PlayerProfile? player;

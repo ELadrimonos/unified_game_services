@@ -3,8 +3,8 @@
 /// no Flutter.
 ///
 /// See [GooglePlayGames]. Concrete provider types and auth strategies are
-/// re-exported so `getInstance<GooglePlayGamesProvider>()` /
-/// `getInstance<GooglePlayAndroidProvider>()` and the REST auth strategies stay
+/// re-exported so `provider<GooglePlayGamesProvider>()` /
+/// `provider<GooglePlayAndroidProvider>()` and the REST auth strategies stay
 /// reachable. The native `GooglePlayAndroidProvider` export is
 /// `dart.library.io`-gated — it depends on `package:jni` (FFI, no web), so on
 /// web only the REST API surface is exported.

@@ -100,8 +100,10 @@ dependencies:
 import 'package:unified_game_services/unified_game_services.dart';
 import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 
-SteamProvider.registerWith(appId: 480); // 480 = Spacewar test app
-final services = UnifiedGameServices(); // uses the registered provider
+// 480 = Spacewar test app
+final services = GameServices.initialize(
+  providers: [SteamProvider(appId: 480)],
+);
 
 await services.signIn();
 await services.unlockAchievement('ACH_WIN_ONE_GAME');
@@ -135,7 +137,7 @@ try {
 ### Steam-specific API
 
 Beyond the unified API (reach via
-`UnifiedGameServicesPlatform.getInstance<SteamProvider>()`):
+`GameServices.provider<SteamProvider>()`):
 
 - `clearAchievement(id)` — clear a single achievement.
 - `resetAllStats(includeAchievements: true)` — reset for re-testing.
@@ -161,7 +163,7 @@ Two tiers, pick by how much trust you need:
   steamID64.
 
 ```dart
-final steam = UnifiedGameServicesPlatform.getInstance<SteamProvider>();
+final steam = GameServices.provider<SteamProvider>()!;
 await steam.signIn();
 
 // 1. Client: get a ticket and send the hex to your server.

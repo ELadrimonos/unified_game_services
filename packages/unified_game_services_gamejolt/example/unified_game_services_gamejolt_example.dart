@@ -6,13 +6,14 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 /// Replace the credentials with your game's id/key (GameJolt dashboard) and the
 /// player's username + Game Token.
 Future<void> main() async {
-  GameJoltProvider.registerWith(
+  // A provider can be used directly, or handed to
+  // GameServices.initialize(providers: [...]) from `unified_game_services`.
+  final services = GameJoltProvider(
     gameId: 'YOUR_GAME_ID',
     privateKey: 'YOUR_PRIVATE_KEY',
     username: 'player_name',
     userToken: 'player_game_token',
   );
-  final services = UnifiedGameServicesPlatform.instance;
 
   final player = await services.signIn();
   print('Signed in as: ${player?.displayName}');
@@ -36,9 +37,8 @@ Future<void> main() async {
   }
 
   // Provider-specific extras: reach GameJolt's session API (online presence)
-  // through the typed accessor, without holding the instance you registered.
-  final gameJolt = UnifiedGameServicesPlatform.getInstance<GameJoltProvider>();
-  await gameJolt.startSessionHeartbeat();
+  // directly on the provider (via a facade: `.provider<GameJoltProvider>()`).
+  await services.startSessionHeartbeat();
   // … play …
-  await gameJolt.stopSessionHeartbeat();
+  await services.stopSessionHeartbeat();
 }

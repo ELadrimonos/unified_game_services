@@ -5,7 +5,7 @@ name: unified_game_services_google_play_android
 # platform but only RUNS on Android (the Play Games SDK loads only there).
 resolution: workspace
 description: Native Google Play Games provider via the Play Games v2 Java SDK over package:jni (pure Dart, no Flutter). Android only; fires native achievement/leaderboard UI.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/ELadrimonos/unified_game_services
 homepage: https://gameservices.aprimo.dev
 documentation: https://docs.gameservices.aprimo.dev/google_play_android
@@ -28,7 +28,7 @@ dependencies:
   # Keep jni aligned with jnigen (jnigen 1.x → jni ^1.0.3). Committed bindings
   # were generated with jnigen 0.16.0 against the jni 1.0.0 API (`.object<T>()`).
   jni: ^1.0.3
-  unified_game_services_platform_interface: ^0.1.0
+  unified_game_services_platform_interface: ^0.2.0
 
 screenshots:
   - path: screenshot.webp

@@ -30,21 +30,23 @@ void main() {
   // Android: auto-resolves the Activity and wires the native Play Games
   // provider (native toasts/overlay). Off Android — including Flutter web —
   // pass `auth:` for the REST path.
-  GooglePlayGamesFlutter.registerWith(
-    achievementIds: {'firstWin': 'CgkI...'},
-    leaderboardIds: {'highScores': 'CgkI...'},
-  );
+  GameServices.initialize(providers: [
+    GooglePlayGamesFlutter.create(
+      achievementIds: {'firstWin': 'CgkI...'},
+      leaderboardIds: {'highScores': 'CgkI...'},
+    ),
+  ]);
   runApp(const MyApp());
 }
 
 // Anywhere in the app:
-final games = UnifiedGameServices(); // uses the registered instance
+final games = GameServices.instance; // the global facade from main()
 await games.unlockAchievement('firstWin');
 ```
 
-`GooglePlayGamesFlutter.registerWith` sets `UnifiedGameServicesPlatform.instance`.
-`GooglePlayGamesFlutter.create` returns the provider without registering it (for
-the multi-provider facade: `UnifiedGameServices(providers: [...])`).
+`GooglePlayGamesFlutter.create` returns the provider; hand it to
+`GameServices.initialize(providers: [...])` (alongside other providers if
+you use several).
 
 This package re-exports the whole family API
 (`unified_game_services_google_play`), so the single import above also gives you

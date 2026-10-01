@@ -2,10 +2,10 @@
 
 Plug-and-play demo of `unified_game_services_google_play_flutter`.
 
-`main()` calls `GooglePlayGamesFlutter.registerWith(...)` once — on Android it wires the
+`main()` calls `GameServices.initialize(providers: [GooglePlayGamesFlutter.create(...)])` once — on Android it wires the
 native Play Games provider and **auto-resolves the host Activity** from the
 Flutter engine (no `jni_flutter` / `PlatformDispatcher` in app code). The UI
-then drives the registered instance through the `UnifiedGameServices` facade
+then drives the global `GameServices.instance`
 (sign in, unlock/increment achievement, submit score).
 
 ## Run on a real device / emulator with Play Services

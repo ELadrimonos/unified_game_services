@@ -17,6 +17,9 @@ const String _kWebError =
 /// so consumer code that references [SteamProvider] still type-checks on web;
 /// every member throws [UnsupportedError] because Steam cannot run there.
 class SteamProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'steam';
+
   /// Always throws [UnsupportedError] — Steam is desktop-only.
   SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
     throw UnsupportedError(_kWebError);
@@ -24,13 +27,6 @@ class SteamProvider extends UnifiedGameServicesPlatform {
 
   /// Mirrors the real provider's `appId` field; unused on web.
   final int? appId;
-
-  /// Always throws [UnsupportedError] — Steam is desktop-only.
-  static void registerWith({
-    int? appId,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) => throw UnsupportedError(_kWebError);
 
   /// Always throws [UnsupportedError] — Steam is desktop-only.
   @override

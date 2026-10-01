@@ -6,7 +6,7 @@ import 'package:unified_game_services_google_play_flutter/unified_game_services_
 
 /// Plug-and-play demo of `unified_game_services_google_play_flutter`.
 ///
-/// One call — `GooglePlayGamesFlutter.registerWith()` — wires the native Google Play Games
+/// One call — `GooglePlayGamesFlutter.create()` — wires the native Google Play Games
 /// provider on Android, auto-resolving the host `Activity` from the running
 /// Flutter engine. No `jni_flutter` / `PlatformDispatcher` in app code.
 ///
@@ -21,12 +21,16 @@ import 'package:unified_game_services_google_play_flutter/unified_game_services_
 /// lets the app boot; real Games API calls need a valid token.
 void main() {
   // Replace with ids from your Play Console game.
-  GooglePlayGamesFlutter.registerWith(
-    auth: StoredCredentialStrategy(
-      accessToken: 'REPLACE_WITH_A_BROKERED_GOOGLE_OAUTH_TOKEN',
-    ),
-    achievementIds: const {'firstWin': 'CgkI_REPLACE_ME_ach'},
-    leaderboardIds: const {'highScores': 'CgkI_REPLACE_ME_lb'},
+  GameServices.initialize(
+    providers: [
+      GooglePlayGamesFlutter.create(
+        auth: StoredCredentialStrategy(
+          accessToken: 'REPLACE_WITH_A_BROKERED_GOOGLE_OAUTH_TOKEN',
+        ),
+        achievementIds: const {'firstWin': 'CgkI_REPLACE_ME_ach'},
+        leaderboardIds: const {'highScores': 'CgkI_REPLACE_ME_lb'},
+      ),
+    ],
   );
   runApp(const DemoApp());
 }
@@ -50,8 +54,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Uses the instance registered in main() via GooglePlayGamesFlutter.registerWith().
-  final UnifiedGameServices _games = UnifiedGameServices();
+  // Uses the global facade initialized in main().
+  final UnifiedGameServices _games = GameServices.instance;
   final List<String> _log = [];
 
   void _append(String line) => setState(() => _log.insert(0, line));

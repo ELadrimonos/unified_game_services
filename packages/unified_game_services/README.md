@@ -42,31 +42,38 @@ import 'package:unified_game_services/unified_game_services.dart';
 import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 import 'package:unified_game_services_gamejolt/unified_game_services_gamejolt.dart';
 
-final services = UnifiedGameServices(providers: [
+// Once, at startup: builds the global facade over your providers.
+GameServices.initialize(providers: [
   SteamProvider(appId: 480),
   GameJoltProvider(
     gameId: '…', privateKey: '…', username: '…', userToken: '…',
   ),
 ]);
 
-await services.signIn();
+// Anywhere else, call the static API directly:
+await GameServices.signIn(); // per-provider results; see "Multi-provider results"
 
 // Writes fan out to every provider that supports the capability:
-if (services.supports(GameCapability.achievements)) {
-  await services.unlockAchievement('first_win'); // Steam + GameJolt
+if (GameServices.supports(GameCapability.achievements)) {
+  await GameServices.unlockAchievement('first_win'); // Steam + GameJolt
 }
-await services.submitScore(leaderboardId: 'global', score: 1500);
+await GameServices.submitScore(leaderboardId: 'global', score: 1500);
 
 // Reads come from the primary provider (the first one), or pick with `from:`:
-final achievements = await services.getAchievements();
-final board = await services.getLeaderboard('global');
+final achievements = await GameServices.getAchievements();
+final board = await GameServices.getLeaderboard('global');
 
 // Listen to events from all providers:
-services.events.listen(print);
+GameServices.events.listen(print);
 ```
 
-Single-provider mode: call `UnifiedGameServices()` with no arguments to use the
-provider registered via `UnifiedGameServicesPlatform.instance`.
+`GameServices` is a static class that delegates to the global
+`UnifiedGameServices` created by `initialize` (`GameServices.instance`; it
+throws `StateError` until `initialize` is called, `maybeInstance` is the
+nullable variant and `reset()` clears it for tests). At least one provider is
+required — an empty list throws `ArgumentError`. For standalone facades or
+dependency injection, build `UnifiedGameServices(providers: [...])` directly;
+it has the same methods and does not touch the global.
 
 ### Capabilities
 
@@ -80,8 +87,60 @@ if (services.supports(GameCapability.cloudSave)) {
 
 `GameCapability` covers `achievements`, `leaderboards`, `stats`, `cloudSave`,
 `friends`, `presence`, `multiplayer`. A fan-out to a capability no provider
-supports throws `CapabilityNotSupportedException`; partial failures throw
-`AggregateGameServiceException`.
+supports throws `CapabilityNotSupportedException`.
+
+Discover what is configured:
+
+```dart
+services.capabilities;                          // union across providers
+services.providersFor(GameCapability.friends);  // only providers advertising it
+```
+
+### Provider IDs
+
+Every provider exposes a stable `providerId` (`steam`, `epic`, `game_center`,
+`google_play_rest`, `google_play_android`, `gamejolt`, `playfab`). It never changes across versions and is
+what results use to say which provider did what. Each Google Play tier
+(REST / Android) has its own id. Data read through the facade
+(`getAchievements`, `getFriends`, `getLeaderboard`, `getStat`, `loadData`,
+`getCurrentPlayer`) is tagged with the source `providerId`, so you can show or
+filter by platform:
+
+```dart
+final steamOnly = (await services.getFriends()).where((p) => p.providerId == 'steam');
+``` Custom providers must override
+`providerId`.
+
+### Multi-provider results
+
+Write operations (`signIn`, `signOut`, `unlockAchievement`, `submitScore`,
+`setStat`, `saveData`, `setPresence`, …) are broadcast to every capable provider
+and return a `MultiProviderOperationResult`. A provider failing does **not**
+throw — its error is kept in the result while the others still complete (and
+are not rolled back):
+
+```dart
+final result = await services.submitScore(leaderboardId: 'global', score: 4200);
+
+for (final r in result.succeeded) {
+  print('${r.providerId} succeeded');
+}
+for (final r in result.failed) {
+  print('${r.providerId} failed: ${r.error}');
+}
+
+result.allSucceeded; // every attempted provider succeeded
+result.anySucceeded; // at least one did
+result.allFailed;    // all failed (and at least one was attempted)
+result['steam'];     // one provider's ProviderOperationResult, or null
+```
+
+Errors that are not `GameServiceException`s are wrapped in a
+`PlatformOperationException` whose `cause` is the original object. Exceptions
+are still thrown for "nothing could be attempted" (`CapabilityNotSupportedException`
+when no provider supports the capability). Reads (`getAchievements`,
+`getLeaderboard`, …) are not aggregated: they use the primary provider or
+`from:`.
 
 ### Provider-specific features
 
@@ -89,7 +148,7 @@ Some providers expose extras beyond the unified API. Reach them with the typed
 accessor:
 
 ```dart
-final gj = services.provider<GameJoltProvider>();
+final gj = GameServices.provider<GameJoltProvider>();
 await gj?.startSessionHeartbeat();
 ```
 

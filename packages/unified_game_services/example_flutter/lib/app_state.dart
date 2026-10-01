@@ -65,12 +65,20 @@ class AppState extends ChangeNotifier {
   // ─── Unified actions ──────────────────────────────────────────────────────
 
   Future<void> signIn() => _run('signIn (fan-out to all)', (f) async {
-    currentPlayer = await f.signIn();
+    final result = await f.signIn();
+    for (final r in result.succeeded) {
+      if (r.value != null) {
+        currentPlayer = r.value;
+        break;
+      }
+    }
+    return result;
   });
 
   Future<void> signOut() => _run('signOut (fan-out to all)', (f) async {
-    await f.signOut();
+    final result = await f.signOut();
     currentPlayer = null;
+    return result;
   });
 
   Future<void> refreshPlayer() => _run('getCurrentPlayer (primary)', (f) async {
@@ -137,7 +145,7 @@ class AppState extends ChangeNotifier {
 
   Future<void> _run(
     String label,
-    Future<void> Function(UnifiedGameServices) op,
+    Future<dynamic> Function(UnifiedGameServices) op,
   ) async {
     final f = facade;
     if (f == null) {
@@ -148,8 +156,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     _push('▶ $label');
     try {
-      await op(f);
-      _push('✓ done', ok: true);
+      final result = await op(f);
+      if (result is MultiProviderOperationResult) {
+        _logResult(result);
+      } else {
+        _push('✓ done', ok: true);
+      }
     } catch (e) {
       _push('✗ ${_describeError(e)}', ok: false);
     } finally {
@@ -164,13 +176,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _describeError(Object e) {
-    if (e is AggregateGameServiceException) {
-      final parts = e.errors.map((x) => x.toString()).join(' | ');
-      return '${e.operation} failed on ${e.errors.length} provider(s): $parts';
+  /// Logs one line per provider: partial failures are results, not throws.
+  void _logResult(MultiProviderOperationResult<Object?> result) {
+    for (final r in result.succeeded) {
+      _push('  ✓ ${r.providerId}');
     }
-    return e.toString();
+    for (final r in result.failed) {
+      _push('  ✗ ${r.providerId}: ${r.error}', ok: false);
+    }
+    _push(
+      result.allSucceeded
+          ? '✓ done'
+          : '⚠ ${result.failedProviders.length} failed',
+      ok: result.allSucceeded,
+    );
   }
+
+  String _describeError(Object e) => e.toString();
 
   String _describeEvent(GameServiceEvent e) => switch (e) {
     UserSignedInEvent(:final player) => '🔔 signed in: ${player.displayName}',

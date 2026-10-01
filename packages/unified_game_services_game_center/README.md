@@ -57,9 +57,9 @@ await services.submitScore(leaderboardId: 'global', score: 4200);
 final board = await services.getLeaderboard('global', maxResults: 10);
 ```
 
-(Or register globally with `GameCenterProvider.registerWith(...)` and construct
-`UnifiedGameServices()` with no arguments — both styles work with every
-provider.)
+(Or make it the global facade with `GameServices.initialize(providers:
+[GameCenterProvider(...)])` and use `GameServices.instance` anywhere —
+both styles work with every provider.)
 
 See [`example/`](example/) for a complete sample.
 

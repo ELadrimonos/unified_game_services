@@ -32,7 +32,7 @@ bundle + run loop):
 
 1. A running ART VM with `package:jni` initialized against it (host hands the
    `JavaVM*`/`JNIEnv` to JNI on startup).
-2. An `activityResolver` (`JObject Function()`) passed to `registerWith` / the
+2. An `activityResolver` (`JObject Function()`) passed to the
    constructor — invoked fresh before each native call so a volatile activity is
    never cached (e.g. `() => ANativeActivity.clazz` for a stable engine activity).
 3. The APK bundles `com.google.android.gms:play-services-games-v2` and declares

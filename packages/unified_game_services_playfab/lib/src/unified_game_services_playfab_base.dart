@@ -26,6 +26,9 @@ import 'playfab_client.dart';
 /// advertised and the achievement operations are left throwing
 /// `UnimplementedError`. Rich presence and multiplayer are likewise omitted.
 class PlayFabProvider extends UnifiedGameServicesPlatform {
+  @override
+  String get providerId => 'playfab';
+
   /// Creates a provider for the given [titleId], signing in via
   /// `LoginWithCustomID` with the app-chosen [customId].
   PlayFabProvider({
@@ -70,27 +73,6 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   String? _playFabId;
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
-
-  /// Registers a [PlayFabProvider] as the active platform implementation.
-  static void registerWith({
-    required String titleId,
-    required String customId,
-    String? displayName,
-    bool createAccount = true,
-    http.Client? httpClient,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) {
-    UnifiedGameServicesPlatform.instance = PlayFabProvider(
-      titleId: titleId,
-      customId: customId,
-      displayName: displayName,
-      createAccount: createAccount,
-      httpClient: httpClient,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
-    );
-  }
 
   @override
   Set<GameCapability> get capabilities => const {
