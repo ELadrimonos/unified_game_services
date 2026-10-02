@@ -41,6 +41,9 @@ export 'package:unified_game_services_google_play/unified_game_services_google_p
 /// app developers never pass an `activityResolver`. Hand the result to
 /// `GameServices.initialize(providers: [...])`.
 abstract final class GooglePlayGamesFlutter {
+  /// Whether Google Play Games is supported on the current platform (always `true`).
+  static bool get isSupported => true;
+
   /// Builds the platform-appropriate Google Play Games provider, auto-resolving
   /// the Android `Activity` on Android.
   ///
@@ -48,20 +51,14 @@ abstract final class GooglePlayGamesFlutter {
   /// [ArgumentError] is thrown otherwise, matching [GooglePlayGames.create]).
   static UnifiedGameServicesPlatform create({
     AuthStrategy? auth,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
   }) {
     if (GooglePlayGames.usesNative) {
       return GooglePlayGames.create(
         activityResolver: flutterActivityResolver(),
-        leaderboardIds: leaderboardIds,
-        achievementIds: achievementIds,
       );
     }
     return GooglePlayGames.create(
       auth: auth,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
     );
   }
 }

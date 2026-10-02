@@ -56,8 +56,6 @@ Future<void> main() async {
   final UnifiedGameServicesPlatform provider = switch (kStore) {
     'steam' => SteamProvider(
       appId: int.parse(env['STEAM_APP_ID'] ?? '480'),
-      achievementIds: {kFirstWin: 'ACH_WIN_ONE_GAME'},
-      leaderboardIds: {kHighScore: 'Quickest Win'},
       // Host must ship libsteam_api + a running Steam client.
     ),
     'epic' => EpicProvider(
@@ -68,8 +66,6 @@ Future<void> main() async {
         clientId: env['EOS_CLIENT_ID']!,
         clientSecret: env['EOS_CLIENT_SECRET']!,
       ),
-      achievementIds: {kFirstWin: 'ACH_WIN_ONE_GAME'},
-      leaderboardIds: {kHighScore: 'high_score'},
       // Host must ship the EOSSDK runtime lib for the platform.
     ),
     final other => throw ArgumentError(
@@ -77,7 +73,17 @@ Future<void> main() async {
     ),
   };
 
-  final services = UnifiedGameServices(providers: [provider]);
+  // Provider-to-native id mappings are declared centrally once, not per-provider.
+  // Use ProviderIdMap for named-field autocompletion, or a plain Map<String, String>.
+  final services = UnifiedGameServices(
+    providers: [provider],
+    achievements: {
+      kFirstWin: ProviderIdMap(steam: 'ACH_WIN_ONE_GAME', epic: 'ACH_WIN_ONE_GAME'),
+    },
+    leaderboards: {
+      kHighScore: ProviderIdMap(steam: 'Quickest Win', epic: 'high_score'),
+    },
+  );
   stdout.writeln('Build target: $kStore → ${provider.runtimeType}\n');
 
   await services.signIn();

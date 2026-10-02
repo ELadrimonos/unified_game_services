@@ -27,10 +27,11 @@ void main() {
 
   group('GameCenterProvider id resolution', () {
     test('maps unified ids to native ids, passing unknown keys through', () {
-      final provider = GameCenterProvider(
-        leaderboardIds: {'global': 'native.board'},
-        achievementIds: {'first_win': 'native.win'},
-      );
+      final provider = GameCenterProvider()
+        ..registerMappings(
+          leaderboardIds: {'global': 'native.board'},
+          achievementIds: {'first_win': 'native.win'},
+        );
       expect(provider.resolveLeaderboardId('global'), 'native.board');
       expect(provider.resolveLeaderboardId('other'), 'other');
       expect(provider.resolveAchievementId('first_win'), 'native.win');

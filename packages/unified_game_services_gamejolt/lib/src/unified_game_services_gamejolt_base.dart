@@ -20,6 +20,9 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'gamejolt';
 
+  /// Whether GameJolt is supported on the current platform (always `true`).
+  static bool get isSupported => true;
+
   /// Creates a provider from raw GameJolt credentials (`gameId` +
   /// `privateKey` from the game's dashboard, `username` + `userToken` from
   /// the signed-in player).
@@ -30,8 +33,6 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required this.userToken,
     http.Client? httpClient,
     String? baseUrl,
-    super.leaderboardIds,
-    super.achievementIds,
   }) : _client = GameJoltClient(
          gameId: gameId,
          privateKey: privateKey,
@@ -46,8 +47,6 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
     required GameJoltClient client,
     required this.username,
     required this.userToken,
-    super.leaderboardIds,
-    super.achievementIds,
     // ignore: prefer_initializing_formals
   }) : _client = client;
 

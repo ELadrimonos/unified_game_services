@@ -20,8 +20,11 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'steam';
 
+  /// Whether Steam is supported on the current platform (always `false` on web).
+  static bool get isSupported => false;
+
   /// Always throws [UnsupportedError] — Steam is desktop-only.
-  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
+  SteamProvider({this.appId}) {
     throw UnsupportedError(_kWebError);
   }
 

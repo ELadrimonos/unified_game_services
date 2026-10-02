@@ -24,7 +24,7 @@ void main() {
         GameCapability.friends,
         GameCapability.presence,
       });
-      expect(provider.supports(GameCapability.multiplayer), isFalse);
+      expect(provider.supports(GameCapability.lobbies), isFalse);
     });
 
     test('is not signed in before init', () async {

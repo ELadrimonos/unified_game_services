@@ -27,10 +27,14 @@ void main() {
         auth: StoredCredentialStrategy(
           accessToken: 'REPLACE_WITH_A_BROKERED_GOOGLE_OAUTH_TOKEN',
         ),
-        achievementIds: const {'firstWin': 'CgkI_REPLACE_ME_ach'},
-        leaderboardIds: const {'highScores': 'CgkI_REPLACE_ME_lb'},
       ),
     ],
+    achievements: {
+      'firstWin': {'googlePlay': 'CgkI_REPLACE_ME_ach'},
+    },
+    leaderboards: {
+      'highScores': {'googlePlay': 'CgkI_REPLACE_ME_lb'},
+    },
   );
   runApp(const DemoApp());
 }

@@ -52,11 +52,15 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'steam';
 
-  SteamProvider({this.appId, super.leaderboardIds, super.achievementIds}) {
+  /// Whether Steam is supported on the current platform (Windows, macOS, Linux).
+  static bool get isSupported =>
+      Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
+  SteamProvider({this.appId}) {
     // Steam is desktop-only. dart:ffi compiles on Android/iOS, but the
     // Steamworks runtime lib does not exist there — fail fast with a clear
     // message instead of a cryptic DynamicLibrary.open error later.
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (!isSupported) {
       throw UnsupportedError(
         'SteamProvider is desktop-only (Steamworks via dart:ffi) and cannot '
         'run on Android/iOS. Do not register it in a mobile build. See the '

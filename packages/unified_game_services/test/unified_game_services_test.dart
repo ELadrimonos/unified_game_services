@@ -425,5 +425,63 @@ void main() {
         throwsStateError,
       );
     });
+
+    test(
+      'unified tables inject provider-specific mappings during initialize',
+      () {
+        final a = FakeProvider(name: 'steam');
+        final b = FakeProvider(name: 'google_play');
+
+        GameServices.initialize(
+          providers: [a, b],
+          achievements: UnifiedAchievementTable({
+            'first_win': ProviderIdMap(
+              steam: 'ACH_WIN_ONE_GAME',
+              googlePlay: 'CgkI123456789_AQ',
+            ),
+          }).mappings,
+          leaderboards: UnifiedLeaderboardTable({
+            'global': ProviderIdMap(
+              steam: 'SteamGlobalBoard',
+              googlePlay: 'PlayGlobalBoard',
+            ),
+          }).mappings,
+        );
+
+        expect(a.resolveAchievementId('first_win'), 'ACH_WIN_ONE_GAME');
+        expect(b.resolveAchievementId('first_win'), 'CgkI123456789_AQ');
+        expect(a.resolveLeaderboardId('global'), 'SteamGlobalBoard');
+        expect(b.resolveLeaderboardId('global'), 'PlayGlobalBoard');
+      },
+    );
+
+    test(
+      'reserved capability calls throw CapabilityNotSupportedException when unsupported',
+      () {
+        final a = FakeProvider(name: 'a');
+        GameServices.initialize(providers: [a]);
+
+        expect(
+          () => GameServices.sendInvitation('friend1'),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => GameServices.createLobby(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => GameServices.startMatchmaking(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => GameServices.showAchievementsUI(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => GameServices.getIdentityToken(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+      },
+    );
   });
 }

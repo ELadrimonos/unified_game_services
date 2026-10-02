@@ -59,12 +59,7 @@ Future<void> main() async {
   // Steam: the ONLY reference to SteamProvider is inside this const guard, so a
   // build without --define=ENABLE_STEAM=true drops it entirely (desktop-only).
   if (kEnableSteam) {
-    providers.add(
-      SteamProvider(
-        appId: 480,
-        achievementIds: {'first_win': 'ACH_WIN_ONE_GAME'},
-      ),
-    );
+    providers.add(SteamProvider(appId: 480));
   }
 
   // Epic: same pattern. Desktop-only; tree-shaken unless ENABLE_EPIC is set.

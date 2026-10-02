@@ -89,8 +89,6 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
         privateKey: cfg.gameJolt.privateKey,
         username: cfg.gameJolt.username,
         userToken: cfg.gameJolt.userToken,
-        achievementIds: cfg.gameJolt.achievementIds,
-        leaderboardIds: cfg.gameJolt.leaderboardIds,
       ),
     );
   }
@@ -126,8 +124,6 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
         ProviderKind.googlePlay,
         GooglePlayGamesFlutter.create(
           auth: auth,
-          achievementIds: cfg.googlePlay.achievementIds,
-          leaderboardIds: cfg.googlePlay.leaderboardIds,
         ),
       );
     }
@@ -145,8 +141,35 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
     statuses[ProviderKind.epic]!,
   ];
 
+  final Map<String, Map<String, String>> achievementsMap = {};
+  final Map<String, Map<String, String>> leaderboardsMap = {};
+
+  void addMappings(
+    String providerId,
+    Map<String, String>? achs,
+    Map<String, String>? lbs,
+  ) {
+    for (final e in (achs ?? const <String, String>{}).entries) {
+      (achievementsMap[e.key] ??= {})[providerId] = e.value;
+    }
+    for (final e in (lbs ?? const <String, String>{}).entries) {
+      (leaderboardsMap[e.key] ??= {})[providerId] = e.value;
+    }
+  }
+
+  addMappings('gamejolt', cfg.gameJolt.achievementIds, cfg.gameJolt.leaderboardIds);
+  addMappings('google_play', cfg.googlePlay.achievementIds, cfg.googlePlay.leaderboardIds);
+  addMappings('steam', cfg.steam.achievementIds, cfg.steam.leaderboardIds);
+  addMappings('epic', cfg.epic.achievementIds, cfg.epic.leaderboardIds);
+
   return ProviderBuild(
-    active.isEmpty ? null : UnifiedGameServices(providers: active),
+    active.isEmpty
+        ? null
+        : UnifiedGameServices(
+            providers: active,
+            achievements: achievementsMap,
+            leaderboards: leaderboardsMap,
+          ),
     ordered,
   );
 }

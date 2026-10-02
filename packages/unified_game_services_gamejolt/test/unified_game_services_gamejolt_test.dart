@@ -175,8 +175,7 @@ void main() {
           ),
           username: 'ada',
           userToken: 'tok',
-          leaderboardIds: const {'global': '12345'},
-        );
+        )..registerMappings(leaderboardIds: const {'global': '12345'});
         await provider.submitScore(leaderboardId: 'global', score: 10);
         // The unified key 'global' is mapped to GameJolt's native table_id.
         expect(m.calls.single.queryParameters['table_id'], '12345');
@@ -195,8 +194,7 @@ void main() {
           ),
           username: 'ada',
           userToken: 'tok',
-          achievementIds: const {'first_win': '999'},
-        );
+        )..registerMappings(achievementIds: const {'first_win': '999'});
         await provider.unlockAchievement('first_win');
         expect(m.calls.single.queryParameters['trophy_id'], '999');
 

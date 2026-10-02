@@ -10,6 +10,7 @@ library;
 
 export 'src/models/models.dart';
 export 'src/platform_interface/platform_interface.dart';
+export 'src/platform_interface/unified_id_table.dart';
 export 'src/capabilities.dart';
 export 'src/events.dart';
 export 'src/exceptions.dart';

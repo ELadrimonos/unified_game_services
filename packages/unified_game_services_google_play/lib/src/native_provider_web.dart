@@ -11,8 +11,6 @@ bool get usesNativeProvider => false;
 /// is false); present only so the conditional import resolves.
 UnifiedGameServicesPlatform createNativeProvider({
   required Object Function() activityResolver,
-  Map<String, String>? leaderboardIds,
-  Map<String, String>? achievementIds,
 }) {
   throw UnsupportedError(
     'The native Play Games provider is Android-only; this platform uses the '

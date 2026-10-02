@@ -151,3 +151,35 @@ class PresenceChangedEvent extends GameServiceEvent {
   String toString() =>
       'PresenceChangedEvent(presence: $presence, timestamp: $timestamp)';
 }
+
+/// Emitted when a game invitation is received.
+///
+/// **Note:** Reserved event for [GameCapability.invitations]; not yet implemented.
+class InvitationReceivedEvent extends GameServiceEvent {
+  /// The ID or name of the sender.
+  final String senderId;
+
+  /// Optional payload associated with the invitation (e.g. lobby ID).
+  final String? payload;
+
+  const InvitationReceivedEvent({
+    required this.senderId,
+    this.payload,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is InvitationReceivedEvent &&
+          other.senderId == senderId &&
+          other.payload == payload &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(senderId, payload, timestamp);
+
+  @override
+  String toString() =>
+      'InvitationReceivedEvent(senderId: $senderId, payload: $payload, timestamp: $timestamp)';
+}

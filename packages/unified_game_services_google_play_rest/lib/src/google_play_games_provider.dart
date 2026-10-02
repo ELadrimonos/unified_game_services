@@ -30,12 +30,13 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'google_play_rest';
 
+  /// Whether Google Play Games REST provider is supported on the current platform (always `true`).
+  static bool get isSupported => true;
+
   GooglePlayGamesProvider({
     required AuthStrategy auth,
     http.Client? httpClient,
     String baseUrl = 'https://games.googleapis.com/games/v1',
-    super.leaderboardIds,
-    super.achievementIds,
   }) : _auth = auth,
        _client = GamesRestClient(
          auth: auth,
@@ -49,8 +50,6 @@ class GooglePlayGamesProvider extends UnifiedGameServicesPlatform {
   GooglePlayGamesProvider.withClient({
     required GamesRestClient client,
     required this._auth,
-    super.leaderboardIds,
-    super.achievementIds,
     // ignore: prefer_initializing_formals
   }) : _client = client;
 

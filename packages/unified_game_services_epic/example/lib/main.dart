@@ -122,7 +122,6 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
         devAuthHost: _fieldOrNull('EOS_DEV_AUTH_HOST'),
         devAuthCredentialName: _fieldOrNull('EOS_DEV_AUTH_CRED'),
         libraryPath: _sdkLibraryPath(),
-        achievementIds: {'TEST': 'TEST_ACHIEVEMENT'},
       );
 
       final player = await _provider!.signIn();

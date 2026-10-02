@@ -31,15 +31,11 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// A key with no entry passes through unchanged, so providers that share the
   /// caller's ids need no map. Providers must resolve ids through
   /// [resolveLeaderboardId] / [resolveAchievementId] for this to take effect.
-  UnifiedGameServicesPlatform({
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
-  }) : _leaderboardIds = leaderboardIds ?? const {},
-       _achievementIds = achievementIds ?? const {},
-       super(token: _token);
+  UnifiedGameServicesPlatform() : super(token: _token);
 
-  final Map<String, String> _leaderboardIds;
-  final Map<String, String> _achievementIds;
+  final Map<String, String> _leaderboardIds = {};
+  final Map<String, String> _achievementIds = {};
+  final Map<String, String> _statIds = {};
 
   /// Maps a unified leaderboard key to this provider's native id.
   ///
@@ -55,6 +51,22 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// See [resolveLeaderboardId]. Intended for subclasses only.
   String resolveAchievementId(String unifiedId) =>
       _achievementIds[unifiedId] ?? unifiedId;
+
+  /// Maps a unified stat key to this provider's native id.
+  ///
+  /// See [resolveLeaderboardId]. Intended for subclasses only.
+  String resolveStatId(String unifiedId) => _statIds[unifiedId] ?? unifiedId;
+
+  /// Registers additional mappings for this provider (called by facade initialization).
+  void registerMappings({
+    Map<String, String>? achievementIds,
+    Map<String, String>? leaderboardIds,
+    Map<String, String>? statIds,
+  }) {
+    if (achievementIds != null) _achievementIds.addAll(achievementIds);
+    if (leaderboardIds != null) _leaderboardIds.addAll(leaderboardIds);
+    if (statIds != null) _statIds.addAll(statIds);
+  }
 
   static final Object _token = Object();
 
@@ -200,6 +212,79 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Returns the signed-in player's friends.
   Future<List<PlayerProfile>> getFriends() =>
       throw UnimplementedError('getFriends() has not been implemented.');
+
+  // ─── Invitations ──────────────────────────────────────────────────────────
+
+  /// Sends a game invitation to [friendId] with optional [payload].
+  ///
+  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet implemented.
+  Future<void> sendInvitation(String friendId, {String? payload}) =>
+      throw UnimplementedError('sendInvitation() has not been implemented.');
+
+  // ─── Lobbies ──────────────────────────────────────────────────────────────
+
+  /// Creates a new game lobby with [maxPlayers].
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<void> createLobby({int maxPlayers = 4, String? name}) =>
+      throw UnimplementedError('createLobby() has not been implemented.');
+
+  /// Joins an existing game lobby by [lobbyId].
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<void> joinLobby(String lobbyId) =>
+      throw UnimplementedError('joinLobby() has not been implemented.');
+
+  /// Leaves the current lobby [lobbyId].
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<void> leaveLobby(String lobbyId) =>
+      throw UnimplementedError('leaveLobby() has not been implemented.');
+
+  // ─── Matchmaking ──────────────────────────────────────────────────────────
+
+  /// Starts a matchmaking search.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet implemented.
+  Future<void> startMatchmaking({Map<String, dynamic>? attributes}) =>
+      throw UnimplementedError('startMatchmaking() has not been implemented.');
+
+  /// Cancels an active matchmaking search.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet implemented.
+  Future<void> cancelMatchmaking() =>
+      throw UnimplementedError('cancelMatchmaking() has not been implemented.');
+
+  // ─── Overlays ─────────────────────────────────────────────────────────────
+
+  /// Opens the platform-native achievements UI overlay.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<void> showAchievementsUI() => throw UnimplementedError(
+    'showAchievementsUI() has not been implemented.',
+  );
+
+  /// Opens the platform-native leaderboards UI overlay for [leaderboardId].
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<void> showLeaderboardsUI({String? leaderboardId}) =>
+      throw UnimplementedError(
+        'showLeaderboardsUI() has not been implemented.',
+      );
+
+  /// Opens a generic or provider-specific native overlay (e.g. settings, friends list).
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<void> showOverlay({String? overlayId}) =>
+      throw UnimplementedError('showOverlay() has not been implemented.');
+
+  // ─── Identity Tokens ──────────────────────────────────────────────────────
+
+  /// Retrieves a platform-signed identity token or session ticket for server verification.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet implemented.
+  Future<String?> getIdentityToken() =>
+      throw UnimplementedError('getIdentityToken() has not been implemented.');
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────
 

@@ -3,4 +3,5 @@
 /// no Flutter dependency.
 library;
 
-export 'src/game_center_provider.dart';
+export 'src/game_center_provider_web.dart'
+    if (dart.library.io) 'src/game_center_provider.dart';

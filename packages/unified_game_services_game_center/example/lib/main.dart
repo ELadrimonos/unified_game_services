@@ -4,12 +4,13 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 import 'game_center_native.dart';
 
-// Pure-Dart provider over GameKit FFI. Map unified keys to your Game Center
-// ids (configured in App Store Connect for the app's bundle id).
-final GameCenterProvider _provider = GameCenterProvider(
-  leaderboardIds: {'global': 'com.example.game.highscores'},
-  achievementIds: {'first_win': 'com.example.game.firstwin'},
-);
+// Pure-Dart provider over GameKit FFI. Unified keys are mapped to your Game
+// Center ids (configured in App Store Connect) via GameServices.initialize().
+final GameCenterProvider _provider = GameCenterProvider()
+  ..registerMappings(
+    leaderboardIds: {'global': 'com.example.game.highscores'},
+    achievementIds: {'first_win': 'com.example.game.firstwin'},
+  );
 
 void main() {
   runApp(const GameCenterExampleApp());

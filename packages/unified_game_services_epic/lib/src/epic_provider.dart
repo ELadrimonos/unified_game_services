@@ -41,6 +41,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   /// [launchArgs] — pass `main()`'s arguments to auto-extract the Epic
   /// Launcher exchange code (`-AUTH_PASSWORD=...`); an explicit [exchangeCode]
   /// takes precedence.
+  /// Whether Epic Online Services is supported on the current platform (Windows, macOS, Linux).
+  static bool get isSupported =>
+      Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
   EpicProvider({
     required this.credentials,
     String? exchangeCode,
@@ -50,13 +54,11 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     this.libraryPath,
     this.tickInterval = const Duration(milliseconds: 100),
     bool debugLogging = false,
-    super.leaderboardIds,
-    super.achievementIds,
   }) : exchangeCode = exchangeCode ?? _extractExchangeCode(launchArgs) {
     // EOS is desktop-only. dart:ffi compiles on Android/iOS, but the EOS
     // runtime lib does not exist there — fail fast with a clear message
     // instead of a cryptic DynamicLibrary.open error later.
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (!isSupported) {
       throw UnsupportedError(
         'EpicProvider is desktop-only (EOS C SDK via dart:ffi) and cannot run '
         'on Android/iOS. Do not register it in a mobile build. See the package '

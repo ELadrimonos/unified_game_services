@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ffi' as ffi;
+import 'dart:io' show Platform;
 
 import 'package:ffi/ffi.dart' as pkg_ffi;
 import 'package:objective_c/objective_c.dart' as objc;
@@ -7,42 +8,21 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 import 'gamekit_bindings.dart';
 
-/// Apple Game Center provider, backed by GameKit through pure-Dart
-/// Objective-C FFI (`package:objective_c`). **No Flutter dependency** — the
-/// same binary works in a Flutter app, a custom Dart game engine, a CLI, or a
-/// server, as long as it runs on macOS or iOS.
-///
-/// ## Runtime requirements (supplied by the host process)
-///
-/// GameKit is not a network API; it talks to the OS Game Center service, and
-/// the OS imposes two requirements the host — not this package — must meet:
-///
-/// 1. **A signed app bundle.** The executable must run inside a code-signed
-///    `.app`/`.ipa` with an `Info.plist` whose bundle id is registered in App
-///    Store Connect, plus the matching entitlements/provisioning. A bare
-///    `dart run foo.dart` has no bundle and GameKit refuses to authenticate
-///    (`GKErrorNotAuthenticated`). A Flutter macOS/iOS app already is such a
-///    bundle; a custom engine must package itself as one.
-/// 2. **A pumped main run loop.** GameKit delivers its completion handlers on
-///    the main dispatch queue / `CFRunLoop`. The host must keep that run loop
-///    running for the `Future`s returned here to complete. Flutter and AppKit
-///    apps do this already; a headless engine must pump `CFRunLoopRun()` (or
-///    equivalent) on the main thread.
-///
-/// This mirrors how the Steam provider needs the Steam client running: the
-/// capability is pure Dart, but the surrounding environment is the host's job.
-///
-/// ## Capabilities
-///
-/// Auth, achievements and leaderboards. GameKit has no portable notion of
-/// free-form numeric *stats* or *rich presence*, so those capabilities are not
-/// advertised; cloud save (`GKSavedGame`) and friends are deferred to a later
-/// iteration.
 class GameCenterProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'game_center';
 
-  GameCenterProvider({super.leaderboardIds, super.achievementIds});
+  /// Whether Game Center is supported on the current platform (macOS, iOS).
+  static bool get isSupported => Platform.isMacOS || Platform.isIOS;
+
+  GameCenterProvider() {
+    if (!isSupported) {
+      throw UnsupportedError(
+        'GameCenterProvider is macOS/iOS-only (GameKit via Objective-C FFI) and '
+        'cannot run on this platform.',
+      );
+    }
+  }
 
   /// `GKErrorDomain` and friends. Instantiated against the dlopen'd framework
   /// so the `GKErrorDomain` symbol can be read; the Obj-C message sends in the

@@ -44,17 +44,17 @@ Future<void> main(List<String> argv) async {
     clientId: args['client-id'] as String,
     clientSecret: args['client-secret'] as String?,
   );
-  final provider = GooglePlayGamesProvider(
-    auth: auth,
-    achievementIds: {
-      if (achievement != null && args['achievement-native'] != null)
-        achievement: args['achievement-native'] as String,
-    },
-    leaderboardIds: {
-      if (leaderboard != null && args['leaderboard-native'] != null)
-        leaderboard: args['leaderboard-native'] as String,
-    },
-  );
+  final provider = GooglePlayGamesProvider(auth: auth)
+    ..registerMappings(
+      achievementIds: {
+        if (achievement != null && args['achievement-native'] != null)
+          achievement: args['achievement-native'] as String,
+      },
+      leaderboardIds: {
+        if (leaderboard != null && args['leaderboard-native'] != null)
+          leaderboard: args['leaderboard-native'] as String,
+      },
+    );
 
   try {
     final profile = await provider.signIn();

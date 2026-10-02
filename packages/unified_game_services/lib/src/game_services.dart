@@ -34,7 +34,15 @@ abstract final class GameServices {
   /// empty.
   static UnifiedGameServices initialize({
     required List<UnifiedGameServicesPlatform> providers,
-  }) => _instance = UnifiedGameServices(providers: providers);
+    Map<String, Map<String, String>>? achievements,
+    Map<String, Map<String, String>>? leaderboards,
+    Map<String, Map<String, String>>? stats,
+  }) => _instance = UnifiedGameServices(
+    providers: providers,
+    achievements: achievements,
+    leaderboards: leaderboards,
+    stats: stats,
+  );
 
   /// The global facade. Throws [StateError] before [initialize] (or after
   /// [reset]).
@@ -187,6 +195,65 @@ abstract final class GameServices {
   static Future<List<PlayerProfile>> getFriends({
     UnifiedGameServicesPlatform? from,
   }) => instance.getFriends(from: from);
+
+  // ─── Invitations ──────────────────────────────────────────────────────────
+
+  /// See [UnifiedGameServices.sendInvitation].
+  static Future<MultiProviderOperationResult<void>> sendInvitation(
+    String friendId, {
+    String? payload,
+  }) => instance.sendInvitation(friendId, payload: payload);
+
+  // ─── Lobbies ──────────────────────────────────────────────────────────────
+
+  /// See [UnifiedGameServices.createLobby].
+  static Future<MultiProviderOperationResult<void>> createLobby({
+    int maxPlayers = 4,
+    String? name,
+  }) => instance.createLobby(maxPlayers: maxPlayers, name: name);
+
+  /// See [UnifiedGameServices.joinLobby].
+  static Future<MultiProviderOperationResult<void>> joinLobby(String lobbyId) =>
+      instance.joinLobby(lobbyId);
+
+  /// See [UnifiedGameServices.leaveLobby].
+  static Future<MultiProviderOperationResult<void>> leaveLobby(
+    String lobbyId,
+  ) => instance.leaveLobby(lobbyId);
+
+  // ─── Matchmaking ──────────────────────────────────────────────────────────
+
+  /// See [UnifiedGameServices.startMatchmaking].
+  static Future<MultiProviderOperationResult<void>> startMatchmaking({
+    Map<String, dynamic>? attributes,
+  }) => instance.startMatchmaking(attributes: attributes);
+
+  /// See [UnifiedGameServices.cancelMatchmaking].
+  static Future<MultiProviderOperationResult<void>> cancelMatchmaking() =>
+      instance.cancelMatchmaking();
+
+  // ─── Overlays ─────────────────────────────────────────────────────────────
+
+  /// See [UnifiedGameServices.showAchievementsUI].
+  static Future<MultiProviderOperationResult<void>> showAchievementsUI() =>
+      instance.showAchievementsUI();
+
+  /// See [UnifiedGameServices.showLeaderboardsUI].
+  static Future<MultiProviderOperationResult<void>> showLeaderboardsUI({
+    String? leaderboardId,
+  }) => instance.showLeaderboardsUI(leaderboardId: leaderboardId);
+
+  /// See [UnifiedGameServices.showOverlay].
+  static Future<MultiProviderOperationResult<void>> showOverlay({
+    String? overlayId,
+  }) => instance.showOverlay(overlayId: overlayId);
+
+  // ─── Identity Tokens ──────────────────────────────────────────────────────
+
+  /// See [UnifiedGameServices.getIdentityToken].
+  static Future<String?> getIdentityToken({
+    UnifiedGameServicesPlatform? from,
+  }) => instance.getIdentityToken(from: from);
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 

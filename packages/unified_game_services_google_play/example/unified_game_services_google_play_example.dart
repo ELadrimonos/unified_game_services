@@ -54,6 +54,7 @@ Future<void> main(List<String> argv) async {
       clientId: args['client-id'] as String,
       clientSecret: args['client-secret'] as String?,
     ),
+  )..registerMappings(
     achievementIds: {
       if (achievement != null && args['achievement-native'] != null)
         achievement: args['achievement-native'] as String,

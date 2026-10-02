@@ -23,6 +23,9 @@ import 'native_provider_web.dart'
 ///   `unified_game_services_google_play_flutter` which wires this for you.
 /// - [auth]: an [AuthStrategy] for the REST path (required off Android).
 abstract final class GooglePlayGames {
+  /// Whether Google Play Games is supported on the current platform (always `true`).
+  static bool get isSupported => true;
+
   /// Whether the current platform uses the native provider (always `false` on
   /// web).
   static bool get usesNative => usesNativeProvider;
@@ -34,8 +37,6 @@ abstract final class GooglePlayGames {
   static UnifiedGameServicesPlatform create({
     Object Function()? activityResolver,
     AuthStrategy? auth,
-    Map<String, String>? leaderboardIds,
-    Map<String, String>? achievementIds,
   }) {
     if (usesNativeProvider) {
       if (activityResolver == null) {
@@ -43,8 +44,6 @@ abstract final class GooglePlayGames {
       }
       return createNativeProvider(
         activityResolver: activityResolver,
-        leaderboardIds: leaderboardIds,
-        achievementIds: achievementIds,
       );
     }
     if (auth == null) {
@@ -52,8 +51,6 @@ abstract final class GooglePlayGames {
     }
     return GooglePlayGamesProvider(
       auth: auth,
-      leaderboardIds: leaderboardIds,
-      achievementIds: achievementIds,
     );
   }
 }

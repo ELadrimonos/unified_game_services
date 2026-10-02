@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:jni/jni.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
@@ -37,16 +38,24 @@ import 'playgames_bindings.dart';
 /// unified facade should serve reads from the REST provider
 /// (`unified_game_services_google_play_rest`); this provider's role is
 /// native-UX writes.
+
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'google_play_android';
 
+  /// Whether Google Play Games Android native provider is supported on the current platform (Android).
+  static bool get isSupported => Platform.isAndroid;
+
   GooglePlayAndroidProvider({
     required JObject Function() activityResolver,
-    super.leaderboardIds,
-    super.achievementIds,
     // ignore: prefer_initializing_formals
   }) : _activityResolver = activityResolver {
+    if (!isSupported) {
+      throw UnsupportedError(
+        'GooglePlayAndroidProvider is Android-only (Play Games v2 Java SDK via package:jni) '
+        'and cannot run on this platform.',
+      );
+    }
     PlayGamesSdk.initialize(_activityResolver());
   }
 

@@ -21,6 +21,7 @@ Future<void> main() async {
     titleId: titleId,
     customId: customId,
     displayName: 'Example Player',
+  )..registerMappings(
     // Map a unified leaderboard key to a PlayFab statistic name.
     leaderboardIds: const {'high': 'HighScore'},
   );

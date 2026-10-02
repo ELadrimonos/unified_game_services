@@ -18,12 +18,8 @@ bool get usesNativeProvider => Platform.isAndroid;
 /// web-compilable).
 UnifiedGameServicesPlatform createNativeProvider({
   required Object Function() activityResolver,
-  Map<String, String>? leaderboardIds,
-  Map<String, String>? achievementIds,
 }) {
   return GooglePlayAndroidProvider(
     activityResolver: () => activityResolver() as JObject,
-    leaderboardIds: leaderboardIds,
-    achievementIds: achievementIds,
   );
 }

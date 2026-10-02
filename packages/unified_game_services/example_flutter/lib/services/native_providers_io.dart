@@ -24,8 +24,6 @@ void buildNativeProviders({
         ProviderKind.steam,
         SteamProvider(
           appId: cfg.steam.appIdValue,
-          achievementIds: cfg.steam.achievementIds,
-          leaderboardIds: cfg.steam.leaderboardIds,
         ),
       );
     }
@@ -61,8 +59,6 @@ void buildNativeProviders({
           devAuthCredentialName: cfg.epic.devAuthCredentialName.isEmpty
               ? null
               : cfg.epic.devAuthCredentialName,
-          achievementIds: cfg.epic.achievementIds,
-          leaderboardIds: cfg.epic.leaderboardIds,
         ),
       );
     }

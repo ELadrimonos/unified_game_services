@@ -31,13 +31,24 @@ class UnifiedGameServices {
   /// see `GameServices.initialize` for that).
   ///
   /// Throws [ArgumentError] if [providers] is empty.
-  UnifiedGameServices({required List<UnifiedGameServicesPlatform> providers})
-    : providers = List.unmodifiable(providers) {
+  UnifiedGameServices({
+    required List<UnifiedGameServicesPlatform> providers,
+    Map<String, Map<String, String>>? achievements,
+    Map<String, Map<String, String>>? leaderboards,
+    Map<String, Map<String, String>>? stats,
+  }) : providers = List.unmodifiable(providers) {
     if (providers.isEmpty) {
       throw ArgumentError.value(
         providers,
         'providers',
         'At least one provider is required.',
+      );
+    }
+    for (final p in providers) {
+      p.registerMappings(
+        achievementIds: achievements?.forProvider(p.providerId),
+        leaderboardIds: leaderboards?.forProvider(p.providerId),
+        statIds: stats?.forProvider(p.providerId),
       );
     }
   }
@@ -247,6 +258,114 @@ class UnifiedGameServices {
       for (final f in await p.getFriends())
         f.copyWith(providerId: p.providerId),
     ];
+  }
+
+  // ─── Invitations ──────────────────────────────────────────────────────────
+
+  /// Sends a game invitation on every provider supporting invitations.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> sendInvitation(
+    String friendId, {
+    String? payload,
+  }) => _fanOut(
+    GameCapability.invitations,
+    'sendInvitation',
+    (p) => p.sendInvitation(friendId, payload: payload),
+  );
+
+  // ─── Lobbies ──────────────────────────────────────────────────────────────
+
+  /// Creates a lobby on every provider supporting lobbies.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> createLobby({
+    int maxPlayers = 4,
+    String? name,
+  }) => _fanOut(
+    GameCapability.lobbies,
+    'createLobby',
+    (p) => p.createLobby(maxPlayers: maxPlayers, name: name),
+  );
+
+  /// Joins a lobby on every provider supporting lobbies.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> joinLobby(String lobbyId) =>
+      _fanOut(GameCapability.lobbies, 'joinLobby', (p) => p.joinLobby(lobbyId));
+
+  /// Leaves a lobby on every provider supporting lobbies.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> leaveLobby(String lobbyId) =>
+      _fanOut(GameCapability.lobbies, 'leaveLobby', (p) => p.leaveLobby(lobbyId));
+
+  // ─── Matchmaking ──────────────────────────────────────────────────────────
+
+  /// Starts matchmaking on every provider supporting matchmaking.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> startMatchmaking({
+    Map<String, dynamic>? attributes,
+  }) => _fanOut(
+    GameCapability.matchmaking,
+    'startMatchmaking',
+    (p) => p.startMatchmaking(attributes: attributes),
+  );
+
+  /// Cancels matchmaking on every provider supporting matchmaking.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> cancelMatchmaking() => _fanOut(
+    GameCapability.matchmaking,
+    'cancelMatchmaking',
+    (p) => p.cancelMatchmaking(),
+  );
+
+  // ─── Overlays ─────────────────────────────────────────────────────────────
+
+  /// Opens the achievements UI overlay on every provider supporting overlays.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> showAchievementsUI() => _fanOut(
+    GameCapability.overlays,
+    'showAchievementsUI',
+    (p) => p.showAchievementsUI(),
+  );
+
+  /// Opens the leaderboards UI overlay on every provider supporting overlays.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> showLeaderboardsUI({
+    String? leaderboardId,
+  }) => _fanOut(
+    GameCapability.overlays,
+    'showLeaderboardsUI',
+    (p) => p.showLeaderboardsUI(leaderboardId: leaderboardId),
+  );
+
+  /// Opens a platform-native overlay on every provider supporting overlays.
+  ///
+  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  Future<MultiProviderOperationResult<void>> showOverlay({
+    String? overlayId,
+  }) => _fanOut(
+    GameCapability.overlays,
+    'showOverlay',
+    (p) => p.showOverlay(overlayId: overlayId),
+  );
+
+  // ─── Identity Tokens ──────────────────────────────────────────────────────
+
+  /// Retrieves an identity token from [from] (defaults to [primary]).
+  ///
+  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet implemented.
+  Future<String?> getIdentityToken({UnifiedGameServicesPlatform? from}) async {
+    final p = from ?? primary;
+    if (!p.supports(GameCapability.identityTokens)) {
+      throw CapabilityNotSupportedException(GameCapability.identityTokens);
+    }
+    return p.getIdentityToken();
   }
 
   // ─── Fan-out helpers ─────────────────────────────────────────────────────

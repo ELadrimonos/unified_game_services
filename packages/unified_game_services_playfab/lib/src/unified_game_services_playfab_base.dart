@@ -29,6 +29,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'playfab';
 
+  /// Whether PlayFab is supported on the current platform (always `true`).
+  static bool get isSupported => true;
+
   /// Creates a provider for the given [titleId], signing in via
   /// `LoginWithCustomID` with the app-chosen [customId].
   PlayFabProvider({
@@ -38,8 +41,6 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     bool createAccount = true,
     http.Client? httpClient,
     String? baseUrl,
-    super.leaderboardIds,
-    super.achievementIds,
   }) : _createAccount = createAccount,
        _client = PlayFabClient(
          titleId: titleId,
@@ -55,8 +56,6 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     required this.customId,
     this.displayName,
     bool createAccount = true,
-    super.leaderboardIds,
-    super.achievementIds,
     // ignore_for_file: prefer_initializing_formals
   }) : _client = client,
        _createAccount = createAccount;

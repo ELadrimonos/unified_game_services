@@ -86,7 +86,7 @@ if (services.supports(GameCapability.cloudSave)) {
 ```
 
 `GameCapability` covers `achievements`, `leaderboards`, `stats`, `cloudSave`,
-`friends`, `presence`, `multiplayer`. A fan-out to a capability no provider
+`friends`, `presence`, `invitations`, `lobbies`, `matchmaking`, `overlays`, and `identityTokens`. A fan-out to a capability no provider
 supports throws `CapabilityNotSupportedException`.
 
 Discover what is configured:

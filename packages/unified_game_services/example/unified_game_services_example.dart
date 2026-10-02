@@ -39,10 +39,6 @@ Future<void> main() async {
         privateKey: env['GAMEJOLT_PRIVATE_KEY']!,
         username: env['GAMEJOLT_USERNAME']!,
         userToken: env['GAMEJOLT_GAME_TOKEN']!,
-        achievementIds: {kFirstWin: env['GAMEJOLT_FIRST_WIN_ID'] ?? '123456'},
-        leaderboardIds: {
-          kHighScore: env['GAMEJOLT_HIGH_SCORE_TABLE'] ?? '654321',
-        },
       ),
     );
   }
@@ -56,10 +52,6 @@ Future<void> main() async {
     providers.add(
       SteamProvider(
         appId: steamAppId,
-        achievementIds: {
-          kFirstWin: env['STEAM_FIRST_WIN'] ?? 'ACH_WIN_ONE_GAME',
-        },
-        leaderboardIds: {kHighScore: env['STEAM_HIGH_SCORE'] ?? 'Quickest Win'},
       ),
     );
   }
@@ -77,7 +69,21 @@ Future<void> main() async {
     return;
   }
 
-  final services = UnifiedGameServices(providers: providers);
+  final services = UnifiedGameServices(
+    providers: providers,
+    achievements: {
+      kFirstWin: ProviderIdMap(
+        gameJolt: env['GAMEJOLT_FIRST_WIN_ID'] ?? '123456',
+        steam: env['STEAM_FIRST_WIN'] ?? 'ACH_WIN_ONE_GAME',
+      ),
+    },
+    leaderboards: {
+      kHighScore: ProviderIdMap(
+        gameJolt: env['GAMEJOLT_HIGH_SCORE_TABLE'] ?? '654321',
+        steam: env['STEAM_HIGH_SCORE'] ?? 'Quickest Win',
+      ),
+    },
+  );
   stdout.writeln(
     'Providers: '
     '${providers.map((p) => p.runtimeType).join(', ')}\n',

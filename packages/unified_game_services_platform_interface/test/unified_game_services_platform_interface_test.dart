@@ -132,6 +132,7 @@ void main() {
         ScoreSubmittedEvent() => 'score',
         StatUpdatedEvent() => 'stat',
         PresenceChangedEvent() => 'presence',
+        InvitationReceivedEvent() => 'invite',
       };
       expect(kind(a), 'ach');
     });

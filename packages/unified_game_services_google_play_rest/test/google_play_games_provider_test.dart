@@ -31,12 +31,15 @@ GooglePlayGamesProvider providerWith(
   Map<String, String>? achievementIds,
 }) {
   final auth = FakeAuthStrategy();
-  return GooglePlayGamesProvider.withClient(
+  final provider = GooglePlayGamesProvider.withClient(
     auth: auth,
     client: GamesRestClient(auth: auth, httpClient: client, baseUrl: _base),
+  );
+  provider.registerMappings(
     leaderboardIds: leaderboardIds,
     achievementIds: achievementIds,
   );
+  return provider;
 }
 
 void main() {

@@ -19,6 +19,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'epic';
 
+  /// Whether Epic Online Services is supported on the current platform (always `false` on web).
+  static bool get isSupported => false;
+
   EpicProvider({
     required this.credentials,
     this.exchangeCode,
@@ -28,8 +31,6 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     this.libraryPath,
     this.tickInterval = const Duration(milliseconds: 100),
     bool debugLogging = false,
-    super.leaderboardIds,
-    super.achievementIds,
   }) {
     throw UnsupportedError(_kWebError);
   }

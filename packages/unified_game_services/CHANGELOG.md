@@ -2,7 +2,7 @@
 
 ## 0.2.0
 
-Core API stabilization.
+Core API stabilization and multi-provider enhancements.
 
 - **Breaking:** the global instance is now `GameServices.initialize(providers: [...])` / `GameServices.instance` (+ `maybeInstance`, `reset()`). The constructor now requires a non-empty `providers` list (`ArgumentError` otherwise) and no longer falls back to `UnifiedGameServicesPlatform.instance`.
 - **Breaking:** fan-out operations (`signIn`, `signOut`, `unlockAchievement`,
@@ -13,6 +13,14 @@ Core API stabilization.
   result values). Provider failures no longer throw.
 - **Breaking:** `AggregateGameServiceException` removed; per-provider errors live
   in `result.failed`.
+- **Breaking:** `GameCapability.multiplayer` removed in favor of dedicated `GameCapability.lobbies` and `GameCapability.matchmaking` capabilities.
+- **Centralized Mappings:** Added `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, and `UnifiedStatTable` (with `ProviderIdMap` / `ProviderId`). You can now pass global mapping tables directly to `GameServices.initialize(providers: [...], achievements: ..., leaderboards: ..., stats: ...)` or `UnifiedGameServices` constructor instead of repeating `achievementIds` / `leaderboardIds` on each provider.
+- **Reserved Capabilities API:** Added reserved capability enum values and API stubs for future features:
+  - `invitations`: `sendInvitation()` + `InvitationReceivedEvent`
+  - `lobbies`: `createLobby()`, `joinLobby()`, `leaveLobby()`
+  - `matchmaking`: `startMatchmaking()`, `cancelMatchmaking()`
+  - `overlays`: `showAchievementsUI()`, `showLeaderboardsUI()`, `showOverlay()`
+  - `identityTokens`: `getIdentityToken()`
 - New `ProviderOperationResult` / `MultiProviderOperationResult` (`succeeded`,
   `failed`, `allSucceeded`, `anySucceeded`, `allFailed`, `[providerId]`).
 - Reads (`getAchievements`, `getFriends`, `getLeaderboard`, `getStat`, `loadData`,

@@ -22,6 +22,28 @@ enum GameCapability {
   /// Publishing rich presence (current activity) information.
   presence,
 
-  /// Real-time or asynchronous multiplayer sessions.
-  multiplayer,
+  /// Invitations sent to or received from friends / platform overlays.
+  ///
+  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  invitations,
+
+  /// Creating, joining, and managing game lobbies/rooms.
+  ///
+  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  lobbies,
+
+  /// Matchmaking queues and session creation.
+  ///
+  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  matchmaking,
+
+  /// Opening platform-native UI overlays (achievements, leaderboards, access point).
+  ///
+  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  overlays,
+
+  /// Retrieving platform-signed identity tokens or session tickets for server-to-server auth.
+  ///
+  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  identityTokens,
 }

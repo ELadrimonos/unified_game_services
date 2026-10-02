@@ -7,6 +7,11 @@
   provider must return a stable `snake_case` id (never `runtimeType`).
   `UnsupportedUnifiedGameServices` uses `unsupported`. Each implementation has
   its own id (e.g. `google_play_rest` / `google_play_android`).
+- **Breaking:** `GameCapability.multiplayer` removed in favor of `GameCapability.lobbies` and `GameCapability.matchmaking`.
+- **New Tables:** Added `UnifiedIdTable`, `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, `UnifiedStatTable`, `ProviderId`, and `ProviderIdMap` for central ID mapping resolution.
+- Added `statIds`, `resolveStatId()`, and `registerMappings()` to `UnifiedGameServicesPlatform`.
+- Added reserved capability API stubs to `UnifiedGameServicesPlatform` (`sendInvitation`, `createLobby`, `joinLobby`, `leaveLobby`, `startMatchmaking`, `cancelMatchmaking`, `showAchievementsUI`, `showLeaderboardsUI`, `showOverlay`, `getIdentityToken`).
+- Added `InvitationReceivedEvent` to the `GameServiceEvent` hierarchy.
 - **Breaking:** `dart_mappable` removed. Models and events are now hand-written
   immutable classes with `copyWith`, `==` (deep for lists/maps), `hashCode` and
   `toString`. Gone: `toJson`/`toMap`/`fromJson`/`fromMap`, all `XMapper`,
