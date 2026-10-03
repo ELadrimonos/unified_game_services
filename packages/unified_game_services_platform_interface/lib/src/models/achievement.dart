@@ -1,3 +1,5 @@
+import '../internal/equality.dart';
+
 /// A single achievement and the signed-in player's progress on it.
 ///
 /// Achievements come in two shapes:
@@ -6,7 +8,11 @@
 ///   [totalSteps] (e.g. "win 50 matches"). Providers that model progress as a
 ///   percentage map it onto steps out of 100.
 class Achievement {
-  /// Provider-scoped unique identifier.
+  /// Unified identifier: the key from the `UnifiedAchievementTable` when the
+  /// provider's native id is mapped there, otherwise the native id itself.
+  ///
+  /// Stable across providers, so the same achievement read from Steam and
+  /// GameJolt compares equal by [id]. See [nativeIds] for the native ids.
   final String id;
 
   /// Localized title.
@@ -39,6 +45,19 @@ class Achievement {
   /// was built by a provider or by hand.
   final String? providerId;
 
+  /// The native id of this achievement on each provider, keyed by
+  /// `providerId` (e.g. `{'steam': 'ACH_WIN_ONE_GAME', 'gamejolt': '123456'}`).
+  ///
+  /// Read-only. Holds the row of the `UnifiedAchievementTable` for [id], plus
+  /// the native id the [providerId] provider itself reported. Set by the
+  /// `UnifiedGameServices` facade on reads; empty when the object was built by
+  /// a provider or by hand.
+  final Map<String, String> nativeIds;
+
+  /// The native id on the provider this came from ([providerId]), or `null`
+  /// when unknown.
+  String? get nativeId => providerId == null ? null : nativeIds[providerId];
+
   const Achievement({
     required this.id,
     required this.title,
@@ -50,6 +69,7 @@ class Achievement {
     this.currentSteps = 0,
     this.totalSteps = 0,
     this.providerId,
+    this.nativeIds = const {},
   });
 
   /// Whether this achievement tracks step-based progress.
@@ -77,6 +97,7 @@ class Achievement {
     int? currentSteps,
     int? totalSteps,
     String? providerId,
+    Map<String, String>? nativeIds,
   }) => Achievement(
     id: id ?? this.id,
     title: title ?? this.title,
@@ -88,6 +109,7 @@ class Achievement {
     currentSteps: currentSteps ?? this.currentSteps,
     totalSteps: totalSteps ?? this.totalSteps,
     providerId: providerId ?? this.providerId,
+    nativeIds: nativeIds ?? this.nativeIds,
   );
 
   @override
@@ -103,7 +125,8 @@ class Achievement {
           other.iconUrl == iconUrl &&
           other.currentSteps == currentSteps &&
           other.totalSteps == totalSteps &&
-          other.providerId == providerId;
+          other.providerId == providerId &&
+          mapEquals(other.nativeIds, nativeIds);
 
   @override
   int get hashCode => Object.hash(
@@ -117,6 +140,7 @@ class Achievement {
     currentSteps,
     totalSteps,
     providerId,
+    mapHash(nativeIds),
   );
 
   @override
@@ -124,5 +148,6 @@ class Achievement {
       'Achievement(id: $id, title: $title, description: $description, '
       'isUnlocked: $isUnlocked, unlockedAt: $unlockedAt, isHidden: $isHidden, '
       'iconUrl: $iconUrl, currentSteps: $currentSteps, '
-      'totalSteps: $totalSteps, providerId: $providerId)';
+      'totalSteps: $totalSteps, providerId: $providerId, '
+      'nativeIds: $nativeIds)';
 }

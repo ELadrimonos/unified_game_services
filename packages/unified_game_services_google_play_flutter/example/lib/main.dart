@@ -29,12 +29,12 @@ void main() {
         ),
       ),
     ],
-    achievements: {
-      'firstWin': {'googlePlay': 'CgkI_REPLACE_ME_ach'},
-    },
-    leaderboards: {
-      'highScores': {'googlePlay': 'CgkI_REPLACE_ME_lb'},
-    },
+    achievements: UnifiedAchievementTable({
+      'firstWin': ProviderIdMap(googlePlay: 'CgkI_REPLACE_ME_ach'),
+    }),
+    leaderboards: UnifiedLeaderboardTable({
+      'highScores': ProviderIdMap(googlePlay: 'CgkI_REPLACE_ME_lb'),
+    }),
   );
   runApp(const DemoApp());
 }

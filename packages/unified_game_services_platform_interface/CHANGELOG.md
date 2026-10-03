@@ -8,6 +8,7 @@
   `UnsupportedUnifiedGameServices` uses `unsupported`. Each implementation has
   its own id (e.g. `google_play_rest` / `google_play_android`).
 - **Breaking:** `GameCapability.multiplayer` removed in favor of `GameCapability.lobbies` and `GameCapability.matchmaking`.
+- `Achievement.nativeIds`, `Leaderboard.nativeIds`, `Stat.nativeKeys`: read-only `providerId` → native id maps, set by the facade (`nativeId` / `nativeKey` getters give the source provider's own); `id`/`key` are the unified one. `UnifiedIdTable.nativeIdsFor` and `reverseForProvider` expose the table row and the native → unified inverse.
 - **New Tables:** Added `UnifiedIdTable`, `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, `UnifiedStatTable`, `ProviderId`, and `ProviderIdMap` for central ID mapping resolution.
 - Added `statIds`, `resolveStatId()`, and `registerMappings()` to `UnifiedGameServicesPlatform`.
 - Added reserved capability API stubs to `UnifiedGameServicesPlatform` (`sendInvitation`, `createLobby`, `joinLobby`, `leaveLobby`, `startMatchmaking`, `cancelMatchmaking`, `showAchievementsUI`, `showLeaderboardsUI`, `showOverlay`, `getIdentityToken`).

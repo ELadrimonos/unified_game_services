@@ -49,11 +49,7 @@ Future<void> main() async {
   // "Quickest Win" board, handy for testing.
   final steamAppId = int.tryParse(env['STEAM_APP_ID'] ?? '');
   if (steamAppId != null) {
-    providers.add(
-      SteamProvider(
-        appId: steamAppId,
-      ),
-    );
+    providers.add(SteamProvider(appId: steamAppId));
   }
 
   if (providers.isEmpty) {
@@ -71,18 +67,18 @@ Future<void> main() async {
 
   final services = UnifiedGameServices(
     providers: providers,
-    achievements: {
+    achievements: UnifiedAchievementTable({
       kFirstWin: ProviderIdMap(
         gameJolt: env['GAMEJOLT_FIRST_WIN_ID'] ?? '123456',
         steam: env['STEAM_FIRST_WIN'] ?? 'ACH_WIN_ONE_GAME',
       ),
-    },
-    leaderboards: {
+    }),
+    leaderboards: UnifiedLeaderboardTable({
       kHighScore: ProviderIdMap(
         gameJolt: env['GAMEJOLT_HIGH_SCORE_TABLE'] ?? '654321',
         steam: env['STEAM_HIGH_SCORE'] ?? 'Quickest Win',
       ),
-    },
+    }),
   );
   stdout.writeln(
     'Providers: '

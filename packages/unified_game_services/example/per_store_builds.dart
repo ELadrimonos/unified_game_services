@@ -74,15 +74,18 @@ Future<void> main() async {
   };
 
   // Provider-to-native id mappings are declared centrally once, not per-provider.
-  // Use ProviderIdMap for named-field autocompletion, or a plain Map<String, String>.
+  // ProviderIdMap gives named-field autocompletion for each provider's id.
   final services = UnifiedGameServices(
     providers: [provider],
-    achievements: {
-      kFirstWin: ProviderIdMap(steam: 'ACH_WIN_ONE_GAME', epic: 'ACH_WIN_ONE_GAME'),
-    },
-    leaderboards: {
+    achievements: UnifiedAchievementTable({
+      kFirstWin: ProviderIdMap(
+        steam: 'ACH_WIN_ONE_GAME',
+        epic: 'ACH_WIN_ONE_GAME',
+      ),
+    }),
+    leaderboards: UnifiedLeaderboardTable({
       kHighScore: ProviderIdMap(steam: 'Quickest Win', epic: 'high_score'),
-    },
+    }),
   );
   stdout.writeln('Build target: $kStore → ${provider.runtimeType}\n');
 

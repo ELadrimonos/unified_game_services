@@ -23,6 +23,18 @@ Core API stabilization and multi-provider enhancements.
   - `identityTokens`: `getIdentityToken()`
 - New `ProviderOperationResult` / `MultiProviderOperationResult` (`succeeded`,
   `failed`, `allSucceeded`, `anySucceeded`, `allFailed`, `[providerId]`).
+- **Unified ids on reads:** `Achievement.id`, `Leaderboard.id` and `Stat.key`
+  are now the unified key from the mapping tables (native id when unmapped), so
+  the same item read from different providers matches. The provider's own id is
+  exposed, read-only, in the new `nativeIds` (`Achievement`, `Leaderboard`) /
+  `nativeKeys` (`Stat`): `providerId` → native id for every provider in the
+  table row, plus the provider the object came from. `nativeId` / `nativeKey`
+  are shortcuts for that provider's own entry. Set by the facade.
+- **Cross-provider achievements:** `getUnifiedAchievements()` merges every
+  provider's achievements by unified id (`UnifiedAchievement.unlockedOn`,
+  `lockedOn`, `isUnlockedOn(providerId)`, …; providers that fail land in
+  `AchievementOverview.failed`), and `syncAchievements()` unlocks on every
+  provider what is already unlocked on another.
 - Reads (`getAchievements`, `getFriends`, `getLeaderboard`, `getStat`, `loadData`,
   `getCurrentPlayer`) tag results with the source `providerId`.
 - **Breaking (re-exported models):** `dart_mappable` is gone from the models

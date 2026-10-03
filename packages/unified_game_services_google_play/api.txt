@@ -1,0 +1,115 @@
+environment:
+  sdk: ^3.12.0
+package:unified_game_services_google_play/unified_game_services_google_play.dart:
+  gamesScope (static const getter: String)
+  AuthStrategy (class extends Object, abstract, interface):
+    isAuthenticated (getter: bool)
+    getAccessToken (method: Future<String> Function({bool forceRefresh}))
+    signOut (method: Future<void> Function())
+  GamesRestClient (class extends Object):
+    new (constructor: GamesRestClient Function({required AuthStrategy auth, String baseUrl, Client? httpClient}))
+    baseUrl (getter: String)
+    close (method: void Function())
+    get (method: Future<Map<String, dynamic>> Function(String, {Map<String, String>? query}))
+    post (method: Future<Map<String, dynamic>> Function(String, {Map<String, String>? query}))
+  GooglePlayGames (class extends Object, abstract, final):
+    isSupported (static getter: bool)
+    usesNative (static getter: bool)
+    create (static method: UnifiedGameServicesPlatform Function({Object Function()? activityResolver, AuthStrategy? auth}))
+  GooglePlayGamesProvider (class extends UnifiedGameServicesPlatform):
+    isSupported (static getter: bool)
+    new (constructor: GooglePlayGamesProvider Function({required AuthStrategy auth, String baseUrl, Client? httpClient}))
+    withClient (constructor: GooglePlayGamesProvider Function({required AuthStrategy auth, required GamesRestClient client}))
+    capabilities (getter: Set<GameCapability>)
+    events (getter: Stream<GameServiceEvent>)
+    providerId (getter: String)
+    dispose (method: Future<void> Function())
+    getAchievements (method: Future<List<Achievement>> Function())
+    getCurrentPlayer (method: Future<PlayerProfile?> Function())
+    getLeaderboard (method: Future<Leaderboard> Function(String, {LeaderboardCollection collection, int maxResults, LeaderboardTimeScope timeScope}))
+    getPlayerScore (method: Future<LeaderboardEntry?> Function(String, {LeaderboardTimeScope timeScope}))
+    incrementAchievement (method: Future<void> Function(String, int))
+    isSignedIn (method: Future<bool> Function())
+    recordEvent (method: Future<void> Function(String, int))
+    revealAchievement (method: Future<void> Function(String))
+    setAchievementStepsAtLeast (method: Future<void> Function(String, int))
+    signIn (method: Future<PlayerProfile?> Function())
+    signOut (method: Future<void> Function())
+    submitScore (method: Future<void> Function({required String leaderboardId, required int score}))
+    unlockAchievement (method: Future<void> Function(String))
+  LoopbackOAuthStrategy (class extends Object implements AuthStrategy):
+    defaultLauncher (static method: Future<void> Function(Uri))
+    new (constructor: LoopbackOAuthStrategy Function({String authorizationEndpoint, required String clientId, String? clientSecret, Client? httpClient, FutureOr<void> Function(Uri)? launchUrl, Random? random, List<String> scopes}))
+    authorizationEndpoint (getter: String)
+    clientId (getter: String)
+    isAuthenticated (getter: bool)
+    scopes (getter: List<String>)
+    getAccessToken (method: Future<String> Function({bool forceRefresh}))
+    signOut (method: Future<void> Function())
+  NativeSilentTokenStrategy (class extends Object implements AuthStrategy):
+    new (constructor: NativeSilentTokenStrategy Function(NativeTokenProvider, {List<String> scopes}))
+    isAuthenticated (getter: bool)
+    scopes (getter: List<String>)
+    getAccessToken (method: Future<String> Function({bool forceRefresh}))
+    signOut (method: Future<void> Function())
+  NativeToken (class extends Object):
+    new (const constructor: NativeToken Function({required String accessToken, DateTime? expiry, String? refreshToken}))
+    accessToken (getter: String)
+    expiry (getter: DateTime?)
+    refreshToken (getter: String?)
+  NativeTokenProvider (class extends Object, abstract, interface):
+    requestToken (method: Future<NativeToken> Function({required List<String> scopes}))
+  PkcePair (class extends Object):
+    method (static const getter: String)
+    new (const constructor: PkcePair Function({required String challenge, required String verifier}))
+    generate (constructor: PkcePair Function([Random?]))
+    challenge (getter: String)
+    verifier (getter: String)
+  StoredCredentialStrategy (class extends Object implements AuthStrategy):
+    new (constructor: StoredCredentialStrategy Function({String? accessToken, String clientId, String? clientSecret, DateTime? expiry, Client? httpClient, String? refreshToken}))
+    isAuthenticated (getter: bool)
+    refreshToken (getter: String?)
+    getAccessToken (method: Future<String> Function({bool forceRefresh}))
+    signOut (method: Future<void> Function())
+  TokenResponse (class extends Object):
+    new (const constructor: TokenResponse Function({required String accessToken, required DateTime expiry, String? refreshToken}))
+    accessToken (getter: String)
+    expiry (getter: DateTime)
+    refreshToken (getter: String?)
+    isExpired (method: bool Function({Duration leeway}))
+  UrlLauncher (type alias for FutureOr<void> Function(Uri))
+dart:async:
+  Future (referenced)
+  FutureOr (referenced)
+  Stream (referenced)
+dart:core:
+  DateTime (referenced)
+  Duration (referenced)
+  List (referenced)
+  Map (referenced)
+  Object (referenced)
+  Set (referenced)
+  String (referenced)
+  Uri (referenced)
+  bool (referenced)
+  int (referenced)
+dart:math:
+  Random (referenced)
+package:http/src/client.dart:
+  Client (referenced)
+package:unified_game_services_platform_interface/src/capabilities.dart:
+  GameCapability (referenced)
+package:unified_game_services_platform_interface/src/events.dart:
+  GameServiceEvent (referenced)
+package:unified_game_services_platform_interface/src/models/achievement.dart:
+  Achievement (referenced)
+package:unified_game_services_platform_interface/src/models/enums.dart:
+  LeaderboardCollection (referenced)
+  LeaderboardTimeScope (referenced)
+package:unified_game_services_platform_interface/src/models/leaderboard.dart:
+  Leaderboard (referenced)
+  LeaderboardEntry (referenced)
+package:unified_game_services_platform_interface/src/models/player_profile.dart:
+  PlayerProfile (referenced)
+package:unified_game_services_platform_interface/src/platform_interface/platform_interface.dart:
+  UnifiedGameServicesPlatform (referenced)

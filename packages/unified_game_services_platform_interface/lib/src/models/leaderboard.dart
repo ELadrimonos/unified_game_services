@@ -72,7 +72,9 @@ class LeaderboardEntry {
 
 /// A leaderboard and a page of its ranked entries.
 class Leaderboard {
-  /// Provider-scoped unique identifier.
+  /// Unified identifier: the key from the `UnifiedLeaderboardTable` the board
+  /// was requested with, otherwise the native id itself. See [nativeIds] for
+  /// the native ids.
   final String id;
 
   /// Localized display name, if the provider exposes one.
@@ -99,6 +101,19 @@ class Leaderboard {
   /// was built by a provider or by hand.
   final String? providerId;
 
+  /// The native id of this leaderboard on each provider, keyed by
+  /// `providerId`.
+  ///
+  /// Read-only. Holds the row of the `UnifiedLeaderboardTable` for [id], plus
+  /// the native id the [providerId] provider itself used. Set by the
+  /// `UnifiedGameServices` facade on reads; empty when the object was built by
+  /// a provider or by hand.
+  final Map<String, String> nativeIds;
+
+  /// The native id on the provider this came from ([providerId]), or `null`
+  /// when unknown.
+  String? get nativeId => providerId == null ? null : nativeIds[providerId];
+
   const Leaderboard({
     required this.id,
     this.displayName,
@@ -108,6 +123,7 @@ class Leaderboard {
     this.entries = const [],
     this.playerEntry,
     this.providerId,
+    this.nativeIds = const {},
   });
 
   /// Returns a copy with the given fields replaced.
@@ -123,6 +139,7 @@ class Leaderboard {
     List<LeaderboardEntry>? entries,
     LeaderboardEntry? playerEntry,
     String? providerId,
+    Map<String, String>? nativeIds,
   }) => Leaderboard(
     id: id ?? this.id,
     displayName: displayName ?? this.displayName,
@@ -132,6 +149,7 @@ class Leaderboard {
     entries: entries ?? this.entries,
     playerEntry: playerEntry ?? this.playerEntry,
     providerId: providerId ?? this.providerId,
+    nativeIds: nativeIds ?? this.nativeIds,
   );
 
   @override
@@ -145,7 +163,8 @@ class Leaderboard {
           other.collection == collection &&
           listEquals(other.entries, entries) &&
           other.playerEntry == playerEntry &&
-          other.providerId == providerId;
+          other.providerId == providerId &&
+          mapEquals(other.nativeIds, nativeIds);
 
   @override
   int get hashCode => Object.hash(
@@ -157,6 +176,7 @@ class Leaderboard {
     listHash(entries),
     playerEntry,
     providerId,
+    mapHash(nativeIds),
   );
 
   @override
@@ -164,5 +184,5 @@ class Leaderboard {
       'Leaderboard(id: $id, displayName: $displayName, order: $order, '
       'timeScope: $timeScope, collection: $collection, '
       'entries: ${entries.length}, playerEntry: $playerEntry, '
-      'providerId: $providerId)';
+      'providerId: $providerId, nativeIds: $nativeIds)';
 }

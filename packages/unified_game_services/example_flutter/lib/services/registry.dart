@@ -120,12 +120,7 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
       }
     }
     if (ok) {
-      add(
-        ProviderKind.googlePlay,
-        GooglePlayGamesFlutter.create(
-          auth: auth,
-        ),
-      );
+      add(ProviderKind.googlePlay, GooglePlayGamesFlutter.create(auth: auth));
     }
   }
 
@@ -157,8 +152,16 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
     }
   }
 
-  addMappings('gamejolt', cfg.gameJolt.achievementIds, cfg.gameJolt.leaderboardIds);
-  addMappings('google_play', cfg.googlePlay.achievementIds, cfg.googlePlay.leaderboardIds);
+  addMappings(
+    'gamejolt',
+    cfg.gameJolt.achievementIds,
+    cfg.gameJolt.leaderboardIds,
+  );
+  addMappings(
+    'google_play',
+    cfg.googlePlay.achievementIds,
+    cfg.googlePlay.leaderboardIds,
+  );
   addMappings('steam', cfg.steam.achievementIds, cfg.steam.leaderboardIds);
   addMappings('epic', cfg.epic.achievementIds, cfg.epic.leaderboardIds);
 
@@ -167,8 +170,8 @@ ProviderBuild buildProviders(AppConfig cfg, Environment env) {
         ? null
         : UnifiedGameServices(
             providers: active,
-            achievements: achievementsMap,
-            leaderboards: leaderboardsMap,
+            achievements: UnifiedAchievementTable(achievementsMap),
+            leaderboards: UnifiedLeaderboardTable(leaderboardsMap),
           ),
     ordered,
   );

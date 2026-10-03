@@ -1,0 +1,78 @@
+environment:
+  sdk: ^3.12.0
+package:unified_game_services_gamejolt/unified_game_services_gamejolt.dart:
+  GameJoltClient (class extends Object):
+    isSuccess (static method: bool Function(Map<String, dynamic>))
+    new (constructor: GameJoltClient Function({String baseUrl, required String gameId, Client? httpClient, required String privateKey}))
+    baseUrl (getter: String)
+    gameId (getter: String)
+    privateKey (getter: String)
+    close (method: void Function())
+    get (method: Future<Map<String, dynamic>> Function(String, Map<String, String?>, {bool throwOnFailure}))
+    signedUri (method: Uri Function(String, Map<String, String?>))
+  GameJoltProvider (class extends UnifiedGameServicesPlatform):
+    isSupported (static getter: bool)
+    new (constructor: GameJoltProvider Function({String? baseUrl, required String gameId, Client? httpClient, required String privateKey, required String userToken, required String username}))
+    withClient (constructor: GameJoltProvider Function({required GameJoltClient client, required String userToken, required String username}))
+    capabilities (getter: Set<GameCapability>)
+    events (getter: Stream<GameServiceEvent>)
+    providerId (getter: String)
+    userToken (getter: String)
+    username (getter: String)
+    closeSession (method: Future<void> Function())
+    deleteSave (method: Future<void> Function(String))
+    dispose (method: Future<void> Function())
+    getAchievements (method: Future<List<Achievement>> Function())
+    getCurrentPlayer (method: Future<PlayerProfile?> Function())
+    getFriends (method: Future<List<PlayerProfile>> Function())
+    getLeaderboard (method: Future<Leaderboard> Function(String, {LeaderboardCollection collection, int maxResults, LeaderboardTimeScope timeScope}))
+    incrementAchievement (method: Future<void> Function(String, int))
+    isSessionOpen (method: Future<bool> Function())
+    isSignedIn (method: Future<bool> Function())
+    listSaves (method: Future<List<CloudSaveMetadata>> Function())
+    loadData (method: Future<CloudSave?> Function(String))
+    openSession (method: Future<void> Function())
+    pingSession (method: Future<void> Function({bool idle}))
+    revealAchievement (method: Future<void> Function(String))
+    saveData (method: Future<void> Function(String, Uint8List))
+    signIn (method: Future<PlayerProfile?> Function())
+    signOut (method: Future<void> Function())
+    startSessionHeartbeat (method: Future<void> Function({Duration interval}))
+    stopSessionHeartbeat (method: Future<void> Function())
+    submitScore (method: Future<void> Function({required String leaderboardId, required int score}))
+    unlockAchievement (method: Future<void> Function(String))
+dart:async:
+  Future (referenced)
+  Stream (referenced)
+dart:core:
+  Duration (referenced)
+  List (referenced)
+  Map (referenced)
+  Object (referenced)
+  Set (referenced)
+  String (referenced)
+  Uri (referenced)
+  bool (referenced)
+  int (referenced)
+dart:typed_data:
+  Uint8List (referenced)
+package:http/src/client.dart:
+  Client (referenced)
+package:unified_game_services_platform_interface/src/capabilities.dart:
+  GameCapability (referenced)
+package:unified_game_services_platform_interface/src/events.dart:
+  GameServiceEvent (referenced)
+package:unified_game_services_platform_interface/src/models/achievement.dart:
+  Achievement (referenced)
+package:unified_game_services_platform_interface/src/models/cloud_save.dart:
+  CloudSave (referenced)
+  CloudSaveMetadata (referenced)
+package:unified_game_services_platform_interface/src/models/enums.dart:
+  LeaderboardCollection (referenced)
+  LeaderboardTimeScope (referenced)
+package:unified_game_services_platform_interface/src/models/leaderboard.dart:
+  Leaderboard (referenced)
+package:unified_game_services_platform_interface/src/models/player_profile.dart:
+  PlayerProfile (referenced)
+package:unified_game_services_platform_interface/src/platform_interface/platform_interface.dart:
+  UnifiedGameServicesPlatform (referenced)

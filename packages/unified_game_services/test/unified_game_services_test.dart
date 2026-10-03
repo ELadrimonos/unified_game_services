@@ -439,13 +439,13 @@ void main() {
               steam: 'ACH_WIN_ONE_GAME',
               googlePlay: 'CgkI123456789_AQ',
             ),
-          }).mappings,
+          }),
           leaderboards: UnifiedLeaderboardTable({
             'global': ProviderIdMap(
               steam: 'SteamGlobalBoard',
               googlePlay: 'PlayGlobalBoard',
             ),
-          }).mappings,
+          }),
         );
 
         expect(a.resolveAchievementId('first_win'), 'ACH_WIN_ONE_GAME');

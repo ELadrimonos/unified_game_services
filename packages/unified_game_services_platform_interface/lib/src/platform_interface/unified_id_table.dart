@@ -76,6 +76,12 @@ abstract class UnifiedIdTable {
 
   const UnifiedIdTable(this.mappings);
 
+  /// The native ID of [unifiedId] on every provider, keyed by `providerId`.
+  ///
+  /// Read-only; empty when [unifiedId] has no row.
+  Map<String, String> nativeIdsFor(String unifiedId) =>
+      Map.unmodifiable(mappings[unifiedId] ?? const <String, String>{});
+
   /// Extracts the native ID map for a specific [providerId].
   Map<String, String> forProvider(String providerId) {
     final result = <String, String>{};
@@ -84,6 +90,18 @@ abstract class UnifiedIdTable {
       if (nativeId != null) {
         result[entry.key] = nativeId;
       }
+    }
+    return result;
+  }
+
+  /// The inverse of [forProvider]: native ID -> unified key for [providerId].
+  ///
+  /// When two unified keys map to the same native ID, the first one wins.
+  Map<String, String> reverseForProvider(String providerId) {
+    final result = <String, String>{};
+    for (final entry in mappings.entries) {
+      final nativeId = entry.value[providerId];
+      if (nativeId != null) result.putIfAbsent(nativeId, () => entry.key);
     }
     return result;
   }
@@ -107,17 +125,10 @@ class UnifiedLeaderboardTable extends UnifiedIdTable {
   ) => UnifiedLeaderboardTable(map);
 }
 
-/// Extension allowing any `Map<String, Map<String, String>>` to extract provider-specific mappings.
-extension UnifiedIdMapExtension on Map<String, Map<String, String>> {
-  /// Extracts the native ID map for a specific [providerId].
-  Map<String, String> forProvider(String providerId) {
-    final result = <String, String>{};
-    for (final entry in entries) {
-      final nativeId = entry.value[providerId];
-      if (nativeId != null) {
-        result[entry.key] = nativeId;
-      }
-    }
-    return result;
-  }
+/// Table mapping unified stat keys to platform-specific stat IDs.
+class UnifiedStatTable extends UnifiedIdTable {
+  const UnifiedStatTable(super.mappings);
+
+  factory UnifiedStatTable.fromMap(Map<String, Map<String, String>> map) =>
+      UnifiedStatTable(map);
 }

@@ -1,0 +1,36 @@
+environment:
+  sdk: ^3.12.0
+package:unified_game_services_epic/unified_game_services_epic.dart:
+  EpicCredentials (class extends Object):
+    new (const constructor: EpicCredentials Function({required String clientId, required String clientSecret, required String deploymentId, String? encryptionKey, required String productId, String productName, String productVersion, required String sandboxId}))
+    clientId (getter: String)
+    clientSecret (getter: String)
+    deploymentId (getter: String)
+    encryptionKey (getter: String?)
+    productId (getter: String)
+    productName (getter: String)
+    productVersion (getter: String)
+    sandboxId (getter: String)
+  EpicProvider (class extends UnifiedGameServicesPlatform):
+    debugLogging (static getter: bool)
+    debugLogging= (static setter: bool)
+    isSupported (static getter: bool)
+    new (constructor: EpicProvider Function({required EpicCredentials credentials, bool debugLogging, String? devAuthCredentialName, String? devAuthHost, String? exchangeCode, List<String>? launchArgs, String? libraryPath, Duration tickInterval}))
+    credentials (getter: EpicCredentials)
+    devAuthCredentialName (getter: String?)
+    devAuthHost (getter: String?)
+    exchangeCode (getter: String?)
+    libraryPath (getter: String?)
+    providerId (getter: String)
+    tickInterval (getter: Duration)
+    dispose (method: Future<void> Function())
+dart:async:
+  Future (referenced)
+dart:core:
+  Duration (referenced)
+  List (referenced)
+  Object (referenced)
+  String (referenced)
+  bool (referenced)
+package:unified_game_services_platform_interface/src/platform_interface/platform_interface.dart:
+  UnifiedGameServicesPlatform (referenced)

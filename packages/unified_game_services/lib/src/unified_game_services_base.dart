@@ -5,6 +5,7 @@ import 'package:async/async.dart' show StreamGroup;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 import 'multi_provider_result.dart';
+import 'unified_achievement.dart';
 
 /// The app-facing entry point: one API over one or many game-service providers.
 ///
@@ -33,10 +34,13 @@ class UnifiedGameServices {
   /// Throws [ArgumentError] if [providers] is empty.
   UnifiedGameServices({
     required List<UnifiedGameServicesPlatform> providers,
-    Map<String, Map<String, String>>? achievements,
-    Map<String, Map<String, String>>? leaderboards,
-    Map<String, Map<String, String>>? stats,
-  }) : providers = List.unmodifiable(providers) {
+    UnifiedAchievementTable? achievements,
+    UnifiedLeaderboardTable? leaderboards,
+    UnifiedStatTable? stats,
+  }) : providers = List.unmodifiable(providers),
+       _achievementTable = achievements,
+       _leaderboardTable = leaderboards,
+       _statTable = stats {
     if (providers.isEmpty) {
       throw ArgumentError.value(
         providers,
@@ -45,6 +49,7 @@ class UnifiedGameServices {
       );
     }
     for (final p in providers) {
+      _reverse[p] = achievements?.reverseForProvider(p.providerId) ?? {};
       p.registerMappings(
         achievementIds: achievements?.forProvider(p.providerId),
         leaderboardIds: leaderboards?.forProvider(p.providerId),
@@ -52,6 +57,14 @@ class UnifiedGameServices {
       );
     }
   }
+
+  final UnifiedAchievementTable? _achievementTable;
+  final UnifiedLeaderboardTable? _leaderboardTable;
+  final UnifiedStatTable? _statTable;
+
+  /// Native -> unified achievement id per provider, used to translate reads.
+  final Map<UnifiedGameServicesPlatform, Map<String, String>> _reverse =
+      Map.identity();
 
   /// The providers this facade operates over, in priority order.
   final List<UnifiedGameServicesPlatform> providers;
@@ -121,10 +134,86 @@ class UnifiedGameServices {
     UnifiedGameServicesPlatform? from,
   }) async {
     final p = from ?? primary;
+    return _unifiedAchievements(p, await p.getAchievements());
+  }
+
+  /// Translates [achievements] read from [p] to unified ids: `id` becomes the
+  /// table key (or stays native when unmapped), `nativeId` keeps the original.
+  List<Achievement> _unifiedAchievements(
+    UnifiedGameServicesPlatform p,
+    List<Achievement> achievements,
+  ) {
+    final reverse = _reverse[p] ?? const <String, String>{};
     return [
-      for (final a in await p.getAchievements())
-        a.copyWith(providerId: p.providerId),
+      for (final a in achievements)
+        a.copyWith(
+          id: reverse[a.id],
+          nativeIds: _withOwn(
+            _achievementTable?.nativeIdsFor(reverse[a.id] ?? a.id),
+            p,
+            a.id,
+          ),
+          providerId: p.providerId,
+        ),
     ];
+  }
+
+  /// Reads achievements from **every** provider that supports them and merges
+  /// them by unified id, so each [UnifiedAchievement] says on which providers
+  /// it is unlocked.
+  ///
+  /// A provider that fails is reported in [AchievementOverview.failed], not
+  /// thrown. Throws [CapabilityNotSupportedException] when no provider supports
+  /// achievements.
+  Future<AchievementOverview> getUnifiedAchievements() async {
+    final targets = providersFor(GameCapability.achievements);
+    if (targets.isEmpty) {
+      throw CapabilityNotSupportedException(GameCapability.achievements);
+    }
+    final read = await _runAll(
+      'getAchievements',
+      targets,
+      (p) async => _unifiedAchievements(p, await p.getAchievements()),
+    );
+    final merged = <String, Map<String, Achievement>>{};
+    for (final r in read.succeeded) {
+      for (final a in r.value!) {
+        (merged[a.id] ??= {})[r.providerId] = a;
+      }
+    }
+    return AchievementOverview([
+      for (final e in merged.entries) UnifiedAchievement(e.key, e.value),
+    ], read.failed);
+  }
+
+  /// Unlocks, on every provider where an achievement is still locked, whatever
+  /// is already unlocked on another provider.
+  ///
+  /// One-way by nature: achievements cannot be re-locked. Only providers that
+  /// list the achievement are touched, and incremental progress is not copied
+  /// (only completed unlocks). Each provider that needed an unlock gets one
+  /// result entry, which fails if any of its unlocks failed; providers already
+  /// in sync have no entry. Providers that could not be read are skipped
+  /// silently — call [getUnifiedAchievements] to see them in `failed`.
+  Future<MultiProviderOperationResult<void>> syncAchievements() async {
+    final overview = await getUnifiedAchievements();
+    final byId = {for (final p in providers) p.providerId: p};
+    final pending = <String, List<String>>{};
+    for (final a in overview.achievements) {
+      if (!a.isUnlockedAnywhere) continue;
+      for (final providerId in a.lockedOn) {
+        (pending[providerId] ??= []).add(a.id);
+      }
+    }
+    return _runAll(
+      'syncAchievements',
+      [for (final id in pending.keys) byId[id]!],
+      (p) async {
+        for (final id in pending[p.providerId]!) {
+          await p.unlockAchievement(id);
+        }
+      },
+    );
   }
 
   /// Unlocks an achievement on every provider that supports achievements.
@@ -177,6 +266,12 @@ class UnifiedGameServices {
     LeaderboardEntry tag(LeaderboardEntry e) =>
         e.copyWith(player: e.player.copyWith(providerId: id));
     return board.copyWith(
+      id: leaderboardId,
+      nativeIds: _withOwn(
+        _leaderboardTable?.nativeIdsFor(leaderboardId),
+        p,
+        p.resolveLeaderboardId(leaderboardId),
+      ),
       providerId: id,
       entries: [for (final e in board.entries) tag(e)],
       playerEntry: board.playerEntry == null ? null : tag(board.playerEntry!),
@@ -202,7 +297,15 @@ class UnifiedGameServices {
   /// Reads a stat from [from] (defaults to [primary]).
   Future<Stat?> getStat(String key, {UnifiedGameServicesPlatform? from}) async {
     final p = from ?? primary;
-    return (await p.getStat(key))?.copyWith(providerId: p.providerId);
+    return (await p.getStat(key))?.copyWith(
+      key: key,
+      nativeKeys: _withOwn(
+        _statTable?.nativeIdsFor(key),
+        p,
+        p.resolveStatId(key),
+      ),
+      providerId: p.providerId,
+    );
   }
 
   // ─── Cloud save ────────────────────────────────────────────────────────────
@@ -298,7 +401,11 @@ class UnifiedGameServices {
   ///
   /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
   Future<MultiProviderOperationResult<void>> leaveLobby(String lobbyId) =>
-      _fanOut(GameCapability.lobbies, 'leaveLobby', (p) => p.leaveLobby(lobbyId));
+      _fanOut(
+        GameCapability.lobbies,
+        'leaveLobby',
+        (p) => p.leaveLobby(lobbyId),
+      );
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────
 
@@ -347,13 +454,12 @@ class UnifiedGameServices {
   /// Opens a platform-native overlay on every provider supporting overlays.
   ///
   /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> showOverlay({
-    String? overlayId,
-  }) => _fanOut(
-    GameCapability.overlays,
-    'showOverlay',
-    (p) => p.showOverlay(overlayId: overlayId),
-  );
+  Future<MultiProviderOperationResult<void>> showOverlay({String? overlayId}) =>
+      _fanOut(
+        GameCapability.overlays,
+        'showOverlay',
+        (p) => p.showOverlay(overlayId: overlayId),
+      );
 
   // ─── Identity Tokens ──────────────────────────────────────────────────────
 
@@ -369,6 +475,13 @@ class UnifiedGameServices {
   }
 
   // ─── Fan-out helpers ─────────────────────────────────────────────────────
+
+  /// The table row [row] plus [p]'s own [native] id, read-only.
+  Map<String, String> _withOwn(
+    Map<String, String>? row,
+    UnifiedGameServicesPlatform p,
+    String native,
+  ) => Map.unmodifiable({...?row, p.providerId: native});
 
   /// Runs [op] on every provider that supports [capability].
   ///

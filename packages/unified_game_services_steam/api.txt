@@ -1,0 +1,34 @@
+environment:
+  sdk: ^3.12.0
+package:unified_game_services_steam/unified_game_services_steam.dart:
+  SteamAuthTicket (class extends Object):
+    new (const constructor: SteamAuthTicket Function({required Uint8List bytes, required int handle}))
+    bytes (getter: Uint8List)
+    handle (getter: int)
+    hex (getter: String)
+    toString (method: String Function())
+  SteamProvider (class extends UnifiedGameServicesPlatform):
+    isSupported (static getter: bool)
+    new (constructor: SteamProvider Function({int? appId}))
+    appId (getter: int?)
+    providerId (getter: String)
+    cancelAuthTicket (method: void Function(int))
+    clearAchievement (method: Future<void> Function(String))
+    dispose (method: Future<void> Function())
+    getWebApiAuthTicket (method: Future<SteamAuthTicket> Function({String? identity}))
+    resetAllStats (method: Future<void> Function({bool includeAchievements}))
+  SteamRestartRequiredException (class extends SignInFailedException):
+    new (const constructor: SteamRestartRequiredException Function([String, Object?]))
+dart:async:
+  Future (referenced)
+dart:core:
+  Object (referenced)
+  String (referenced)
+  bool (referenced)
+  int (referenced)
+dart:typed_data:
+  Uint8List (referenced)
+package:unified_game_services_platform_interface/src/exceptions.dart:
+  SignInFailedException (referenced)
+package:unified_game_services_platform_interface/src/platform_interface/platform_interface.dart:
+  UnifiedGameServicesPlatform (referenced)

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 import 'multi_provider_result.dart';
+import 'unified_achievement.dart';
 import 'unified_game_services_base.dart';
 
 /// Static, app-wide entry point: initialize once, then call from anywhere.
@@ -34,9 +35,9 @@ abstract final class GameServices {
   /// empty.
   static UnifiedGameServices initialize({
     required List<UnifiedGameServicesPlatform> providers,
-    Map<String, Map<String, String>>? achievements,
-    Map<String, Map<String, String>>? leaderboards,
-    Map<String, Map<String, String>>? stats,
+    UnifiedAchievementTable? achievements,
+    UnifiedLeaderboardTable? leaderboards,
+    UnifiedStatTable? stats,
   }) => _instance = UnifiedGameServices(
     providers: providers,
     achievements: achievements,
@@ -109,6 +110,14 @@ abstract final class GameServices {
   static Future<List<Achievement>> getAchievements({
     UnifiedGameServicesPlatform? from,
   }) => instance.getAchievements(from: from);
+
+  /// See [UnifiedGameServices.getUnifiedAchievements].
+  static Future<AchievementOverview> getUnifiedAchievements() =>
+      instance.getUnifiedAchievements();
+
+  /// See [UnifiedGameServices.syncAchievements].
+  static Future<MultiProviderOperationResult<void>> syncAchievements() =>
+      instance.syncAchievements();
 
   /// See [UnifiedGameServices.unlockAchievement].
   static Future<MultiProviderOperationResult<void>> unlockAchievement(

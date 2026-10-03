@@ -60,6 +60,18 @@ melos:
       description: Check formatting in all packages.
       run: dart format --set-exit-if-changed .
 
+    api:check:
+      description: >
+        Fail if a publishable package's public API differs from its committed
+        api.txt golden (needs `dart pub global activate api_summary`).
+      run: melos exec -c 1 --no-private -- api_summary --check
+
+    api:update:
+      description: >
+        Regenerate every publishable package's api.txt golden after an
+        intentional API change, then review the diff.
+      run: melos exec -c 1 --no-private -- api_summary --write
+
     test:
       description: Run tests in packages that have them.
       run: dart test

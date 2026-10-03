@@ -97,7 +97,14 @@ melos run analyze            # dart analyze --fatal-infos, all packages
 melos run format             # dart format .
 melos run format-check       # CI format gate
 melos run test               # dart test in packages that have a test/ dir
+melos run api:check          # public API must match each package's api.txt golden
+melos run api:update         # regenerate api.txt after an intentional API change
 ```
+
+`api.txt` goldens come from `api_summary` (`dart pub global activate api_summary`).
+Review their diff in every PR: it is the public-API change log. Caveat: for
+conditional exports (`game_center`, `steam`, `epic`) the tool resolves the web
+stub, so those goldens do not cover the native (`dart.library.io`) members.
 
 Single package: `cd packages/<name> && dart test`.
 
