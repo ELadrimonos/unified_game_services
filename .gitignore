@@ -35,3 +35,4 @@ steam_appid.txt
 # JetBrains IDE project files
 *.iml
 .idea/
+.claude/
