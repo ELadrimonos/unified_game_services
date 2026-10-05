@@ -4,7 +4,9 @@ import 'dart:io' show Platform;
 import 'package:jni/jni.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
-import 'playgames_bindings.dart';
+// The bindings define stubs (`Leaderboard`, `Exception`) that clash with the
+// unified model / dart:core.
+import 'playgames_bindings.dart' hide Exception, Leaderboard;
 
 /// Native Google Play Games provider, backed by the **Play Games v2 Java SDK**
 /// reached over `package:jni` (pure Dart, no Flutter). **Android only.**
@@ -25,19 +27,17 @@ import 'playgames_bindings.dart';
 /// 3. The APK must bundle `com.google.android.gms:play-services-games-v2` and
 ///    declare the Play Games app id `<meta-data>` in its manifest.
 ///
-/// ## Status: writes wired; async reads pending a Task binding
+/// ## Status: writes + native UIs wired; async reads pending
 /// The toast-firing writes ([unlockAchievement], [incrementAchievement],
 /// [revealAchievement], [submitScore]) are plain void SDK calls and are fully
-/// implemented. Operations that must read the result of a `Task<T>`
-/// (confirming sign-in state, loading the current player, listing achievements
-/// / leaderboard scores) are **not yet implemented**: jnigen 0.16.0
-/// mis-generates `com.google.android.gms.tasks.Task`/`Tasks`, so those classes
-/// are excluded and `Task`-returning methods come back as opaque [JObject].
-/// Wiring the read path needs a jnigen that fixes generics (or a small
-/// hand-written JNI `Tasks.await` helper) — see `jnigen.yaml`. Until then the
-/// unified facade should serve reads from the REST provider
+/// implemented, as are the native achievements/leaderboards screens
+/// ([showAchievementsUi], [showLeaderboardsUi]), which await a `Task<Intent>`
+/// through an `OnCompleteListener`. Reads that need a `Task<T>` payload mapped
+/// to unified models (sign-in state, current player, achievement / score
+/// lists) are **not yet implemented**. Until then the unified facade should
+/// serve reads from the REST provider
 /// (`unified_game_services_google_play_rest`); this provider's role is
-/// native-UX writes.
+/// native-UX writes and screens.
 
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
@@ -56,7 +56,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
         'and cannot run on this platform.',
       );
     }
-    PlayGamesSdk.initialize(_activityResolver());
+    PlayGamesSdk.initialize(_activityResolver().as(Context.type));
   }
 
   /// Resolves the host Android `Activity` jobject the Play Games clients bind
@@ -68,10 +68,6 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   /// each operation fetch the live one. Engine hosts with a stable activity can
   /// pass `() => activity`.
   final JObject Function() _activityResolver;
-
-  /// Best-effort sign-in flag: set once [signIn] has triggered the native flow.
-  /// Not authoritative — confirming actual sign-in needs the Task read path.
-  bool _signInTriggered = false;
 
   final StreamController<GameServiceEvent> _events =
       StreamController<GameServiceEvent>.broadcast();
@@ -88,21 +84,64 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   // ─── Authentication ──────────────────────────────────────────────────────
 
   @override
-  Future<bool> isSignedIn() async => _signInTriggered;
-
-  @override
-  Future<PlayerProfile?> signIn() async {
-    // Triggers the native Play Games sign-in UI. The returned Task is opaque
-    // (see class docs) so we cannot yet read the AuthenticationResult or load
-    // the profile here; returns null until the Task read path lands.
-    final client = PlayGames.getGamesSignInClient(_activityResolver());
+  Future<bool> isSignedIn() async {
+    final client = PlayGames.getGamesSignInClient(
+      _activityResolver().as(Activity.type),
+    );
+    final Task<AuthenticationResult?> task;
     try {
-      client.signIn().release();
-      _signInTriggered = true;
+      task = client.isAuthenticated();
     } finally {
       client.release();
     }
+    try {
+      return await _isAuthenticated(task);
+    } on _TaskFailure catch (e) {
+      throw PlatformOperationException(
+        'Could not query Play Games sign-in state',
+        cause: e.error,
+      );
+    }
+  }
+
+  @override
+  Future<PlayerProfile?> signIn() async {
+    // Shows the native Play Games sign-in UI when needed and waits for the
+    // outcome. The profile is not loaded yet (needs the PlayersClient Task
+    // mapped to a model), so this returns null on success.
+    final client = PlayGames.getGamesSignInClient(
+      _activityResolver().as(Activity.type),
+    );
+    final Task<AuthenticationResult?> task;
+    try {
+      task = client.signIn();
+    } finally {
+      client.release();
+    }
+    final bool ok;
+    try {
+      ok = await _isAuthenticated(task);
+    } on _TaskFailure catch (e) {
+      throw SignInFailedException('Play Games sign-in failed', e.error);
+    }
+    if (!ok) {
+      throw const SignInFailedException(
+        'Play Games sign-in was not completed (player not authenticated).',
+      );
+    }
     return null;
+  }
+
+  Future<bool> _isAuthenticated(Task<AuthenticationResult?> task) async {
+    final result = (await _awaitTask(
+      task as Task<JObject?>,
+    ))?.as(AuthenticationResult.type);
+    if (result == null) return false;
+    try {
+      return result.isAuthenticated;
+    } finally {
+      result.release();
+    }
   }
 
   // ─── Achievements (writes fire native toasts) ──────────────────────────────
@@ -163,7 +202,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     required int score,
   }) async {
     final id = resolveLeaderboardId(leaderboardId);
-    final client = PlayGames.getLeaderboardsClient(_activityResolver());
+    final client = PlayGames.getLeaderboardsClient(
+      _activityResolver().as(Activity.type),
+    );
     try {
       _withJString(id, (js) => client.submitScore(js, score));
     } finally {
@@ -178,10 +219,120 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
-  // ─── Reads (pending the jnigen Task<T> fix) ────────────────────────────────
+  // ─── Native UIs (provider-specific, not on the unified interface) ──────────
+
+  /// Opens the native Play Games **achievements** screen.
+  ///
+  /// Provider-specific: other providers have no equivalent system UI. Throws
+  /// [PlatformOperationException] if the SDK cannot produce the intent (e.g.
+  /// the player is not signed in).
+  Future<void> showAchievementsUi() async {
+    final client = PlayGames.getAchievementsClient(
+      _activityResolver().as(Activity.type),
+    );
+    final Task<Intent?> task;
+    try {
+      task = client.getAchievementsIntent();
+    } finally {
+      client.release();
+    }
+    await _startIntent(task, _achievementsRequestCode);
+  }
+
+  /// Opens the native Play Games **leaderboards** screen: the list of all
+  /// leaderboards, or a single one when [leaderboardId] is given.
+  ///
+  /// Provider-specific; see [showAchievementsUi] for failure behavior.
+  Future<void> showLeaderboardsUi({String? leaderboardId}) async {
+    final client = PlayGames.getLeaderboardsClient(
+      _activityResolver().as(Activity.type),
+    );
+    final Task<Intent?> task;
+    try {
+      if (leaderboardId == null) {
+        task = client.getAllLeaderboardsIntent();
+      } else {
+        final js = resolveLeaderboardId(leaderboardId).toJString();
+        try {
+          task = client.getLeaderboardIntent(js);
+        } finally {
+          js.release();
+        }
+      }
+    } finally {
+      client.release();
+    }
+    await _startIntent(task, _leaderboardsRequestCode);
+  }
+
+  static const _achievementsRequestCode = 9003;
+  static const _leaderboardsRequestCode = 9004;
+
+  /// Awaits [task] without blocking a thread, via an `OnCompleteListener`.
+  ///
+  /// Completes with the task result (a new reference the caller must release,
+  /// or null) or errors with a [_TaskFailure] carrying the Java exception text.
+  /// Releases the task and the listener.
+  Future<JObject?> _awaitTask(Task<JObject?> task) async {
+    final completer = Completer<JObject?>();
+    final listener = OnCompleteListener<JObject?>.implement(
+      $OnCompleteListener<JObject?>(
+        onComplete: (done) {
+          if (completer.isCompleted) return;
+          if (done.isSuccessful) {
+            completer.complete(done.result);
+          } else {
+            completer.completeError(_TaskFailure(done.exception?.toString()));
+          }
+        },
+      ),
+    );
+    try {
+      task.addOnCompleteListener(listener).release();
+      return await completer.future;
+    } finally {
+      listener.release();
+      task.release();
+    }
+  }
+
+  /// Awaits [task] and launches its `Intent` from a freshly resolved Activity.
+  Future<void> _startIntent(Task<Intent?> task, int requestCode) async {
+    final Intent? intent;
+    try {
+      intent = (await _awaitTask(task as Task<JObject?>))?.as(Intent.type);
+    } on _TaskFailure catch (e) {
+      // ApiException status 4 = SIGN_IN_REQUIRED.
+      if (e.isSignInRequired) {
+        throw NotSignedInException(
+          'Sign in to Play Games before opening its UI',
+          e.error,
+        );
+      }
+      throw PlatformOperationException(
+        'Play Games UI request failed',
+        cause: e.error,
+      );
+    }
+    if (intent == null) {
+      throw const PlatformOperationException(
+        'Play Games returned no intent for this UI',
+      );
+    }
+    try {
+      // Re-resolve: the activity may have changed while awaiting the Task.
+      _activityResolver()
+          .as(Activity.type)
+          .startActivityForResult(intent, requestCode);
+    } finally {
+      intent.release();
+    }
+  }
+
+  // ─── Reads (pending the Task<T> binding) ───────────────────────────────────
   //
-  // The Play Games v2 read path returns `Task<T>` objects that jnigen 0.16.0
-  // cannot yet generate, so reads are explicitly unsupported here: they throw
+  // The Play Games v2 read path returns `Task<T>` objects that are not
+  // bound yet, so reads are explicitly unsupported here: they throw
   // [CapabilityNotSupportedException] (per the interface contract) instead of
   // falling through to the base `UnimplementedError`. Serve reads from
   // `unified_game_services_google_play_rest` alongside this provider.
@@ -190,7 +341,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     throw CapabilityNotSupportedException(
       capability,
       cause:
-          'The Play Games v2 JNI read path is pending (jnigen Task<T> gap); '
+          'The Play Games v2 JNI read path is pending (Task<T> not bound yet); '
           'use unified_game_services_google_play_rest for reads.',
     );
   }
@@ -225,7 +376,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   /// Runs [body] with a fresh `AchievementsClient`, releasing it afterwards.
   void _withAchievements(void Function(AchievementsClient client) body) {
-    final client = PlayGames.getAchievementsClient(_activityResolver());
+    final client = PlayGames.getAchievementsClient(
+      _activityResolver().as(Activity.type),
+    );
     try {
       body(client);
     } finally {
@@ -246,4 +399,17 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   void _emit(GameServiceEvent event) {
     if (!_events.isClosed) _events.add(event);
   }
+}
+
+/// A failed Play Services `Task`, carrying the Java exception's text.
+class _TaskFailure implements Exception {
+  _TaskFailure(this.error);
+
+  final String? error;
+
+  /// `ApiException` status 4 = `SIGN_IN_REQUIRED`.
+  bool get isSignInRequired =>
+      error != null &&
+      (error!.contains('ApiException: 4:') ||
+          error!.contains('SIGN_IN_REQUIRED'));
 }

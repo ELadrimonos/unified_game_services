@@ -33,7 +33,7 @@ dependencies:
   # jni_flutter is the Flutter plugin half of package:jni: on Android it bundles
   # libdartjni.so, registers the JavaVM/JNIEnv, and exposes androidActivity().
   jni_flutter: ^1.0.3
-  jni: ^1.0.3
+  jni: ^1.1.0
   unified_game_services_google_play: ^0.2.0
   unified_game_services_google_play_android: ^0.2.0
   unified_game_services_platform_interface: ^0.2.0

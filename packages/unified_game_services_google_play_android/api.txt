@@ -15,6 +15,8 @@ package:unified_game_services_google_play_android/unified_game_services_google_p
     isSignedIn (method: Future<bool> Function())
     revealAchievement (method: Future<void> Function(String))
     setAchievementStepsAtLeast (method: Future<void> Function(String, int))
+    showAchievementsUi (method: Future<void> Function())
+    showLeaderboardsUi (method: Future<void> Function({String? leaderboardId}))
     signIn (method: Future<PlayerProfile?> Function())
     submitScore (method: Future<void> Function({required String leaderboardId, required int score}))
     unlockAchievement (method: Future<void> Function(String))

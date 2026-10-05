@@ -10,7 +10,7 @@
 #   * ANDROID_SDK_ROOT (or ANDROID_HOME) pointing at an Android SDK with at
 #     least one installed platform (android.jar).
 #   * A JDK (8–21). curl + unzip. Network access to dl.google.com.
-#   * `dart pub global activate jnigen` (or run via `dart run jnigen`).
+#   * `dart pub get` (jnigen is a dev_dependency; config in tool/jnigen.dart).
 #
 # Usage: tool/regenerate_bindings.sh [PLAY_GAMES_VERSION]
 set -euo pipefail
@@ -45,7 +45,7 @@ fetch() {
   echo "  fetch $url"
   curl -fsSL "$url" -o "$WORK/$file" || { echo "  (skip, not found: $file)"; return 0; }
   if [[ "$ext" == "aar" ]]; then
-    (cd "$WORK" && unzip -o -q "$file" classes.jar && mv classes.jar "$CP_DIR/$artifact-$version.jar")
+    (cd "$WORK" && unzip -o -q "$file" classes.jar && mv -f classes.jar "$CP_DIR/$artifact.jar")
   else
     cp "$WORK/$file" "$CP_DIR/$file"
   fi
@@ -68,8 +68,7 @@ cp "$ANDROID_JAR" "$CP_DIR/android.jar"
 
 echo "Running jnigen…"
 cd "$PKG_DIR"
-dart run jnigen --config jnigen.yaml \
-  $(for j in "$CP_DIR"/*.jar; do printf -- '--class-path %q ' "$j"; done)
+dart run tool/jnigen.dart
 
 # ffigen/jnigen sometimes emit analyzer-rejected annotations; format to settle.
 dart format lib/src/playgames_bindings.dart >/dev/null

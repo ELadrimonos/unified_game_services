@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Bindings regenerated with jnigen 1.0.1 (config moved from `jnigen.yaml` to `tool/jnigen.dart`); the existing provider API is unchanged.
+- Added provider-specific `showAchievementsUi()` and `showLeaderboardsUi({leaderboardId})`, opening the native Play Games screens.
 - **Breaking:** removed `GooglePlayAndroidProvider.registerWith(...)`; construct the provider (`GooglePlayAndroidProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
