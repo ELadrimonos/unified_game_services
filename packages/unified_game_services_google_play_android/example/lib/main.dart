@@ -48,7 +48,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // Replace with ids from your Play Console game.
-  static const _achievementId = 'CgkI_REPLACE_ME_ach';
+  // Achievements created in the Play Console for this example.
+  static const _normalAchievementId = 'CgkI_4DWwZYFEAIQAQ';
+  static const _hiddenAchievementId = 'CgkI_4DWwZYFEAIQAg';
+  static const _incrementalAchievementId = 'CgkI_4DWwZYFEAIQAw'; // 10 steps
   static const _leaderboardId = 'CgkI_REPLACE_ME_lb';
 
   GooglePlayAndroidProvider? _provider;
@@ -103,7 +106,7 @@ class _HomePageState extends State<HomePage> {
       await action();
       _append('$label ✓');
     } on GameServiceException catch (e) {
-      _append('$label ✗ ${e.runtimeType}: ${e.message}');
+      _append('$label ✗ $e');
     } catch (e) {
       _append('$label ✗ $e');
     }
@@ -138,27 +141,30 @@ class _HomePageState extends State<HomePage> {
                       ? null
                       : () => _run(
                           'unlock',
-                          () => p.unlockAchievement(_achievementId),
+                          () => p.unlockAchievement(_normalAchievementId),
                         ),
-                  child: const Text('Unlock achievement'),
+                  child: const Text('Unlock normal'),
                 ),
                 FilledButton(
                   onPressed: p == null
                       ? null
                       : () => _run(
                           'increment',
-                          () => p.incrementAchievement(_achievementId, 1),
+                          () => p.incrementAchievement(
+                            _incrementalAchievementId,
+                            1,
+                          ),
                         ),
-                  child: const Text('Increment +1'),
+                  child: const Text('Increment +1 (of 10)'),
                 ),
                 FilledButton(
                   onPressed: p == null
                       ? null
                       : () => _run(
                           'reveal',
-                          () => p.revealAchievement(_achievementId),
+                          () => p.revealAchievement(_hiddenAchievementId),
                         ),
-                  child: const Text('Reveal achievement'),
+                  child: const Text('Reveal hidden'),
                 ),
                 FilledButton(
                   onPressed: p == null
@@ -171,6 +177,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                   child: const Text('Submit score 1234'),
+                ),
+                FilledButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('achievementsUi', p.showAchievementsUi),
+                  child: const Text('Show achievements UI'),
+                ),
+                FilledButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('leaderboardsUi', p.showLeaderboardsUi),
+                  child: const Text('Show leaderboards UI'),
                 ),
               ],
             ),

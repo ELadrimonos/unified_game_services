@@ -1,4 +1,4 @@
-package com.example.gpg_flutter_example
+package dev.aprimo.gpg_android_example
 
 import io.flutter.embedding.android.FlutterActivity
 
