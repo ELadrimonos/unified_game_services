@@ -59,7 +59,8 @@ Dependency direction: facade → platform_interface ← each provider. Providers
 `UnifiedGameServicesPlatform` (abstract) is the single contract every provider
 extends. Conventions:
 
-- Methods have default bodies that throw `UnimplementedError`. A provider overrides
+- Methods have default bodies that throw `CapabilityNotSupportedException` (auth
+  and `events` throw `UnimplementedError`: every provider must supply them). A provider overrides
   **only** the operations it supports — adding a method is non-breaking.
 - Each provider declares `Set<GameCapability> get capabilities`. Gate calls with
   `supports(cap)`; unsupported ops should throw `CapabilityNotSupportedException`.

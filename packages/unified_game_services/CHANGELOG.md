@@ -21,6 +21,15 @@ Core API stabilization and multi-provider enhancements.
   - `matchmaking`: `startMatchmaking()`, `cancelMatchmaking()`
   - `overlays`: `showAchievementsUI()`, `showLeaderboardsUI()`, `showOverlay()`
   - `identityTokens`: `getIdentityToken()`
+- **Facade parity:** added `isSignedIn`, `revealAchievement`, `getPlayerScore`,
+  `getStats`, `listSaves` and `deleteSave`, so everything on the platform
+  interface is reachable from `GameServices` (reads take `from:`, writes fan out).
+- **Predictable errors:** base-class defaults and facade reads now throw
+  `CapabilityNotSupportedException` for an unsupported capability instead of
+  `UnimplementedError`. Reads check `supports(cap)` on the target provider.
+- `identityTokens` implemented by Steam (Web API ticket, hex) and Epic (EOS
+  Connect ID token, JWT). `invitations`, `lobbies`, `matchmaking` and `overlays`
+  remain reserved.
 - New `ProviderOperationResult` / `MultiProviderOperationResult` (`succeeded`,
   `failed`, `allSucceeded`, `anySucceeded`, `allFailed`, `[providerId]`).
 - **Unified ids on reads:** `Achievement.id`, `Leaderboard.id` and `Stat.key`

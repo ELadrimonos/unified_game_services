@@ -14,7 +14,7 @@ Pure Dart, no Flutter dependency.
 ## What's inside
 
 - **`UnifiedGameServicesPlatform`** — the abstract base every provider extends.
-  Methods default to throwing `UnimplementedError`, so a provider overrides only
+  Methods default to throwing `CapabilityNotSupportedException`, so a provider overrides only
   what it supports.
 - **Models** — `Achievement`, `Leaderboard`/`LeaderboardEntry`, `PlayerProfile`,
   `Stat`, `CloudSave`, `RichPresence`. Hand-written immutable value classes

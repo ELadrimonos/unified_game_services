@@ -54,6 +54,33 @@ class FakeProvider extends UnifiedGameServicesPlatform
   }) => _record('score:$leaderboardId:$score');
 
   @override
+  Future<bool> isSignedIn() async => true;
+
+  @override
+  Future<void> revealAchievement(String id) => _record('reveal:$id');
+
+  @override
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async => LeaderboardEntry(
+    rank: 3,
+    score: 30,
+    player: PlayerProfile(id: name, displayName: name),
+  );
+
+  @override
+  Future<List<Stat>> getStats() async => [Stat(key: 'native_kills', value: 7)];
+
+  @override
+  Future<List<CloudSaveMetadata>> listSaves() async => [
+    const CloudSaveMetadata(slot: 'main'),
+  ];
+
+  @override
+  Future<void> deleteSave(String slot) => _record('delete:$slot');
+
+  @override
   Future<List<Achievement>> getAchievements() async {
     calls.add('getAchievements');
     return [Achievement(id: '$name-a', title: name)];
@@ -226,11 +253,9 @@ void main() {
     test(
       'non-GameServiceException errors are wrapped with their cause',
       () async {
-        // Base-class default throws UnimplementedError for stats.
-        final a = FakeProvider(name: 'a', caps: {GameCapability.stats});
-        final result = await UnifiedGameServices(
-          providers: [a],
-        ).setStat('k', 1);
+        // Base-class default throws UnimplementedError for signOut.
+        final a = FakeProvider(name: 'a');
+        final result = await UnifiedGameServices(providers: [a]).signOut();
 
         final error = result.failed.single.error;
         expect(error, isA<PlatformOperationException>());
@@ -238,6 +263,52 @@ void main() {
         expect(result.failed.single.stackTrace, isNotNull);
       },
     );
+
+    test('facade covers the remaining reads and writes', () async {
+      final a = FakeProvider(
+        name: 'a',
+        caps: {
+          GameCapability.achievements,
+          GameCapability.leaderboards,
+          GameCapability.stats,
+          GameCapability.cloudSave,
+        },
+      );
+      final services = UnifiedGameServices(
+        providers: [a],
+        stats: UnifiedStatTable.fromMap({
+          'kills': {'a': 'native_kills'},
+        }),
+      );
+
+      expect(await services.isSignedIn(), isTrue);
+      expect((await services.getPlayerScore('lb'))!.player.providerId, 'a');
+
+      final stat = (await services.getStats()).single;
+      expect(stat.key, 'kills');
+      expect(stat.nativeKeys['a'], 'native_kills');
+      expect(stat.providerId, 'a');
+
+      expect((await services.listSaves()).single.providerId, 'a');
+
+      await services.revealAchievement('x');
+      await services.deleteSave('main');
+      expect(a.calls, containsAll(['reveal:x', 'delete:main']));
+    });
+
+    test('reads from a provider lacking the capability throw', () {
+      final services = UnifiedGameServices(
+        providers: [FakeProvider(name: 'a')],
+      );
+      expect(
+        services.listSaves(),
+        throwsA(isA<CapabilityNotSupportedException>()),
+      );
+      expect(
+        services.getStats(),
+        throwsA(isA<CapabilityNotSupportedException>()),
+      );
+    });
 
     test('unsupported providers are not invoked', () async {
       final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
@@ -316,8 +387,8 @@ void main() {
     });
 
     test('reads come from the primary provider by default', () async {
-      final a = FakeProvider(name: 'a');
-      final b = FakeProvider(name: 'b');
+      final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
+      final b = FakeProvider(name: 'b', caps: {GameCapability.achievements});
       final services = UnifiedGameServices(providers: [a, b]);
 
       final list = await services.getAchievements();
@@ -327,8 +398,8 @@ void main() {
     });
 
     test('reads tag results with the source providerId', () async {
-      final a = FakeProvider(name: 'a');
-      final b = FakeProvider(name: 'b');
+      final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
+      final b = FakeProvider(name: 'b', caps: {GameCapability.achievements});
       final services = UnifiedGameServices(providers: [a, b]);
 
       expect((await services.getAchievements()).single.providerId, 'a');
@@ -339,8 +410,8 @@ void main() {
     });
 
     test('reads can target a specific provider with from:', () async {
-      final a = FakeProvider(name: 'a');
-      final b = FakeProvider(name: 'b');
+      final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
+      final b = FakeProvider(name: 'b', caps: {GameCapability.achievements});
       final services = UnifiedGameServices(providers: [a, b]);
 
       final list = await services.getAchievements(from: b);

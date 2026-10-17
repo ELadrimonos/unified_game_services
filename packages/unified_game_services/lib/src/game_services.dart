@@ -104,6 +104,10 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getCurrentPlayer(from: from);
 
+  /// See [UnifiedGameServices.isSignedIn].
+  static Future<bool> isSignedIn({UnifiedGameServicesPlatform? from}) =>
+      instance.isSignedIn(from: from);
+
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.getAchievements].
@@ -130,6 +134,11 @@ abstract final class GameServices {
     int steps,
   ) => instance.incrementAchievement(achievementId, steps);
 
+  /// See [UnifiedGameServices.revealAchievement].
+  static Future<MultiProviderOperationResult<void>> revealAchievement(
+    String achievementId,
+  ) => instance.revealAchievement(achievementId);
+
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.submitScore].
@@ -153,6 +162,14 @@ abstract final class GameServices {
     from: from,
   );
 
+  /// See [UnifiedGameServices.getPlayerScore].
+  static Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    UnifiedGameServicesPlatform? from,
+  }) =>
+      instance.getPlayerScore(leaderboardId, timeScope: timeScope, from: from);
+
   // ─── Stats ─────────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.setStat].
@@ -173,6 +190,10 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getStat(key, from: from);
 
+  /// See [UnifiedGameServices.getStats].
+  static Future<List<Stat>> getStats({UnifiedGameServicesPlatform? from}) =>
+      instance.getStats(from: from);
+
   // ─── Cloud save ────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.saveData].
@@ -186,6 +207,15 @@ abstract final class GameServices {
     String slot, {
     UnifiedGameServicesPlatform? from,
   }) => instance.loadData(slot, from: from);
+
+  /// See [UnifiedGameServices.listSaves].
+  static Future<List<CloudSaveMetadata>> listSaves({
+    UnifiedGameServicesPlatform? from,
+  }) => instance.listSaves(from: from);
+
+  /// See [UnifiedGameServices.deleteSave].
+  static Future<MultiProviderOperationResult<void>> deleteSave(String slot) =>
+      instance.deleteSave(slot);
 
   // ─── Presence ──────────────────────────────────────────────────────────────
 

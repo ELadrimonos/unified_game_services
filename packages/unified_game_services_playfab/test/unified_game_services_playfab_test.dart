@@ -65,14 +65,20 @@ void main() {
       },
     );
 
-    test('achievement ops throw UnimplementedError (base default)', () {
-      final p = providerWith(mock(const {}).client);
-      expect(
-        () => p.unlockAchievement('x'),
-        throwsA(isA<UnimplementedError>()),
-      );
-      expect(() => p.getAchievements(), throwsA(isA<UnimplementedError>()));
-    });
+    test(
+      'achievement ops throw CapabilityNotSupportedException (base default)',
+      () {
+        final p = providerWith(mock(const {}).client);
+        expect(
+          () => p.unlockAchievement('x'),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => p.getAchievements(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+      },
+    );
   });
 
   group('auth', () {

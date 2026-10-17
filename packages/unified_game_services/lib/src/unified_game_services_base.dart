@@ -126,6 +126,10 @@ class UnifiedGameServices {
     return (await p.getCurrentPlayer())?.copyWith(providerId: p.providerId);
   }
 
+  /// Whether a player is signed in on [from] (defaults to [primary]).
+  Future<bool> isSignedIn({UnifiedGameServicesPlatform? from}) =>
+      (from ?? primary).isSignedIn();
+
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// Achievements from [from] (defaults to [primary]), each tagged with the
@@ -133,7 +137,7 @@ class UnifiedGameServices {
   Future<List<Achievement>> getAchievements({
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.achievements, from);
     return _unifiedAchievements(p, await p.getAchievements());
   }
 
@@ -235,6 +239,15 @@ class UnifiedGameServices {
     (p) => p.incrementAchievement(achievementId, steps),
   );
 
+  /// Reveals a hidden achievement on every provider that supports achievements.
+  Future<MultiProviderOperationResult<void>> revealAchievement(
+    String achievementId,
+  ) => _fanOut(
+    GameCapability.achievements,
+    'revealAchievement',
+    (p) => p.revealAchievement(achievementId),
+  );
+
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
   /// Submits a score to every provider that supports leaderboards.
@@ -255,7 +268,7 @@ class UnifiedGameServices {
     int maxResults = 25,
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.leaderboards, from);
     final board = await p.getLeaderboard(
       leaderboardId,
       timeScope: timeScope,
@@ -278,6 +291,20 @@ class UnifiedGameServices {
     );
   }
 
+  /// The signed-in player's own entry on [leaderboardId] from [from]
+  /// (defaults to [primary]), or `null` when the player has no score.
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    UnifiedGameServicesPlatform? from,
+  }) async {
+    final p = _reader(GameCapability.leaderboards, from);
+    final entry = await p.getPlayerScore(leaderboardId, timeScope: timeScope);
+    return entry?.copyWith(
+      player: entry.player.copyWith(providerId: p.providerId),
+    );
+  }
+
   // ─── Stats ───────────────────────────────────────────────────────────────
 
   /// Sets a stat on every provider that supports stats.
@@ -296,7 +323,7 @@ class UnifiedGameServices {
 
   /// Reads a stat from [from] (defaults to [primary]).
   Future<Stat?> getStat(String key, {UnifiedGameServicesPlatform? from}) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.stats, from);
     return (await p.getStat(key))?.copyWith(
       key: key,
       nativeKeys: _withOwn(
@@ -306,6 +333,27 @@ class UnifiedGameServices {
       ),
       providerId: p.providerId,
     );
+  }
+
+  /// All stats of the signed-in player from [from] (defaults to [primary]),
+  /// keyed by unified key where a mapping exists.
+  Future<List<Stat>> getStats({UnifiedGameServicesPlatform? from}) async {
+    final p = _reader(GameCapability.stats, from);
+    final reverse =
+        _statTable?.reverseForProvider(p.providerId) ??
+        const <String, String>{};
+    return [
+      for (final s in await p.getStats())
+        s.copyWith(
+          key: reverse[s.key],
+          nativeKeys: _withOwn(
+            _statTable?.nativeIdsFor(reverse[s.key] ?? s.key),
+            p,
+            s.key,
+          ),
+          providerId: p.providerId,
+        ),
+    ];
   }
 
   // ─── Cloud save ────────────────────────────────────────────────────────────
@@ -325,12 +373,29 @@ class UnifiedGameServices {
     String slot, {
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.cloudSave, from);
     final save = await p.loadData(slot);
     return save?.copyWith(
       metadata: save.metadata.copyWith(providerId: p.providerId),
     );
   }
+
+  /// Metadata of the saves on [from] (defaults to [primary]).
+  Future<List<CloudSaveMetadata>> listSaves({
+    UnifiedGameServicesPlatform? from,
+  }) async {
+    final p = _reader(GameCapability.cloudSave, from);
+    return [
+      for (final m in await p.listSaves()) m.copyWith(providerId: p.providerId),
+    ];
+  }
+
+  /// Deletes a save from every provider that supports cloud save.
+  Future<MultiProviderOperationResult<void>> deleteSave(String slot) => _fanOut(
+    GameCapability.cloudSave,
+    'deleteSave',
+    (p) => p.deleteSave(slot),
+  );
 
   // ─── Presence ──────────────────────────────────────────────────────────────
 
@@ -356,7 +421,7 @@ class UnifiedGameServices {
   Future<List<PlayerProfile>> getFriends({
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.friends, from);
     return [
       for (final f in await p.getFriends())
         f.copyWith(providerId: p.providerId),
@@ -468,11 +533,7 @@ class UnifiedGameServices {
   /// Gated by [GameCapability.identityTokens]. The format depends on the
   /// provider (Steam: hex ticket, Epic: JWT).
   Future<String?> getIdentityToken({UnifiedGameServicesPlatform? from}) async {
-    final p = from ?? primary;
-    if (!p.supports(GameCapability.identityTokens)) {
-      throw CapabilityNotSupportedException(GameCapability.identityTokens);
-    }
-    return p.getIdentityToken();
+    return _reader(GameCapability.identityTokens, from).getIdentityToken();
   }
 
   // ─── Fan-out helpers ─────────────────────────────────────────────────────
@@ -483,6 +544,19 @@ class UnifiedGameServices {
     UnifiedGameServicesPlatform p,
     String native,
   ) => Map.unmodifiable({...?row, p.providerId: native});
+
+  /// The provider a read targets: [from] or [primary]. Throws
+  /// [CapabilityNotSupportedException] when it does not advertise [capability].
+  UnifiedGameServicesPlatform _reader(
+    GameCapability capability,
+    UnifiedGameServicesPlatform? from,
+  ) {
+    final p = from ?? primary;
+    if (!p.supports(capability)) {
+      throw CapabilityNotSupportedException(capability);
+    }
+    return p;
+  }
 
   /// Runs [op] on every provider that supports [capability].
   ///
