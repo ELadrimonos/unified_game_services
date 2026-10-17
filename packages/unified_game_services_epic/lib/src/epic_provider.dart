@@ -531,6 +531,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     GameCapability.friends,
     GameCapability.presence,
     GameCapability.cloudSave,
+    GameCapability.identityTokens,
   };
 
   @override
@@ -1088,6 +1089,35 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   @override
   Future<bool> isSignedIn() async => _puid != null;
+
+  /// Returns the signed-in user's EOS Connect **ID token** (a JWT).
+  ///
+  /// Send it to your backend, which verifies the signature against Epic's JWKS
+  /// (`https://api.epicgames.dev/auth/v1/oauth/jwks`) and reads the
+  /// ProductUserId from the `sub` claim. Valid for every sign-in method,
+  /// including anonymous Device ID.
+  @override
+  Future<String?> getIdentityToken() async {
+    final eos = _ensureInit();
+    _requireSignedIn();
+
+    final opts = calloc<EOS_Connect_CopyIdTokenOptions>();
+    opts.ref
+      ..ApiVersion = EOS_CONNECT_COPYIDTOKEN_API_LATEST
+      ..LocalUserId = _localUserId!;
+    final out = calloc<Pointer<EOS_Connect_IdToken>>();
+    try {
+      final rc = eos.EOS_Connect_CopyIdToken(_connect!, opts, out);
+      checkEosResult(rc.value, 'EOS_Connect_CopyIdToken');
+      final jwt = out.value.ref.JsonWebToken;
+      if (jwt == nullptr) return null;
+      return jwt.cast<Utf8>().toDartString();
+    } finally {
+      if (out.value != nullptr) eos.EOS_Connect_IdToken_Release(out.value);
+      calloc.free(opts);
+      calloc.free(out);
+    }
+  }
 
   @override
   Future<PlayerProfile?> getCurrentPlayer() async => _currentProfile();

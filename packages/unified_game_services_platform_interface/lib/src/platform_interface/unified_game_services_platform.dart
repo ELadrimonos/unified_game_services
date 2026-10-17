@@ -282,7 +282,8 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
 
   /// Retrieves a platform-signed identity token or session ticket for server verification.
   ///
-  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet implemented.
+  /// Gated by [GameCapability.identityTokens]. The format depends on the
+  /// provider (Steam: hex ticket, Epic: JWT).
   Future<String?> getIdentityToken() =>
       throw UnimplementedError('getIdentityToken() has not been implemented.');
 

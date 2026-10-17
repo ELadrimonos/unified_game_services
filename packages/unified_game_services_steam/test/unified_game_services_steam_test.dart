@@ -23,6 +23,7 @@ void main() {
         GameCapability.cloudSave,
         GameCapability.friends,
         GameCapability.presence,
+        GameCapability.identityTokens,
       });
       expect(provider.supports(GameCapability.lobbies), isFalse);
     });

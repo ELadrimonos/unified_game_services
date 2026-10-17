@@ -465,7 +465,8 @@ class UnifiedGameServices {
 
   /// Retrieves an identity token from [from] (defaults to [primary]).
   ///
-  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet implemented.
+  /// Gated by [GameCapability.identityTokens]. The format depends on the
+  /// provider (Steam: hex ticket, Epic: JWT).
   Future<String?> getIdentityToken({UnifiedGameServicesPlatform? from}) async {
     final p = from ?? primary;
     if (!p.supports(GameCapability.identityTokens)) {

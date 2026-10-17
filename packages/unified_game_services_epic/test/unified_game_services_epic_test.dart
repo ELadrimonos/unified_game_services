@@ -28,6 +28,7 @@ void main() {
         GameCapability.friends,
         GameCapability.presence,
         GameCapability.cloudSave,
+        GameCapability.identityTokens,
       });
     });
 

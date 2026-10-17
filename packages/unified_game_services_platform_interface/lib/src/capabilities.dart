@@ -24,7 +24,8 @@ enum GameCapability {
 
   /// Invitations sent to or received from friends / platform overlays.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  /// Implemented by Steam (Web API auth ticket, hex) and Epic (EOS Connect ID
+  /// token, a JWT). The token's format depends on `providerId`.
   invitations,
 
   /// Creating, joining, and managing game lobbies/rooms.

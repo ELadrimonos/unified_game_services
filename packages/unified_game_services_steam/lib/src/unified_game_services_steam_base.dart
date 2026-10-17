@@ -98,6 +98,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     GameCapability.cloudSave,
     GameCapability.friends,
     GameCapability.presence,
+    GameCapability.identityTokens,
   };
 
   @override
@@ -655,6 +656,26 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       },
     );
   }
+
+  /// Returns a Steam Web API auth ticket as lowercase hex, ready to send to
+  /// your backend for `ISteamUserAuth/AuthenticateUserTicket`.
+  ///
+  /// **Validity window: 2 minutes.** The ticket handle is cancelled
+  /// automatically 2 minutes after this call returns so it does not leak, and
+  /// Steam rejects a cancelled ticket. Your backend must call
+  /// `AuthenticateUserTicket` within that window, so send the token right away
+  /// and do not cache it. Use [getWebApiAuthTicket] directly for control over
+  /// the handle lifetime or the `identity` string.
+  @override
+  Future<String?> getIdentityToken() async {
+    final ticket = await getWebApiAuthTicket();
+    Timer(_identityTicketLifetime, () {
+      if (_client != null) cancelAuthTicket(ticket.handle);
+    });
+    return ticket.hex;
+  }
+
+  static const Duration _identityTicketLifetime = Duration(minutes: 2);
 
   /// Releases an auth-ticket handle obtained from [getWebApiAuthTicket]
   /// (`SteamUser()->CancelAuthTicket`). Call once your backend has consumed it.

@@ -83,6 +83,7 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
   9) Read a cloud save
  10) List cloud saves
  11) Delete a cloud save
+ 12) Get Identity Token (2mins expiration)
   0) Quit''');
     stdout.write('> ');
     final choice = stdin.readLineSync()?.trim();
@@ -155,6 +156,10 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
         case '11':
           await steam.deleteSave(_prompt('Slot (filename)'));
           stdout.writeln('Deleted.');
+        case '12':
+          final token = await steam.getIdentityToken();
+          stdout.writeln('Send this to your backend (valid ~2 min):');
+          stdout.writeln(token);
         case '0':
         case null:
           return;
