@@ -58,6 +58,14 @@ bundle + run loop):
   `Task`-backed read path still need a configured Play Console game + tester
   account to fully exercise.
 
+## Native screens
+
+The provider advertises `GameCapability.overlays`:
+`showAchievementsUI()` and `showLeaderboardsUI({leaderboardId})` open the native
+Play Games screens (the unified leaderboard id is translated to the Play Games
+id). `showOverlay()` is not supported by Play Games and throws
+`PlatformOperationException`. The player must be signed in.
+
 ## Bindings
 
 `lib/src/playgames_bindings.dart` is generated and committed. Regenerate with:

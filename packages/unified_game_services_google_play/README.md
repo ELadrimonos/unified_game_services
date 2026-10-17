@@ -24,6 +24,13 @@ Wraps:
 > needs you to supply that resolver yourself (see below), which a Flutter app
 > should not do by hand.
 
+### Native screens (`overlays`)
+
+On Android, `GameServices.showAchievementsUI()` and
+`GameServices.showLeaderboardsUI(leaderboardId: ...)` open the native Play Games
+screens. Off Android (the REST tier) they throw `CapabilityNotSupportedException`,
+so gate with `GameServices.supports(GameCapability.overlays)` if you target both.
+
 ## Usage
 
 ```dart

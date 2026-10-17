@@ -64,8 +64,8 @@ mapping if you persisted them. `copyWith` cannot reset a field to `null`.
 ## Capabilities
 
 `GameCapability.multiplayer` is replaced by `lobbies` and `matchmaking`.
-`lobbies`, `invitations` and `identityTokens` are implemented now; see the
-README. `createLobby`, `joinLobby`, `leaveLobby` and `sendInvitation` changed
+`lobbies`, `invitations`, `identityTokens` and `overlays` (Google Play Android)
+are implemented now; see the README. `createLobby`, `joinLobby`, `leaveLobby` and `sendInvitation` changed
 signature: they take and return `Lobby` values and are not fanned out.
 `InvitationReceivedEvent` now carries `senderId`, `joinToken` and `providerId`.
 

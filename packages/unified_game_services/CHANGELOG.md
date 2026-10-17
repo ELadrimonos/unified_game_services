@@ -15,11 +15,14 @@ Core API stabilization and multi-provider enhancements.
   in `result.failed`.
 - **Breaking:** `GameCapability.multiplayer` removed in favor of dedicated `GameCapability.lobbies` and `GameCapability.matchmaking` capabilities.
 - **Centralized Mappings:** Added `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, and `UnifiedStatTable` (with `ProviderIdMap` / `ProviderId`). You can now pass global mapping tables directly to `GameServices.initialize(providers: [...], achievements: ..., leaderboards: ..., stats: ...)` or `UnifiedGameServices` constructor instead of repeating `achievementIds` / `leaderboardIds` on each provider.
-- **Capabilities in this release:** `identityTokens`, `lobbies` and
-  `invitations` are implemented (see below). `matchmaking` and `overlays` stay
-  reserved: `startMatchmaking()`, `cancelMatchmaking()`, `showAchievementsUI()`,
-  `showLeaderboardsUI()` and `showOverlay()` exist on the facade and throw
+- **Capabilities in this release:** `identityTokens`, `lobbies`, `invitations`
+  and `overlays` are implemented (see below). `matchmaking` stays reserved:
+  `startMatchmaking()` and `cancelMatchmaking()` exist on the facade and throw
   `CapabilityNotSupportedException` until a provider implements them.
+- **Overlays:** `showAchievementsUI()` and `showLeaderboardsUI({leaderboardId})`
+  open the native Play Games screens through `GooglePlayAndroidProvider` (and
+  through the `google_play` / `google_play_flutter` wrappers on Android). Other
+  providers do not advertise `overlays`; `showOverlay()` has no implementation.
 - **Facade parity:** added `isSignedIn`, `revealAchievement`, `getPlayerScore`,
   `getStats`, `listSaves` and `deleteSave`, so everything on the platform
   interface is reachable from `GameServices` (reads take `from:`, writes fan out).

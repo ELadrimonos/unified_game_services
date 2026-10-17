@@ -100,17 +100,19 @@ services.providersFor(GameCapability.friends);  // only providers advertising it
 
 What each provider advertises today:
 
-| Provider | achievements | leaderboards | stats | cloudSave | friends | presence | lobbies | invitations | identityTokens |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Steam | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Epic | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | ✓ |
-| GameJolt | ✓ | ✓ | | ✓ | ✓ | | | | |
-| PlayFab | | ✓ | ✓ | ✓ | ✓ | | ✓ | | |
-| Game Center | ✓ | ✓ | | | | | | | |
-| Google Play (REST and Android) | ✓ | ✓ | | | | | | | |
+| Provider | achievements | leaderboards | stats | cloudSave | friends | presence | lobbies | invitations | overlays | identityTokens |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Steam | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
+| Epic | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | | ✓ |
+| GameJolt | ✓ | ✓ | | ✓ | ✓ | | | | | |
+| PlayFab | | ✓ | ✓ | ✓ | ✓ | | ✓ | | | |
+| Game Center | ✓ | ✓ | | | | | | | | |
+| Google Play (Android) | ✓ | ✓ | | | | | | | ✓ | |
+| Google Play (REST) | ✓ | ✓ | | | | | | | | |
 
-`matchmaking` and `overlays` exist on the API but no provider implements them
-yet; calling them throws `CapabilityNotSupportedException`. Xbox PC is a
+`overlays` (the native achievements and leaderboards screens) is only on Google
+Play Android today, and `matchmaking` has no provider yet; calling an
+unsupported one throws `CapabilityNotSupportedException`. Xbox PC is a
 placeholder and advertises nothing.
 
 ### Provider IDs

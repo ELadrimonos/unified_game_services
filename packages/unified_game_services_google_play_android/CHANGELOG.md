@@ -3,7 +3,7 @@
 ## 0.2.0
 
 - Bindings regenerated with jnigen 1.0.1 (config moved from `jnigen.yaml` to `tool/jnigen.dart`); the existing provider API is unchanged.
-- Added provider-specific `showAchievementsUi()` and `showLeaderboardsUi({leaderboardId})`, opening the native Play Games screens.
+- `GameCapability.overlays`: `showAchievementsUI()` and `showLeaderboardsUI({leaderboardId})` open the native Play Games screens through the unified API (`GameServices.showAchievementsUI()` reaches them on Android; the REST tier has no system UI and does not advertise `overlays`). `showOverlay()` throws `PlatformOperationException`.
 - **Breaking:** removed `GooglePlayAndroidProvider.registerWith(...)`; construct the provider (`GooglePlayAndroidProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 

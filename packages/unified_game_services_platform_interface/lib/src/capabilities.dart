@@ -40,7 +40,7 @@ enum GameCapability {
 
   /// Opening platform-native UI overlays (achievements, leaderboards, access point).
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  /// Implemented by Google Play Android (`showAchievementsUI`, `showLeaderboardsUI`).
   overlays,
 
   /// Retrieving platform-signed identity tokens or session tickets for server-to-server auth.

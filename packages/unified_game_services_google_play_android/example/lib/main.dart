@@ -181,13 +181,13 @@ class _HomePageState extends State<HomePage> {
                 FilledButton(
                   onPressed: p == null
                       ? null
-                      : () => _run('achievementsUi', p.showAchievementsUi),
+                      : () => _run('achievementsUi', p.showAchievementsUI),
                   child: const Text('Show achievements UI'),
                 ),
                 FilledButton(
                   onPressed: p == null
                       ? null
-                      : () => _run('leaderboardsUi', p.showLeaderboardsUi),
+                      : () => _run('leaderboardsUi', p.showLeaderboardsUI),
                   child: const Text('Show leaderboards UI'),
                 ),
               ],

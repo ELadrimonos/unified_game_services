@@ -19,6 +19,13 @@ depends on Flutter: it resolves that activity from the running Flutter engine
 | **Android only**, non-Flutter host, want native toasts | [`unified_game_services_google_play_android`](../unified_game_services_google_play_android) |
 | **Cloud REST tier** — any platform incl. Android (NDK), no native toasts | [`unified_game_services_google_play_rest`](../unified_game_services_google_play_rest) |
 
+### Native screens (`overlays`)
+
+On Android, `GameServices.showAchievementsUI()` and
+`GameServices.showLeaderboardsUI(leaderboardId: ...)` open the native Play Games
+screens. Off Android (the REST tier) they throw `CapabilityNotSupportedException`,
+so gate with `GameServices.supports(GameCapability.overlays)` if you target both.
+
 ## Usage
 
 ```dart
