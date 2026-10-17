@@ -23,14 +23,10 @@ void main() {
     });
 
     // These run on the host (desktop/CI), i.e. the non-Android branch.
-    test(
-      'off Android, builds the REST provider from an AuthStrategy',
-      () {
-        final p = GooglePlayGames.create(auth: _FakeAuth());
-        expect(p, isA<GooglePlayGamesProvider>());
-      },
-      testOn: '!android',
-    );
+    test('off Android, builds the REST provider from an AuthStrategy', () {
+      final p = GooglePlayGames.create(auth: _FakeAuth());
+      expect(p, isA<GooglePlayGamesProvider>());
+    }, testOn: '!android');
 
     test('off Android, throws without an AuthStrategy', () {
       expect(() => GooglePlayGames.create(), throwsArgumentError);

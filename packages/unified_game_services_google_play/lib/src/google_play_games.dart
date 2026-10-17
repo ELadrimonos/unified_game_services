@@ -42,15 +42,11 @@ abstract final class GooglePlayGames {
       if (activityResolver == null) {
         throw ArgumentError.notNull('activityResolver');
       }
-      return createNativeProvider(
-        activityResolver: activityResolver,
-      );
+      return createNativeProvider(activityResolver: activityResolver);
     }
     if (auth == null) {
       throw ArgumentError.notNull('auth');
     }
-    return GooglePlayGamesProvider(
-      auth: auth,
-    );
+    return GooglePlayGamesProvider(auth: auth);
   }
 }

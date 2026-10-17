@@ -49,16 +49,12 @@ abstract final class GooglePlayGamesFlutter {
   ///
   /// Off Android the REST provider is used and [auth] is required (an
   /// [ArgumentError] is thrown otherwise, matching [GooglePlayGames.create]).
-  static UnifiedGameServicesPlatform create({
-    AuthStrategy? auth,
-  }) {
+  static UnifiedGameServicesPlatform create({AuthStrategy? auth}) {
     if (GooglePlayGames.usesNative) {
       return GooglePlayGames.create(
         activityResolver: flutterActivityResolver(),
       );
     }
-    return GooglePlayGames.create(
-      auth: auth,
-    );
+    return GooglePlayGames.create(auth: auth);
   }
 }

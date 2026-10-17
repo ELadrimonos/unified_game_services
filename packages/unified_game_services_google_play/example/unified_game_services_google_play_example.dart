@@ -46,20 +46,21 @@ Future<void> main(List<String> argv) async {
   );
 
   final achievement = args['achievement'] as String?;
-  final provider = GooglePlayGames.create(
-    // Ignored on this platform (usesNative is always false off Android), but
-    // this is where a Flutter/native Android host would pass a resolver for
-    // the current `Activity` instead of `auth`.
-    auth: LoopbackOAuthStrategy(
-      clientId: args['client-id'] as String,
-      clientSecret: args['client-secret'] as String?,
-    ),
-  )..registerMappings(
-    achievementIds: {
-      if (achievement != null && args['achievement-native'] != null)
-        achievement: args['achievement-native'] as String,
-    },
-  );
+  final provider =
+      GooglePlayGames.create(
+        // Ignored on this platform (usesNative is always false off Android), but
+        // this is where a Flutter/native Android host would pass a resolver for
+        // the current `Activity` instead of `auth`.
+        auth: LoopbackOAuthStrategy(
+          clientId: args['client-id'] as String,
+          clientSecret: args['client-secret'] as String?,
+        ),
+      )..registerMappings(
+        achievementIds: {
+          if (achievement != null && args['achievement-native'] != null)
+            achievement: args['achievement-native'] as String,
+        },
+      );
 
   try {
     final profile = await provider.signIn();

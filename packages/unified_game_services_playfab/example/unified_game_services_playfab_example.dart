@@ -17,14 +17,15 @@ Future<void> main() async {
     exit(64);
   }
 
-  final provider = PlayFabProvider(
-    titleId: titleId,
-    customId: customId,
-    displayName: 'Example Player',
-  )..registerMappings(
-    // Map a unified leaderboard key to a PlayFab statistic name.
-    leaderboardIds: const {'high': 'HighScore'},
-  );
+  final provider =
+      PlayFabProvider(
+        titleId: titleId,
+        customId: customId,
+        displayName: 'Example Player',
+      )..registerMappings(
+        // Map a unified leaderboard key to a PlayFab statistic name.
+        leaderboardIds: const {'high': 'HighScore'},
+      );
 
   final player = await provider.signIn();
   print('Signed in as ${player?.displayName} (${player?.id})');

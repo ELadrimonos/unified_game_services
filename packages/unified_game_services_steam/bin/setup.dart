@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // One-shot setup for the Steam native library, for apps that depend on
 // unified_game_services_steam.
 //

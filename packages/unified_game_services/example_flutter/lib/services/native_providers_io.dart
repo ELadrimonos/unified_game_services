@@ -20,12 +20,7 @@ void buildNativeProviders({
     if (!env.isDesktop) {
       skip(ProviderKind.steam, env.unavailableReason(ProviderKind.steam)!);
     } else {
-      add(
-        ProviderKind.steam,
-        SteamProvider(
-          appId: cfg.steam.appIdValue,
-        ),
-      );
+      add(ProviderKind.steam, SteamProvider(appId: cfg.steam.appIdValue));
     }
   }
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // Dev tool: obtain the Steamworks SDK, generate the `steamworks` Dart bindings
 // for a target platform via `steamworks_gen`, and copy the matching native
 // redistributable next to the example.
