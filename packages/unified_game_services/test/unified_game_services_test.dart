@@ -533,7 +533,7 @@ void main() {
         GameServices.initialize(providers: [a]);
 
         expect(
-          () => GameServices.sendInvitation('friend1'),
+          () => GameServices.findLobbies(),
           throwsA(isA<CapabilityNotSupportedException>()),
         );
         expect(

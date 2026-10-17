@@ -27,6 +27,13 @@ Core API stabilization and multi-provider enhancements.
 - **Predictable errors:** base-class defaults and facade reads now throw
   `CapabilityNotSupportedException` for an unsupported capability instead of
   `UnimplementedError`. Reads check `supports(cap)` on the target provider.
+- **Breaking (reserved API):** lobbies are implemented. `createLobby`,
+  `joinLobby`, `leaveLobby` and `sendInvitation` now take and return `Lobby`
+  values instead of `MultiProviderOperationResult<void>`. A lobby belongs to one
+  provider and is never fanned out: calls use `on:` or the first provider with
+  `lobbies`; calls on a `Lobby` route by `lobby.providerId`. Added
+  `refreshLobby`, `findLobbies`, `updateLobby`, `setMemberData`. See
+  `docs/design/lobbies.md`.
 - `identityTokens` implemented by Steam (Web API ticket, hex) and Epic (EOS
   Connect ID token, JWT). `invitations`, `lobbies`, `matchmaking` and `overlays`
   remain reserved.

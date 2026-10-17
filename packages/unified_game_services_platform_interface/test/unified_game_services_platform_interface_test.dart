@@ -133,6 +133,8 @@ void main() {
         StatUpdatedEvent() => 'stat',
         PresenceChangedEvent() => 'presence',
         InvitationReceivedEvent() => 'invite',
+        JoinRequestedEvent() => 'join',
+        LobbyEvent() => 'lobby',
       };
       expect(kind(a), 'ach');
     });
@@ -149,6 +151,87 @@ void main() {
   group('providerId', () {
     test('is exposed by implementations', () {
       expect(_FakeProviderA().providerId, 'fake_a');
+    });
+  });
+
+  group('Lobby', () {
+    const alice = PlayerProfile(id: 'a', displayName: 'Alice');
+    const lobby = Lobby(
+      id: 'l1',
+      providerId: 'playfab',
+      joinToken: 'conn',
+      ownerId: 'a',
+      members: [
+        LobbyMember(player: alice, data: {'ready': 'true'}),
+      ],
+      maxMembers: 2,
+      data: {'mode': 'ranked'},
+    );
+
+    test('compares deeply and copies', () {
+      final same = lobby.copyWith();
+      expect(same, lobby);
+      expect(same.hashCode, lobby.hashCode);
+      expect(lobby.copyWith(data: {'mode': 'casual'}), isNot(lobby));
+      expect(lobby.copyWith(maxMembers: 4).members, lobby.members);
+    });
+
+    test('hasRoom reflects members against maxMembers', () {
+      expect(lobby.hasRoom, isTrue);
+      final full = lobby.copyWith(
+        members: [
+          ...lobby.members,
+          const LobbyMember(
+            player: PlayerProfile(id: 'b', displayName: 'B'),
+          ),
+        ],
+      );
+      expect(full.hasRoom, isFalse);
+    });
+
+    test('lobby events carry the snapshot and compare by value', () {
+      final t = DateTime.utc(2026);
+      final e = LobbyOwnerChangedEvent(
+        lobby: lobby,
+        previousOwnerId: 'a',
+        timestamp: t,
+      );
+      expect(
+        e,
+        LobbyOwnerChangedEvent(
+          lobby: lobby,
+          previousOwnerId: 'a',
+          timestamp: t,
+        ),
+      );
+      expect(e.lobby.providerId, 'playfab');
+    });
+
+    test('defaults throw CapabilityNotSupportedException', () {
+      final p = _FakeProviderA();
+      expect(
+        p.createLobby,
+        throwsA(
+          isA<CapabilityNotSupportedException>().having(
+            (e) => e.capability,
+            'capability',
+            GameCapability.lobbies,
+          ),
+        ),
+      );
+      expect(
+        () => p.sendInvitation('l', 'u'),
+        throwsA(isA<CapabilityNotSupportedException>()),
+      );
+    });
+
+    test('RichPresence carries party id and join token', () {
+      const rp = RichPresence(state: 'Lobby', partyId: 'p', joinToken: 'j');
+      expect(rp.copyWith(state: 'x').joinToken, 'j');
+      expect(
+        rp,
+        const RichPresence(state: 'Lobby', partyId: 'p', joinToken: 'j'),
+      );
     });
   });
 }

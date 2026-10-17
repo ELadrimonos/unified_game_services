@@ -24,13 +24,13 @@ enum GameCapability {
 
   /// Invitations sent to or received from friends / platform overlays.
   ///
-  /// Implemented by Steam (Web API auth ticket, hex) and Epic (EOS Connect ID
-  /// token, a JWT). The token's format depends on `providerId`.
+  /// An invitation is always to a lobby: see `sendInvitation` and
+  /// `InvitationReceivedEvent`.
   invitations,
 
-  /// Creating, joining, and managing game lobbies/rooms.
+  /// Creating, joining, searching and managing game lobbies/rooms.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  /// A lobby belongs to one provider and is never fanned out; see `Lobby`.
   lobbies,
 
   /// Matchmaking queues and session creation.
@@ -45,6 +45,7 @@ enum GameCapability {
 
   /// Retrieving platform-signed identity tokens or session tickets for server-to-server auth.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet implemented.
+  /// Implemented by Steam (Web API auth ticket, hex) and Epic (EOS Connect ID
+  /// token, a JWT). The token's format depends on `providerId`.
   identityTokens,
 }

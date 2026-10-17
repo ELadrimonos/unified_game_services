@@ -214,30 +214,60 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
 
   // ─── Invitations ──────────────────────────────────────────────────────────
 
-  /// Sends a game invitation to [friendId] with optional [payload].
+  /// Invites [userId] to the lobby [lobbyId].
   ///
-  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet implemented.
-  Future<void> sendInvitation(String friendId, {String? payload}) =>
+  /// Gated by [GameCapability.invitations]. Incoming invitations arrive as
+  /// [InvitationReceivedEvent].
+  Future<void> sendInvitation(String lobbyId, String userId) =>
       throw CapabilityNotSupportedException(GameCapability.invitations);
 
   // ─── Lobbies ──────────────────────────────────────────────────────────────
+  //
+  // A lobby belongs to the provider that created it. Every method returns a
+  // [Lobby] whose `providerId` is this provider's id. Gated by
+  // [GameCapability.lobbies].
 
-  /// Creates a new game lobby with [maxPlayers].
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<void> createLobby({int maxPlayers = 4, String? name}) =>
-      throw CapabilityNotSupportedException(GameCapability.lobbies);
+  /// Creates a lobby and joins it as the owner.
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
 
-  /// Joins an existing game lobby by [lobbyId].
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<void> joinLobby(String lobbyId) =>
-      throw CapabilityNotSupportedException(GameCapability.lobbies);
+  /// Joins the lobby identified by [joinToken] (see [Lobby.joinToken]).
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
 
-  /// Leaves the current lobby [lobbyId].
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
+  /// Leaves the lobby [lobbyId]. The provider decides what happens to
+  /// ownership: [LobbyOwnerChangedEvent] or [LobbyClosedEvent] follow.
   Future<void> leaveLobby(String lobbyId) =>
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// The current state of [lobbyId], or `null` if it no longer exists.
+  Future<Lobby?> getLobby(String lobbyId) =>
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Searches public lobbies matching every filter in [filters].
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Updates a lobby; owner only. Entries of [data] merge into the existing
+  /// data and a `null` value removes the key.
+  Future<Lobby> updateLobby(
+    String lobbyId, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Updates the signed-in player's own [LobbyMember.data]; a `null` value
+  /// removes the key.
+  Future<Lobby> setMemberData(String lobbyId, Map<String, String?> data) =>
       throw CapabilityNotSupportedException(GameCapability.lobbies);
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────

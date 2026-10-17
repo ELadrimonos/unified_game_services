@@ -428,49 +428,140 @@ class UnifiedGameServices {
     ];
   }
 
-  // ─── Invitations ──────────────────────────────────────────────────────────
+  // ─── Lobbies & invitations ─────────────────────────────────────────────────
+  //
+  // A lobby belongs to one provider and is never fanned out. Calls that create
+  // or find lobbies go to [on], or else to the first provider advertising
+  // [GameCapability.lobbies]. Calls on an existing [Lobby] route by
+  // `lobby.providerId`. They return the value and throw on failure.
 
-  /// Sends a game invitation on every provider supporting invitations.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> sendInvitation(
-    String friendId, {
-    String? payload,
-  }) => _fanOut(
-    GameCapability.invitations,
-    'sendInvitation',
-    (p) => p.sendInvitation(friendId, payload: payload),
+  /// The provider a lobby call without a lobby targets.
+  UnifiedGameServicesPlatform _lobbyProvider(UnifiedGameServicesPlatform? on) {
+    if (on != null) return _reader(GameCapability.lobbies, on);
+    final capable = providersFor(GameCapability.lobbies);
+    if (capable.isEmpty) {
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+    }
+    return capable.first;
+  }
+
+  /// The provider that owns [lobby].
+  UnifiedGameServicesPlatform _lobbyOwner(Lobby lobby) {
+    for (final p in providers) {
+      if (p.providerId == lobby.providerId) {
+        return _reader(GameCapability.lobbies, p);
+      }
+    }
+    throw ArgumentError.value(
+      lobby,
+      'lobby',
+      'No registered provider has providerId "${lobby.providerId}".',
+    );
+  }
+
+  Lobby _tagLobby(UnifiedGameServicesPlatform p, Lobby lobby) => lobby.copyWith(
+    providerId: p.providerId,
+    members: [
+      for (final m in lobby.members)
+        m.copyWith(player: m.player.copyWith(providerId: p.providerId)),
+    ],
   );
 
-  // ─── Lobbies ──────────────────────────────────────────────────────────────
+  /// Creates a lobby on [on] (default: the first provider with lobbies).
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return _tagLobby(
+      p,
+      await p.createLobby(
+        maxMembers: maxMembers,
+        visibility: visibility,
+        data: data,
+        memberData: memberData,
+      ),
+    );
+  }
 
-  /// Creates a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> createLobby({
-    int maxPlayers = 4,
-    String? name,
-  }) => _fanOut(
-    GameCapability.lobbies,
-    'createLobby',
-    (p) => p.createLobby(maxPlayers: maxPlayers, name: name),
-  );
+  /// Joins the lobby identified by [joinToken] on [on] (default: the first
+  /// provider with lobbies). The token comes from `Lobby.joinToken`, an
+  /// [InvitationReceivedEvent] or a [JoinRequestedEvent].
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return _tagLobby(p, await p.joinLobby(joinToken, memberData: memberData));
+  }
 
-  /// Joins a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> joinLobby(String lobbyId) =>
-      _fanOut(GameCapability.lobbies, 'joinLobby', (p) => p.joinLobby(lobbyId));
+  /// Leaves [lobby].
+  Future<void> leaveLobby(Lobby lobby) async =>
+      _lobbyOwner(lobby).leaveLobby(lobby.id);
 
-  /// Leaves a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> leaveLobby(String lobbyId) =>
-      _fanOut(
-        GameCapability.lobbies,
-        'leaveLobby',
-        (p) => p.leaveLobby(lobbyId),
-      );
+  /// The current state of [lobby], or `null` if it no longer exists.
+  Future<Lobby?> refreshLobby(Lobby lobby) async {
+    final p = _lobbyOwner(lobby);
+    final fresh = await p.getLobby(lobby.id);
+    return fresh == null ? null : _tagLobby(p, fresh);
+  }
+
+  /// Searches public lobbies on [on] (default: the first provider with
+  /// lobbies) matching every filter.
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return [
+      for (final l in await p.findLobbies(
+        filters: filters,
+        maxResults: maxResults,
+      ))
+        _tagLobby(p, l),
+    ];
+  }
+
+  /// Updates [lobby]; owner only. Entries of [data] merge in and a `null` value
+  /// removes the key.
+  Future<Lobby> updateLobby(
+    Lobby lobby, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) async {
+    final p = _lobbyOwner(lobby);
+    return _tagLobby(
+      p,
+      await p.updateLobby(
+        lobby.id,
+        data: data,
+        visibility: visibility,
+        maxMembers: maxMembers,
+      ),
+    );
+  }
+
+  /// Updates the signed-in player's own data in [lobby]; a `null` value removes
+  /// the key.
+  Future<Lobby> setMemberData(Lobby lobby, Map<String, String?> data) async {
+    final p = _lobbyOwner(lobby);
+    return _tagLobby(p, await p.setMemberData(lobby.id, data));
+  }
+
+  /// Invites [userId] to [lobby].
+  Future<void> sendInvitation(Lobby lobby, String userId) async {
+    final p = _lobbyOwner(lobby);
+    if (!p.supports(GameCapability.invitations)) {
+      throw CapabilityNotSupportedException(GameCapability.invitations);
+    }
+    await p.sendInvitation(lobby.id, userId);
+  }
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────
 
