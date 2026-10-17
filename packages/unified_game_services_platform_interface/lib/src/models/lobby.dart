@@ -16,6 +16,28 @@ enum LobbyVisibility {
   public,
 }
 
+/// What a [Lobby] is for.
+///
+/// A [lobby] is a room for one activity: it can be searched and ends with the
+/// activity. A [party] is a small, usually private group that stays together
+/// across activities and can queue for a match or enter a lobby as one.
+/// Both use the same operations; the kind only tells the game (and other
+/// players) which one it is looking at.
+enum LobbyKind {
+  /// A room for one activity.
+  lobby,
+
+  /// A group that persists across activities.
+  party,
+}
+
+/// Reserved [Lobby.data] key under which providers persist [Lobby.kind].
+///
+/// Providers write it when the kind is not [LobbyKind.lobby] and strip it from
+/// [Lobby.data] when reading, so apps never see it. Custom providers that store
+/// lobby data should do the same.
+const String lobbyKindDataKey = 'ugs_kind';
+
 /// How a [LobbyFilter] compares a lobby data value with [LobbyFilter.value].
 enum LobbyFilterOp {
   /// Equal (string comparison).
@@ -125,6 +147,9 @@ class Lobby {
   /// Who can find and join the lobby.
   final LobbyVisibility visibility;
 
+  /// Whether this is a [LobbyKind.lobby] or a [LobbyKind.party].
+  final LobbyKind kind;
+
   /// Lobby data, string to string (the lowest common denominator of providers).
   final Map<String, String> data;
 
@@ -137,6 +162,7 @@ class Lobby {
     this.memberCount,
     this.maxMembers = 4,
     this.visibility = LobbyVisibility.friendsOnly,
+    this.kind = LobbyKind.lobby,
     this.data = const {},
   });
 
@@ -160,6 +186,7 @@ class Lobby {
     int? memberCount,
     int? maxMembers,
     LobbyVisibility? visibility,
+    LobbyKind? kind,
     Map<String, String>? data,
   }) => Lobby(
     id: id ?? this.id,
@@ -170,6 +197,7 @@ class Lobby {
     memberCount: memberCount ?? this.memberCount,
     maxMembers: maxMembers ?? this.maxMembers,
     visibility: visibility ?? this.visibility,
+    kind: kind ?? this.kind,
     data: data ?? this.data,
   );
 
@@ -185,6 +213,7 @@ class Lobby {
           other.memberCount == memberCount &&
           other.maxMembers == maxMembers &&
           other.visibility == visibility &&
+          other.kind == kind &&
           mapEquals(other.data, data);
 
   @override
@@ -197,12 +226,13 @@ class Lobby {
     memberCount,
     maxMembers,
     visibility,
+    kind,
     mapHash(data),
   );
 
   @override
   String toString() =>
       'Lobby(id: $id, providerId: $providerId, ownerId: $ownerId, '
-      'members: $size/$maxMembers, visibility: ${visibility.name}, '
+      'members: $size/$maxMembers, visibility: ${visibility.name}, kind: ${kind.name}, '
       'data: $data)';
 }

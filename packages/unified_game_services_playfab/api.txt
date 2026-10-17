@@ -25,7 +25,7 @@ package:unified_game_services_playfab/unified_game_services_playfab.dart:
     entityId (getter: String?)
     events (getter: Stream<GameServiceEvent>)
     providerId (getter: String)
-    createLobby (method: Future<Lobby> Function({Map<String, String> data, int maxMembers, Map<String, String> memberData, LobbyVisibility visibility}))
+    createLobby (method: Future<Lobby> Function({Map<String, String> data, LobbyKind kind, int maxMembers, Map<String, String> memberData, LobbyVisibility visibility}))
     deleteSave (method: Future<void> Function(String))
     dispose (method: Future<void> Function())
     findLobbies (method: Future<List<Lobby>> Function({List<LobbyFilter> filters, int maxResults}))
@@ -84,6 +84,7 @@ package:unified_game_services_platform_interface/src/models/leaderboard.dart:
 package:unified_game_services_platform_interface/src/models/lobby.dart:
   Lobby (referenced)
   LobbyFilter (referenced)
+  LobbyKind (referenced)
   LobbyVisibility (referenced)
 package:unified_game_services_platform_interface/src/models/player_profile.dart:
   PlayerProfile (referenced)

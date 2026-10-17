@@ -17,6 +17,7 @@
   (sealed `LobbyEvent`) and `JoinRequestedEvent`. `RichPresence` gained
   `partyId` and `joinToken`. **Breaking:** `sendInvitation(lobbyId, userId)` and
   `InvitationReceivedEvent(senderId, joinToken, providerId)`.
+- `LobbyKind` (`lobby` or `party`) and `Lobby.kind`; `createLobby(kind:)`. Providers persist it under the reserved `lobbyKindDataKey` and strip it on read.
 - **New Tables:** Added `UnifiedIdTable`, `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, `UnifiedStatTable`, `ProviderId`, and `ProviderIdMap` for central ID mapping resolution.
 - Added `statIds`, `resolveStatId()`, and `registerMappings()` to `UnifiedGameServicesPlatform`.
 - Added reserved capability API stubs to `UnifiedGameServicesPlatform` (`sendInvitation`, `createLobby`, `joinLobby`, `leaveLobby`, `startMatchmaking`, `cancelMatchmaking`, `showAchievementsUI`, `showLeaderboardsUI`, `showOverlay`, `getIdentityToken`).

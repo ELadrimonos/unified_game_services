@@ -241,12 +241,14 @@ abstract final class GameServices {
   static Future<Lobby> createLobby({
     int maxMembers = 4,
     LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
     Map<String, String> data = const {},
     Map<String, String> memberData = const {},
     UnifiedGameServicesPlatform? on,
   }) => instance.createLobby(
     maxMembers: maxMembers,
     visibility: visibility,
+    kind: kind,
     data: data,
     memberData: memberData,
     on: on,

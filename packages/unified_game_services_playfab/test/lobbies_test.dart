@@ -164,6 +164,27 @@ void main() {
     },
   );
 
+  test('a party is persisted in lobby data and stripped on read', () async {
+    final s = await signedIn();
+    s.stubs['/Lobby/CreateLobby'] = {'LobbyId': 'L1', 'ConnectionString': 'c'};
+    s.stubs['/Lobby/GetLobby'] = {
+      'Lobby': _lobbyJson(lobbyData: {'ugs_kind': 'party', 'map': 'dust'}),
+    };
+
+    final party = await s.p.createLobby(
+      kind: LobbyKind.party,
+      visibility: LobbyVisibility.private,
+    );
+
+    final create = s.calls.firstWhere(
+      (c) => c.uri.path == '/Lobby/CreateLobby',
+    );
+    expect(create.body['LobbyData'], {'ugs_kind': 'party'});
+    expect(create.body['AccessPolicy'], 'Private');
+    expect(party.kind, LobbyKind.party);
+    expect(party.data, {'map': 'dust'});
+  });
+
   test('joinLobby sends the connection string and member data', () async {
     final s = await signedIn();
     s.stubs['/Lobby/JoinLobby'] = {'LobbyId': 'L1'};

@@ -240,6 +240,15 @@ and hand-made groups the same way. Sketch:
 The roadmap's 1.0 criterion (two real providers without breaking changes) is met
 by steps 2 and 4.
 
+## Parties
+
+A party is a `Lobby` with `kind: LobbyKind.party`: same operations, usually
+`private`, kept between activities. There is no separate capability. Providers
+store the kind under the reserved lobby-data key `ugs_kind` and hide it from
+`Lobby.data`. Matchmaking will take a `Lobby` (typically a party) as the group
+that queues together. Revisit if two real providers expose a party API that
+differs from their lobbies (Xbox is the likely one).
+
 ## Open questions
 
 - Does PlayFab accept the EOS ID token for login? The route would be

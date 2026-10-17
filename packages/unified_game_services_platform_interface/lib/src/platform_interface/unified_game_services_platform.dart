@@ -227,10 +227,14 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   // [Lobby] whose `providerId` is this provider's id. Gated by
   // [GameCapability.lobbies].
 
-  /// Creates a lobby and joins it as the owner.
+  /// Creates a lobby (or, with [kind], a party) and joins it as the owner.
+  ///
+  /// The provider persists [kind] under [lobbyKindDataKey] when it is not
+  /// [LobbyKind.lobby].
   Future<Lobby> createLobby({
     int maxMembers = 4,
     LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
     Map<String, String> data = const {},
     Map<String, String> memberData = const {},
   }) => throw CapabilityNotSupportedException(GameCapability.lobbies);

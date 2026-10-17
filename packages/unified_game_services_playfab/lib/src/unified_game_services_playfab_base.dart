@@ -486,6 +486,11 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   Lobby _lobbyFromJson(Map<String, dynamic> j) {
     final owner = (j['Owner'] as Map?)?.cast<String, dynamic>();
+    final lobbyData = {
+      for (final e in ((j['LobbyData'] as Map?) ?? const {}).entries)
+        '${e.key}': _text(e.value),
+    };
+    final kindName = lobbyData.remove(lobbyKindDataKey);
     return Lobby(
       id: j['LobbyId'] as String,
       providerId: providerId,
@@ -506,9 +511,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
       maxMembers: (j['MaxPlayers'] as num?)?.toInt() ?? 0,
       visibility:
           _policyToVisibility[j['AccessPolicy']] ?? LobbyVisibility.public,
+      kind: LobbyKind.values.asNameMap()[kindName] ?? LobbyKind.lobby,
       data: {
-        for (final e in ((j['LobbyData'] as Map?) ?? const {}).entries)
-          '${e.key}': _text(e.value),
+        ...lobbyData,
         ..._unifiedSearchData((j['SearchData'] as Map?)?.cast()),
       },
     );
@@ -518,10 +523,14 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   Future<Lobby> createLobby({
     int maxMembers = 4,
     LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
     Map<String, String> data = const {},
     Map<String, String> memberData = const {},
   }) async {
-    final split = _splitData(data);
+    final split = _splitData({
+      ...data,
+      if (kind != LobbyKind.lobby) lobbyKindDataKey: kind.name,
+    });
     await _ensureEntity();
     final created = await _lobbyPost('/Lobby/CreateLobby', {
       'MaxPlayers': maxMembers,

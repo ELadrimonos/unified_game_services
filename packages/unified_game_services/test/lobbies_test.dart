@@ -25,6 +25,7 @@ class MemoryLobbyProvider extends UnifiedGameServicesPlatform
   Future<Lobby> createLobby({
     int maxMembers = 4,
     LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
     Map<String, String> data = const {},
     Map<String, String> memberData = const {},
   }) async {
@@ -37,6 +38,7 @@ class MemoryLobbyProvider extends UnifiedGameServicesPlatform
       members: [LobbyMember(player: _me, data: memberData)],
       maxMembers: maxMembers,
       visibility: visibility,
+      kind: kind,
       data: data,
     );
   }
@@ -125,6 +127,12 @@ void main() {
       expect(steam.lobbies, isEmpty);
     },
   );
+
+  test('createLobby passes the kind through', () async {
+    final party = await services.createLobby(kind: LobbyKind.party);
+    expect(party.kind, LobbyKind.party);
+    expect((await services.createLobby()).kind, LobbyKind.lobby);
+  });
 
   test('on: targets a specific provider', () async {
     final lobby = await services.createLobby(on: steam);
