@@ -358,6 +358,21 @@ void main() {
     },
   );
 
+  test('dispose leaves the lobbies it joined', () async {
+    final s = await signedIn();
+    s.stubs['/Lobby/CreateLobby'] = {'LobbyId': 'L1', 'ConnectionString': 'c'};
+    s.stubs['/Lobby/GetLobby'] = {'Lobby': _lobbyJson()};
+    s.stubs['/Lobby/LeaveLobby'] = const {};
+    await s.p.createLobby();
+
+    await s.p.dispose();
+
+    expect(
+      s.calls.where((c) => c.uri.path == '/Lobby/LeaveLobby'),
+      hasLength(1),
+    );
+  });
+
   test('lobby calls before sign-in throw NotSignedIn', () {
     final p = PlayFabProvider.withClient(
       client: PlayFabClient(titleId: 'ABCD', httpClient: mock({}).client),

@@ -139,6 +139,14 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   Future<void> dispose() async {
     _pump?.cancel();
     _pump = null;
+    // Leave explicitly so other members see the player go (and ownership
+    // migrate) right away instead of after Steam notices the process is gone.
+    final client = _client;
+    if (client != null) {
+      for (final id in _watched.keys) {
+        client.steamMatchmaking.leaveLobby(id);
+      }
+    }
     _watched.clear();
     _lobbyCallbacks.clear();
     if (_client != null) {
@@ -759,6 +767,22 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Reads a `LobbyCreated_t` by hand.
+  ///
+  /// The generated struct is `@Packed(8)` (the Windows layout), but Steam packs
+  /// callback structs to 4 bytes on Linux and macOS, which moves the 64-bit lobby
+  /// id from offset 8 to offset 4. Reading the generated field there returns
+  /// garbage, so read the bytes at the right offset for the platform.
+  ({int result, int lobbyId}) _readLobbyCreated(Pointer<sw.LobbyCreated> ptr) {
+    final idOffset = Platform.isWindows ? 8 : 4;
+    final bytes = ptr.cast<Uint8>().asTypedList(idOffset + 8);
+    final view = ByteData.sublistView(bytes);
+    return (
+      result: view.getInt32(0, Endian.little),
+      lobbyId: view.getUint64(idOffset, Endian.little),
+    );
+  }
+
   Lobby _watch(sw.SteamClient client, int id) {
     final lobby = _lobbySnapshot(client, id);
     _watched[id] = lobby;
@@ -779,12 +803,13 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       maxMembers,
     );
     final id = await _awaitCall<sw.LobbyCreated, int>(callId, (ptr) {
-      if (ptr.ref.result != sw.EResult.eResultOK.value) {
+      final created = _readLobbyCreated(ptr);
+      if (created.result != sw.EResult.eResultOK.value) {
         throw PlatformOperationException(
-          'Steam could not create the lobby: ${ptr.ref.result}.',
+          'Steam could not create the lobby: EResult ${created.result}.',
         );
       }
-      return ptr.ref.steamIdLobby;
+      return created.lobbyId;
     });
     _setLobbyData(client, id, _visibilityKey, visibility.name);
     if (kind != LobbyKind.lobby) {

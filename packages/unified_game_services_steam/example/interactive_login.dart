@@ -242,8 +242,25 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
             stdout.writeln('No lobby yet.');
             break;
           }
-          await steam.sendInvitation(current.id, _prompt('SteamID64'));
-          stdout.writeln('Invited.');
+          final friends = await steam.getFriends();
+          if (friends.isEmpty) {
+            stdout.writeln('No friends to invite.');
+            break;
+          }
+          for (var i = 0; i < friends.length; i++) {
+            final f = friends[i];
+            stdout.writeln(
+              '  ${i + 1}) ${f.displayName}${f.isOnline == true ? ' (online)' : ''}',
+            );
+          }
+          final pick = int.tryParse(_prompt('Friend number'));
+          if (pick == null || pick < 1 || pick > friends.length) {
+            stdout.writeln('Not a valid number.');
+            break;
+          }
+          final friend = friends[pick - 1];
+          await steam.sendInvitation(current.id, friend.id);
+          stdout.writeln('Invited ${friend.displayName}.');
         case '20':
           final current = lobby;
           if (current == null) {

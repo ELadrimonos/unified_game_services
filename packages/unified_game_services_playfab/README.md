@@ -59,7 +59,9 @@ token (refreshed automatically) and map like this:
   Events come from polling every `lobbyPollInterval` (default 5 s, `null`
   disables it; call `pollLobbies()` yourself).
 - **Ids.** Members and owner are identified by their title-player *entity id*
-  (`PlayFabProvider.entityId`), not their `PlayFabId`. `Lobby.joinToken` is the
+  (`PlayFabProvider.entityId`), not their `PlayFabId`.
+  `dispose()` leaves the lobbies it joined; if the app is killed instead, PlayFab
+  does not notice (no PubSub), so the player stays listed as a member. `Lobby.joinToken` is the
   connection string; share it through your own channel or rich presence.
 
 Not verified against a live PlayFab title yet; the tests use recorded request and

@@ -815,6 +815,15 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   /// Closes the HTTP client and events stream.
   @override
   Future<void> dispose() async {
+    // PlayFab does not detect disconnects here (no PubSub), so leave the lobbies
+    // we joined; best effort, a failure must not block shutting down.
+    for (final id in _watched.keys.toList()) {
+      try {
+        await leaveLobby(id);
+      } on GameServiceException {
+        // Already gone or offline.
+      }
+    }
     _stopWatching();
     _client.close();
     await _events.close();
