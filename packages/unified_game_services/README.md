@@ -18,6 +18,8 @@ Pure Dart, so it runs in Flutter apps, CLIs, servers and game engines alike.
 
 ## Install
 
+Upgrading from 0.1? See [`MIGRATION.md`](MIGRATION.md).
+
 ```yaml
 dependencies:
   unified_game_services: ^0.1.0
@@ -96,6 +98,21 @@ services.capabilities;                          // union across providers
 services.providersFor(GameCapability.friends);  // only providers advertising it
 ```
 
+What each provider advertises today:
+
+| Provider | achievements | leaderboards | stats | cloudSave | friends | presence | lobbies | invitations | identityTokens |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Steam | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Epic | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | ✓ |
+| GameJolt | ✓ | ✓ | | ✓ | ✓ | | | | |
+| PlayFab | | ✓ | ✓ | ✓ | ✓ | | ✓ | | |
+| Game Center | ✓ | ✓ | | | | | | | |
+| Google Play (REST and Android) | ✓ | ✓ | | | | | | | |
+
+`matchmaking` and `overlays` exist on the API but no provider implements them
+yet; calling them throws `CapabilityNotSupportedException`. Xbox PC is a
+placeholder and advertises nothing.
+
 ### Provider IDs
 
 Every provider exposes a stable `providerId` (`steam`, `epic`, `game_center`,
@@ -141,6 +158,56 @@ are still thrown for "nothing could be attempted" (`CapabilityNotSupportedExcept
 when no provider supports the capability). Reads (`getAchievements`,
 `getLeaderboard`, …) are not aggregated: they use the primary provider or
 `from:`.
+
+### Identity tokens
+
+`getIdentityToken()` returns something your backend can verify to know who the
+player really is. The format depends on the provider, so check `providerId`:
+
+```dart
+final token = await GameServices.getIdentityToken(from: steam);
+// Steam: hex Web API ticket, valid about 2 minutes. Send it right away.
+// Epic:  EOS Connect ID token (JWT). Verify it with Epic's JWKS.
+```
+
+### Lobbies and parties
+
+A lobby belongs to **one provider** and is never fanned out: a Steam lobby holds
+Steam players, a PlayFab lobby holds PlayFab players. For lobbies shared across
+stores, use a backend provider (PlayFab, or your own custom provider).
+
+```dart
+// Goes to the first provider that advertises `lobbies`, or pick one with on:.
+final lobby = await GameServices.createLobby(
+  maxMembers: 4,
+  visibility: LobbyVisibility.public,
+  data: {'mode': 'ranked'},
+);
+
+final open = await GameServices.findLobbies(
+  filters: [const LobbyFilter('mode', LobbyFilterOp.equals, 'ranked')],
+);
+final joined = await GameServices.joinLobby(open.first.joinToken);
+
+await GameServices.setMemberData(joined, {'ready': 'true'});
+await GameServices.leaveLobby(joined); // calls on a Lobby route by its providerId
+```
+
+- `Lobby` is an immutable snapshot. Every operation and every event returns a
+  fresh one.
+- `createLobby(kind: LobbyKind.party)` makes a persistent group (same
+  operations, usually `private`).
+- `Lobby.joinToken` is what `joinLobby` accepts: put it in `RichPresence.joinToken`,
+  an invitation or your own channel. Incoming invitations and "Join" clicks
+  arrive as `InvitationReceivedEvent` and `JoinRequestedEvent`.
+- Changes arrive on `GameServices.events` as `LobbyMemberJoinedEvent`,
+  `LobbyMemberLeftEvent`, `LobbyDataChangedEvent`, `LobbyOwnerChangedEvent` and
+  `LobbyClosedEvent`.
+- Call `GameServices.dispose()` when the app closes so the player leaves.
+
+Provider limits (Steam only searches public lobbies; PlayFab needs
+`lobbySearchKeys` and has no automatic owner migration) are in each provider's
+README. Design notes: [`docs/design/lobbies.md`](../../docs/design/lobbies.md).
 
 ### Provider-specific features
 
