@@ -50,7 +50,8 @@ class Lobby {
   final String joinToken;          // opaque string that joinLobby accepts; safe to
                                    // put in presence/invites (see Discord below)
   final String ownerId;            // a LobbyMember.player.id
-  final List<LobbyMember> members;
+  final List<LobbyMember> members; // empty in search summaries
+  final int? memberCount;          // set for summaries; use Lobby.size
   final int maxMembers;
   final LobbyVisibility visibility;
   final Map<String, String> data;  // string -> string, lowest common denominator

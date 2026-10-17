@@ -111,8 +111,13 @@ class Lobby {
   /// [PlayerProfile.id] of the owner.
   final String ownerId;
 
-  /// Current members, owner included.
+  /// Current members, owner included. Empty in search results from providers
+  /// that only return a summary; see [memberCount].
   final List<LobbyMember> members;
+
+  /// Number of members when [members] was not listed (search summaries), else
+  /// `null`. Use [size] to read the count either way.
+  final int? memberCount;
 
   /// Maximum number of members.
   final int maxMembers;
@@ -129,13 +134,18 @@ class Lobby {
     required this.joinToken,
     required this.ownerId,
     this.members = const [],
+    this.memberCount,
     this.maxMembers = 4,
     this.visibility = LobbyVisibility.friendsOnly,
     this.data = const {},
   });
 
+  /// Number of members, from [memberCount] when the provider only sent a
+  /// summary, else from [members].
+  int get size => memberCount ?? members.length;
+
   /// Whether another member can still fit.
-  bool get hasRoom => members.length < maxMembers;
+  bool get hasRoom => size < maxMembers;
 
   /// Returns a copy with the given fields replaced.
   ///
@@ -147,6 +157,7 @@ class Lobby {
     String? joinToken,
     String? ownerId,
     List<LobbyMember>? members,
+    int? memberCount,
     int? maxMembers,
     LobbyVisibility? visibility,
     Map<String, String>? data,
@@ -156,6 +167,7 @@ class Lobby {
     joinToken: joinToken ?? this.joinToken,
     ownerId: ownerId ?? this.ownerId,
     members: members ?? this.members,
+    memberCount: memberCount ?? this.memberCount,
     maxMembers: maxMembers ?? this.maxMembers,
     visibility: visibility ?? this.visibility,
     data: data ?? this.data,
@@ -170,6 +182,7 @@ class Lobby {
           other.joinToken == joinToken &&
           other.ownerId == ownerId &&
           listEquals(other.members, members) &&
+          other.memberCount == memberCount &&
           other.maxMembers == maxMembers &&
           other.visibility == visibility &&
           mapEquals(other.data, data);
@@ -181,6 +194,7 @@ class Lobby {
     joinToken,
     ownerId,
     listHash(members),
+    memberCount,
     maxMembers,
     visibility,
     mapHash(data),
@@ -189,6 +203,6 @@ class Lobby {
   @override
   String toString() =>
       'Lobby(id: $id, providerId: $providerId, ownerId: $ownerId, '
-      'members: ${members.length}/$maxMembers, visibility: ${visibility.name}, '
+      'members: $size/$maxMembers, visibility: ${visibility.name}, '
       'data: $data)';
 }

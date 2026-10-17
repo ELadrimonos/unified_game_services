@@ -60,6 +60,8 @@ void main() {
         expect(p.supports(GameCapability.stats), isTrue);
         expect(p.supports(GameCapability.cloudSave), isTrue);
         expect(p.supports(GameCapability.friends), isTrue);
+        expect(p.supports(GameCapability.lobbies), isTrue);
+        expect(p.supports(GameCapability.invitations), isFalse);
         expect(p.supports(GameCapability.achievements), isFalse);
         expect(p.supports(GameCapability.presence), isFalse);
       },
