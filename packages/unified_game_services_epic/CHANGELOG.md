@@ -3,6 +3,10 @@
 ## 0.2.0
 
 - **Breaking:** removed `EpicProvider.registerWith(...)`; construct the provider (`EpicProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
+- **Identity token:** `getIdentityToken()` (`identityTokens`) returns the signed-in
+  user's EOS Connect ID token (a JWT, `EOS_Connect_CopyIdToken`). Verify it on
+  your backend against Epic's JWKS; the ProductUserId is the `sub` claim. Works
+  with every sign-in method. Not yet exercised against a live EOS backend.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
 ## 0.1.0

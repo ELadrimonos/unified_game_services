@@ -1,8 +1,8 @@
 # Lobbies & matchmaking (design for 0.3.0)
 
-Status: models, platform methods, facade and events are implemented (core).
-Providers (PlayFab, then Steam), the Discord IPC provider and matchmaking are
-not. The Discord provider is planned for 0.3.0 but is not needed yet.
+Status: implemented for core, PlayFab and Steam (Steam verified on Linux, PlayFab
+only against recorded request shapes). Not done: the Discord IPC provider,
+Epic lobbies, `PlayFabLogin` for cross-store login, and matchmaking.
 
 SDK details (Steam, EOS, Discord, PlayFab) are written from memory and must be
 checked against each SDK's docs before implementing a provider.
