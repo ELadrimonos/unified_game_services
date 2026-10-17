@@ -24,8 +24,10 @@ void main() {
         GameCapability.friends,
         GameCapability.presence,
         GameCapability.identityTokens,
+        GameCapability.lobbies,
+        GameCapability.invitations,
       });
-      expect(provider.supports(GameCapability.lobbies), isFalse);
+      expect(provider.supports(GameCapability.matchmaking), isFalse);
     });
 
     test('is not signed in before init', () async {

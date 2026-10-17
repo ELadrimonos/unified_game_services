@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io' show Platform;
 import 'dart:typed_data';
@@ -99,6 +100,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     GameCapability.friends,
     GameCapability.presence,
     GameCapability.identityTokens,
+    GameCapability.lobbies,
+    GameCapability.invitations,
   };
 
   @override
@@ -121,6 +124,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       const Duration(milliseconds: 50),
       (_) => client.runFrame(),
     );
+    _registerLobbyCallbacks(client);
     return client;
   }
 
@@ -135,6 +139,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   Future<void> dispose() async {
     _pump?.cancel();
     _pump = null;
+    _watched.clear();
+    _lobbyCallbacks.clear();
     if (_client != null) {
       sw.SteamApi.shutdown();
       _client = null;
@@ -575,6 +581,433 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       isOnline: online,
       isFriend: isFriend,
     );
+  }
+
+  // ─── Lobbies (ISteamMatchmaking) ───────────────────────────────────────────
+  //
+  // Mapping and limits:
+  //  * `Lobby.joinToken` and `Lobby.id` are the lobby's 64-bit Steam id as a
+  //    decimal string. Members and owner are Steam ids as strings, like
+  //    [PlayerProfile.id].
+  //  * Steam cannot read a lobby's type back and cannot list a member's data
+  //    keys, so the provider stores two reserved entries: `ugs_vis` in lobby
+  //    data (visibility) and `ugs_md` in each member's data (a JSON map of all
+  //    that member's data). Both are hidden from `Lobby.data` and
+  //    `LobbyMember.data`; `lobbyKindDataKey` holds the lobby kind.
+  //  * `findLobbies` returns Steam's public lobbies worldwide; friends-only and
+  //    private lobbies are not searchable on Steam.
+  //  * Steam has no owner-changed callback; the provider compares the owner
+  //    after every member or data update.
+  //  * Only lobbies this provider created or joined emit events.
+
+  static const String _visibilityKey = 'ugs_vis';
+  static const String _memberDataKey = 'ugs_md';
+
+  /// Latest snapshot of every lobby this provider is in, by Steam lobby id.
+  final Map<int, Lobby> _watched = {};
+  final List<sw.Callback<dynamic>> _lobbyCallbacks = [];
+
+  void _registerLobbyCallbacks(sw.SteamClient client) {
+    if (_lobbyCallbacks.isNotEmpty) return;
+    _lobbyCallbacks.addAll([
+      client.registerCallback<sw.LobbyChatUpdate>(
+        cb: (ptr) => _onLobbyChatUpdate(
+          client,
+          ptr.ref.steamIdLobby,
+          ptr.ref.steamIdUserChanged,
+          ptr.ref.chatMemberStateChange,
+        ),
+      ),
+      client.registerCallback<sw.LobbyDataUpdate>(
+        cb: (ptr) => _onLobbyDataUpdate(client, ptr.ref.steamIdLobby),
+      ),
+      client.registerCallback<sw.LobbyInvite>(
+        cb: (ptr) => _emit(
+          InvitationReceivedEvent(
+            senderId: ptr.ref.steamIdUser.toString(),
+            joinToken: ptr.ref.steamIdLobby.toString(),
+            providerId: providerId,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      ),
+      client.registerCallback<sw.GameLobbyJoinRequested>(
+        cb: (ptr) => _emit(
+          JoinRequestedEvent(
+            joinToken: ptr.ref.steamIdLobby.toString(),
+            providerId: providerId,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  static sw.ELobbyType _lobbyType(LobbyVisibility v) => switch (v) {
+    LobbyVisibility.private => sw.ELobbyType.private,
+    LobbyVisibility.friendsOnly => sw.ELobbyType.friendsOnly,
+    LobbyVisibility.public => sw.ELobbyType.public,
+  };
+
+  int _parseLobbyId(String token) =>
+      int.tryParse(token) ??
+      (throw ArgumentError.value(token, 'joinToken', 'not a Steam lobby id'));
+
+  void _setLobbyData(sw.SteamClient client, int lobby, String key, String? v) {
+    final ok = v == null
+        ? _withUtf8(
+            key,
+            (k) => client.steamMatchmaking.deleteLobbyData(lobby, k),
+          )
+        : _withUtf8(
+            key,
+            (k) => _withUtf8(
+              v,
+              (val) => client.steamMatchmaking.setLobbyData(lobby, k, val),
+            ),
+          );
+    if (!ok) {
+      throw PlatformOperationException(
+        'Steam refused lobby data "$key" (only the owner can set it; keys '
+        'are limited to 255 bytes and values to 8192).',
+      );
+    }
+  }
+
+  Map<String, String> _memberDataOf(
+    sw.SteamClient client,
+    int lobby,
+    int user,
+  ) {
+    final raw = _withUtf8(
+      _memberDataKey,
+      (k) => client.steamMatchmaking
+          .getLobbyMemberData(lobby, user, k)
+          .toDartString(),
+    );
+    if (raw.isEmpty) return const {};
+    try {
+      return (jsonDecode(raw) as Map).map((k, v) => MapEntry('$k', '$v'));
+    } on FormatException {
+      return const {};
+    }
+  }
+
+  /// Applies [changes] (a `null` value removes the key) to the signed-in
+  /// player's member data in [lobby].
+  void _writeMemberData(
+    sw.SteamClient client,
+    int lobby,
+    Map<String, String?> changes,
+  ) {
+    final me = client.steamUser.getSteamId();
+    final merged = {..._memberDataOf(client, lobby, me)};
+    changes.forEach((k, v) => v == null ? merged.remove(k) : merged[k] = v);
+    _withUtf8(
+      _memberDataKey,
+      (k) => _withUtf8(
+        jsonEncode(merged),
+        (v) => client.steamMatchmaking.setLobbyMemberData(lobby, k, v),
+      ),
+    );
+  }
+
+  /// Reads the lobby [id] as this client currently sees it. With [summary]
+  /// (search results) members are not listed.
+  Lobby _lobbySnapshot(sw.SteamClient client, int id, {bool summary = false}) {
+    final mm = client.steamMatchmaking;
+    final data = <String, String>{};
+    final keyBuf = calloc<Uint8>(256).cast<Utf8>();
+    final valueBuf = calloc<Uint8>(8192).cast<Utf8>();
+    try {
+      for (var i = 0; i < mm.getLobbyDataCount(id); i++) {
+        if (mm.getLobbyDataByIndex(id, i, keyBuf, 256, valueBuf, 8192)) {
+          data[keyBuf.toDartString()] = valueBuf.toDartString();
+        }
+      }
+    } finally {
+      calloc.free(keyBuf);
+      calloc.free(valueBuf);
+    }
+    final visibilityName = data.remove(_visibilityKey);
+    final kindName = data.remove(lobbyKindDataKey);
+    final count = mm.getNumLobbyMembers(id);
+    return Lobby(
+      id: id.toString(),
+      providerId: providerId,
+      joinToken: id.toString(),
+      ownerId: mm.getLobbyOwner(id).toString(),
+      members: summary
+          ? const []
+          : [
+              for (var i = 0; i < count; i++)
+                () {
+                  final user = mm.getLobbyMemberByIndex(id, i);
+                  return LobbyMember(
+                    player: _profileForId(client, user),
+                    data: _memberDataOf(client, id, user),
+                  );
+                }(),
+            ],
+      memberCount: summary ? count : null,
+      maxMembers: mm.getLobbyMemberLimit(id),
+      visibility:
+          LobbyVisibility.values.asNameMap()[visibilityName] ??
+          (summary ? LobbyVisibility.public : LobbyVisibility.friendsOnly),
+      kind: LobbyKind.values.asNameMap()[kindName] ?? LobbyKind.lobby,
+      data: data,
+    );
+  }
+
+  Lobby _watch(sw.SteamClient client, int id) {
+    final lobby = _lobbySnapshot(client, id);
+    _watched[id] = lobby;
+    return lobby;
+  }
+
+  @override
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+  }) async {
+    final client = _ensureInit();
+    final callId = client.steamMatchmaking.createLobby(
+      _lobbyType(visibility),
+      maxMembers,
+    );
+    final id = await _awaitCall<sw.LobbyCreated, int>(callId, (ptr) {
+      if (ptr.ref.result != sw.EResult.eResultOK.value) {
+        throw PlatformOperationException(
+          'Steam could not create the lobby: ${ptr.ref.result}.',
+        );
+      }
+      return ptr.ref.steamIdLobby;
+    });
+    _setLobbyData(client, id, _visibilityKey, visibility.name);
+    if (kind != LobbyKind.lobby) {
+      _setLobbyData(client, id, lobbyKindDataKey, kind.name);
+    }
+    data.forEach((k, v) => _setLobbyData(client, id, k, v));
+    if (memberData.isNotEmpty) _writeMemberData(client, id, memberData);
+    return _watch(client, id);
+  }
+
+  @override
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+  }) async {
+    final client = _ensureInit();
+    final id = _parseLobbyId(joinToken);
+    await _awaitCall<sw.LobbyEnter, void>(
+      client.steamMatchmaking.joinLobby(id),
+      (ptr) {
+        final response = ptr.ref.eChatRoomEnterResponse;
+        if (response != 1 /* k_EChatRoomEnterResponseSuccess */ ) {
+          throw PlatformOperationException(switch (response) {
+            2 => 'The lobby does not exist.',
+            3 => 'Not allowed to join this lobby.',
+            4 => 'The lobby is full.',
+            6 || 9 => 'Banned from this lobby.',
+            _ => 'Steam could not join the lobby (response $response).',
+          }, code: '$response');
+        }
+      },
+    );
+    if (memberData.isNotEmpty) _writeMemberData(client, id, memberData);
+    return _watch(client, id);
+  }
+
+  @override
+  Future<void> leaveLobby(String lobbyId) async {
+    final client = _ensureInit();
+    final id = _parseLobbyId(lobbyId);
+    _watched.remove(id);
+    client.steamMatchmaking.leaveLobby(id);
+  }
+
+  @override
+  Future<Lobby?> getLobby(String lobbyId) async {
+    final client = _ensureInit();
+    final id = _parseLobbyId(lobbyId);
+    // Steam only knows lobbies this client is in or just searched; an unknown
+    // lobby has no owner.
+    if (client.steamMatchmaking.getLobbyOwner(id) == 0) return null;
+    return _lobbySnapshot(client, id);
+  }
+
+  @override
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+  }) async {
+    final client = _ensureInit();
+    final mm = client.steamMatchmaking;
+    for (final f in filters) {
+      switch (f.op) {
+        case LobbyFilterOp.equals || LobbyFilterOp.notEquals:
+          _withUtf8(
+            f.key,
+            (k) => _withUtf8(
+              f.value,
+              (v) => mm.addRequestLobbyListStringFilter(
+                k,
+                v,
+                f.op == LobbyFilterOp.equals
+                    ? sw.ELobbyComparison.equal
+                    : sw.ELobbyComparison.notEqual,
+              ),
+            ),
+          );
+        case LobbyFilterOp.lessThan || LobbyFilterOp.greaterThan:
+          final n =
+              int.tryParse(f.value) ??
+              (throw ArgumentError.value(
+                f.value,
+                f.key,
+                'numeric comparison needs an integer',
+              ));
+          _withUtf8(
+            f.key,
+            (k) => mm.addRequestLobbyListNumericalFilter(
+              k,
+              n,
+              f.op == LobbyFilterOp.lessThan
+                  ? sw.ELobbyComparison.lessThan
+                  : sw.ELobbyComparison.greaterThan,
+            ),
+          );
+      }
+    }
+    mm.addRequestLobbyListDistanceFilter(sw.ELobbyDistanceFilter.worldwide);
+    mm.addRequestLobbyListResultCountFilter(maxResults);
+    final matching = await _awaitCall<sw.LobbyMatchList, int>(
+      mm.requestLobbyList(),
+      (ptr) => ptr.ref.lobbiesMatching,
+    );
+    return [
+      for (var i = 0; i < matching; i++)
+        _lobbySnapshot(client, mm.getLobbyByIndex(i), summary: true),
+    ];
+  }
+
+  @override
+  Future<Lobby> updateLobby(
+    String lobbyId, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) async {
+    final client = _ensureInit();
+    final id = _parseLobbyId(lobbyId);
+    final mm = client.steamMatchmaking;
+    if (mm.getLobbyOwner(id) != client.steamUser.getSteamId()) {
+      throw const PlatformOperationException(
+        'Only the lobby owner can update it.',
+      );
+    }
+    data?.forEach((k, v) => _setLobbyData(client, id, k, v));
+    if (visibility != null) {
+      if (!mm.setLobbyType(id, _lobbyType(visibility))) {
+        throw const PlatformOperationException('Steam refused the lobby type.');
+      }
+      _setLobbyData(client, id, _visibilityKey, visibility.name);
+    }
+    if (maxMembers != null && !mm.setLobbyMemberLimit(id, maxMembers)) {
+      throw const PlatformOperationException(
+        'Steam refused the member limit (it cannot be below the member count).',
+      );
+    }
+    return _watch(client, id);
+  }
+
+  @override
+  Future<Lobby> setMemberData(String lobbyId, Map<String, String?> data) async {
+    final client = _ensureInit();
+    final id = _parseLobbyId(lobbyId);
+    _writeMemberData(client, id, data);
+    return _watch(client, id);
+  }
+
+  @override
+  Future<void> sendInvitation(String lobbyId, String userId) async {
+    final client = _ensureInit();
+    final invitee = int.tryParse(userId);
+    if (invitee == null ||
+        !client.steamMatchmaking.inviteUserToLobby(
+          _parseLobbyId(lobbyId),
+          invitee,
+        )) {
+      throw PlatformOperationException('Steam could not invite "$userId".');
+    }
+  }
+
+  void _onLobbyChatUpdate(
+    sw.SteamClient client,
+    int lobbyId,
+    int userChanged,
+    int stateChange,
+  ) {
+    final old = _watched[lobbyId];
+    if (old == null) return;
+    final current = _watch(client, lobbyId);
+    final now = DateTime.now();
+    final user = userChanged.toString();
+    if (stateChange & sw.EChatMemberStateChange.entered.value != 0) {
+      final member = current.members.where((m) => m.player.id == user);
+      if (member.isNotEmpty) {
+        _emit(
+          LobbyMemberJoinedEvent(
+            lobby: current,
+            member: member.first,
+            timestamp: now,
+          ),
+        );
+      }
+    } else {
+      final member = old.members.where((m) => m.player.id == user);
+      _emit(
+        LobbyMemberLeftEvent(
+          lobby: current,
+          member: member.isNotEmpty
+              ? member.first
+              : LobbyMember(player: _profileForId(client, userChanged)),
+          timestamp: now,
+        ),
+      );
+    }
+    _emitOwnerChange(old, current, now);
+  }
+
+  void _onLobbyDataUpdate(sw.SteamClient client, int lobbyId) {
+    final old = _watched[lobbyId];
+    if (old == null) return;
+    final current = _watch(client, lobbyId);
+    if (current == old) return;
+    final now = DateTime.now();
+    _emitOwnerChange(old, current, now);
+    if (current.data.toString() != old.data.toString() ||
+        current.visibility != old.visibility ||
+        current.maxMembers != old.maxMembers ||
+        current.members.map((m) => m.data.toString()).join('|') !=
+            old.members.map((m) => m.data.toString()).join('|')) {
+      _emit(LobbyDataChangedEvent(lobby: current, timestamp: now));
+    }
+  }
+
+  void _emitOwnerChange(Lobby old, Lobby current, DateTime now) {
+    if (old.ownerId != current.ownerId) {
+      _emit(
+        LobbyOwnerChangedEvent(
+          lobby: current,
+          previousOwnerId: old.ownerId,
+          timestamp: now,
+        ),
+      );
+    }
   }
 
   // ─── Steam-specific extras (NOT part of the unified interface) ─────────────

@@ -3,6 +3,7 @@
 ## 0.2.0
 
 - **Breaking:** removed `SteamProvider.registerWith(...)`; construct the provider (`SteamProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
+- **Lobbies and invitations** via `ISteamMatchmaking`: create, join, leave, get, find (public lobbies, worldwide), update, member data, invite, lobby events, plus `InvitationReceivedEvent` and `JoinRequestedEvent` from Steam invites and "Join game". `Lobby.joinToken` is the lobby's Steam id. Not yet verified against a live Steam client; try it with `example/interactive_login.dart` (options 13-20).
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
 ## 0.1.0
