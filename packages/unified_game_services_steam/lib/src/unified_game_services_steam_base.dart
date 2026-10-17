@@ -14,6 +14,15 @@ import 'steam_exceptions.dart';
 export 'steam_auth_ticket.dart';
 export 'steam_exceptions.dart';
 
+/// Runs [unregister] once the current dispatch finishes.
+///
+/// `Dispatcher.runFrame` iterates its callback/call-result `Set` while invoking
+/// our handlers; removing from that set inside a handler throws
+/// `ConcurrentModificationError`, so handlers must unregister asynchronously.
+@visibleForTesting
+void unregisterAfterDispatch(void Function() unregister) =>
+    scheduleMicrotask(unregister);
+
 /// Maps an error thrown by `SteamClient.init` to a [GameServiceException].
 @visibleForTesting
 GameServiceException mapSteamInitError(Object error) => switch (error) {
@@ -617,7 +626,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       cb: (ptr) {
         // The callback fires for every outstanding request; match our handle.
         if (ptr.authTicket != handle || completer.isCompleted) return;
-        client.unregisterCallback(callback: cb);
+        unregisterAfterDispatch(() => client.unregisterCallback(callback: cb));
         if (ptr.result != sw.EResult.eResultOK) {
           completer.completeError(
             PlatformOperationException(
@@ -678,7 +687,9 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       asyncCallId: callId,
       cb: (Pointer<T> data, bool hasFailed) {
         if (completer.isCompleted) return;
-        client.unregisterCallResult(callResult: callResult);
+        unregisterAfterDispatch(
+          () => client.unregisterCallResult(callResult: callResult),
+        );
         if (hasFailed) {
           completer.completeError(
             const PlatformOperationException('Steam async call failed.'),
