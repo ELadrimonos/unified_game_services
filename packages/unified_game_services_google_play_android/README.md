@@ -43,14 +43,16 @@ bundle + run loop):
 - **Implemented:** the native-UX writes — `unlockAchievement`,
   `incrementAchievement`, `revealAchievement`, `submitScore`, and the
   provider-specific `setAchievementStepsAtLeast`. `signIn()` triggers the native
-  sign-in flow.
-- **Pending:** operations that read a `Task<T>` result (confirming sign-in
-  state, current player, listing achievements / leaderboard scores). jnigen
-  0.16.0 mis-generates `com.google.android.gms.tasks.Task`/`Tasks`, so those are
-  excluded from the bindings and `Task`-returning methods come back as opaque
-  `JObject`. Wiring reads needs a jnigen that fixes generics (or a small
-  hand-written JNI `Tasks.await` helper). Meanwhile the unified facade can serve
-  reads from the REST provider.
+  sign-in flow and returns the player; `isSignedIn()` and `getCurrentPlayer()`
+  (id + display name, no avatar) read the SDK's `Task` results.
+- **Reads:** `getAchievements` (definitions + progress, native steps),
+  `getLeaderboard` (top 1–25 scores; daily/weekly/all-time, public/friends) and
+  `getPlayerScore` (global rank at any position). The payload types are opaque
+  in the committed bindings, so their getters are called reflectively by JNI
+  signature (`lib/src/play_games_data.dart`); regenerating the bindings with
+  those classes included would make that unnecessary.
+- `signOut()` throws `PlatformOperationException`: Play Games v2 has no
+  programmatic sign-out.
 - **Runtime-verified on a Flutter Android host** (see the family's
   [`..._flutter`](../unified_game_services_google_play_flutter) `example/`):
   `signIn()` fires the native Play Games sign-in overlay, proving the JNI path

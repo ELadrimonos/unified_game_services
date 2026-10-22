@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- Ship a Game Center setup agent skill and update the README to use facade ID tables and operation results.
 - **Breaking:** removed `GameCenterProvider.registerWith(...)`; construct the provider (`GameCenterProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 

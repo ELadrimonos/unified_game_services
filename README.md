@@ -21,7 +21,7 @@ README covers install, usage, per-store builds, and Flutter desktop flavors.
 | `unified_game_services` | App-facing facade — multi-provider fan-out | ✅ |
 | `unified_game_services_platform_interface` | Shared contract + models (for provider authors) | ✅ |
 | `unified_game_services_steam` | Steam (Steamworks via FFI), desktop only | ✅ runtime-verified (macOS; lobbies, invitations and identity ticket on Linux) |
-| `unified_game_services_epic` | Epic Online Services (EOS C SDK via FFI), desktop only | ✅ runtime-verified (macOS); leaderboard `getPlayerScore` scans top-100 only |
+| `unified_game_services_epic` | Epic Online Services (EOS C SDK via FFI), desktop only | ✅ runtime-verified (macOS); `getPlayerScore` limited to the ranks EOS returns |
 | `unified_game_services_game_center` | Apple Game Center (GameKit via Objective-C FFI), macOS/iOS | ⚠️ implemented, not yet runtime-verified (needs a paid Apple Developer account + Game Center–enabled App Store Connect record) |
 | `unified_game_services_gamejolt` | GameJolt (REST Game API v1.2) | ✅ verified with tests + live |
 | `unified_game_services_playfab` | PlayFab (REST Client + Multiplayer Lobby API) | ✅ verified with tests; lobbies not yet tried against a live title |

@@ -173,16 +173,16 @@ Pure-Dart-reachable providers ship first:
   aggregate a backing stat), the **stats read path** (`getStats`/`getStat`:
   QueryStats + CopyStatByIndex) and the **leaderboards read path**
   (`getLeaderboard`/`getPlayerScore`: QueryLeaderboardRanks +
-  CopyLeaderboardRecordByIndex; `getPlayerScore` scans the top-100 ranks page —
-  a dedicated QueryLeaderboardUserScores path is a TODO). `debugLogging: true`
+  CopyLeaderboardRecordByIndex; `getPlayerScore` looks the local player up in
+  every returned rank via CopyLeaderboardRecordByUserId). `debugLogging: true`
   (constructor) toggles verbose FFI traces, off by default. **Runtime-verified on
   macOS** via the Dev Auth Tool (real display name + friends list). Plus
   **cloud save** (`EOS_HPlayerDataStorage`: `saveData`/`loadData`/`listSaves`/
   `deleteData`) and **rich presence** (`EOS_HPresence`: `setPresence`) — both now
   wired via the EOS PDS bindings. **Gaps:** **no avatar** (the C SDK exposes
-  none — `PlayerProfile.avatarUrl` stays null); `getPlayerScore` scans the
-  top-100 ranks page (dedicated `QueryLeaderboardUserScores` path is a TODO).
-  EAS also requires
+  none — `PlayerProfile.avatarUrl` stays null); `getPlayerScore` only finds
+  players within the ranks `QueryLeaderboardRanks` returns (EOS has no rank
+  lookup below them). EAS also requires
   **Dev Portal config**: an Epic Account Services Application with the client
   associated + scopes (else `EOS_InvalidRequest` 1012). Capabilities advertised:
   achievements, leaderboards, stats, **friends, presence, cloudSave**.
@@ -221,11 +221,15 @@ Pure-Dart-reachable providers ship first:
   on-device client). Heavy host requirements (engine supplies the
   `JavaVM*`/`JNIEnv` and the `Activity` jobject; APK bundles the
   `play-services-games-v2` aar) — same "host supplies the runtime" shape as
-  Steam/GameCenter. **Read-path gap:** jnigen 0.16.0 mis-generates the generic
-  `tasks.Task`/`Tasks`, so they're excluded and `Task`-returning methods are
-  opaque `JObject` — confirming sign-in / current-player / list reads await a
-  jnigen generics fix or a hand-written JNI `Tasks.await`. Keep the runtime
-  `jni` aligned with jnigen (jnigen 1.x → jni ^1.0.3; committed bindings still generated with 0.16.0). **Runtime-verified on a
+  Steam/GameCenter. **Read path:** bindings are generated with jnigen 1.0.1,
+  whose `Task` generics work; `isSignedIn`/`signIn`/`getCurrentPlayer` await
+  `Task` results via an `OnCompleteListener`. `getAchievements`/
+  `getLeaderboard`/`getPlayerScore` read `AnnotatedData` payloads whose types
+  are opaque in the committed bindings, so `lib/src/play_games_data.dart` calls
+  their getters reflectively (`JClass.forName` + `instanceMethodId`); adding
+  those classes to `tool/jnigen.dart` and regenerating would replace it. Keep
+  the runtime `jni` aligned with jnigen
+  (jnigen 1.x → jni ^1.0.3). **Runtime-verified on a
   Flutter Android host** (`example/`): `signIn()` fires the native Play Games
   sign-in overlay, proving the JNI path reaches the live SDK (VM/Activity wiring
   + bindings work). The example is a Flutter app that *consumes* the pure-Dart

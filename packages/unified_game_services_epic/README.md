@@ -144,19 +144,19 @@ provider pumps on a `Timer`. Completions are correlated to Dart `Future`s by the
   `CopyStatByIndex`.
 - `getLeaderboard` / `getPlayerScore` **read path** —
   `QueryLeaderboardRanks` + `GetLeaderboardRecordCount` +
-  `CopyLeaderboardRecordByIndex`. `getPlayerScore` currently scans the ranks
-  page (top 100) for the local player; a player below that is not found
-  (a dedicated `QueryLeaderboardUserScores` path is a TODO).
+  `CopyLeaderboardRecordByIndex`. `getPlayerScore` looks the local player up
+  in every rank the query returns with `CopyLeaderboardRecordByUserId`.
 
 - **Cloud save** (`EOS_HPlayerDataStorage`) — `saveData` / `loadData` /
-  `listSaves` / `deleteData`.
+  `listSaves` / `deleteSave`.
 - **Presence** (`EOS_HPresence`) — `setPresence`.
 
 **Not implemented yet (documented gaps):**
 - **No avatar** — the SDK does not expose one (`PlayerProfile.avatarUrl` is
   always null).
-- `getPlayerScore` scans the top-100 ranks page rather than using a dedicated
-  `QueryLeaderboardUserScores` path (TODO).
+- `getPlayerScore` returns `null` for a player below the ranks
+  `QueryLeaderboardRanks` returns: EOS has no rank lookup for arbitrary
+  positions.
 
 ### Debug logging
 
@@ -180,6 +180,15 @@ melos run epic:gen
 
 The SDK headers/libs are **not** committed (`.eos-sdk/` is gitignored) — same
 posture as the Steamworks and GameKit bindings in this repo.
+
+## Agent skills
+
+The package includes the public
+[`unified-game-services-epic-setup`](skills/unified-game-services-epic-setup/SKILL.md)
+skill for EOS runtime and Developer Portal setup, authentication, facade 0.2.0
+wiring, lifecycle, troubleshooting and live-validation checklists. It is shipped
+automatically with the package under `skills/` and is self-contained when installed
+outside the package.
 
 ## License
 

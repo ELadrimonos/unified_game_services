@@ -2,6 +2,9 @@
 
 ## 0.2.0
 
+- `getPlayerScore()` looks the local player up with `EOS_Leaderboards_CopyLeaderboardRecordByUserId` across every rank `QueryLeaderboardRanks` returns, instead of scanning only the first 100 entries.
+- `revealAchievement()` is now a no-op (EOS shows hidden achievements once unlocked), matching Steam and GameJolt, so a facade fan-out no longer fails on Epic. It used to throw `PlatformOperationException`.
+- Docs: add the public `unified-game-services-epic-setup` agent skill with self-contained EOS setup, facade wiring, credential-safety guidance and live-vs-mock validation checklists.
 - Fix: `getStat`, `setStat` and `incrementStat` now map the key through `resolveStatId`, so `UnifiedStatTable` mappings apply.
 - **Breaking:** removed `EpicProvider.registerWith(...)`; construct the provider (`EpicProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - **Identity token:** `getIdentityToken()` (`identityTokens`) returns the signed-in

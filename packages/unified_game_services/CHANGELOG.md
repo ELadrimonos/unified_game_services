@@ -4,6 +4,10 @@
 
 Core API stabilization and multi-provider enhancements.
 
+- Docs: add public agent skills for game integration, cross-store progression
+  design, per-provider behavior differences and per-store builds; link them
+  from the README.
+
 - **Breaking:** the global instance is now `GameServices.initialize(providers: [...])` / `GameServices.instance` (+ `maybeInstance`, `reset()`). The constructor now requires a non-empty `providers` list (`ArgumentError` otherwise) and no longer falls back to `UnifiedGameServicesPlatform.instance`.
 - **Breaking:** fan-out operations (`signIn`, `signOut`, `unlockAchievement`,
   `incrementAchievement`, `submitScore`, `setStat`, `incrementStat`, `saveData`,

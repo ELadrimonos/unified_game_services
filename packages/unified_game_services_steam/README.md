@@ -90,8 +90,8 @@ per-platform bindings with [`tool/README.md`](tool/README.md) and a
 
 ```yaml
 dependencies:
-  unified_game_services: ^0.1.0
-  unified_game_services_steam: ^0.1.0
+  unified_game_services: ^0.2.0
+  unified_game_services_steam: ^0.2.0
 ```
 
 ## Usage
@@ -179,6 +179,15 @@ steam.cancelAuthTicket(ticket.handle); // release when your server is done
 
 The verified steamID64 is the link key — the client cannot forge it. This is
 the recommended path for "log in / link with Steam" against your own service.
+
+## Agent skills
+
+- [Steam setup](skills/unified-game-services-steam-setup/SKILL.md) — a
+  self-contained guide for agents configuring the 0.2.0 facade, native runtime,
+  app ID, lifecycle, security, and real-runtime verification.
+
+The package-root `skills/` directory is distributed automatically with the Dart
+package; no separate skill publishing step is required.
 
 ## Examples & tooling
 

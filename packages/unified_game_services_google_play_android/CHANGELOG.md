@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Reads: `getAchievements()`, `getLeaderboard()` and `getPlayerScore()` now load from the on-device client (they threw `CapabilityNotSupportedException`). `signOut()` throws `PlatformOperationException` instead of `UnimplementedError`.
+- `getCurrentPlayer()` loads the player (id + display name) through `PlayersClient`; it used to throw `UnimplementedError`. `signIn()` now returns that profile and emits `UserSignedInEvent` instead of always returning `null`.
 - Writes (`unlockAchievement`, `incrementAchievement`, `revealAchievement`, `setAchievementStepsAtLeast`, `submitScore`) now use the SDK's `*Immediate` variants and await their `Task`, so failures (unknown id, signed out, offline) throw `NotSignedInException`/`PlatformOperationException` instead of silently succeeding. Behavior change: no offline queueing.
 - Bindings regenerated with jnigen 1.0.1 (config moved from `jnigen.yaml` to `tool/jnigen.dart`); the existing provider API is unchanged.
 - `GameCapability.overlays`: `showAchievementsUI()` and `showLeaderboardsUI({leaderboardId})` open the native Play Games screens through the unified API (`GameServices.showAchievementsUI()` reaches them on Android; the REST tier has no system UI and does not advertise `overlays`). `showOverlay()` throws `PlatformOperationException`.

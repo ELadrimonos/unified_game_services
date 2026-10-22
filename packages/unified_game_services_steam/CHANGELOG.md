@@ -2,6 +2,11 @@
 
 ## 0.2.0
 
+- `getPlayerScore()` returns the signed-in player's entry and global rank (one-entry `globalAroundUser` window); it used to throw `CapabilityNotSupportedException`.
+- `getStats()` returns the integer stats declared in the facade's `UnifiedStatTable` (Steamworks cannot enumerate stats; empty without a table); it used to throw `CapabilityNotSupportedException`.
+- Docs: add the public `unified-game-services-steam-setup` agent skill for
+  runtime setup, facade wiring, lifecycle, security, and live-vs-mock validation;
+  link it from the README and align installation examples with 0.2.0.
 - Fix: `getStat`, `setStat` and `incrementStat` now map the key through `resolveStatId`, so `UnifiedStatTable` mappings apply; `StatUpdatedEvent` carries the resolved id.
 - Fix: the web stub now declares `getSteamId64` (throws `UnsupportedError`), matching the native `SteamProvider` API.
 - **Breaking:** removed `SteamProvider.registerWith(...)`; construct the provider (`SteamProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.

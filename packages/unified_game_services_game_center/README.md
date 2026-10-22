@@ -44,18 +44,26 @@ capability is pure Dart, but the surrounding environment is the host's job.
 import 'package:unified_game_services/unified_game_services.dart';
 import 'package:unified_game_services_game_center/unified_game_services_game_center.dart';
 
-final services = UnifiedGameServices(providers: [
-  GameCenterProvider(
-    leaderboardIds: {'global': 'com.example.game.highscores'},
-    achievementIds: {'first_win': 'com.example.game.firstwin'},
-  ),
-]);
+final services = UnifiedGameServices(
+  providers: [GameCenterProvider()],
+  leaderboards: UnifiedLeaderboardTable({
+    'global': ProviderIdMap(gameCenter: 'com.example.game.highscores'),
+  }),
+  achievements: UnifiedAchievementTable({
+    'first_win': ProviderIdMap(gameCenter: 'com.example.game.firstwin'),
+  }),
+);
 
-final player = await services.signIn();
-await services.unlockAchievement('first_win');
-await services.submitScore(leaderboardId: 'global', score: 4200);
+(await services.signIn()).throwIfAnyFailed();
+(await services.unlockAchievement('first_win')).throwIfAnyFailed();
+(await services.submitScore(leaderboardId: 'global', score: 4200))
+    .throwIfAnyFailed();
 final board = await services.getLeaderboard('global', maxResults: 10);
 ```
+
+The host must present any required Game Center authentication UI before this
+code runs; the pure-Dart provider cannot present a native view controller.
+Await `services.dispose()` when the host no longer needs the facade.
 
 (Or make it the global facade with `GameServices.initialize(providers:
 [GameCenterProvider(...)])` and use `GameServices.instance` anywhere —
@@ -80,6 +88,13 @@ needs the Apple toolchain (`clang` via Xcode Command Line Tools) and a
 native-assets-capable build (Flutter macOS/iOS, or `dart`/`dart test` on Dart
 3.12+). No Apple SDK is shipped: the `.m` is our generated glue, and GameKit
 itself is `dlopen`'d from the OS at runtime.
+
+## Agent skills
+
+This package ships a [Game Center setup skill](skills/unified-game-services-game-center-setup/SKILL.md)
+covering Apple signing, App Store Connect, host authentication UI, ID tables, and
+runtime troubleshooting. In a consumer project with dependencies resolved,
+install package skills with `dart run skills@ get`.
 
 ## License
 

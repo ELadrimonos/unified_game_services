@@ -18,10 +18,8 @@ The write path — the calls that fire the **native Play Games toasts/overlay**:
 - `unlockAchievement` / `incrementAchievement` / `revealAchievement`
 - `submitScore`
 
-Reads (sign-in state, current player, listing achievements/scores) are **not
-wired yet** — see the provider docs: jnigen 0.16.0 mis-generates `Task<T>`, so
-the read path awaits a generics fix. For reads today use the REST provider
-(`unified_game_services_google_play_rest`).
+Reads (sign-in state, current player, achievements, leaderboard and player
+scores) go through the same on-device client; see the provider docs.
 
 ## Run on a real device / emulator with Play Services
 

@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- `getPlayerScore()` returns the player's best score in the table with its global rank (`/scores/` + `/scores/get-rank/`); it used to throw `CapabilityNotSupportedException`.
 - **Breaking:** removed `GameJoltProvider.registerWith(...)`; construct the provider (`GameJoltProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 

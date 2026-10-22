@@ -63,6 +63,13 @@ Guidelines:
    the interface). Apps reach them with
    `GameServices.provider<MyProvider>()`.
 
+## Agent skills
+
+This package ships a [custom provider skill](skills/unified-game-services-platform-interface-custom-providers/SKILL.md)
+covering authentication, capabilities, ID mapping, errors, events, and tests.
+In a consumer project with this dependency resolved, install package skills with
+`dart run skills@ get`.
+
 ## License
 
 MIT — see the [LICENSE](LICENSE) file.

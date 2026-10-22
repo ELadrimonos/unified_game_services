@@ -22,10 +22,10 @@ Upgrading from 0.1? See [`MIGRATION.md`](MIGRATION.md).
 
 ```yaml
 dependencies:
-  unified_game_services: ^0.1.0
+  unified_game_services: ^0.2.0
   # plus the provider(s) you need:
-  unified_game_services_steam: ^0.1.0
-  unified_game_services_gamejolt: ^0.1.0
+  unified_game_services_steam: ^0.2.0
+  unified_game_services_gamejolt: ^0.2.0
 ```
 
 This package re-exports the shared models, capabilities, events and exceptions,
@@ -357,6 +357,27 @@ iOS/macOS (Xcode schemes + `.xcconfig`). Recommended setup per platform:
   above and attaching the correct native lib as a release asset. Don't try to
   ship every store's native lib in a single "universal" build — that's exactly
   the redistribution problem called out above.
+
+## Agent skills
+
+This package ships best-practice skills for building a game on top of it:
+
+- [`unified-game-services-game-integration`](skills/unified-game-services-game-integration/SKILL.md)
+  — architecture, background sign-in, handling write results and retries,
+  events, shutdown and testing.
+- [`unified-game-services-cross-store-progression`](skills/unified-game-services-cross-store-progression/SKILL.md)
+  — achievements, stats and leaderboards that behave the same on every store,
+  ID tables and dashboard parity.
+- [`unified-game-services-provider-behaviors`](skills/unified-game-services-provider-behaviors/SKILL.md)
+  — what each provider really does behind a facade call: writes that add
+  instead of replace, calls that throw or no-op, ignored scopes, sign-in
+  semantics.
+- [`unified-game-services-per-store-builds`](skills/unified-game-services-per-store-builds/SKILL.md)
+  — per-store entry points, web vs native, tree-shaking, native runtimes,
+  assets, credentials and the release CI matrix.
+
+In a consumer project with this dependency resolved, install package skills with
+`dart run skills@ get`.
 
 ## Related packages
 
