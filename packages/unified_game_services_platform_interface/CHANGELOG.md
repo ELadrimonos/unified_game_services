@@ -10,9 +10,25 @@
   its own id (e.g. `google_play_rest` / `google_play_android`).
 - **Breaking:** `GameCapability.multiplayer` removed in favor of `GameCapability.lobbies` and `GameCapability.matchmaking`.
 - `Achievement.nativeIds`, `Leaderboard.nativeIds`, `Stat.nativeKeys`: read-only `providerId` → native id maps, set by the facade (`nativeId` / `nativeKey` getters give the source provider's own); `id`/`key` are the unified one. `UnifiedIdTable.nativeIdsFor` and `reverseForProvider` expose the table row and the native → unified inverse.
+- **Behaviour change:** the default bodies of every capability-gated method now
+  throw `CapabilityNotSupportedException(capability)` instead of
+  `UnimplementedError`. Only authentication, `isSignedIn`, `getCurrentPlayer` and
+  `events` still throw `UnimplementedError`, because every provider must supply
+  them. Update any `catch (UnimplementedError)` in provider tests.
+- **Lobbies:** new models `Lobby`, `LobbyMember`, `LobbyVisibility`,
+  `LobbyFilter`, `LobbyFilterOp`; `Lobby.memberCount` / `size` for providers that
+  only return a search summary; platform methods `createLobby`, `joinLobby`,
+  `leaveLobby`, `getLobby`, `findLobbies`, `updateLobby`, `setMemberData`;
+  events `LobbyMemberJoinedEvent`, `LobbyMemberLeftEvent`,
+  `LobbyDataChangedEvent`, `LobbyOwnerChangedEvent`, `LobbyClosedEvent`
+  (sealed `LobbyEvent`) and `JoinRequestedEvent`. `RichPresence` gained
+  `partyId` and `joinToken`. **Breaking:** `sendInvitation(lobbyId, userId)` and
+  `InvitationReceivedEvent(senderId, joinToken, providerId)`.
+- `LobbyKind` (`lobby` or `party`) and `Lobby.kind`; `createLobby(kind:)`. Providers persist it under the reserved lobby-data key `lobbyKindDataKey` (`ugs_kind`) and strip it on read; custom providers that store lobby data should do the same.
+- `getIdentityToken()` is documented as gated by `GameCapability.identityTokens` (Steam: hex ticket, Epic: JWT).
 - **New Tables:** Added `UnifiedIdTable`, `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, `UnifiedStatTable`, `ProviderId`, and `ProviderIdMap` for central ID mapping resolution.
 - Added `statIds`, `resolveStatId()`, and `registerMappings()` to `UnifiedGameServicesPlatform`.
-- Added reserved capability API stubs to `UnifiedGameServicesPlatform` (`sendInvitation`, `createLobby`, `joinLobby`, `leaveLobby`, `startMatchmaking`, `cancelMatchmaking`, `showAchievementsUI`, `showLeaderboardsUI`, `showOverlay`, `getIdentityToken`).
+- Added capability API to `UnifiedGameServicesPlatform` (`sendInvitation`, `createLobby`, `joinLobby`, `leaveLobby`, `startMatchmaking`, `cancelMatchmaking`, `showAchievementsUI`, `showLeaderboardsUI`, `showOverlay`, `getIdentityToken`).
 - Added `InvitationReceivedEvent` to the `GameServiceEvent` hierarchy.
 - **Breaking:** `dart_mappable` removed. Models and events are now hand-written
   immutable classes with `copyWith`, `==` (deep for lists/maps), `hashCode` and

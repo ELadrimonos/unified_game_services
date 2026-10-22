@@ -3,6 +3,7 @@
 ## 0.2.0
 
 - **Breaking:** removed `GooglePlayGamesProvider.registerWith(...)`; construct the provider (`GooglePlayGamesProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
+- Does not advertise `GameCapability.overlays` (a REST client cannot open system UI); `showAchievementsUI()` / `showLeaderboardsUI()` throw `CapabilityNotSupportedException`. Use the Android tier for the native screens.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
 ## 0.1.0

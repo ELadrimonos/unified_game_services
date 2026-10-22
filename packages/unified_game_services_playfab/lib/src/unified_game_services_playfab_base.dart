@@ -13,12 +13,14 @@ import 'playfab_client.dart';
 /// a PlayFab title can ship on any platform and is reachable from any Dart
 /// runtime, including web.
 ///
-/// Advertises [GameCapability.leaderboards] and [GameCapability.stats] (both
-/// backed by PlayFab player statistics), [GameCapability.cloudSave] (PlayFab
-/// user data) and [GameCapability.friends]. PlayFab has no first-class
-/// achievements API, so [GameCapability.achievements] is not advertised and the
-/// achievement operations keep the base behaviour of throwing
-/// [UnimplementedError]. Rich presence is not supported either.
+/// Supported capabilities: leaderboards and stats (both PlayFab *player
+/// statistics*), cloud save (PlayFab *user data*), friends and lobbies (the
+/// PlayFab Multiplayer Lobby REST API; see the lobby section below for how
+/// searchable data and ownership map). PlayFab has no first-class achievements
+/// API — achievements are conventionally built on statistics app-side — so
+/// [GameCapability.achievements] is deliberately not advertised and the
+/// achievement operations throw [CapabilityNotSupportedException]. Rich
+/// presence, invitations and matchmaking are omitted.
 ///
 /// **Authentication.** [signIn] calls `LoginWithCustomID`: the app supplies a
 /// stable, app-chosen custom id for the player and PlayFab returns a session
@@ -52,7 +54,11 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     bool createAccount = true,
     http.Client? httpClient,
     String? baseUrl,
+    Map<String, String> lobbySearchKeys = const {},
+    Duration? lobbyPollInterval = const Duration(seconds: 5),
   }) : _createAccount = createAccount,
+       _searchKeys = _validatedSearchKeys(lobbySearchKeys),
+       _lobbyPollInterval = lobbyPollInterval,
        _client = PlayFabClient(
          titleId: titleId,
          httpClient: httpClient,
@@ -69,9 +75,13 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     required this.customId,
     this.displayName,
     bool createAccount = true,
+    Map<String, String> lobbySearchKeys = const {},
+    Duration? lobbyPollInterval = const Duration(seconds: 5),
     // ignore_for_file: prefer_initializing_formals
   }) : _client = client,
-       _createAccount = createAccount;
+       _createAccount = createAccount,
+       _searchKeys = _validatedSearchKeys(lobbySearchKeys),
+       _lobbyPollInterval = lobbyPollInterval;
 
   /// The app-chosen, stable identifier of this player, used for
   /// `LoginWithCustomID`.
@@ -96,6 +106,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     GameCapability.stats,
     GameCapability.cloudSave,
     GameCapability.friends,
+    GameCapability.lobbies,
   };
 
   @override
@@ -132,6 +143,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
       throw const SignInFailedException('PlayFab login returned no ticket.');
     }
     _client.setSessionTicket(ticket);
+    _client.setEntity((data['EntityToken'] as Map?)?.cast<String, dynamic>());
     _playFabId =
         (data['PlayFabId'] as String?) ??
         ((data['EntityToken'] as Map?)?['Entity'] as Map?)?['Id'] as String?;
@@ -155,6 +167,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   @override
   Future<void> signOut() async {
     // PlayFab client sessions are stateless tickets; just drop local state.
+    _stopWatching();
     _client.setSessionTicket(null);
     _playFabId = null;
   }
@@ -436,11 +449,462 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     }).toList();
   }
 
+  // ─── Lobbies (PlayFab Multiplayer Lobby API) ─────────────────────────────
+  //
+  // Lobby calls use the entity token (`X-EntityToken`) of the signed-in
+  // `title_player_account`, refreshed through `Authentication/GetEntityToken`.
+  //
+  // Mapping and limits of this REST-only implementation:
+  //  * Lobbies are created with `UseConnections: false` and owner migration
+  //    `None`. Searchable lobbies otherwise need a live PubSub connection, which
+  //    needs a SignalR client; without it `findLobbies` would return nothing.
+  //    The cost: PlayFab never migrates ownership for you.
+  //  * PlayFab keeps *searchable* data apart from regular lobby data, and
+  //    searchable keys must be named `string_key1..30` / `number_key1..30`.
+  //    [lobbySearchKeys] maps unified data keys onto those names; mapped keys go
+  //    to searchable data, every other key to regular lobby data.
+  //  * `Lobby.joinToken` is PlayFab's connection string. Member ids are
+  //    title-player entity ids (see [entityId]), not `PlayFabId`s.
+  //  * Events come from polling [pollLobbies] every [lobbyPollInterval]; invites
+  //    need PubSub so `invitations` is not advertised.
+
+  final Map<String, String> _searchKeys;
+  final Duration? _lobbyPollInterval;
+  final Map<String, Lobby> _watched = {};
+  Timer? _poller;
+  var _polling = false;
+
+  static final RegExp _searchKeyPattern = RegExp(
+    r'^(string|number)_key([1-9]|[12][0-9]|30)$',
+  );
+
+  static Map<String, String> _validatedSearchKeys(Map<String, String> keys) {
+    for (final e in keys.entries) {
+      if (!_searchKeyPattern.hasMatch(e.value)) {
+        throw ArgumentError.value(
+          e.value,
+          'lobbySearchKeys["${e.key}"]',
+          'must be string_key1..30 or number_key1..30',
+        );
+      }
+    }
+    return Map.unmodifiable(keys);
+  }
+
+  /// The signed-in player's `title_player_account` entity id: the id of this
+  /// player as a lobby member and owner. `null` before sign-in.
+  String? get entityId => _client.entityId;
+
+  Map<String, String> get _entityKey => {
+    'Id': _client.entityId!,
+    'Type': _client.entityType ?? 'title_player_account',
+  };
+
+  Future<Map<String, dynamic>> _lobbyPost(
+    String endpoint,
+    Map<String, dynamic> body,
+  ) async {
+    await _ensureEntity();
+    return _client.post(endpoint, body, useEntityToken: true);
+  }
+
+  /// Splits unified [data] into PlayFab lobby data and searchable data.
+  ({Map<String, String> lobby, Map<String, Object> search}) _splitData(
+    Map<String, String> data,
+  ) {
+    final lobby = <String, String>{};
+    final search = <String, Object>{};
+    data.forEach((key, value) {
+      final searchKey = _searchKeys[key];
+      if (searchKey == null) {
+        lobby[key] = value;
+      } else {
+        search[searchKey] = searchKey.startsWith('number_')
+            ? (num.tryParse(value) ??
+                  (throw ArgumentError.value(
+                    value,
+                    key,
+                    'must be numeric ($searchKey)',
+                  )))
+            : value;
+      }
+    });
+    return (lobby: lobby, search: search);
+  }
+
+  static String _text(Object? v) =>
+      v is num && v == v.truncate() ? '${v.toInt()}' : '$v';
+
+  Map<String, String> _unifiedSearchData(Map<String, dynamic>? search) {
+    final unified = {for (final e in _searchKeys.entries) e.value: e.key};
+    return {
+      for (final e in (search ?? const <String, dynamic>{}).entries)
+        unified[e.key] ?? e.key: _text(e.value),
+    };
+  }
+
+  static const _policyToVisibility = {
+    'Public': LobbyVisibility.public,
+    'Friends': LobbyVisibility.friendsOnly,
+    'Private': LobbyVisibility.private,
+  };
+
+  static String _policy(LobbyVisibility v) => switch (v) {
+    LobbyVisibility.public => 'Public',
+    LobbyVisibility.friendsOnly => 'Friends',
+    LobbyVisibility.private => 'Private',
+  };
+
+  PlayerProfile _entityProfile(Map<String, dynamic> key) {
+    final id = '${key['Id']}';
+    return PlayerProfile(
+      id: id,
+      displayName: id,
+      extra: {'entityType': key['Type']},
+    );
+  }
+
+  Lobby _lobbyFromJson(Map<String, dynamic> j) {
+    final owner = (j['Owner'] as Map?)?.cast<String, dynamic>();
+    final lobbyData = {
+      for (final e in ((j['LobbyData'] as Map?) ?? const {}).entries)
+        '${e.key}': _text(e.value),
+    };
+    final kindName = lobbyData.remove(lobbyKindDataKey);
+    return Lobby(
+      id: j['LobbyId'] as String,
+      providerId: providerId,
+      joinToken: j['ConnectionString'] as String? ?? '',
+      ownerId: owner == null ? '' : '${owner['Id']}',
+      members: [
+        for (final m in (j['Members'] as List? ?? const []))
+          LobbyMember(
+            player: _entityProfile(
+              ((m as Map)['MemberEntity'] as Map).cast<String, dynamic>(),
+            ),
+            data: {
+              for (final e in ((m['MemberData'] as Map?) ?? const {}).entries)
+                '${e.key}': _text(e.value),
+            },
+          ),
+      ],
+      maxMembers: (j['MaxPlayers'] as num?)?.toInt() ?? 0,
+      visibility:
+          _policyToVisibility[j['AccessPolicy']] ?? LobbyVisibility.public,
+      kind: LobbyKind.values.asNameMap()[kindName] ?? LobbyKind.lobby,
+      data: {
+        ...lobbyData,
+        ..._unifiedSearchData((j['SearchData'] as Map?)?.cast()),
+      },
+    );
+  }
+
+  @override
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+  }) async {
+    final split = _splitData({
+      ...data,
+      if (kind != LobbyKind.lobby) lobbyKindDataKey: kind.name,
+    });
+    await _ensureEntity();
+    final created = await _lobbyPost('/Lobby/CreateLobby', {
+      'MaxPlayers': maxMembers,
+      'Owner': _entityKey,
+      'UseConnections': false,
+      'OwnerMigrationPolicy': 'None',
+      'RestrictInvitesToLobbyOwner': false,
+      'AccessPolicy': _policy(visibility),
+      if (split.lobby.isNotEmpty) 'LobbyData': split.lobby,
+      if (split.search.isNotEmpty) 'SearchData': split.search,
+      'Members': [
+        {'MemberEntity': _entityKey, 'MemberData': memberData},
+      ],
+    });
+    return _fetchAndWatch(created['LobbyId'] as String);
+  }
+
+  @override
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+  }) async {
+    await _ensureEntity();
+    final joined = await _lobbyPost('/Lobby/JoinLobby', {
+      'ConnectionString': joinToken,
+      'MemberData': memberData,
+      'MemberEntity': _entityKey,
+    });
+    return _fetchAndWatch(joined['LobbyId'] as String);
+  }
+
+  @override
+  Future<void> leaveLobby(String lobbyId) async {
+    await _ensureEntity();
+    _watched.remove(lobbyId);
+    if (_watched.isEmpty) _stopPolling();
+    await _lobbyPost('/Lobby/LeaveLobby', {
+      'LobbyId': lobbyId,
+      'MemberEntity': _entityKey,
+    });
+  }
+
+  @override
+  Future<Lobby?> getLobby(String lobbyId) async {
+    try {
+      final res = await _lobbyPost('/Lobby/GetLobby', {'LobbyId': lobbyId});
+      return _lobbyFromJson((res['Lobby'] as Map).cast<String, dynamic>());
+    } on PlatformOperationException catch (e) {
+      if (e.code == '13000') return null; // LobbyDoesNotExist
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+  }) async {
+    final res = await _lobbyPost('/Lobby/FindLobbies', {
+      if (filters.isNotEmpty)
+        'Filter': filters.map(_filterClause).join(' and '),
+      'Pagination': {'PageSizeRequested': maxResults.clamp(1, 50)},
+    });
+    return [
+      for (final l in (res['Lobbies'] as List? ?? const []))
+        _summaryFromJson((l as Map).cast<String, dynamic>()),
+    ];
+  }
+
+  Lobby _summaryFromJson(Map<String, dynamic> j) {
+    final owner = (j['Owner'] as Map?)?.cast<String, dynamic>();
+    return Lobby(
+      id: j['LobbyId'] as String,
+      providerId: providerId,
+      joinToken: j['ConnectionString'] as String? ?? '',
+      ownerId: owner == null ? '' : '${owner['Id']}',
+      memberCount: (j['CurrentPlayers'] as num?)?.toInt() ?? 0,
+      maxMembers: (j['MaxPlayers'] as num?)?.toInt() ?? 0,
+      visibility: LobbyVisibility.public,
+      data: _unifiedSearchData((j['SearchData'] as Map?)?.cast()),
+    );
+  }
+
+  String _filterClause(LobbyFilter f) {
+    final key =
+        _searchKeys[f.key] ??
+        (_searchKeyPattern.hasMatch(f.key) ? f.key : null);
+    if (key == null) {
+      throw ArgumentError.value(
+        f.key,
+        'filters',
+        'is not searchable; map it in lobbySearchKeys',
+      );
+    }
+    final op = switch (f.op) {
+      LobbyFilterOp.equals => 'eq',
+      LobbyFilterOp.notEquals => 'ne',
+      LobbyFilterOp.lessThan => 'lt',
+      LobbyFilterOp.greaterThan => 'gt',
+    };
+    if (key.startsWith('number_')) {
+      final n = num.tryParse(f.value);
+      if (n == null) {
+        throw ArgumentError.value(f.value, f.key, 'must be numeric ($key)');
+      }
+      return '$key $op $n';
+    }
+    if (f.op == LobbyFilterOp.lessThan || f.op == LobbyFilterOp.greaterThan) {
+      throw ArgumentError.value(
+        f.op,
+        f.key,
+        'numeric comparison needs a number_key, but $key is a string key',
+      );
+    }
+    return "$key $op '${f.value.replaceAll("'", "''")}'";
+  }
+
+  @override
+  Future<Lobby> updateLobby(
+    String lobbyId, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) async {
+    final set = <String, String>{};
+    final remove = <String>[];
+    data?.forEach((k, v) => v == null ? remove.add(k) : set[k] = v);
+    final splitSet = _splitData(set);
+    final removeSearch = [
+      for (final k in remove)
+        if (_searchKeys.containsKey(k)) _searchKeys[k]!,
+    ];
+    final removeLobby = [
+      for (final k in remove)
+        if (!_searchKeys.containsKey(k)) k,
+    ];
+    await _lobbyPost('/Lobby/UpdateLobby', {
+      'LobbyId': lobbyId,
+      if (splitSet.lobby.isNotEmpty) 'LobbyData': splitSet.lobby,
+      if (splitSet.search.isNotEmpty) 'SearchData': splitSet.search,
+      if (removeLobby.isNotEmpty) 'LobbyDataToDelete': removeLobby,
+      if (removeSearch.isNotEmpty) 'SearchDataToDelete': removeSearch,
+      if (visibility case final v?) 'AccessPolicy': _policy(v),
+      'MaxPlayers': ?maxMembers,
+    });
+    return _refetch(lobbyId);
+  }
+
+  @override
+  Future<Lobby> setMemberData(String lobbyId, Map<String, String?> data) async {
+    await _ensureEntity();
+    await _lobbyPost('/Lobby/UpdateLobby', {
+      'LobbyId': lobbyId,
+      'MemberEntity': _entityKey,
+      'MemberData': {for (final e in data.entries) e.key: ?e.value},
+      'MemberDataToDelete': [
+        for (final e in data.entries)
+          if (e.value == null) e.key,
+      ],
+    });
+    return _refetch(lobbyId);
+  }
+
+  Future<void> _ensureEntity() async {
+    if (!_client.hasSession) {
+      throw const NotSignedInException(
+        'PlayFab session ticket missing; call signIn() first.',
+      );
+    }
+    if (_client.entityId == null || _client.entityTokenStale) {
+      _client.setEntity(
+        await _client.post('/Authentication/GetEntityToken', const {}),
+      );
+    }
+  }
+
+  Future<Lobby> _refetch(String lobbyId) async {
+    final lobby = await getLobby(lobbyId);
+    if (lobby == null) {
+      throw const PlatformOperationException('The lobby no longer exists.');
+    }
+    if (_watched.containsKey(lobbyId)) _watched[lobbyId] = lobby;
+    return lobby;
+  }
+
+  Future<Lobby> _fetchAndWatch(String lobbyId) async {
+    final lobby = await _refetch(lobbyId);
+    _watched[lobbyId] = lobby;
+    final interval = _lobbyPollInterval;
+    if (interval != null) {
+      _poller ??= Timer.periodic(interval, (_) => pollLobbies());
+    }
+    return lobby;
+  }
+
+  /// Fetches every lobby this provider joined and emits the lobby events for
+  /// what changed since the last look. Called on a timer every
+  /// `lobbyPollInterval`; call it yourself when polling is disabled (`null`).
+  Future<void> pollLobbies() async {
+    if (_polling) return;
+    _polling = true;
+    try {
+      for (final id in _watched.keys.toList()) {
+        final old = _watched[id];
+        if (old == null) continue;
+        final Lobby? current;
+        try {
+          current = await getLobby(id);
+        } on GameServiceException {
+          continue; // transient; try again on the next tick
+        }
+        if (current == null) {
+          _watched.remove(id);
+          _emit(LobbyClosedEvent(lobby: old, timestamp: DateTime.now()));
+          continue;
+        }
+        _watched[id] = current;
+        _diffLobby(old, current);
+      }
+      if (_watched.isEmpty) _stopPolling();
+    } finally {
+      _polling = false;
+    }
+  }
+
+  void _diffLobby(Lobby old, Lobby current) {
+    final now = DateTime.now();
+    final before = {for (final m in old.members) m.player.id: m};
+    final after = {for (final m in current.members) m.player.id: m};
+    for (final e in after.entries) {
+      if (!before.containsKey(e.key)) {
+        _emit(
+          LobbyMemberJoinedEvent(
+            lobby: current,
+            member: e.value,
+            timestamp: now,
+          ),
+        );
+      }
+    }
+    for (final e in before.entries) {
+      if (!after.containsKey(e.key)) {
+        _emit(
+          LobbyMemberLeftEvent(lobby: current, member: e.value, timestamp: now),
+        );
+      }
+    }
+    if (old.ownerId != current.ownerId) {
+      _emit(
+        LobbyOwnerChangedEvent(
+          lobby: current,
+          previousOwnerId: old.ownerId,
+          timestamp: now,
+        ),
+      );
+    }
+    final memberDataChanged = after.entries.any(
+      (e) =>
+          before[e.key] != null &&
+          before[e.key]!.data.toString() != e.value.data.toString(),
+    );
+    if (memberDataChanged ||
+        old.data.toString() != current.data.toString() ||
+        old.visibility != current.visibility ||
+        old.maxMembers != current.maxMembers) {
+      _emit(LobbyDataChangedEvent(lobby: current, timestamp: now));
+    }
+  }
+
+  void _stopPolling() {
+    _poller?.cancel();
+    _poller = null;
+  }
+
+  void _stopWatching() {
+    _watched.clear();
+    _stopPolling();
+  }
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   /// Closes the HTTP client and closes [events].
   @override
   Future<void> dispose() async {
+    // PlayFab does not detect disconnects here (no PubSub), so leave the lobbies
+    // we joined; best effort, a failure must not block shutting down.
+    for (final id in _watched.keys.toList()) {
+      try {
+        await leaveLobby(id);
+      } on GameServiceException {
+        // Already gone or offline.
+      }
+    }
+    _stopWatching();
     _client.close();
     await _events.close();
   }

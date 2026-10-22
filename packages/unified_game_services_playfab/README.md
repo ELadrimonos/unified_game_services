@@ -21,12 +21,51 @@ title-scoped services) is a different product and remains deferred; see the root
 | `stats`        | Player Statistics                 |
 | `cloudSave`    | User Data (`Get`/`UpdateUserData`)|
 | `friends`      | `GetFriendsList`                  |
+| `lobbies`      | Multiplayer Lobby API (`Lobby/*`) |
 
 **Achievements are intentionally unsupported.** PlayFab has no first-class
 achievements API — they are conventionally built on statistics in app/server
 logic — so `GameCapability.achievements` is not advertised and the achievement
-operations stay unimplemented rather than being faked. Rich presence and
-multiplayer are likewise omitted.
+operations stay unsupported rather than being faked. Rich presence,
+invitations and matchmaking are likewise omitted.
+
+## Lobbies
+
+PlayFab is the intended place for **cross-store lobbies**: a Steam and an Epic
+player can share one if both are PlayFab players. Lobby calls use the entity
+token (refreshed automatically) and map like this:
+
+- **Searchable data.** PlayFab only lets you filter on keys named
+  `string_key1..30` / `number_key1..30`. Map your own keys onto them:
+
+  ```dart
+  PlayFabProvider(
+    titleId: 'ABCD',
+    customId: id,
+    lobbySearchKeys: {'mode': 'string_key1', 'level': 'number_key1'},
+  );
+  // data: {'mode': 'ranked', 'level': '7', 'map': 'dust'}
+  //   -> SearchData {string_key1, number_key1}, LobbyData {map}
+  await GameServices.findLobbies(filters: [
+    LobbyFilter('mode', LobbyFilterOp.equals, 'ranked'),
+  ]);
+  ```
+
+  Filters on unmapped keys throw `ArgumentError`. Search results are summaries:
+  `members` is empty, use `Lobby.size`.
+- **No PubSub.** This provider is REST-only. Lobbies are created with
+  `UseConnections: false` and owner migration `None` (otherwise they would not
+  be searchable), so PlayFab never hands ownership to someone else for you.
+  Events come from polling every `lobbyPollInterval` (default 5 s, `null`
+  disables it; call `pollLobbies()` yourself).
+- **Ids.** Members and owner are identified by their title-player *entity id*
+  (`PlayFabProvider.entityId`), not their `PlayFabId`.
+  `dispose()` leaves the lobbies it joined; if the app is killed instead, PlayFab
+  does not notice (no PubSub), so the player stays listed as a member. `Lobby.joinToken` is the
+  connection string; share it through your own channel or rich presence.
+
+Not verified against a live PlayFab title yet; the tests use recorded request and
+response shapes from the REST reference.
 
 ## Usage
 

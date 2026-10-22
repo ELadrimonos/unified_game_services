@@ -5,6 +5,27 @@
 - Fix: `getStat`, `setStat` and `incrementStat` now map the key through `resolveStatId`, so `UnifiedStatTable` mappings apply; `StatUpdatedEvent` carries the resolved id.
 - Fix: the web stub now declares `getSteamId64` (throws `UnsupportedError`), matching the native `SteamProvider` API.
 - **Breaking:** removed `SteamProvider.registerWith(...)`; construct the provider (`SteamProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
+- **Lobbies and invitations** via `ISteamMatchmaking` (`lobbies`, `invitations`):
+  create (lobby or party), join, leave, get, find, update, member data, invite,
+  lobby events, and `InvitationReceivedEvent` / `JoinRequestedEvent` from Steam
+  invites and "Join game". `Lobby.joinToken` is the lobby's Steam id.
+  - `findLobbies` returns public lobbies worldwide (Steam does not search
+    friends-only or private lobbies).
+  - Steam cannot read a lobby's type or list a member's data keys, so the
+    provider stores two reserved entries (`ugs_vis` in lobby data, `ugs_md` in
+    member data) and hides them from `Lobby.data` / `LobbyMember.data`.
+  - Linux and macOS: `LobbyCreated_t` is read by hand, because Steam packs
+    callback structs to 4 bytes there and the generated struct assumes 8.
+  - `dispose()` leaves the lobbies it joined so other members see the player go
+    right away.
+- **Identity token:** `getIdentityToken()` (`identityTokens`) returns a Steam Web
+  API auth ticket as hex for `ISteamUserAuth/AuthenticateUserTicket`. The ticket
+  handle is cancelled 2 minutes after the call, so verify it right away. Use
+  `getWebApiAuthTicket()` for control over the handle.
+- `example/interactive_login.dart`: options 12 to 20 (identity token and
+  lobbies, including inviting a friend from a numbered list).
+- Verified on Linux against a live Steam client (lobbies, invitations to
+  friends, identity ticket).
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
 ## 0.1.0

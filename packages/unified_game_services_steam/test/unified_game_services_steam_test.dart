@@ -2,7 +2,7 @@ import 'package:steamworks/steamworks.dart' as sw;
 import 'package:test/test.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 import 'package:unified_game_services_steam/src/unified_game_services_steam_base.dart'
-    show mapSteamInitError;
+    show mapSteamInitError, unregisterAfterDispatch;
 import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 
 // NOTE: Operations are not exercised here — they require the Steam client,
@@ -23,8 +23,11 @@ void main() {
         GameCapability.cloudSave,
         GameCapability.friends,
         GameCapability.presence,
+        GameCapability.identityTokens,
+        GameCapability.lobbies,
+        GameCapability.invitations,
       });
-      expect(provider.supports(GameCapability.lobbies), isFalse);
+      expect(provider.supports(GameCapability.matchmaking), isFalse);
     });
 
     test('is not signed in before init', () async {
@@ -61,6 +64,41 @@ void main() {
       final mapped = mapSteamInitError(StateError('boom'));
       expect(mapped, isA<SignInFailedException>());
       expect(mapped.message, 'Failed to initialize Steam.');
+    });
+  });
+
+  group('unregisterAfterDispatch', () {
+    test(
+      'removing a handler while the set is iterated does not throw',
+      () async {
+        final handlers = <void Function()>{};
+        void Function()? self;
+        self = () => unregisterAfterDispatch(() => handlers.remove(self));
+        handlers.add(self);
+
+        // Mirrors Dispatcher.runFrame: iterate the set, invoking each handler.
+        expect(() {
+          for (final h in handlers) {
+            h();
+          }
+        }, returnsNormally);
+
+        expect(handlers, isNotEmpty, reason: 'removal must be deferred');
+        await Future<void>.delayed(Duration.zero);
+        expect(handlers, isEmpty);
+      },
+    );
+
+    test('removing synchronously would throw (guards the premise)', () {
+      final handlers = <Object>{};
+      final self = Object();
+      handlers.add(self);
+      handlers.add(Object());
+      expect(() {
+        for (final _ in handlers) {
+          handlers.remove(self);
+        }
+      }, throwsA(isA<ConcurrentModificationError>()));
     });
   });
 }

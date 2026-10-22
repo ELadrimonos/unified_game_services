@@ -37,6 +37,10 @@ class PlayFabClient {
   final http.Client _http;
 
   String? _sessionTicket;
+  String? _entityToken;
+  DateTime? _entityTokenExpiry;
+  String? _entityId;
+  String? _entityType;
 
   /// Whether a session ticket has been stored, meaning the player is logged
   /// in.
@@ -45,23 +49,77 @@ class PlayFabClient {
   /// Stores [ticket], or clears it when `null`.
   ///
   /// The ticket is sent as `X-Authorization` on authenticated requests.
-  void setSessionTicket(String? ticket) => _sessionTicket = ticket;
+  /// Clearing it also clears the entity token (see [setEntity]).
+  void setSessionTicket(String? ticket) {
+    _sessionTicket = ticket;
+    if (ticket == null) setEntity(null);
+  }
+
+  /// The entity token sent as `X-EntityToken` on entity APIs such as Lobby.
+  String? get entityToken => _entityToken;
+
+  /// When [entityToken] expires, if known.
+  DateTime? get entityTokenExpiry => _entityTokenExpiry;
+
+  /// Id of the signed-in `title_player_account` entity.
+  String? get entityId => _entityId;
+
+  /// Type of the signed-in entity (`title_player_account`).
+  String? get entityType => _entityType;
+
+  /// Stores the entity token and key from a login or `GetEntityToken` response
+  /// (`{EntityToken, TokenExpiration, Entity: {Id, Type}}`).
+  void setEntity(Map<String, dynamic>? entity) {
+    if (entity == null) {
+      _entityToken = _entityTokenExpiry = _entityId = _entityType = null;
+      return;
+    }
+    _entityToken = entity['EntityToken'] as String? ?? _entityToken;
+    final exp = entity['TokenExpiration'] as String?;
+    _entityTokenExpiry = exp == null
+        ? _entityTokenExpiry
+        : DateTime.tryParse(exp);
+    final key = (entity['Entity'] as Map?)?.cast<String, dynamic>();
+    _entityId = key?['Id'] as String? ?? _entityId;
+    _entityType = key?['Type'] as String? ?? _entityType;
+  }
+
+  /// Whether the entity token is missing or within a minute of expiring.
+  bool get entityTokenStale {
+    final exp = _entityTokenExpiry;
+    return _entityToken == null ||
+        (exp != null &&
+            DateTime.now().toUtc().isAfter(
+              exp.toUtc().subtract(const Duration(minutes: 1)),
+            ));
+  }
 
   /// POSTs [body] as JSON to [endpoint], for example
   /// `/Client/GetPlayerStatistics`.
   ///
-  /// When [authenticated] is `true`, the stored session ticket is attached and
-  /// a missing ticket throws [NotSignedInException]. Returns the unwrapped
-  /// `data` object. Throws [NetworkException] when the request fails, and
+  /// When [authenticated] is `true` the stored session ticket is attached;
+  /// calling without a ticket throws [NotSignedInException]. With
+  /// [useEntityToken] the entity token is sent as `X-EntityToken` instead
+  /// (Lobby and other entity APIs). Returns the unwrapped `data` object.
+  /// Throws [NetworkException] when the request fails, and
   /// [PlatformOperationException] when the HTTP status is not 200 (using
   /// PlayFab's `errorMessage` when present) or the body has no `data` object.
   Future<Map<String, dynamic>> post(
     String endpoint,
     Map<String, dynamic> body, {
     bool authenticated = true,
+    bool useEntityToken = false,
   }) async {
     final headers = <String, String>{'Content-Type': 'application/json'};
-    if (authenticated) {
+    if (useEntityToken) {
+      final token = _entityToken;
+      if (token == null) {
+        throw const NotSignedInException(
+          'PlayFab entity token missing; call signIn() first.',
+        );
+      }
+      headers['X-EntityToken'] = token;
+    } else if (authenticated) {
       final ticket = _sessionTicket;
       if (ticket == null) {
         throw const NotSignedInException(
@@ -94,7 +152,11 @@ class PlayFabClient {
           map?['errorMessage'] as String? ??
           map?['error'] as String? ??
           'PlayFab $endpoint returned HTTP ${res.statusCode}.';
-      throw PlatformOperationException(message);
+      final errorCode = map?['errorCode'];
+      throw PlatformOperationException(
+        message,
+        code: errorCode == null ? null : '$errorCode',
+      );
     }
     if (map == null || map['data'] is! Map) {
       throw PlatformOperationException(

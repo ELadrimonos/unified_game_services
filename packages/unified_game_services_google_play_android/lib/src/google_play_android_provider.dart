@@ -33,17 +33,17 @@ import 'playgames_bindings.dart' hide Exception, Leaderboard;
 /// resolver for you.
 ///
 /// ## Capabilities
-/// Advertises [GameCapability.achievements] and [GameCapability.leaderboards].
-/// Stats, cloud save, friends and presence are not advertised, for the same
-/// reasons as in the REST provider.
+/// Advertises [GameCapability.achievements], [GameCapability.leaderboards]
+/// and [GameCapability.overlays]. Stats, cloud save, friends and presence are
+/// not advertised, for the same reasons as in the REST provider.
 ///
 /// ## Implemented and pending operations
-/// Implemented: [isSignedIn], [signIn], and the writes [unlockAchievement],
-/// [incrementAchievement], [revealAchievement] and [submitScore]. The writes
+/// Implemented: [isSignedIn], [signIn], the writes [unlockAchievement],
+/// [incrementAchievement], [revealAchievement] and [submitScore], and the
+/// native screens [showAchievementsUI] and [showLeaderboardsUI]. The writes
 /// use the SDK's `*Immediate` variants and await their `Task`, so a rejected
 /// write (unknown id, signed out, offline) throws instead of being reported as
-/// a success. The native screens [showAchievementsUi] and [showLeaderboardsUi]
-/// are provider-specific extras.
+/// a success.
 ///
 /// Pending: reads that return a `Task<T>` payload mapped to unified models.
 /// [getAchievements], [getLeaderboard] and [getPlayerScore] throw
@@ -97,6 +97,7 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   Set<GameCapability> get capabilities => const {
     GameCapability.achievements,
     GameCapability.leaderboards,
+    GameCapability.overlays,
   };
 
   @override
@@ -270,15 +271,16 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
-  // ─── Native UIs (provider-specific, not on the unified interface) ──────────
+  // ─── Native UIs ([GameCapability.overlays]) ─────────────────────────────────
 
   /// Opens the native Play Games **achievements** screen.
   ///
-  /// Provider-specific: not part of the unified interface, and other providers
-  /// have no equivalent system UI. Throws [NotSignedInException] when the
-  /// player is not signed in and [PlatformOperationException] if the SDK
-  /// cannot produce the screen.
-  Future<void> showAchievementsUi() async {
+  /// Throws [NotSignedInException] when the player is not signed in and
+  /// [PlatformOperationException] if the SDK cannot produce the screen. The
+  /// REST tier has no system UI, so only this provider advertises
+  /// [GameCapability.overlays].
+  @override
+  Future<void> showAchievementsUI() async {
     final client = PlayGames.getAchievementsClient(
       _activityResolver().as(Activity.type),
     );
@@ -294,9 +296,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   /// Opens the native Play Games **leaderboards** screen: the list of all
   /// leaderboards, or a single one when [leaderboardId] is given.
   ///
-  /// Provider-specific: not part of the unified interface. Fails the same way
-  /// as [showAchievementsUi].
-  Future<void> showLeaderboardsUi({String? leaderboardId}) async {
+  /// The unified [leaderboardId] is translated to the Play Games id. See
+  /// [showAchievementsUI] for failure behavior.
+  @override
+  Future<void> showLeaderboardsUI({String? leaderboardId}) async {
     final client = PlayGames.getLeaderboardsClient(
       _activityResolver().as(Activity.type),
     );
@@ -317,6 +320,15 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     }
     await _startIntent(task, _leaderboardsRequestCode);
   }
+
+  /// Play Games has no generic overlay: use [showAchievementsUI] or
+  /// [showLeaderboardsUI].
+  @override
+  Future<void> showOverlay({String? overlayId}) =>
+      throw const PlatformOperationException(
+        'Google Play Games has no generic overlay; use showAchievementsUI() or '
+        'showLeaderboardsUI().',
+      );
 
   static const _achievementsRequestCode = 9003;
   static const _leaderboardsRequestCode = 9004;

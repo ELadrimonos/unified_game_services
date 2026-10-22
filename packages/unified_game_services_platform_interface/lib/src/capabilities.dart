@@ -1,4 +1,6 @@
+/// @docImport 'events.dart';
 /// @docImport 'exceptions.dart';
+/// @docImport 'models/lobby.dart';
 /// @docImport 'platform_interface/platform_interface.dart';
 library;
 
@@ -54,14 +56,14 @@ enum GameCapability {
 
   /// Invitations sent to or received from friends / platform overlays.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet
-  /// implemented.
+  /// An invitation is always to a lobby: see
+  /// [UnifiedGameServicesPlatform.sendInvitation] and
+  /// [InvitationReceivedEvent].
   invitations,
 
-  /// Creating, joining, and managing game lobbies/rooms.
+  /// Creating, joining, searching and managing game lobbies/rooms.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet
-  /// implemented.
+  /// A lobby belongs to one provider and is never fanned out; see [Lobby].
   lobbies,
 
   /// Matchmaking queues and session creation.
@@ -73,14 +75,17 @@ enum GameCapability {
   /// Opening platform-native UI overlays (achievements, leaderboards, access
   /// point).
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet
-  /// implemented.
+  /// Implemented by Google Play Android
+  /// ([UnifiedGameServicesPlatform.showAchievementsUI],
+  /// [UnifiedGameServicesPlatform.showLeaderboardsUI]).
   overlays,
 
   /// Retrieving platform-signed identity tokens or session tickets for
   /// server-to-server auth.
   ///
-  /// **Note:** Reserved capability; methods in the API are not yet
-  /// implemented.
+  /// Gates [UnifiedGameServicesPlatform.getIdentityToken]. Implemented by
+  /// Steam (Web API auth ticket, hex) and Epic (EOS Connect ID token, a JWT).
+  /// The token's format depends on
+  /// [UnifiedGameServicesPlatform.providerId].
   identityTokens,
 }

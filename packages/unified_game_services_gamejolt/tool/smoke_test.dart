@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // Live smoke test against the real GameJolt Game API. Reads credentials from
 // the environment and exercises the provider end to end.
 //

@@ -3,6 +3,7 @@
 library;
 
 import 'models/achievement.dart';
+import 'models/lobby.dart';
 import 'models/player_profile.dart';
 import 'models/rich_presence.dart';
 import 'models/stat.dart';
@@ -180,23 +181,30 @@ class PresenceChangedEvent extends GameServiceEvent {
 
 /// Emitted when a game invitation is received.
 ///
-/// **Note:** Reserved event for [GameCapability.invitations]; not yet
-/// implemented.
+/// Accept it by passing [joinToken] to [UnifiedGameServicesPlatform.joinLobby]
+/// on the provider named by [providerId]. Gated by
+/// [GameCapability.invitations].
 class InvitationReceivedEvent extends GameServiceEvent {
-  /// The ID or name of the sender.
+  /// [PlayerProfile.id] of the sender.
   final String senderId;
 
-  /// Provider-defined payload attached to the invitation (e.g. a lobby ID),
-  /// or `null` if there is none.
-  final String? payload;
+  /// The token to pass to [UnifiedGameServicesPlatform.joinLobby] (see
+  /// [Lobby.joinToken]).
+  final String joinToken;
+
+  /// [UnifiedGameServicesPlatform.providerId] of the provider that delivered
+  /// the invitation.
+  final String providerId;
 
   /// Creates an event for an invitation from [senderId] received at
   /// [timestamp].
   ///
-  /// [payload] is the optional provider-defined invitation payload.
+  /// [joinToken] and [providerId] identify the lobby and the provider to
+  /// join it through.
   const InvitationReceivedEvent({
     required this.senderId,
-    this.payload,
+    required this.joinToken,
+    required this.providerId,
     required super.timestamp,
   });
 
@@ -205,13 +213,179 @@ class InvitationReceivedEvent extends GameServiceEvent {
       identical(this, other) ||
       other is InvitationReceivedEvent &&
           other.senderId == senderId &&
-          other.payload == payload &&
+          other.joinToken == joinToken &&
+          other.providerId == providerId &&
           other.timestamp == timestamp;
 
   @override
-  int get hashCode => Object.hash(senderId, payload, timestamp);
+  int get hashCode => Object.hash(senderId, joinToken, providerId, timestamp);
 
   @override
   String toString() =>
-      'InvitationReceivedEvent(senderId: $senderId, payload: $payload, timestamp: $timestamp)';
+      'InvitationReceivedEvent(senderId: $senderId, joinToken: $joinToken, '
+      'providerId: $providerId, timestamp: $timestamp)';
+}
+
+/// Emitted when the player asks to join someone through a provider's own UI
+/// (an accepted invitation, a "Join" button on a friend's presence).
+///
+/// Pass [joinToken] to `joinLobby`; the lobby may live in a different provider
+/// than the one that delivered this event.
+class JoinRequestedEvent extends GameServiceEvent {
+  /// The token to pass to `joinLobby`.
+  final String joinToken;
+
+  /// `providerId` of the provider that delivered the request.
+  final String providerId;
+
+  const JoinRequestedEvent({
+    required this.joinToken,
+    required this.providerId,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is JoinRequestedEvent &&
+          other.joinToken == joinToken &&
+          other.providerId == providerId &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(joinToken, providerId, timestamp);
+
+  @override
+  String toString() =>
+      'JoinRequestedEvent(joinToken: $joinToken, providerId: $providerId, '
+      'timestamp: $timestamp)';
+}
+
+/// Base type of the events about a [Lobby]; each carries the updated snapshot.
+sealed class LobbyEvent extends GameServiceEvent {
+  /// The lobby after the change.
+  final Lobby lobby;
+
+  const LobbyEvent({required this.lobby, required super.timestamp});
+}
+
+/// A member joined [lobby].
+class LobbyMemberJoinedEvent extends LobbyEvent {
+  /// The member who joined.
+  final LobbyMember member;
+
+  const LobbyMemberJoinedEvent({
+    required super.lobby,
+    required this.member,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LobbyMemberJoinedEvent &&
+          other.lobby == lobby &&
+          other.member == member &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(lobby, member, timestamp);
+
+  @override
+  String toString() =>
+      'LobbyMemberJoinedEvent(lobby: $lobby, member: $member, '
+      'timestamp: $timestamp)';
+}
+
+/// A member left [lobby] (left, disconnected or was removed).
+class LobbyMemberLeftEvent extends LobbyEvent {
+  /// The member who left.
+  final LobbyMember member;
+
+  const LobbyMemberLeftEvent({
+    required super.lobby,
+    required this.member,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LobbyMemberLeftEvent &&
+          other.lobby == lobby &&
+          other.member == member &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(lobby, member, timestamp);
+
+  @override
+  String toString() =>
+      'LobbyMemberLeftEvent(lobby: $lobby, member: $member, '
+      'timestamp: $timestamp)';
+}
+
+/// The lobby's data, visibility or a member's data changed.
+class LobbyDataChangedEvent extends LobbyEvent {
+  const LobbyDataChangedEvent({required super.lobby, required super.timestamp});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LobbyDataChangedEvent &&
+          other.lobby == lobby &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(lobby, timestamp);
+
+  @override
+  String toString() =>
+      'LobbyDataChangedEvent(lobby: $lobby, timestamp: $timestamp)';
+}
+
+/// The lobby has a new owner ([Lobby.ownerId]).
+class LobbyOwnerChangedEvent extends LobbyEvent {
+  /// [PlayerProfile.id] of the previous owner.
+  final String previousOwnerId;
+
+  const LobbyOwnerChangedEvent({
+    required super.lobby,
+    required this.previousOwnerId,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LobbyOwnerChangedEvent &&
+          other.lobby == lobby &&
+          other.previousOwnerId == previousOwnerId &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(lobby, previousOwnerId, timestamp);
+
+  @override
+  String toString() =>
+      'LobbyOwnerChangedEvent(lobby: $lobby, '
+      'previousOwnerId: $previousOwnerId, timestamp: $timestamp)';
+}
+
+/// The lobby no longer exists (the last member left or it was destroyed).
+class LobbyClosedEvent extends LobbyEvent {
+  const LobbyClosedEvent({required super.lobby, required super.timestamp});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LobbyClosedEvent &&
+          other.lobby == lobby &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(lobby, timestamp);
+
+  @override
+  String toString() => 'LobbyClosedEvent(lobby: $lobby, timestamp: $timestamp)';
 }

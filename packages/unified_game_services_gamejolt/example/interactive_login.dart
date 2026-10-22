@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // Interactive REAL login + integration playground for the GameJolt provider.
 //
 // Run:  dart run example/interactive_login.dart

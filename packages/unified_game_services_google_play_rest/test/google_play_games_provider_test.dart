@@ -62,6 +62,15 @@ void main() {
       expect(p.supports(GameCapability.friends), isFalse);
     });
 
+    test('has no system UI, so overlays are unsupported', () {
+      final p = providerWith(mock(const {}).client);
+      expect(p.supports(GameCapability.overlays), isFalse);
+      expect(
+        () => p.showAchievementsUI(),
+        throwsA(isA<CapabilityNotSupportedException>()),
+      );
+    });
+
     test('signIn loads players/me and emits a sign-in event', () async {
       final m = mock({
         'GET /players/me': {'playerId': '7', 'displayName': 'Ada'},

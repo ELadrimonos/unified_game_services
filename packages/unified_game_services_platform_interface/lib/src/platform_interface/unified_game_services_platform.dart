@@ -8,8 +8,10 @@ part of 'platform_interface.dart';
 /// `UnifiedGameServices` constructor).
 ///
 /// Methods are grouped by [GameCapability]. The base class provides default
-/// implementations that throw [UnimplementedError], so a provider only needs
-/// to override the operations it actually supports. Declare what is supported
+/// implementations that throw [CapabilityNotSupportedException] for the
+/// operation's [GameCapability] (authentication and [events] throw
+/// [UnimplementedError]: every provider must supply those). A provider only
+/// needs to override the operations it actually supports; declare support
 /// through [capabilities].
 ///
 /// ## Error contract
@@ -26,9 +28,9 @@ part of 'platform_interface.dart';
 /// - [PlatformOperationException] for any other provider or SDK failure.
 ///
 /// Unless noted, a method's capability gate is the [GameCapability] of its
-/// section. Calling a method the provider has not implemented throws
-/// [UnimplementedError] instead, which signals a provider bug rather than a
-/// runtime condition; callers should check [supports] first.
+/// section; callers should check [supports] first. An [UnimplementedError]
+/// from authentication or [events] signals a provider bug rather than a
+/// runtime condition.
 ///
 /// ## Id mapping
 ///
@@ -203,7 +205,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Throws [NotSignedInException] if the provider needs a signed-in player to
   /// read progress.
   Future<List<Achievement>> getAchievements() =>
-      throw UnimplementedError('getAchievements() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.achievements);
 
   /// Unlocks the achievement identified by [achievementId].
   ///
@@ -213,7 +215,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// achievement is a no-op or an error is provider-dependent. Providers may
   /// emit an [AchievementUnlockedEvent].
   Future<void> unlockAchievement(String achievementId) =>
-      throw UnimplementedError('unlockAchievement() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.achievements);
 
   /// Adds [steps] of progress to an incremental achievement.
   ///
@@ -224,9 +226,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [GameCapability.achievements]. Throws [NotSignedInException] when no
   /// player is signed in.
   Future<void> incrementAchievement(String achievementId, int steps) =>
-      throw UnimplementedError(
-        'incrementAchievement() has not been implemented.',
-      );
+      throw CapabilityNotSupportedException(GameCapability.achievements);
 
   /// Reveals a hidden achievement without unlocking it.
   ///
@@ -234,7 +234,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// resolved through [resolveAchievementId]. Providers without a hidden
   /// state may treat this as a no-op.
   Future<void> revealAchievement(String achievementId) =>
-      throw UnimplementedError('revealAchievement() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.achievements);
 
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
@@ -248,7 +248,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   Future<void> submitScore({
     required String leaderboardId,
     required int score,
-  }) => throw UnimplementedError('submitScore() has not been implemented.');
+  }) => throw CapabilityNotSupportedException(GameCapability.leaderboards);
 
   /// Fetches a page of [leaderboardId], scoped by [timeScope] and
   /// [collection], up to [maxResults] entries.
@@ -272,7 +272,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
     LeaderboardCollection collection = LeaderboardCollection.global,
     int maxResults = 25,
-  }) => throw UnimplementedError('getLeaderboard() has not been implemented.');
+  }) => throw CapabilityNotSupportedException(GameCapability.leaderboards);
 
   /// Returns the signed-in player's own entry on [leaderboardId], or `null`.
   ///
@@ -284,7 +284,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-  }) => throw UnimplementedError('getPlayerScore() has not been implemented.');
+  }) => throw CapabilityNotSupportedException(GameCapability.leaderboards);
 
   // ─── Stats ───────────────────────────────────────────────────────────────
 
@@ -293,7 +293,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Gated by [GameCapability.stats]. Throws [NotSignedInException] when no
   /// player is signed in. The list is empty if the player has no stats.
   Future<List<Stat>> getStats() =>
-      throw UnimplementedError('getStats() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.stats);
 
   /// Returns a single stat by [key], or `null` if it does not exist.
   ///
@@ -301,7 +301,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [resolveStatId]. Throws [NotSignedInException] when no player is signed
   /// in.
   Future<Stat?> getStat(String key) =>
-      throw UnimplementedError('getStat() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.stats);
 
   /// Sets the stat [key] to [value].
   ///
@@ -309,7 +309,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [resolveStatId]; [value] replaces the stored value. Providers may emit a
   /// [StatUpdatedEvent].
   Future<void> setStat(String key, num value) =>
-      throw UnimplementedError('setStat() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.stats);
 
   /// Increments the stat [key] by [by] (default `1`).
   ///
@@ -317,7 +317,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [resolveStatId]; [by] is a relative amount added to the current value,
   /// not the new total. Providers may emit a [StatUpdatedEvent].
   Future<void> incrementStat(String key, {num by = 1}) =>
-      throw UnimplementedError('incrementStat() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.stats);
 
   // ─── Cloud save ────────────────────────────────────────────────────────────
 
@@ -329,14 +329,14 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [NotSignedInException] when no player is signed in. Size limits and
   /// conflict handling are provider-dependent.
   Future<void> saveData(String slot, Uint8List data) =>
-      throw UnimplementedError('saveData() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.cloudSave);
 
   /// Loads the cloud save [slot], or `null` if it does not exist.
   ///
   /// Gated by [GameCapability.cloudSave]. Throws [NotSignedInException] when
   /// no player is signed in.
   Future<CloudSave?> loadData(String slot) =>
-      throw UnimplementedError('loadData() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.cloudSave);
 
   /// Lists metadata for every cloud save slot.
   ///
@@ -344,7 +344,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// saves, and carries no payloads (see [loadData]). Throws
   /// [NotSignedInException] when no player is signed in.
   Future<List<CloudSaveMetadata>> listSaves() =>
-      throw UnimplementedError('listSaves() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.cloudSave);
 
   /// Deletes the cloud save [slot].
   ///
@@ -353,7 +353,7 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// that need to tell the difference should check [listSaves] first. Throws
   /// [NotSignedInException] when no player is signed in.
   Future<void> deleteSave(String slot) =>
-      throw UnimplementedError('deleteSave() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.cloudSave);
 
   // ─── Rich presence ───────────────────────────────────────────────────────
 
@@ -364,14 +364,14 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Throws [NotSignedInException] when no player is signed in. Providers may
   /// emit a [PresenceChangedEvent].
   Future<void> setPresence(RichPresence presence) =>
-      throw UnimplementedError('setPresence() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.presence);
 
   /// Clears any published presence.
   ///
   /// Gated by [GameCapability.presence]. Providers may emit a
   /// [PresenceChangedEvent] with a `null` presence.
   Future<void> clearPresence() =>
-      throw UnimplementedError('clearPresence() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.presence);
 
   // ─── Friends ─────────────────────────────────────────────────────────────
 
@@ -380,39 +380,69 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// Gated by [GameCapability.friends]. The list is empty if the player has
   /// no friends. Throws [NotSignedInException] when no player is signed in.
   Future<List<PlayerProfile>> getFriends() =>
-      throw UnimplementedError('getFriends() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.friends);
 
   // ─── Invitations ──────────────────────────────────────────────────────────
 
-  /// Sends a game invitation to [friendId] with optional [payload].
+  /// Invites [userId] to the lobby [lobbyId].
   ///
-  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet
-  /// implemented.
-  Future<void> sendInvitation(String friendId, {String? payload}) =>
-      throw UnimplementedError('sendInvitation() has not been implemented.');
+  /// Gated by [GameCapability.invitations]. Incoming invitations arrive as
+  /// [InvitationReceivedEvent].
+  Future<void> sendInvitation(String lobbyId, String userId) =>
+      throw CapabilityNotSupportedException(GameCapability.invitations);
 
   // ─── Lobbies ──────────────────────────────────────────────────────────────
+  //
+  // A lobby belongs to the provider that created it. Every method returns a
+  // [Lobby] whose `providerId` is this provider's id. Gated by
+  // [GameCapability.lobbies].
 
-  /// Creates a new game lobby with [maxPlayers] and an optional [name].
+  /// Creates a lobby (or, with [kind], a party) and joins it as the owner.
   ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet
-  /// implemented.
-  Future<void> createLobby({int maxPlayers = 4, String? name}) =>
-      throw UnimplementedError('createLobby() has not been implemented.');
+  /// The provider persists [kind] under [lobbyKindDataKey] when it is not
+  /// [LobbyKind.lobby].
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
 
-  /// Joins an existing game lobby by [lobbyId].
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet
-  /// implemented.
-  Future<void> joinLobby(String lobbyId) =>
-      throw UnimplementedError('joinLobby() has not been implemented.');
+  /// Joins the lobby identified by [joinToken] (see [Lobby.joinToken]).
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
 
-  /// Leaves the lobby identified by [lobbyId].
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet
-  /// implemented.
+  /// Leaves the lobby [lobbyId]. The provider decides what happens to
+  /// ownership: [LobbyOwnerChangedEvent] or [LobbyClosedEvent] follow.
   Future<void> leaveLobby(String lobbyId) =>
-      throw UnimplementedError('leaveLobby() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// The current state of [lobbyId], or `null` if it no longer exists.
+  Future<Lobby?> getLobby(String lobbyId) =>
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Searches public lobbies matching every filter in [filters].
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Updates a lobby; owner only. Entries of [data] merge into the existing
+  /// data and a `null` value removes the key.
+  Future<Lobby> updateLobby(
+    String lobbyId, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) => throw CapabilityNotSupportedException(GameCapability.lobbies);
+
+  /// Updates the signed-in player's own [LobbyMember.data]; a `null` value
+  /// removes the key.
+  Future<Lobby> setMemberData(String lobbyId, Map<String, String?> data) =>
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────
 
@@ -421,55 +451,47 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet
   /// implemented.
   Future<void> startMatchmaking({Map<String, dynamic>? attributes}) =>
-      throw UnimplementedError('startMatchmaking() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.matchmaking);
 
   /// Cancels an active matchmaking search.
   ///
   /// **Note:** Reserved capability ([GameCapability.matchmaking]); not yet
   /// implemented.
   Future<void> cancelMatchmaking() =>
-      throw UnimplementedError('cancelMatchmaking() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.matchmaking);
 
   // ─── Overlays ─────────────────────────────────────────────────────────────
 
   /// Opens the platform-native achievements UI overlay.
   ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet
-  /// implemented.
-  Future<void> showAchievementsUI() => throw UnimplementedError(
-    'showAchievementsUI() has not been implemented.',
-  );
+  /// Gated by [GameCapability.overlays].
+  Future<void> showAchievementsUI() =>
+      throw CapabilityNotSupportedException(GameCapability.overlays);
 
   /// Opens the platform-native leaderboards UI overlay.
   ///
-  /// Shows [leaderboardId] when given, otherwise the provider's default view.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet
-  /// implemented.
+  /// Gated by [GameCapability.overlays]. Shows [leaderboardId] when given,
+  /// otherwise the provider's default view.
   Future<void> showLeaderboardsUI({String? leaderboardId}) =>
-      throw UnimplementedError(
-        'showLeaderboardsUI() has not been implemented.',
-      );
+      throw CapabilityNotSupportedException(GameCapability.overlays);
 
   /// Opens a generic or provider-specific native overlay (e.g. settings,
   /// friends list).
   ///
-  /// [overlayId] selects a provider-defined overlay.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet
-  /// implemented.
+  /// Gated by [GameCapability.overlays]. [overlayId] selects a
+  /// provider-defined overlay. No built-in provider implements this yet.
   Future<void> showOverlay({String? overlayId}) =>
-      throw UnimplementedError('showOverlay() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.overlays);
 
   // ─── Identity Tokens ──────────────────────────────────────────────────────
 
   /// Retrieves a platform-signed identity token or session ticket for server
   /// verification.
   ///
-  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet
-  /// implemented.
+  /// Gated by [GameCapability.identityTokens]. The format depends on the
+  /// provider (Steam: hex ticket, Epic: JWT).
   Future<String?> getIdentityToken() =>
-      throw UnimplementedError('getIdentityToken() has not been implemented.');
+      throw CapabilityNotSupportedException(GameCapability.identityTokens);
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+
 // Interactive REAL integration playground for the Steam provider, using the
 // Spacewar test app (appId 480).
 //
@@ -58,6 +59,14 @@ Checklist:
   stdout.writeln('OK');
   stdout.writeln('Player: ${player?.displayName} (id ${player?.id})');
 
+  steam.events.listen((e) {
+    if (e is LobbyEvent ||
+        e is InvitationReceivedEvent ||
+        e is JoinRequestedEvent) {
+      stdout.writeln('\n[event] $e');
+    }
+  });
+
   try {
     await _menu(steam);
   } finally {
@@ -66,6 +75,7 @@ Checklist:
 }
 
 Future<void> _menu(SteamProvider steam) async {
+  Lobby? lobby;
   while (true) {
     stdout.writeln('''
 
@@ -83,6 +93,15 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
   9) Read a cloud save
  10) List cloud saves
  11) Delete a cloud save
+ 12) Get Identity Token (2mins expiration)
+ 13) Create a lobby (or party)
+ 14) Find public lobbies
+ 15) Join a lobby by join token
+ 16) Show current lobby
+ 17) Set lobby data (owner)
+ 18) Set my member data
+ 19) Invite a user to the lobby
+ 20) Leave the lobby
   0) Quit''');
     stdout.write('> ');
     final choice = stdin.readLineSync()?.trim();
@@ -155,6 +174,102 @@ Spacewar leaderboards: ${_spacewarLeaderboards.join(', ')}
         case '11':
           await steam.deleteSave(_prompt('Slot (filename)'));
           stdout.writeln('Deleted.');
+        case '12':
+          final token = await steam.getIdentityToken();
+          stdout.writeln('Send this to your backend (valid ~2 min):');
+          stdout.writeln(token);
+        case '13':
+          final party = _prompt('Kind (lobby/party)') == 'party';
+          lobby = await steam.createLobby(
+            kind: party ? LobbyKind.party : LobbyKind.lobby,
+            visibility: party
+                ? LobbyVisibility.private
+                : LobbyVisibility.public,
+            data: {'mode': 'test'},
+          );
+          stdout.writeln('Created: $lobby');
+          stdout.writeln('Join token: ${lobby.joinToken}');
+        case '14':
+          final found = await steam.findLobbies(
+            filters: [const LobbyFilter('mode', LobbyFilterOp.equals, 'test')],
+          );
+          stdout.writeln('${found.length} lobbies:');
+          for (final l in found) {
+            stdout.writeln(
+              '  ${l.joinToken}  ${l.size}/${l.maxMembers}  ${l.data}',
+            );
+          }
+        case '15':
+          lobby = await steam.joinLobby(_prompt('Join token'));
+          stdout.writeln('Joined: $lobby');
+        case '16':
+          final current = lobby;
+          if (current == null) {
+            stdout.writeln('No lobby yet.');
+            break;
+          }
+          lobby = await steam.getLobby(current.id);
+          stdout.writeln(lobby ?? 'The lobby no longer exists.');
+          for (final m in lobby?.members ?? const <LobbyMember>[]) {
+            stdout.writeln(
+              '  ${m.player.id} ${m.player.displayName} ${m.data}',
+            );
+          }
+        case '17':
+          final current = lobby;
+          if (current == null) {
+            stdout.writeln('No lobby yet.');
+            break;
+          }
+          lobby = await steam.updateLobby(
+            current.id,
+            data: {_prompt('Key'): _prompt('Value')},
+          );
+          stdout.writeln('Data: ${lobby.data}');
+        case '18':
+          final current = lobby;
+          if (current == null) {
+            stdout.writeln('No lobby yet.');
+            break;
+          }
+          lobby = await steam.setMemberData(current.id, {
+            _prompt('Key'): _prompt('Value'),
+          });
+          stdout.writeln('Members: ${lobby.members}');
+        case '19':
+          final current = lobby;
+          if (current == null) {
+            stdout.writeln('No lobby yet.');
+            break;
+          }
+          final friends = await steam.getFriends();
+          if (friends.isEmpty) {
+            stdout.writeln('No friends to invite.');
+            break;
+          }
+          for (var i = 0; i < friends.length; i++) {
+            final f = friends[i];
+            stdout.writeln(
+              '  ${i + 1}) ${f.displayName}${f.isOnline == true ? ' (online)' : ''}',
+            );
+          }
+          final pick = int.tryParse(_prompt('Friend number'));
+          if (pick == null || pick < 1 || pick > friends.length) {
+            stdout.writeln('Not a valid number.');
+            break;
+          }
+          final friend = friends[pick - 1];
+          await steam.sendInvitation(current.id, friend.id);
+          stdout.writeln('Invited ${friend.displayName}.');
+        case '20':
+          final current = lobby;
+          if (current == null) {
+            stdout.writeln('No lobby yet.');
+            break;
+          }
+          await steam.leaveLobby(current.id);
+          lobby = null;
+          stdout.writeln('Left.');
         case '0':
         case null:
           return;

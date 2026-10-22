@@ -15,12 +15,40 @@ Core API stabilization and multi-provider enhancements.
   in `result.failed`.
 - **Breaking:** `GameCapability.multiplayer` removed in favor of dedicated `GameCapability.lobbies` and `GameCapability.matchmaking` capabilities.
 - **Centralized Mappings:** Added `UnifiedAchievementTable`, `UnifiedLeaderboardTable`, and `UnifiedStatTable` (with `ProviderIdMap` / `ProviderId`). You can now pass global mapping tables directly to `GameServices.initialize(providers: [...], achievements: ..., leaderboards: ..., stats: ...)` or `UnifiedGameServices` constructor instead of repeating `achievementIds` / `leaderboardIds` on each provider.
-- **Reserved Capabilities API:** Added reserved capability enum values and API stubs for future features:
-  - `invitations`: `sendInvitation()` + `InvitationReceivedEvent`
-  - `lobbies`: `createLobby()`, `joinLobby()`, `leaveLobby()`
-  - `matchmaking`: `startMatchmaking()`, `cancelMatchmaking()`
-  - `overlays`: `showAchievementsUI()`, `showLeaderboardsUI()`, `showOverlay()`
-  - `identityTokens`: `getIdentityToken()`
+- **Capabilities in this release:** `identityTokens`, `lobbies`, `invitations`
+  and `overlays` are implemented (see below). `matchmaking` stays reserved:
+  `startMatchmaking()` and `cancelMatchmaking()` exist on the facade and throw
+  `CapabilityNotSupportedException` until a provider implements them.
+- **Overlays:** `showAchievementsUI()` and `showLeaderboardsUI({leaderboardId})`
+  open the native Play Games screens through `GooglePlayAndroidProvider` (and
+  through the `google_play` / `google_play_flutter` wrappers on Android). Other
+  providers do not advertise `overlays`; `showOverlay()` has no implementation.
+- **Facade parity:** added `isSignedIn`, `revealAchievement`, `getPlayerScore`,
+  `getStats`, `listSaves` and `deleteSave`, so everything on the platform
+  interface is reachable from `GameServices` (reads take `from:`, writes fan out).
+- **Predictable errors:** base-class defaults and facade reads now throw
+  `CapabilityNotSupportedException` for an unsupported capability instead of
+  `UnimplementedError`. Reads check `supports(cap)` on the target provider.
+- **Lobbies and invitations.** A lobby belongs to one provider and is never
+  fanned out: `createLobby`, `joinLobby` and `findLobbies` use `on:` or else the
+  first provider that advertises `lobbies`; every call that takes a `Lobby`
+  (`leaveLobby`, `refreshLobby`, `updateLobby`, `setMemberData`,
+  `sendInvitation`) routes by `lobby.providerId`. They return values and throw
+  on failure instead of returning a `MultiProviderOperationResult`.
+  - **Breaking vs the reserved stubs:** `createLobby`, `joinLobby`, `leaveLobby`
+    and `sendInvitation` changed signature (`sendInvitation(Lobby, userId)`).
+  - `createLobby(kind: LobbyKind.party)` makes a persistent group; same
+    operations, no extra capability.
+  - Lobby events (`LobbyMemberJoinedEvent`, `LobbyMemberLeftEvent`,
+    `LobbyDataChangedEvent`, `LobbyOwnerChangedEvent`, `LobbyClosedEvent`),
+    `JoinRequestedEvent` and the reworked `InvitationReceivedEvent` arrive on
+    `GameServices.events`.
+  - A lobby's `joinToken` can travel through `RichPresence.joinToken`, an
+    invitation or your own channel, and is accepted by `joinLobby`.
+  - Design notes: `docs/design/lobbies.md`.
+- `getIdentityToken({from})` is implemented by Steam (Web API ticket as hex,
+  valid about 2 minutes) and Epic (EOS Connect ID token, a JWT). The format
+  depends on the provider.
 - New `ProviderOperationResult` / `MultiProviderOperationResult` (`succeeded`,
   `failed`, `allSucceeded`, `anySucceeded`, `allFailed`, `[providerId]`).
 - **Unified ids on reads:** `Achievement.id`, `Leaderboard.id` and `Stat.key`

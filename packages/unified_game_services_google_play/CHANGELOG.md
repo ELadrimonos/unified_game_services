@@ -3,6 +3,7 @@
 ## 0.2.0
 
 - **Breaking:** removed `GooglePlayGames.registerWith(...)`; use `GooglePlayGames.create(...)` and pass the result to `GameServices.initialize(providers: [...])`.
+- `GameServices.showAchievementsUI()` / `showLeaderboardsUI()` (`GameCapability.overlays`) open the native Play Games screens on Android; the REST tier has no system UI and does not advertise `overlays`. (This package returns the provider for the current platform, so it needs no extra code.)
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 
 ## 0.1.0

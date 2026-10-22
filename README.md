@@ -20,11 +20,11 @@ README covers install, usage, per-store builds, and Flutter desktop flavors.
 |---|---|---|
 | `unified_game_services` | App-facing facade — multi-provider fan-out | ✅ |
 | `unified_game_services_platform_interface` | Shared contract + models (for provider authors) | ✅ |
-| `unified_game_services_steam` | Steam (Steamworks via FFI), desktop only | ✅ runtime-verified (macOS) |
+| `unified_game_services_steam` | Steam (Steamworks via FFI), desktop only | ✅ runtime-verified (macOS; lobbies, invitations and identity ticket on Linux) |
 | `unified_game_services_epic` | Epic Online Services (EOS C SDK via FFI), desktop only | ✅ runtime-verified (macOS); leaderboard `getPlayerScore` scans top-100 only |
 | `unified_game_services_game_center` | Apple Game Center (GameKit via Objective-C FFI), macOS/iOS | ⚠️ implemented, not yet runtime-verified (needs a paid Apple Developer account + Game Center–enabled App Store Connect record) |
 | `unified_game_services_gamejolt` | GameJolt (REST Game API v1.2) | ✅ verified with tests + live |
-| `unified_game_services_playfab` | PlayFab (REST Client API) | ✅ verified with tests |
+| `unified_game_services_playfab` | PlayFab (REST Client + Multiplayer Lobby API) | ✅ verified with tests; lobbies not yet tried against a live title |
 | `unified_game_services_google_play_rest` | Google Play Games via REST — cross-platform, achievements + leaderboards only | ✅ verified with tests |
 | `unified_game_services_google_play_android` | Google Play Games via the on-device Play Games v2 Java SDK (JNI), Android only | ✅ writes verified on-device; reads blocked on a jnigen `Task<T>` generics bug |
 | `unified_game_services_google_play` | Auto-selects native on Android, REST elsewhere (incl. web) | ✅ |

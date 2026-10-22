@@ -60,19 +60,27 @@ void main() {
         expect(p.supports(GameCapability.stats), isTrue);
         expect(p.supports(GameCapability.cloudSave), isTrue);
         expect(p.supports(GameCapability.friends), isTrue);
+        expect(p.supports(GameCapability.lobbies), isTrue);
+        expect(p.supports(GameCapability.invitations), isFalse);
         expect(p.supports(GameCapability.achievements), isFalse);
         expect(p.supports(GameCapability.presence), isFalse);
       },
     );
 
-    test('achievement ops throw UnimplementedError (base default)', () {
-      final p = providerWith(mock(const {}).client);
-      expect(
-        () => p.unlockAchievement('x'),
-        throwsA(isA<UnimplementedError>()),
-      );
-      expect(() => p.getAchievements(), throwsA(isA<UnimplementedError>()));
-    });
+    test(
+      'achievement ops throw CapabilityNotSupportedException (base default)',
+      () {
+        final p = providerWith(mock(const {}).client);
+        expect(
+          () => p.unlockAchievement('x'),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => p.getAchievements(),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+      },
+    );
   });
 
   group('auth', () {

@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:unified_game_services_epic/unified_game_services_epic.dart';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
@@ -55,6 +57,10 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
   List<PlayerProfile> _friends = [];
   bool _loadingFriends = false;
   String? _friendsError;
+
+  String? _identityToken;
+  String? _identityError;
+  bool _loadingIdentity = false;
 
   // ── Campos del formulario (prefill desde env / --dart-define si existe) ─────
   late final _fields = <String, TextEditingController>{
@@ -154,6 +160,37 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
   }
 
   // ── Load friends (EAS only) ───────────────────────────────────────────────
+  Future<void> _loadIdentityToken() async {
+    if (_provider == null) return;
+    setState(() {
+      _loadingIdentity = true;
+      _identityError = null;
+    });
+    try {
+      final token = await _provider!.getIdentityToken();
+      setState(() => _identityToken = token);
+    } catch (e) {
+      setState(() => _identityError = e.toString());
+    } finally {
+      setState(() => _loadingIdentity = false);
+    }
+  }
+
+  /// Claims of the JWT payload (`sub` is the ProductUserId), for display only.
+  /// The signature is NOT checked here: your backend must verify it.
+  Map<String, dynamic>? _jwtClaims(String jwt) {
+    final parts = jwt.split('.');
+    if (parts.length < 2) return null;
+    try {
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      return (jsonDecode(payload) as Map).cast<String, dynamic>();
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _loadFriends() async {
     if (_provider == null) return;
     setState(() {
@@ -405,6 +442,7 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
 
         // Panel de amigos (EAS)
         SliverToBoxAdapter(child: _buildFriendsPanel()),
+        SliverToBoxAdapter(child: _buildIdentityPanel()),
 
         // Achievement list
         if (_loadingAchievements && _achievements.isEmpty)
@@ -517,6 +555,78 @@ class _EosHomeScreenState extends State<EosHomeScreen> {
               ),
             ),
           const Divider(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildIdentityPanel() {
+    final token = _identityToken;
+    final claims = token == null ? null : _jwtClaims(token);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.badge, color: Color(0xFF00D4FF), size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                'Identity token',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              FilledButton.tonalIcon(
+                onPressed: _loadingIdentity ? null : _loadIdentityToken,
+                icon: _loadingIdentity
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.vpn_key, size: 18),
+                label: const Text('Get'),
+              ),
+            ],
+          ),
+          if (_identityError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                _identityError!,
+                style: const TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 12,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            )
+          else if (token == null)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                'No token yet.',
+                style: TextStyle(color: Colors.white38, fontSize: 12),
+              ),
+            )
+          else ...[
+            if (claims != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  'sub (ProductUserId): ${claims['sub']}\n'
+                  'iss: ${claims['iss']}\n'
+                  'exp: ${claims['exp'] is int ? DateTime.fromMillisecondsSinceEpoch((claims['exp'] as int) * 1000, isUtc: true) : claims['exp']}',
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                ),
+              ),
+            TextButton.icon(
+              onPressed: () => Clipboard.setData(ClipboardData(text: token)),
+              icon: const Icon(Icons.copy, size: 16),
+              label: Text('Copy JWT (${token.length} chars)'),
+            ),
+          ],
         ],
       ),
     );

@@ -104,6 +104,10 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getCurrentPlayer(from: from);
 
+  /// See [UnifiedGameServices.isSignedIn].
+  static Future<bool> isSignedIn({UnifiedGameServicesPlatform? from}) =>
+      instance.isSignedIn(from: from);
+
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.getAchievements].
@@ -130,6 +134,11 @@ abstract final class GameServices {
     int steps,
   ) => instance.incrementAchievement(achievementId, steps);
 
+  /// See [UnifiedGameServices.revealAchievement].
+  static Future<MultiProviderOperationResult<void>> revealAchievement(
+    String achievementId,
+  ) => instance.revealAchievement(achievementId);
+
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.submitScore].
@@ -153,6 +162,14 @@ abstract final class GameServices {
     from: from,
   );
 
+  /// See [UnifiedGameServices.getPlayerScore].
+  static Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    UnifiedGameServicesPlatform? from,
+  }) =>
+      instance.getPlayerScore(leaderboardId, timeScope: timeScope, from: from);
+
   // ─── Stats ─────────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.setStat].
@@ -173,6 +190,10 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getStat(key, from: from);
 
+  /// See [UnifiedGameServices.getStats].
+  static Future<List<Stat>> getStats({UnifiedGameServicesPlatform? from}) =>
+      instance.getStats(from: from);
+
   // ─── Cloud save ────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.saveData].
@@ -186,6 +207,15 @@ abstract final class GameServices {
     String slot, {
     UnifiedGameServicesPlatform? from,
   }) => instance.loadData(slot, from: from);
+
+  /// See [UnifiedGameServices.listSaves].
+  static Future<List<CloudSaveMetadata>> listSaves({
+    UnifiedGameServicesPlatform? from,
+  }) => instance.listSaves(from: from);
+
+  /// See [UnifiedGameServices.deleteSave].
+  static Future<MultiProviderOperationResult<void>> deleteSave(String slot) =>
+      instance.deleteSave(slot);
 
   // ─── Presence ──────────────────────────────────────────────────────────────
 
@@ -205,30 +235,66 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getFriends(from: from);
 
-  // ─── Invitations ──────────────────────────────────────────────────────────
-
-  /// See [UnifiedGameServices.sendInvitation].
-  static Future<MultiProviderOperationResult<void>> sendInvitation(
-    String friendId, {
-    String? payload,
-  }) => instance.sendInvitation(friendId, payload: payload);
-
-  // ─── Lobbies ──────────────────────────────────────────────────────────────
+  // ─── Lobbies & invitations ─────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.createLobby].
-  static Future<MultiProviderOperationResult<void>> createLobby({
-    int maxPlayers = 4,
-    String? name,
-  }) => instance.createLobby(maxPlayers: maxPlayers, name: name);
+  static Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) => instance.createLobby(
+    maxMembers: maxMembers,
+    visibility: visibility,
+    kind: kind,
+    data: data,
+    memberData: memberData,
+    on: on,
+  );
 
   /// See [UnifiedGameServices.joinLobby].
-  static Future<MultiProviderOperationResult<void>> joinLobby(String lobbyId) =>
-      instance.joinLobby(lobbyId);
+  static Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) => instance.joinLobby(joinToken, memberData: memberData, on: on);
 
   /// See [UnifiedGameServices.leaveLobby].
-  static Future<MultiProviderOperationResult<void>> leaveLobby(
-    String lobbyId,
-  ) => instance.leaveLobby(lobbyId);
+  static Future<void> leaveLobby(Lobby lobby) => instance.leaveLobby(lobby);
+
+  /// See [UnifiedGameServices.refreshLobby].
+  static Future<Lobby?> refreshLobby(Lobby lobby) =>
+      instance.refreshLobby(lobby);
+
+  /// See [UnifiedGameServices.findLobbies].
+  static Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+    UnifiedGameServicesPlatform? on,
+  }) => instance.findLobbies(filters: filters, maxResults: maxResults, on: on);
+
+  /// See [UnifiedGameServices.updateLobby].
+  static Future<Lobby> updateLobby(
+    Lobby lobby, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) => instance.updateLobby(
+    lobby,
+    data: data,
+    visibility: visibility,
+    maxMembers: maxMembers,
+  );
+
+  /// See [UnifiedGameServices.setMemberData].
+  static Future<Lobby> setMemberData(Lobby lobby, Map<String, String?> data) =>
+      instance.setMemberData(lobby, data);
+
+  /// See [UnifiedGameServices.sendInvitation].
+  static Future<void> sendInvitation(Lobby lobby, String userId) =>
+      instance.sendInvitation(lobby, userId);
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────
 

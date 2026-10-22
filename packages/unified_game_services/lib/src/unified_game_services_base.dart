@@ -126,6 +126,10 @@ class UnifiedGameServices {
     return (await p.getCurrentPlayer())?.copyWith(providerId: p.providerId);
   }
 
+  /// Whether a player is signed in on [from] (defaults to [primary]).
+  Future<bool> isSignedIn({UnifiedGameServicesPlatform? from}) =>
+      (from ?? primary).isSignedIn();
+
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// Achievements from [from] (defaults to [primary]), each tagged with the
@@ -133,7 +137,7 @@ class UnifiedGameServices {
   Future<List<Achievement>> getAchievements({
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.achievements, from);
     return _unifiedAchievements(p, await p.getAchievements());
   }
 
@@ -235,6 +239,15 @@ class UnifiedGameServices {
     (p) => p.incrementAchievement(achievementId, steps),
   );
 
+  /// Reveals a hidden achievement on every provider that supports achievements.
+  Future<MultiProviderOperationResult<void>> revealAchievement(
+    String achievementId,
+  ) => _fanOut(
+    GameCapability.achievements,
+    'revealAchievement',
+    (p) => p.revealAchievement(achievementId),
+  );
+
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
   /// Submits a score to every provider that supports leaderboards.
@@ -255,7 +268,7 @@ class UnifiedGameServices {
     int maxResults = 25,
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.leaderboards, from);
     final board = await p.getLeaderboard(
       leaderboardId,
       timeScope: timeScope,
@@ -278,6 +291,20 @@ class UnifiedGameServices {
     );
   }
 
+  /// The signed-in player's own entry on [leaderboardId] from [from]
+  /// (defaults to [primary]), or `null` when the player has no score.
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    UnifiedGameServicesPlatform? from,
+  }) async {
+    final p = _reader(GameCapability.leaderboards, from);
+    final entry = await p.getPlayerScore(leaderboardId, timeScope: timeScope);
+    return entry?.copyWith(
+      player: entry.player.copyWith(providerId: p.providerId),
+    );
+  }
+
   // ─── Stats ───────────────────────────────────────────────────────────────
 
   /// Sets a stat on every provider that supports stats.
@@ -296,7 +323,7 @@ class UnifiedGameServices {
 
   /// Reads a stat from [from] (defaults to [primary]).
   Future<Stat?> getStat(String key, {UnifiedGameServicesPlatform? from}) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.stats, from);
     return (await p.getStat(key))?.copyWith(
       key: key,
       nativeKeys: _withOwn(
@@ -306,6 +333,27 @@ class UnifiedGameServices {
       ),
       providerId: p.providerId,
     );
+  }
+
+  /// All stats of the signed-in player from [from] (defaults to [primary]),
+  /// keyed by unified key where a mapping exists.
+  Future<List<Stat>> getStats({UnifiedGameServicesPlatform? from}) async {
+    final p = _reader(GameCapability.stats, from);
+    final reverse =
+        _statTable?.reverseForProvider(p.providerId) ??
+        const <String, String>{};
+    return [
+      for (final s in await p.getStats())
+        s.copyWith(
+          key: reverse[s.key],
+          nativeKeys: _withOwn(
+            _statTable?.nativeIdsFor(reverse[s.key] ?? s.key),
+            p,
+            s.key,
+          ),
+          providerId: p.providerId,
+        ),
+    ];
   }
 
   // ─── Cloud save ────────────────────────────────────────────────────────────
@@ -325,12 +373,29 @@ class UnifiedGameServices {
     String slot, {
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.cloudSave, from);
     final save = await p.loadData(slot);
     return save?.copyWith(
       metadata: save.metadata.copyWith(providerId: p.providerId),
     );
   }
+
+  /// Metadata of the saves on [from] (defaults to [primary]).
+  Future<List<CloudSaveMetadata>> listSaves({
+    UnifiedGameServicesPlatform? from,
+  }) async {
+    final p = _reader(GameCapability.cloudSave, from);
+    return [
+      for (final m in await p.listSaves()) m.copyWith(providerId: p.providerId),
+    ];
+  }
+
+  /// Deletes a save from every provider that supports cloud save.
+  Future<MultiProviderOperationResult<void>> deleteSave(String slot) => _fanOut(
+    GameCapability.cloudSave,
+    'deleteSave',
+    (p) => p.deleteSave(slot),
+  );
 
   // ─── Presence ──────────────────────────────────────────────────────────────
 
@@ -356,56 +421,149 @@ class UnifiedGameServices {
   Future<List<PlayerProfile>> getFriends({
     UnifiedGameServicesPlatform? from,
   }) async {
-    final p = from ?? primary;
+    final p = _reader(GameCapability.friends, from);
     return [
       for (final f in await p.getFriends())
         f.copyWith(providerId: p.providerId),
     ];
   }
 
-  // ─── Invitations ──────────────────────────────────────────────────────────
+  // ─── Lobbies & invitations ─────────────────────────────────────────────────
+  //
+  // A lobby belongs to one provider and is never fanned out. Calls that create
+  // or find lobbies go to [on], or else to the first provider advertising
+  // [GameCapability.lobbies]. Calls on an existing [Lobby] route by
+  // `lobby.providerId`. They return the value and throw on failure.
 
-  /// Sends a game invitation on every provider supporting invitations.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.invitations]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> sendInvitation(
-    String friendId, {
-    String? payload,
-  }) => _fanOut(
-    GameCapability.invitations,
-    'sendInvitation',
-    (p) => p.sendInvitation(friendId, payload: payload),
+  /// The provider a lobby call without a lobby targets.
+  UnifiedGameServicesPlatform _lobbyProvider(UnifiedGameServicesPlatform? on) {
+    if (on != null) return _reader(GameCapability.lobbies, on);
+    final capable = providersFor(GameCapability.lobbies);
+    if (capable.isEmpty) {
+      throw CapabilityNotSupportedException(GameCapability.lobbies);
+    }
+    return capable.first;
+  }
+
+  /// The provider that owns [lobby].
+  UnifiedGameServicesPlatform _lobbyOwner(Lobby lobby) {
+    for (final p in providers) {
+      if (p.providerId == lobby.providerId) {
+        return _reader(GameCapability.lobbies, p);
+      }
+    }
+    throw ArgumentError.value(
+      lobby,
+      'lobby',
+      'No registered provider has providerId "${lobby.providerId}".',
+    );
+  }
+
+  Lobby _tagLobby(UnifiedGameServicesPlatform p, Lobby lobby) => lobby.copyWith(
+    providerId: p.providerId,
+    members: [
+      for (final m in lobby.members)
+        m.copyWith(player: m.player.copyWith(providerId: p.providerId)),
+    ],
   );
 
-  // ─── Lobbies ──────────────────────────────────────────────────────────────
+  /// Creates a lobby on [on] (default: the first provider with lobbies).
+  Future<Lobby> createLobby({
+    int maxMembers = 4,
+    LobbyVisibility visibility = LobbyVisibility.friendsOnly,
+    LobbyKind kind = LobbyKind.lobby,
+    Map<String, String> data = const {},
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return _tagLobby(
+      p,
+      await p.createLobby(
+        maxMembers: maxMembers,
+        visibility: visibility,
+        kind: kind,
+        data: data,
+        memberData: memberData,
+      ),
+    );
+  }
 
-  /// Creates a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> createLobby({
-    int maxPlayers = 4,
-    String? name,
-  }) => _fanOut(
-    GameCapability.lobbies,
-    'createLobby',
-    (p) => p.createLobby(maxPlayers: maxPlayers, name: name),
-  );
+  /// Joins the lobby identified by [joinToken] on [on] (default: the first
+  /// provider with lobbies). The token comes from `Lobby.joinToken`, an
+  /// [InvitationReceivedEvent] or a [JoinRequestedEvent].
+  Future<Lobby> joinLobby(
+    String joinToken, {
+    Map<String, String> memberData = const {},
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return _tagLobby(p, await p.joinLobby(joinToken, memberData: memberData));
+  }
 
-  /// Joins a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> joinLobby(String lobbyId) =>
-      _fanOut(GameCapability.lobbies, 'joinLobby', (p) => p.joinLobby(lobbyId));
+  /// Leaves [lobby].
+  Future<void> leaveLobby(Lobby lobby) async =>
+      _lobbyOwner(lobby).leaveLobby(lobby.id);
 
-  /// Leaves a lobby on every provider supporting lobbies.
-  ///
-  /// **Note:** Reserved capability ([GameCapability.lobbies]); not yet implemented.
-  Future<MultiProviderOperationResult<void>> leaveLobby(String lobbyId) =>
-      _fanOut(
-        GameCapability.lobbies,
-        'leaveLobby',
-        (p) => p.leaveLobby(lobbyId),
-      );
+  /// The current state of [lobby], or `null` if it no longer exists.
+  Future<Lobby?> refreshLobby(Lobby lobby) async {
+    final p = _lobbyOwner(lobby);
+    final fresh = await p.getLobby(lobby.id);
+    return fresh == null ? null : _tagLobby(p, fresh);
+  }
+
+  /// Searches public lobbies on [on] (default: the first provider with
+  /// lobbies) matching every filter.
+  Future<List<Lobby>> findLobbies({
+    List<LobbyFilter> filters = const [],
+    int maxResults = 25,
+    UnifiedGameServicesPlatform? on,
+  }) async {
+    final p = _lobbyProvider(on);
+    return [
+      for (final l in await p.findLobbies(
+        filters: filters,
+        maxResults: maxResults,
+      ))
+        _tagLobby(p, l),
+    ];
+  }
+
+  /// Updates [lobby]; owner only. Entries of [data] merge in and a `null` value
+  /// removes the key.
+  Future<Lobby> updateLobby(
+    Lobby lobby, {
+    Map<String, String?>? data,
+    LobbyVisibility? visibility,
+    int? maxMembers,
+  }) async {
+    final p = _lobbyOwner(lobby);
+    return _tagLobby(
+      p,
+      await p.updateLobby(
+        lobby.id,
+        data: data,
+        visibility: visibility,
+        maxMembers: maxMembers,
+      ),
+    );
+  }
+
+  /// Updates the signed-in player's own data in [lobby]; a `null` value removes
+  /// the key.
+  Future<Lobby> setMemberData(Lobby lobby, Map<String, String?> data) async {
+    final p = _lobbyOwner(lobby);
+    return _tagLobby(p, await p.setMemberData(lobby.id, data));
+  }
+
+  /// Invites [userId] to [lobby].
+  Future<void> sendInvitation(Lobby lobby, String userId) async {
+    final p = _lobbyOwner(lobby);
+    if (!p.supports(GameCapability.invitations)) {
+      throw CapabilityNotSupportedException(GameCapability.invitations);
+    }
+    await p.sendInvitation(lobby.id, userId);
+  }
 
   // ─── Matchmaking ──────────────────────────────────────────────────────────
 
@@ -433,7 +591,7 @@ class UnifiedGameServices {
 
   /// Opens the achievements UI overlay on every provider supporting overlays.
   ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  /// Implemented by Google Play Android.
   Future<MultiProviderOperationResult<void>> showAchievementsUI() => _fanOut(
     GameCapability.overlays,
     'showAchievementsUI',
@@ -442,7 +600,8 @@ class UnifiedGameServices {
 
   /// Opens the leaderboards UI overlay on every provider supporting overlays.
   ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  /// Shows [leaderboardId] when given, otherwise each provider's default view.
+  /// Implemented by Google Play Android.
   Future<MultiProviderOperationResult<void>> showLeaderboardsUI({
     String? leaderboardId,
   }) => _fanOut(
@@ -453,7 +612,9 @@ class UnifiedGameServices {
 
   /// Opens a platform-native overlay on every provider supporting overlays.
   ///
-  /// **Note:** Reserved capability ([GameCapability.overlays]); not yet implemented.
+  /// No built-in provider implements this yet. Google Play Android advertises
+  /// [GameCapability.overlays] but has no generic overlay, so its entry in the
+  /// result is a [PlatformOperationException].
   Future<MultiProviderOperationResult<void>> showOverlay({String? overlayId}) =>
       _fanOut(
         GameCapability.overlays,
@@ -465,13 +626,10 @@ class UnifiedGameServices {
 
   /// Retrieves an identity token from [from] (defaults to [primary]).
   ///
-  /// **Note:** Reserved capability ([GameCapability.identityTokens]); not yet implemented.
+  /// Gated by [GameCapability.identityTokens]. The format depends on the
+  /// provider (Steam: hex ticket, Epic: JWT).
   Future<String?> getIdentityToken({UnifiedGameServicesPlatform? from}) async {
-    final p = from ?? primary;
-    if (!p.supports(GameCapability.identityTokens)) {
-      throw CapabilityNotSupportedException(GameCapability.identityTokens);
-    }
-    return p.getIdentityToken();
+    return _reader(GameCapability.identityTokens, from).getIdentityToken();
   }
 
   // ─── Fan-out helpers ─────────────────────────────────────────────────────
@@ -482,6 +640,19 @@ class UnifiedGameServices {
     UnifiedGameServicesPlatform p,
     String native,
   ) => Map.unmodifiable({...?row, p.providerId: native});
+
+  /// The provider a read targets: [from] or [primary]. Throws
+  /// [CapabilityNotSupportedException] when it does not advertise [capability].
+  UnifiedGameServicesPlatform _reader(
+    GameCapability capability,
+    UnifiedGameServicesPlatform? from,
+  ) {
+    final p = from ?? primary;
+    if (!p.supports(capability)) {
+      throw CapabilityNotSupportedException(capability);
+    }
+    return p;
+  }
 
   /// Runs [op] on every provider that supports [capability].
   ///
