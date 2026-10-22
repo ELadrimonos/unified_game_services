@@ -92,6 +92,13 @@ abstract class UnifiedGameServicesPlatform extends PlatformInterface {
   /// [setStat], [incrementStat]). Intended for subclasses only.
   String resolveStatId(String unifiedId) => _statIds[unifiedId] ?? unifiedId;
 
+  /// The native stat ids registered for this provider (see
+  /// [registerMappings]), without duplicates.
+  ///
+  /// Lets a provider whose SDK cannot enumerate stats implement [getStats] by
+  /// reading the stats the app declared. Intended for subclasses only.
+  Set<String> get mappedStatIds => _statIds.values.toSet();
+
   /// Registers unified-key to native-id mappings for this provider.
   ///
   /// Each map goes from a unified key to this provider's native id and feeds

@@ -45,12 +45,13 @@ void main() {
       expect(await provider.getCurrentPlayer(), isNull);
     });
 
-    test('reveal/increment achievement throw without the native runtime', () {
+    test('revealAchievement is a no-op', () async {
       final provider = EpicProvider(credentials: _credentials);
-      expect(
-        () => provider.revealAchievement('a'),
-        throwsA(isA<PlatformOperationException>()),
-      );
+      await expectLater(provider.revealAchievement('a'), completes);
+    });
+
+    test('incrementAchievement throws without the native runtime', () {
+      final provider = EpicProvider(credentials: _credentials);
       expect(
         () => provider.incrementAchievement('a', 1),
         throwsA(isA<PlatformOperationException>()),

@@ -146,6 +146,15 @@ void main() {
       expect(platform.supports(GameCapability.achievements), isFalse);
       expect(platform.signIn, throwsUnimplementedError);
     });
+
+    test('mappedStatIds lists the registered native stat ids once', () {
+      final platform = _FakeProviderA();
+      expect(platform.mappedStatIds, isEmpty);
+      platform.registerMappings(
+        statIds: {'kills': 'STAT_KILLS', 'frags': 'STAT_KILLS', 'wins': 'W'},
+      );
+      expect(platform.mappedStatIds, {'STAT_KILLS', 'W'});
+    });
   });
 
   group('providerId', () {

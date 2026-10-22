@@ -6,6 +6,7 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 // The bindings define stubs (`Leaderboard`, `Exception`) that clash with the
 // unified model / dart:core.
+import 'play_games_data.dart';
 import 'playgames_bindings.dart' hide Exception, Leaderboard;
 
 /// Native Google Play Games provider, backed by the **Play Games v2 Java SDK**
@@ -37,20 +38,15 @@ import 'playgames_bindings.dart' hide Exception, Leaderboard;
 /// and [GameCapability.overlays]. Stats, cloud save, friends and presence are
 /// not advertised, for the same reasons as in the REST provider.
 ///
-/// ## Implemented and pending operations
-/// Implemented: [isSignedIn], [signIn], the writes [unlockAchievement],
-/// [incrementAchievement], [revealAchievement] and [submitScore], and the
-/// native screens [showAchievementsUI] and [showLeaderboardsUI]. The writes
-/// use the SDK's `*Immediate` variants and await their `Task`, so a rejected
-/// write (unknown id, signed out, offline) throws instead of being reported as
-/// a success.
-///
-/// Pending: reads that return a `Task<T>` payload mapped to unified models.
-/// [getAchievements], [getLeaderboard] and [getPlayerScore] throw
-/// [CapabilityNotSupportedException]; [getCurrentPlayer] and [signOut] are not
-/// overridden and throw [UnimplementedError]. Serve reads from
-/// `unified_game_services_google_play_rest` alongside this provider; the
-/// `unified_game_services_google_play` facade does not combine them itself.
+/// ## Operations
+/// Session: [isSignedIn], [signIn] and [getCurrentPlayer]; [signOut] throws
+/// [PlatformOperationException] (Play Games v2 has no sign-out). Writes:
+/// [unlockAchievement], [incrementAchievement], [revealAchievement] and
+/// [submitScore] use the SDK's `*Immediate` variants and await their `Task`,
+/// so a rejected write (unknown id, signed out, offline) throws instead of
+/// being reported as a success. Reads: [getAchievements], [getLeaderboard]
+/// and [getPlayerScore]. Native screens: [showAchievementsUI] and
+/// [showLeaderboardsUI].
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'google_play_android';
@@ -130,15 +126,15 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     }
   }
 
-  /// Shows the native Play Games sign-in UI when needed and waits for the
-  /// outcome.
+  /// Shows the native Play Games sign-in UI when needed, waits for the outcome
+  /// and loads the player with [getCurrentPlayer].
   ///
-  /// Always returns `null` on success because the player profile is not loaded
-  /// yet. Throws [SignInFailedException] if sign-in fails or the player is not
+  /// Emits a [UserSignedInEvent] when a profile is returned. Returns `null`
+  /// when sign-in succeeded but the profile could not be loaded. Throws
+  /// [SignInFailedException] if sign-in fails or the player is not
   /// authenticated afterwards.
   @override
   Future<PlayerProfile?> signIn() async {
-    // The profile needs the PlayersClient Task mapped to a model.
     final client = PlayGames.getGamesSignInClient(
       _activityResolver().as(Activity.type),
     );
@@ -159,7 +155,67 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
         'Play Games sign-in was not completed (player not authenticated).',
       );
     }
-    return null;
+    final PlayerProfile? player;
+    try {
+      player = await getCurrentPlayer();
+    } on GameServiceException {
+      // Signed in, but the profile read failed: sign-in itself succeeded.
+      return null;
+    }
+    if (player != null) {
+      _emit(UserSignedInEvent(player: player, timestamp: DateTime.now()));
+    }
+    return player;
+  }
+
+  /// Always throws [PlatformOperationException]: Play Games v2 has no
+  /// programmatic sign-out; the player manages the account in Play Games.
+  @override
+  Future<void> signOut() async {
+    throw const PlatformOperationException(
+      'Play Games v2 has no sign-out; the player signs out in Play Games.',
+    );
+  }
+
+  /// Loads the signed-in player with the SDK's `PlayersClient`.
+  ///
+  /// The profile carries the player id and display name; `avatarUrl` stays
+  /// `null` because Play Games image URLs are only readable through its
+  /// `ImageManager`. Returns `null` when no player is signed in. Throws
+  /// [PlatformOperationException] for other failures.
+  @override
+  Future<PlayerProfile?> getCurrentPlayer() async {
+    final client = PlayGames.getPlayersClient(
+      _activityResolver().as(Activity.type),
+    );
+    final Task<Player?> task;
+    try {
+      task = client.getCurrentPlayer();
+    } finally {
+      client.release();
+    }
+    final Player? player;
+    try {
+      player = (await _awaitTask(task as Task<JObject?>))?.as(Player.type);
+    } on _TaskFailure catch (e) {
+      if (e.isSignInRequired) return null;
+      throw PlatformOperationException(
+        'Could not load the Play Games player',
+        cause: e.error,
+      );
+    }
+    if (player == null) return null;
+    try {
+      return PlayerProfile(
+        id: player.getPlayerId().toDartString(releaseOriginal: true),
+        displayName: player.getDisplayName().toDartString(
+          releaseOriginal: true,
+        ),
+        providerId: providerId,
+      );
+    } finally {
+      player.release();
+    }
   }
 
   Future<bool> _isAuthenticated(Task<AuthenticationResult?> task) async {
@@ -394,49 +450,166 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     }
   }
 
-  // ─── Reads (pending the Task<T> binding) ───────────────────────────────────
+  // ─── Reads ─────────────────────────────────────────────────────────────────
   //
-  // The Play Games v2 read path returns `Task<T>` objects that are not
-  // bound yet, so reads are explicitly unsupported here: they throw
-  // [CapabilityNotSupportedException] (per the interface contract) instead of
-  // falling through to the base `UnimplementedError`. Serve reads from
-  // `unified_game_services_google_play_rest` alongside this provider.
+  // The payload types (AnnotatedData, data buffers, Achievement,
+  // LeaderboardScore) are opaque in the committed bindings, so their getters
+  // are called reflectively; see play_games_data.dart.
 
-  static Never _readsUnsupported(GameCapability capability) {
-    throw CapabilityNotSupportedException(
-      capability,
-      cause:
-          'The Play Games v2 JNI read path is pending (Task<T> not bound yet); '
-          'use unified_game_services_google_play_rest for reads.',
+  /// Loads the achievement definitions merged with the player's progress.
+  ///
+  /// Uses the SDK's cached data when fresh (`load(false)`). Hidden
+  /// achievements report `isHidden: true`. Incremental achievements carry their
+  /// native steps; `unlockedAt` is the last update of an unlocked achievement.
+  /// Throws [NotSignedInException] when sign-in is required and
+  /// [PlatformOperationException] for other failures.
+  @override
+  Future<List<Achievement>> getAchievements() async {
+    final buffer = await _awaitRead(
+      _withAchievements((c) => c.load(false)) as Task<JObject?>,
+      'load achievements',
     );
+    if (buffer == null) return const [];
+    return readBuffer(buffer, (e) {
+      final a = readAchievement(e);
+      final unlocked = a.state == achievementStateUnlocked;
+      return Achievement(
+        id: a.id,
+        title: a.name,
+        description: a.description,
+        isUnlocked: unlocked,
+        unlockedAt: unlocked && a.updatedAtMillis > 0
+            ? DateTime.fromMillisecondsSinceEpoch(a.updatedAtMillis)
+            : null,
+        isHidden: a.state == achievementStateHidden,
+        currentSteps: a.currentSteps,
+        totalSteps: a.totalSteps,
+      );
+    });
   }
 
-  /// Not implemented yet: always throws [CapabilityNotSupportedException].
+  /// Loads up to [maxResults] top scores (clamped to the SDK's 1–25).
   ///
-  /// Read achievements through the REST provider instead.
-  @override
-  Future<List<Achievement>> getAchievements() async =>
-      _readsUnsupported(GameCapability.achievements);
-
-  /// Not implemented yet: always throws [CapabilityNotSupportedException].
-  ///
-  /// Read leaderboards through the REST provider instead.
+  /// [timeScope] maps to Play Games' daily, weekly and all-time spans and
+  /// [collection] to its public and friends collections. Throws like
+  /// [getAchievements].
   @override
   Future<Leaderboard> getLeaderboard(
     String leaderboardId, {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
     LeaderboardCollection collection = LeaderboardCollection.global,
     int maxResults = 25,
-  }) async => _readsUnsupported(GameCapability.leaderboards);
+  }) async {
+    final id = resolveLeaderboardId(leaderboardId);
+    final scores = await _awaitRead(
+      _withLeaderboards(
+            (c) => _withJString(
+              id,
+              (js) => c.loadTopScores(
+                js,
+                _timeSpan(timeScope),
+                _collection(collection),
+                maxResults.clamp(1, 25),
+              ),
+            ),
+          )
+          as Task<JObject?>,
+      'load leaderboard "$id"',
+    );
+    final entries = <LeaderboardEntry>[];
+    if (scores != null) {
+      final wrapper = scores.as(LeaderboardsClient$LeaderboardScores.type);
+      try {
+        entries.addAll(
+          readBuffer(wrapper.scores, (e) => _entryOf(readScore(e))),
+        );
+      } finally {
+        wrapper.release();
+      }
+    }
+    return Leaderboard(
+      id: leaderboardId,
+      timeScope: timeScope,
+      collection: collection,
+      entries: entries,
+    );
+  }
 
-  /// Not implemented yet: always throws [CapabilityNotSupportedException].
+  /// Loads the signed-in player's score, or `null` when they have none.
   ///
-  /// Read scores through the REST provider instead.
+  /// Uses the public collection, so the rank is global at any position.
+  /// Throws like [getAchievements].
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-  }) async => _readsUnsupported(GameCapability.leaderboards);
+  }) async {
+    final id = resolveLeaderboardId(leaderboardId);
+    final score = await _awaitRead(
+      _withLeaderboards(
+            (c) => _withJString(
+              id,
+              (js) => c.loadCurrentPlayerLeaderboardScore(
+                js,
+                _timeSpan(timeScope),
+                _collectionPublic,
+              ),
+            ),
+          )
+          as Task<JObject?>,
+      'load the player score on "$id"',
+    );
+    if (score == null) return null;
+    try {
+      return _entryOf(readScore(score));
+    } finally {
+      score.release();
+    }
+  }
+
+  // `LeaderboardVariant` constants.
+  static const _collectionPublic = 0;
+  static const _collectionFriends = 3;
+
+  static int _timeSpan(LeaderboardTimeScope scope) => switch (scope) {
+    LeaderboardTimeScope.daily => 0,
+    LeaderboardTimeScope.weekly => 1,
+    LeaderboardTimeScope.allTime => 2,
+  };
+
+  static int _collection(LeaderboardCollection collection) =>
+      switch (collection) {
+        LeaderboardCollection.global => _collectionPublic,
+        LeaderboardCollection.friends => _collectionFriends,
+      };
+
+  static LeaderboardEntry _entryOf(ScoreData s) => LeaderboardEntry(
+    rank: s.rank,
+    score: s.rawScore,
+    formattedScore: s.displayScore,
+    achievedAt: s.timestampMillis > 0
+        ? DateTime.fromMillisecondsSinceEpoch(s.timestampMillis)
+        : null,
+    player: PlayerProfile(id: s.holderId ?? '', displayName: s.holderName),
+  );
+
+  /// Awaits a read `Task` whose result is an `AnnotatedData`, and returns its
+  /// payload (a new reference, or `null`). Maps failures like [_awaitWrite].
+  Future<JObject?> _awaitRead(Task<JObject?> task, String what) async {
+    final JObject? annotated;
+    try {
+      annotated = await _awaitTask(task);
+    } on _TaskFailure catch (e) {
+      if (e.isSignInRequired) {
+        throw NotSignedInException('Sign in to Play Games to $what', e.error);
+      }
+      throw PlatformOperationException(
+        'Play Games failed to $what',
+        cause: e.error,
+      );
+    }
+    return annotated == null ? null : unwrapAnnotated(annotated);
+  }
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -453,6 +626,18 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   /// Runs [body] with a fresh `AchievementsClient`, releasing it afterwards.
   T _withAchievements<T>(T Function(AchievementsClient client) body) {
     final client = PlayGames.getAchievementsClient(
+      _activityResolver().as(Activity.type),
+    );
+    try {
+      return body(client);
+    } finally {
+      client.release();
+    }
+  }
+
+  /// Runs [body] with a fresh `LeaderboardsClient`, releasing it afterwards.
+  T _withLeaderboards<T>(T Function(LeaderboardsClient client) body) {
+    final client = PlayGames.getLeaderboardsClient(
       _activityResolver().as(Activity.type),
     );
     try {

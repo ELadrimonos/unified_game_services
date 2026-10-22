@@ -263,27 +263,54 @@ class GameJoltProvider extends UnifiedGameServicesPlatform {
       'limit': '$maxResults',
     });
     final scores = _mapList(response['scores']);
-    final entries = <LeaderboardEntry>[];
-    for (var i = 0; i < scores.length; i++) {
-      final s = scores[i];
-      final isGuest = s['user_id'] == null || '${s['user_id']}' == '0';
-      entries.add(
-        LeaderboardEntry(
-          rank: i + 1,
-          score: int.tryParse('${s['sort']}') ?? 0,
-          formattedScore: s['score'] as String?,
-          player: PlayerProfile(
-            id: isGuest ? 'guest' : '${s['user_id']}',
-            displayName: isGuest ? '${s['guest']}' : '${s['user']}',
-          ),
-        ),
-      );
-    }
     return Leaderboard(
       id: leaderboardId,
       timeScope: timeScope,
       collection: collection,
-      entries: entries,
+      entries: [
+        for (var i = 0; i < scores.length; i++) _entryOf(scores[i], i + 1),
+      ],
+    );
+  }
+
+  /// Returns the player's best score in the table with its global rank, or
+  /// `null` when the player has no score there.
+  ///
+  /// Costs two requests: the player's scores (best first), then
+  /// `/scores/get-rank/` for that score. [timeScope] is ignored: GameJolt
+  /// tables are not time-scoped.
+  @override
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async {
+    final id = resolveLeaderboardId(leaderboardId);
+    final response = await _client.get('/scores/', {
+      ..._auth,
+      'table_id': id,
+      'limit': '1',
+    });
+    final scores = _mapList(response['scores']);
+    if (scores.isEmpty) return null;
+    final best = scores.first;
+    final rank = await _client.get('/scores/get-rank/', {
+      'table_id': id,
+      'sort': '${best['sort']}',
+    });
+    return _entryOf(best, int.tryParse('${rank['rank']}') ?? 0);
+  }
+
+  /// Maps one GameJolt score record to an entry at [rank].
+  LeaderboardEntry _entryOf(Map<String, dynamic> s, int rank) {
+    final isGuest = s['user_id'] == null || '${s['user_id']}' == '0';
+    return LeaderboardEntry(
+      rank: rank,
+      score: int.tryParse('${s['sort']}') ?? 0,
+      formattedScore: s['score'] as String?,
+      player: PlayerProfile(
+        id: isGuest ? 'guest' : '${s['user_id']}',
+        displayName: isGuest ? '${s['guest']}' : '${s['user']}',
+      ),
     );
   }
 

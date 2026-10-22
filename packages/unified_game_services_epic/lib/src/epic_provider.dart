@@ -1278,13 +1278,11 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
   }
 
-  /// Always throws [PlatformOperationException]: EOS achievements have no
-  /// reveal operation.
+  /// Does nothing: EOS has no reveal operation and shows a hidden achievement
+  /// once it is unlocked.
   @override
   Future<void> revealAchievement(String achievementId) async {
-    throw const PlatformOperationException(
-      'EOS achievements have no reveal operation.',
-    );
+    // No EOS equivalent; a no-op keeps a facade fan-out from failing here.
   }
 
   // --- stats + leaderboards (write path) -------------------------------------
@@ -1613,35 +1611,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }) async {
     final eos = _ensureInit();
     _requireSignedIn();
-    final id = resolveLeaderboardId(leaderboardId);
 
     // 1. Query the global ranks for this leaderboard into the local cache.
-    final idPtr = id.toNativeUtf8();
-    final queryOpts = calloc<EOS_Leaderboards_QueryLeaderboardRanksOptions>();
-    queryOpts.ref
-      ..ApiVersion = EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST
-      ..LeaderboardId = idPtr.cast<Char>()
-      ..LocalUserId = _localUserId!;
-    try {
-      final res = await _track(
-        (_, cd) => eos.EOS_Leaderboards_QueryLeaderboardRanks(
-          _leaderboards!,
-          queryOpts,
-          cd,
-          Pointer.fromFunction<
-            Void Function(
-              Pointer<
-                EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo
-              >,
-            )
-          >(_onQueryLeaderboardRanksComplete),
-        ),
-      );
-      checkEosResult(res.code, 'EOS_Leaderboards_QueryLeaderboardRanks');
-    } finally {
-      calloc.free(idPtr);
-      calloc.free(queryOpts);
-    }
+    await _queryLeaderboardRanks(eos, resolveLeaderboardId(leaderboardId));
 
     // 2. Count, then copy each record up to maxResults.
     final countOpts =
@@ -1670,19 +1642,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
           out,
         );
         if (rc.value == EosResult.success && out.value != nullptr) {
-          final r = out.value.ref;
-          final puid = _productUserIdToString(eos, r.UserId) ?? 'unknown';
-          final name = r.UserDisplayName == nullptr
-              ? puid
-              : r.UserDisplayName.cast<Utf8>().toDartString();
-          entries.add(
-            LeaderboardEntry(
-              rank: r.Rank,
-              score: r.Score,
-              player: PlayerProfile(id: puid, displayName: name),
-            ),
-          );
-          eos.EOS_Leaderboards_LeaderboardRecord_Release(out.value);
+          entries.add(_takeRecord(eos, out.value));
         }
       } finally {
         calloc.free(copyOpts);
@@ -1700,26 +1660,94 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   /// Returns the signed-in player's entry, or `null` when it is not found.
   ///
-  /// Scans only the top 100 ranks, so a player ranked lower yields `null`.
-  /// [timeScope] is passed on to [getLeaderboard] and has the same limitation.
+  /// Looks the player up by id in every rank `EOS_Leaderboards_QueryLeaderboardRanks`
+  /// returns (`EOS_Leaderboards_CopyLeaderboardRecordByUserId`), not only the
+  /// first page. A player below the ranks EOS returns yields `null`: EOS has no
+  /// rank lookup for arbitrary positions. [timeScope] is ignored, as in
+  /// [getLeaderboard].
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
     LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
   }) async {
-    // EOS exposes a dedicated user-scores query, but it needs the leaderboard's
-    // backing stat name + aggregation. For now we reuse the ranks page and pick
-    // the local player's row — so a player ranked outside the fetched page
-    // (top 100) is not found. Revisit with EOS_Leaderboards_QueryLeaderboardUserScores.
-    final board = await getLeaderboard(
-      leaderboardId,
-      timeScope: timeScope,
-      maxResults: 100,
-    );
-    for (final entry in board.entries) {
-      if (entry.player.id == _puid) return entry;
+    final eos = _ensureInit();
+    _requireSignedIn();
+    await _queryLeaderboardRanks(eos, resolveLeaderboardId(leaderboardId));
+
+    final copyOpts =
+        calloc<EOS_Leaderboards_CopyLeaderboardRecordByUserIdOptions>();
+    copyOpts.ref
+      ..ApiVersion = EOS_LEADERBOARDS_COPYLEADERBOARDRECORDBYUSERID_API_LATEST
+      ..UserId = _localUserId!;
+    final out = calloc<Pointer<EOS_Leaderboards_LeaderboardRecord>>();
+    try {
+      final rc = eos.EOS_Leaderboards_CopyLeaderboardRecordByUserId(
+        _leaderboards!,
+        copyOpts,
+        out,
+      );
+      if (rc.value == EosResult.notFound || out.value == nullptr) return null;
+      checkEosResult(
+        rc.value,
+        'EOS_Leaderboards_CopyLeaderboardRecordByUserId',
+      );
+      return _takeRecord(eos, out.value);
+    } finally {
+      calloc.free(copyOpts);
+      calloc.free(out);
     }
-    return null;
+  }
+
+  /// Runs `EOS_Leaderboards_QueryLeaderboardRanks` for the native [id], filling
+  /// the SDK's record cache read by the `CopyLeaderboardRecord*` calls.
+  Future<void> _queryLeaderboardRanks(EosBindings eos, String id) async {
+    final idPtr = id.toNativeUtf8();
+    final queryOpts = calloc<EOS_Leaderboards_QueryLeaderboardRanksOptions>();
+    queryOpts.ref
+      ..ApiVersion = EOS_LEADERBOARDS_QUERYLEADERBOARDRANKS_API_LATEST
+      ..LeaderboardId = idPtr.cast<Char>()
+      ..LocalUserId = _localUserId!;
+    try {
+      final res = await _track(
+        (_, cd) => eos.EOS_Leaderboards_QueryLeaderboardRanks(
+          _leaderboards!,
+          queryOpts,
+          cd,
+          Pointer.fromFunction<
+            Void Function(
+              Pointer<
+                EOS_Leaderboards_OnQueryLeaderboardRanksCompleteCallbackInfo
+              >,
+            )
+          >(_onQueryLeaderboardRanksComplete),
+        ),
+      );
+      checkEosResult(res.code, 'EOS_Leaderboards_QueryLeaderboardRanks');
+    } finally {
+      calloc.free(idPtr);
+      calloc.free(queryOpts);
+    }
+  }
+
+  /// Maps a copied leaderboard [record] to an entry and releases it.
+  LeaderboardEntry _takeRecord(
+    EosBindings eos,
+    Pointer<EOS_Leaderboards_LeaderboardRecord> record,
+  ) {
+    try {
+      final r = record.ref;
+      final puid = _productUserIdToString(eos, r.UserId) ?? 'unknown';
+      final name = r.UserDisplayName == nullptr
+          ? puid
+          : r.UserDisplayName.cast<Utf8>().toDartString();
+      return LeaderboardEntry(
+        rank: r.Rank,
+        score: r.Score,
+        player: PlayerProfile(id: puid, displayName: name),
+      );
+    } finally {
+      eos.EOS_Leaderboards_LeaderboardRecord_Release(record);
+    }
   }
 
   // --- friends ---------------------------------------------------------------

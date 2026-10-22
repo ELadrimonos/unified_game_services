@@ -395,19 +395,31 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// Float stats are not supported. [key] is mapped through `resolveStatId`
   /// and must resolve to the stat API name from Steamworks.
   @override
-  Future<Stat?> getStat(String key) async {
-    final id = resolveStatId(key);
+  Future<Stat?> getStat(String key) async =>
+      _readStat(_ensureInit().steamUserStats, resolveStatId(key));
+
+  /// Returns the integer stats declared in the `UnifiedStatTable` given to the
+  /// facade, keyed by Steamworks API name.
+  ///
+  /// Steamworks cannot enumerate an app's stats, so only mapped stats are
+  /// read; without a stat table the list is empty. Stats Steam does not know
+  /// as integers are skipped.
+  @override
+  Future<List<Stat>> getStats() async {
     final stats = _ensureInit().steamUserStats;
-    return _withUtf8(id, (keyPtr) {
-      final pData = calloc<Int>();
-      try {
-        if (!stats.getStatInt32(keyPtr, pData)) return null;
-        return Stat(key: id, value: pData.value);
-      } finally {
-        calloc.free(pData);
-      }
-    });
+    return [for (final id in mappedStatIds) ?_readStat(stats, id)];
   }
+
+  Stat? _readStat(Pointer<sw.ISteamUserStats> stats, String id) =>
+      _withUtf8(id, (keyPtr) {
+        final pData = calloc<Int>();
+        try {
+          if (!stats.getStatInt32(keyPtr, pData)) return null;
+          return Stat(key: id, value: pData.value);
+        } finally {
+          calloc.free(pData);
+        }
+      });
 
   /// Sets the integer stat [key] and stores it to Steam, then emits a
   /// [StatUpdatedEvent].
@@ -529,6 +541,43 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns the signed-in player's entry with its global rank, or `null` when
+  /// the player has no score on the leaderboard.
+  ///
+  /// Downloads the one-entry window around the user, so it works at any rank.
+  /// [timeScope] is ignored: Steam leaderboards are not time-scoped.
+  @override
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async {
+    final client = _ensureInit();
+    final stats = client.steamUserStats;
+    final handle = await _findLeaderboard(
+      stats,
+      resolveLeaderboardId(leaderboardId),
+    );
+    final callId = stats.downloadLeaderboardEntries(
+      handle,
+      sw.ELeaderboardDataRequest.globalAroundUser,
+      0,
+      0,
+    );
+    final entries =
+        await _awaitCall<
+          sw.LeaderboardScoresDownloaded,
+          List<LeaderboardEntry>
+        >(callId, (ptr) {
+          final downloaded = ptr.ref;
+          return _readEntries(
+            client,
+            downloaded.steamLeaderboardEntries,
+            downloaded.entryCount,
+          );
+        });
+    return entries.isEmpty ? null : entries.first;
+  }
+
   List<LeaderboardEntry> _readEntries(
     sw.SteamClient client,
     int entriesHandle,
@@ -639,6 +688,10 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     return result;
   }
 
+  /// Deletes the Steam Cloud file named [slot] with `FileDelete`.
+  ///
+  /// Throws [PlatformOperationException] when Steam rejects the delete, for
+  /// example when the file does not exist.
   @override
   Future<void> deleteSave(String slot) async {
     final storage = _ensureInit().steamRemoteStorage;

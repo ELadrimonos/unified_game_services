@@ -17,9 +17,9 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 ///   2. the current `Activity` jobject — obtained here with
 ///      `Jni.getCurrentActivity()` and passed into the provider.
 ///
-/// Reads are not wired yet (see the provider docs: `Task<T>` binding pending),
-/// so this demo exercises the write path — the calls that fire the native
-/// Play Games toasts/overlay: unlock / increment / reveal / submitScore.
+/// The demo exercises the write path — the calls that fire the native Play
+/// Games toasts/overlay: unlock / increment / reveal / submitScore — and the
+/// read path: sign-in state, current player, achievements and scores.
 ///
 /// Before it works on-device you must, in `android/`:
 ///   - set the real Play Games app id string resource (see AndroidManifest +
@@ -177,6 +177,74 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                   child: const Text('Submit score 1234'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('isSignedIn', () async {
+                          _append('isSignedIn = ${await p.isSignedIn()}');
+                        }),
+                  child: const Text('Is signed in?'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('getCurrentPlayer', () async {
+                          final me = await p.getCurrentPlayer();
+                          _append('player = ${me?.id} "${me?.displayName}"');
+                        }),
+                  child: const Text('Current player'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('getAchievements', () async {
+                          final list = await p.getAchievements();
+                          for (final a in list) {
+                            _append(
+                              '  ${a.id} "${a.title}" unlocked=${a.isUnlocked} '
+                              'hidden=${a.isHidden} '
+                              'steps=${a.currentSteps}/${a.totalSteps} '
+                              'at=${a.unlockedAt}',
+                            );
+                          }
+                          _append('achievements: ${list.length}');
+                        }),
+                  child: const Text('Load achievements'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('getLeaderboard', () async {
+                          final board = await p.getLeaderboard(_leaderboardId);
+                          for (final e in board.entries) {
+                            _append(
+                              '  #${e.rank} ${e.player.displayName} '
+                              '${e.displayScore}',
+                            );
+                          }
+                          _append('leaderboard: ${board.entries.length}');
+                        }),
+                  child: const Text('Load leaderboard'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('getPlayerScore', () async {
+                          final e = await p.getPlayerScore(_leaderboardId);
+                          _append(
+                            e == null
+                                ? 'player score: none'
+                                : 'player score: #${e.rank} ${e.displayScore}',
+                          );
+                        }),
+                  child: const Text('My score'),
+                ),
+                OutlinedButton(
+                  onPressed: p == null
+                      ? null
+                      : () => _run('signOut', p.signOut),
+                  child: const Text('Sign out'),
                 ),
                 FilledButton(
                   onPressed: p == null

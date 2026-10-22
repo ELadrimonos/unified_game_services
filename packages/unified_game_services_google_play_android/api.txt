@@ -9,6 +9,7 @@ package:unified_game_services_google_play_android/unified_game_services_google_p
     providerId (getter: String)
     dispose (method: Future<void> Function())
     getAchievements (method: Future<List<Achievement>> Function())
+    getCurrentPlayer (method: Future<PlayerProfile?> Function())
     getLeaderboard (method: Future<Leaderboard> Function(String, {LeaderboardCollection collection, int maxResults, LeaderboardTimeScope timeScope}))
     getPlayerScore (method: Future<LeaderboardEntry?> Function(String, {LeaderboardTimeScope timeScope}))
     incrementAchievement (method: Future<void> Function(String, int))
@@ -19,6 +20,7 @@ package:unified_game_services_google_play_android/unified_game_services_google_p
     showLeaderboardsUI (method: Future<void> Function({String? leaderboardId}))
     showOverlay (method: Future<void> Function({String? overlayId}))
     signIn (method: Future<PlayerProfile?> Function())
+    signOut (method: Future<void> Function())
     submitScore (method: Future<void> Function({required String leaderboardId, required int score}))
     unlockAchievement (method: Future<void> Function(String))
 dart:async:

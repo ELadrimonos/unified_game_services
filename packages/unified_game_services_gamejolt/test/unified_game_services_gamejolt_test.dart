@@ -234,6 +234,46 @@ void main() {
       expect(board.entries[1].player.displayName, 'Anon');
     });
 
+    test(
+      'getPlayerScore returns the best score with its global rank',
+      () async {
+        final m = mock({
+          '/api/game/v1_2/scores/': {
+            'response': {
+              'success': 'true',
+              'scores': [
+                {
+                  'score': '1,500 pts',
+                  'sort': '1500',
+                  'user': 'ada',
+                  'user_id': 7,
+                },
+              ],
+            },
+          },
+          '/api/game/v1_2/scores/get-rank/': {
+            'response': {'success': 'true', 'rank': 4},
+          },
+        });
+        final entry = await providerWith(m.client).getPlayerScore('tbl');
+        expect(entry?.rank, 4);
+        expect(entry?.score, 1500);
+        expect(entry?.player.id, '7');
+        expect(m.calls.first.queryParameters['username'], 'ada');
+        expect(m.calls.last.queryParameters['sort'], '1500');
+      },
+    );
+
+    test('getPlayerScore returns null when the player has no score', () async {
+      final m = mock({
+        '/api/game/v1_2/scores/': {
+          'response': {'success': 'true', 'scores': <Object>[]},
+        },
+      });
+      expect(await providerWith(m.client).getPlayerScore('tbl'), isNull);
+      expect(m.calls, hasLength(1));
+    });
+
     test('cloud save round-trips bytes through base64', () async {
       Uint8List? stored;
       final client = MockClient((req) async {
