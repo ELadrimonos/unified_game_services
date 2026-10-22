@@ -50,7 +50,19 @@ Core API stabilization and multi-provider enhancements.
   valid about 2 minutes) and Epic (EOS Connect ID token, a JWT). The format
   depends on the provider.
 - New `ProviderOperationResult` / `MultiProviderOperationResult` (`succeeded`,
-  `failed`, `allSucceeded`, `anySucceeded`, `allFailed`, `[providerId]`).
+  `failed`, `values`, `errors`, `allSucceeded`, `anySucceeded`, `anyFailed`,
+  `allFailed`, `[providerId]`, `throwIfAnyFailed()`).
+- **Read from every provider (debugging/diffing):** `getAchievementsFromAll()`,
+  `getLeaderboardFromAll(id, ...)`, `getStatsFromAll()`, `getStatFromAll(key)`,
+  `getPlayerScoreFromAll(id)`, `getFriendsFromAll()`, `loadDataFromAll(slot)`, `listSavesFromAll()` and
+  `getCurrentPlayerFromAll()` return a `MultiProviderOperationResult` with one entry per capable provider;
+  failures are data. Also on `GameServices`.
+- `ProviderOperationResult` is a `sealed` class: `OperationSuccess` (non-null
+  `value`) / `OperationFailure` (non-null `error`, `stackTrace`). Switch
+  exhaustively, or use `isSuccess`, `valueOrNull`, `errorOrNull`,
+  `getOrThrow()`, `when(success:, failure:)`. `result.succeeded` /
+  `result.failed` are typed `OperationSuccess` / `OperationFailure`;
+  `AchievementOverview.failed` is `List<OperationFailure<...>>`.
 - **Unified ids on reads:** `Achievement.id`, `Leaderboard.id` and `Stat.key`
   are now the unified key from the mapping tables (native id when unmapped), so
   the same item read from different providers matches. The provider's own id is
@@ -58,8 +70,8 @@ Core API stabilization and multi-provider enhancements.
   `nativeKeys` (`Stat`): `providerId` → native id for every provider in the
   table row, plus the provider the object came from. `nativeId` / `nativeKey`
   are shortcuts for that provider's own entry. Set by the facade.
-- **Cross-provider achievements:** `getUnifiedAchievements()` merges every
-  provider's achievements by unified id (`UnifiedAchievement.unlockedOn`,
+- **Cross-provider achievements:** `getAchievementOverview()` merges every
+  provider's achievements by unified id (`AchievementStatus.unlockedOn`,
   `lockedOn`, `isUnlockedOn(providerId)`, …; providers that fail land in
   `AchievementOverview.failed`), and `syncAchievements()` unlocks on every
   provider what is already unlocked on another.

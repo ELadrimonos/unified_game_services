@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
 import 'multi_provider_result.dart';
-import 'unified_achievement.dart';
+import 'achievement_overview.dart';
 import 'unified_game_services_base.dart';
 
 /// Static, app-wide entry point: initialize once, then call from anywhere.
@@ -11,17 +11,27 @@ import 'unified_game_services_base.dart';
 /// ```dart
 /// GameServices.initialize(providers: [
 ///   SteamProvider(appId: 480),
-///   GameJoltProvider(gameId: '…', privateKey: '…', username: '…', userToken: '…'),
+///   GameJoltProvider(
+///     gameId: '…',
+///     privateKey: '…',
+///     username: '…',
+///     userToken: '…',
+///   ),
 /// ]);
 ///
 /// await GameServices.signIn();
-/// final result = await GameServices.submitScore(leaderboardId: 'global', score: 4200);
+/// final result = await GameServices.submitScore(
+///   leaderboardId: 'global',
+///   score: 4200,
+/// );
 /// final achievements = await GameServices.getAchievements();
 /// ```
 ///
-/// Every method delegates to the global [UnifiedGameServices] ([instance]);
-/// see it for the semantics (fan-out writes return a
-/// [MultiProviderOperationResult], reads use the primary provider or `from:`).
+/// Every other member delegates to the global [UnifiedGameServices]
+/// ([instance]), so each throws [StateError] until [initialize] has been
+/// called; see the delegate for the semantics (fan-out writes return a
+/// [MultiProviderOperationResult], reads use the [primary] provider or
+/// `from:`).
 /// For several independent facades or dependency injection, build
 /// [UnifiedGameServices] directly instead.
 abstract final class GameServices {
@@ -30,9 +40,14 @@ abstract final class GameServices {
   /// Creates the global [UnifiedGameServices] over [providers], stores it as
   /// [instance] and returns it.
   ///
+  /// [providers] are in priority order; the first becomes [primary].
+  /// [achievements], [leaderboards] and [stats] map unified ids to each
+  /// provider's native ids and are registered on every provider (see
+  /// [UnifiedGameServices.new]).
+  ///
   /// Replaces any previous global **without disposing it**; call [dispose]
   /// first if it holds resources. Throws [ArgumentError] if [providers] is
-  /// empty.
+  /// empty, in which case the previous global (if any) is left in place.
   static UnifiedGameServices initialize({
     required List<UnifiedGameServicesPlatform> providers,
     UnifiedAchievementTable? achievements,
@@ -45,8 +60,10 @@ abstract final class GameServices {
     stats: stats,
   );
 
-  /// The global facade. Throws [StateError] before [initialize] (or after
-  /// [reset]).
+  /// The global facade.
+  ///
+  /// Throws [StateError] before [initialize] (or after [reset]); use
+  /// [maybeInstance] to check without throwing.
   static UnifiedGameServices get instance =>
       _instance ??
       (throw StateError(
@@ -54,10 +71,12 @@ abstract final class GameServices {
         'GameServices.initialize(providers: [...]) first.',
       ));
 
-  /// The global facade, or `null` if [initialize] has not been called.
+  /// The global facade, or `null` before [initialize] (or after [reset]).
   static UnifiedGameServices? get maybeInstance => _instance;
 
-  /// Clears the global facade (does not dispose it). Mainly for tests.
+  /// Clears the global facade so [instance] throws again.
+  ///
+  /// Does not dispose the providers (see [dispose]). Mainly for tests.
   static void reset() => _instance = null;
 
   /// See [UnifiedGameServices.providers].
@@ -86,6 +105,10 @@ abstract final class GameServices {
   ) => instance.providersFor(capability);
 
   /// See [UnifiedGameServices.provider].
+  ///
+  /// For example, `GameServices.provider<GameJoltProvider>()` reaches
+  /// GameJolt-only features. Returns `null` when no such provider is
+  /// configured.
   static T? provider<T extends UnifiedGameServicesPlatform>() =>
       instance.provider<T>();
 
@@ -108,6 +131,10 @@ abstract final class GameServices {
   static Future<bool> isSignedIn({UnifiedGameServicesPlatform? from}) =>
       instance.isSignedIn(from: from);
 
+  /// See [UnifiedGameServices.getCurrentPlayerFromAll].
+  static Future<MultiProviderOperationResult<PlayerProfile?>>
+  getCurrentPlayerFromAll() => instance.getCurrentPlayerFromAll();
+
   // ─── Achievements ──────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.getAchievements].
@@ -115,9 +142,13 @@ abstract final class GameServices {
     UnifiedGameServicesPlatform? from,
   }) => instance.getAchievements(from: from);
 
-  /// See [UnifiedGameServices.getUnifiedAchievements].
-  static Future<AchievementOverview> getUnifiedAchievements() =>
-      instance.getUnifiedAchievements();
+  /// See [UnifiedGameServices.getAchievementsFromAll].
+  static Future<MultiProviderOperationResult<List<Achievement>>>
+  getAchievementsFromAll() => instance.getAchievementsFromAll();
+
+  /// See [UnifiedGameServices.getAchievementOverview].
+  static Future<AchievementOverview> getAchievementOverview() =>
+      instance.getAchievementOverview();
 
   /// See [UnifiedGameServices.syncAchievements].
   static Future<MultiProviderOperationResult<void>> syncAchievements() =>
@@ -170,6 +201,27 @@ abstract final class GameServices {
   }) =>
       instance.getPlayerScore(leaderboardId, timeScope: timeScope, from: from);
 
+  /// See [UnifiedGameServices.getPlayerScoreFromAll].
+  static Future<MultiProviderOperationResult<LeaderboardEntry?>>
+  getPlayerScoreFromAll(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) => instance.getPlayerScoreFromAll(leaderboardId, timeScope: timeScope);
+
+  /// See [UnifiedGameServices.getLeaderboardFromAll].
+  static Future<MultiProviderOperationResult<Leaderboard>>
+  getLeaderboardFromAll(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    LeaderboardCollection collection = LeaderboardCollection.global,
+    int maxResults = 25,
+  }) => instance.getLeaderboardFromAll(
+    leaderboardId,
+    timeScope: timeScope,
+    collection: collection,
+    maxResults: maxResults,
+  );
+
   // ─── Stats ─────────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.setStat].
@@ -194,6 +246,15 @@ abstract final class GameServices {
   static Future<List<Stat>> getStats({UnifiedGameServicesPlatform? from}) =>
       instance.getStats(from: from);
 
+  /// See [UnifiedGameServices.getStatsFromAll].
+  static Future<MultiProviderOperationResult<List<Stat>>> getStatsFromAll() =>
+      instance.getStatsFromAll();
+
+  /// See [UnifiedGameServices.getStatFromAll].
+  static Future<MultiProviderOperationResult<Stat?>> getStatFromAll(
+    String key,
+  ) => instance.getStatFromAll(key);
+
   // ─── Cloud save ────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.saveData].
@@ -217,6 +278,15 @@ abstract final class GameServices {
   static Future<MultiProviderOperationResult<void>> deleteSave(String slot) =>
       instance.deleteSave(slot);
 
+  /// See [UnifiedGameServices.listSavesFromAll].
+  static Future<MultiProviderOperationResult<List<CloudSaveMetadata>>>
+  listSavesFromAll() => instance.listSavesFromAll();
+
+  /// See [UnifiedGameServices.loadDataFromAll].
+  static Future<MultiProviderOperationResult<CloudSave?>> loadDataFromAll(
+    String slot,
+  ) => instance.loadDataFromAll(slot);
+
   // ─── Presence ──────────────────────────────────────────────────────────────
 
   /// See [UnifiedGameServices.setPresence].
@@ -234,6 +304,10 @@ abstract final class GameServices {
   static Future<List<PlayerProfile>> getFriends({
     UnifiedGameServicesPlatform? from,
   }) => instance.getFriends(from: from);
+
+  /// See [UnifiedGameServices.getFriendsFromAll].
+  static Future<MultiProviderOperationResult<List<PlayerProfile>>>
+  getFriendsFromAll() => instance.getFriendsFromAll();
 
   // ─── Lobbies & invitations ─────────────────────────────────────────────────
 
@@ -332,8 +406,10 @@ abstract final class GameServices {
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
-  /// See [UnifiedGameServices.dispose]. Does not clear the global; call
-  /// [reset] too if you will not reuse it.
+  /// See [UnifiedGameServices.dispose].
+  ///
+  /// Does not clear the global; call [reset] afterwards if you will not reuse
+  /// it.
   static Future<MultiProviderOperationResult<void>> dispose() =>
       instance.dispose();
 }

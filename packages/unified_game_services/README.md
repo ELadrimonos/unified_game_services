@@ -152,6 +152,38 @@ result.allSucceeded; // every attempted provider succeeded
 result.anySucceeded; // at least one did
 result.allFailed;    // all failed (and at least one was attempted)
 result['steam'];     // one provider's ProviderOperationResult, or null
+result.values;       // values returned by the providers that succeeded
+result.throwIfAnyFailed(); // all-or-nothing: rethrow the first error
+```
+
+Each entry is a `sealed` `ProviderOperationResult`: an `OperationSuccess`
+(non-null `value`) or an `OperationFailure` (non-null `error`, `stackTrace`).
+Switch exhaustively, or use `isSuccess`, `valueOrNull`, `errorOrNull`,
+`getOrThrow()` and `when(success:, failure:)`:
+
+```dart
+switch (result['steam']) {
+  case OperationSuccess(:final value): ...
+  case OperationFailure(:final error): print(error.message);
+  case null: print('steam was not attempted');
+}
+```
+
+Reads default to the primary provider (or `from:`). To see what **every**
+provider returns — handy for debugging mappings or diffing stores — use the
+`*FromAll` variants, which return one result per capable provider:
+
+```dart
+final boards = await services.getLeaderboardFromAll('global');
+for (final r in boards.results) {
+  print('${r.providerId}: ${r.when(
+    success: (b) => '${b.entries.length} entries',
+    failure: (e) => 'failed: ${e.message}',
+  )}');
+}
+// Also: getAchievementsFromAll(), getStatsFromAll(), getStatFromAll(key),
+// getPlayerScoreFromAll(id), getFriendsFromAll(), loadDataFromAll(slot), listSavesFromAll(),
+// getCurrentPlayerFromAll().
 ```
 
 Errors that are not `GameServiceException`s are wrapped in a

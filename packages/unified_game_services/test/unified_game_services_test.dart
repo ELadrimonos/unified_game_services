@@ -60,30 +60,73 @@ class FakeProvider extends UnifiedGameServicesPlatform
   Future<void> revealAchievement(String id) => _record('reveal:$id');
 
   @override
-  Future<LeaderboardEntry?> getPlayerScore(
-    String leaderboardId, {
-    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
-  }) async => LeaderboardEntry(
-    rank: 3,
-    score: 30,
-    player: PlayerProfile(id: name, displayName: name),
-  );
-
-  @override
-  Future<List<Stat>> getStats() async => [Stat(key: 'native_kills', value: 7)];
-
-  @override
-  Future<List<CloudSaveMetadata>> listSaves() async => [
-    const CloudSaveMetadata(slot: 'main'),
-  ];
-
-  @override
   Future<void> deleteSave(String slot) => _record('delete:$slot');
 
   @override
   Future<List<Achievement>> getAchievements() async {
     calls.add('getAchievements');
     return [Achievement(id: '$name-a', title: name)];
+  }
+
+  @override
+  Future<LeaderboardEntry?> getPlayerScore(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+  }) async {
+    await _record('getPlayerScore:$leaderboardId');
+    return name == 'none'
+        ? null
+        : LeaderboardEntry(
+            rank: 1,
+            player: PlayerProfile(id: name, displayName: name),
+            score: 10,
+          );
+  }
+
+  @override
+  Future<List<PlayerProfile>> getFriends() async {
+    await _record('getFriends');
+    return [PlayerProfile(id: '$name-f', displayName: 'f')];
+  }
+
+  @override
+  Future<List<CloudSaveMetadata>> listSaves() async {
+    await _record('listSaves');
+    return [CloudSaveMetadata(slot: '$name-slot')];
+  }
+
+  @override
+  Future<CloudSave?> loadData(String slot) async {
+    await _record('loadData:$slot');
+    return name == 'none'
+        ? null
+        : CloudSave(
+            metadata: CloudSaveMetadata(slot: slot),
+            data: [1],
+          );
+  }
+
+  @override
+  Future<List<Stat>> getStats() async {
+    await _record('getStats');
+    return [Stat(key: '$name-kills', value: 3)];
+  }
+
+  @override
+  Future<Stat?> getStat(String key) async {
+    await _record('getStat:$key');
+    return name == 'none' ? null : Stat(key: key, value: 7);
+  }
+
+  @override
+  Future<Leaderboard> getLeaderboard(
+    String leaderboardId, {
+    LeaderboardTimeScope timeScope = LeaderboardTimeScope.allTime,
+    LeaderboardCollection collection = LeaderboardCollection.global,
+    int maxResults = 25,
+  }) async {
+    await _record('getLeaderboard:$leaderboardId');
+    return Leaderboard(id: leaderboardId);
   }
 }
 
@@ -202,13 +245,181 @@ void main() {
       // Original provider error is preserved, not discarded.
       final error = result.failed.single.error;
       expect(error, isA<PlatformOperationException>());
-      expect(error!.message, 'b:unlock:x');
-      expect(result['b']!.success, isFalse);
+      expect(error.message, 'b:unlock:x');
+      expect(result['b']!.isFailure, isTrue);
       expect(result['zzz'], isNull);
       // Every provider was attempted.
       expect(a.calls, contains('unlock:x'));
       expect(b.calls, contains('unlock:x'));
       expect(c.calls, contains('unlock:x'));
+    });
+
+    test('results are sealed: exhaustive switch, typed accessors', () async {
+      final a = FakeProvider(name: 'a', caps: {GameCapability.achievements});
+      final b = FakeProvider(
+        name: 'b',
+        caps: {GameCapability.achievements},
+        failOn: {'unlock:x'},
+      );
+      final result = await UnifiedGameServices(
+        providers: [a, b],
+      ).unlockAchievement('x');
+
+      final labels = [
+        for (final r in result.results)
+          switch (r) {
+            OperationSuccess(:final providerId) => '$providerId:ok',
+            OperationFailure(:final providerId, :final error) =>
+              '$providerId:${error.message}',
+          },
+      ];
+      expect(labels, ['a:ok', 'b:b:unlock:x']);
+      expect(result['a']!.isSuccess, isTrue);
+      expect(result['b']!.errorOrNull, isA<PlatformOperationException>());
+      expect(result['a']!.errorOrNull, isNull);
+      expect(result.anyFailed, isTrue);
+      expect(result.errors, hasLength(1));
+      expect(result['a']!.when(success: (_) => 1, failure: (_) => 0), 1);
+      expect(result['b']!.when(success: (_) => 1, failure: (_) => 0), 0);
+      expect(result['a']!.getOrThrow, returnsNormally);
+      expect(result['b']!.getOrThrow, throwsA(isA<GameServiceException>()));
+      expect(result.throwIfAnyFailed, throwsA(isA<GameServiceException>()));
+    });
+
+    group('reads from all providers', () {
+      late FakeProvider a, b, c;
+      late UnifiedGameServices services;
+
+      setUp(() {
+        const caps = {
+          GameCapability.achievements,
+          GameCapability.leaderboards,
+          GameCapability.stats,
+        };
+        a = FakeProvider(name: 'a', caps: caps);
+        b = FakeProvider(
+          name: 'b',
+          caps: caps,
+          failOn: {'getStats', 'getStat:k', 'getLeaderboard:lb'},
+        );
+        c = FakeProvider(name: 'none', caps: caps);
+        services = UnifiedGameServices(providers: [a, b, c]);
+      });
+
+      test(
+        'getAchievementsFromAll returns one tagged list per provider',
+        () async {
+          final r = await services.getAchievementsFromAll();
+          expect(r.operation, 'getAchievements');
+          expect(r.successfulProviders, ['a', 'b', 'none']);
+          expect(r['b']!.valueOrNull!.single.providerId, 'b');
+        },
+      );
+
+      test(
+        'getStatsFromAll reports a failing provider without throwing',
+        () async {
+          final r = await services.getStatsFromAll();
+          expect(r.successfulProviders, ['a', 'none']);
+          expect(r.failedProviders, ['b']);
+          expect(r['a']!.valueOrNull!.single.providerId, 'a');
+          expect(r['a']!.valueOrNull!.single.nativeKeys, {'a': 'a-kills'});
+        },
+      );
+
+      test(
+        'getStatFromAll keeps null for providers without the stat',
+        () async {
+          final r = await services.getStatFromAll('k');
+          expect(r['a']!.valueOrNull!.providerId, 'a');
+          expect(r['none']!.isSuccess, isTrue);
+          expect(r['none']!.valueOrNull, isNull);
+          expect(r['b']!.isFailure, isTrue);
+        },
+      );
+
+      test(
+        'getLeaderboardFromAll tags each leaderboard with its provider',
+        () async {
+          final r = await services.getLeaderboardFromAll('lb');
+          expect(r['a']!.valueOrNull!.providerId, 'a');
+          expect(r['none']!.valueOrNull!.providerId, 'none');
+          expect(r.failedProviders, ['b']);
+        },
+      );
+
+      test(
+        'getPlayerScoreFromAll tags the player, null when no entry',
+        () async {
+          final r = await services.getPlayerScoreFromAll('lb');
+          expect(r['a']!.valueOrNull!.player.providerId, 'a');
+          expect(r['none']!.isSuccess, isTrue);
+          expect(r['none']!.valueOrNull, isNull);
+          expect(
+            (await services.getPlayerScore('lb', from: a))!.player.providerId,
+            'a',
+          );
+        },
+      );
+
+      test('getCurrentPlayerFromAll asks every provider', () async {
+        final r = await services.getCurrentPlayerFromAll();
+        expect(r.successfulProviders, ['a', 'b', 'none']);
+        expect(r['b']!.valueOrNull!.providerId, 'b');
+      });
+
+      test(
+        'getFriendsFromAll and loadDataFromAll are capability-gated',
+        () async {
+          final x = FakeProvider(
+            name: 'x',
+            caps: {GameCapability.friends, GameCapability.cloudSave},
+          );
+          final y = FakeProvider(
+            name: 'y',
+            caps: {GameCapability.achievements},
+          );
+          final svc = UnifiedGameServices(providers: [x, y]);
+          final friends = await svc.getFriendsFromAll();
+          expect(friends.results.map((r) => r.providerId), ['x']);
+          expect(friends['x']!.valueOrNull!.single.providerId, 'x');
+          final saves = await svc.loadDataFromAll('s1');
+          expect(saves['x']!.valueOrNull!.metadata.providerId, 'x');
+          expect(y.calls, isEmpty);
+          final lists = await svc.listSavesFromAll();
+          expect(lists.results.map((r) => r.providerId), ['x']);
+          expect(lists['x']!.valueOrNull!.single.providerId, 'x');
+          expect((await svc.listSaves(from: x)).single.slot, 'x-slot');
+        },
+      );
+
+      test('throws CapabilityNotSupported when nobody supports it', () {
+        final bare = UnifiedGameServices(providers: [FakeProvider(name: 'x')]);
+        expect(
+          bare.getStatsFromAll,
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+        expect(
+          () => bare.getLeaderboardFromAll('lb'),
+          throwsA(isA<CapabilityNotSupportedException>()),
+        );
+      });
+
+      test('static GameServices delegates', () async {
+        GameServices.initialize(providers: [a]);
+        addTearDown(GameServices.reset);
+        expect((await GameServices.getStatsFromAll()).allSucceeded, isTrue);
+        expect((await GameServices.getStatFromAll('k')).allSucceeded, isTrue);
+        expect(
+          (await GameServices.getAchievementsFromAll()).allSucceeded,
+          isTrue,
+        );
+        expect(
+          (await GameServices.getLeaderboardFromAll('lb')).allSucceeded,
+          isTrue,
+        );
+        expect((await GameServices.getStats()).single.providerId, 'a');
+      });
     });
 
     test('all providers succeed', () async {
@@ -225,7 +436,7 @@ void main() {
       expect(result.allFailed, isFalse);
       expect(result.failed, isEmpty);
       expect(result.results.map((r) => r.providerId), ['a', 'b', 'c']);
-      expect(result.results.every((r) => r.error == null), isTrue);
+      expect(result.results.every((r) => r.isSuccess), isTrue);
     });
 
     test('all providers fail without throwing', () async {
@@ -244,7 +455,7 @@ void main() {
       expect(result.allSucceeded, isFalse);
       expect(result.anySucceeded, isFalse);
       expect(result.allFailed, isTrue);
-      expect(result.failed.map((r) => r.error!.message), [
+      expect(result.failed.map((r) => r.error.message), [
         'a:score:lb:5',
         'b:score:lb:5',
       ]);
@@ -259,7 +470,7 @@ void main() {
 
         final error = result.failed.single.error;
         expect(error, isA<PlatformOperationException>());
-        expect(error!.cause, isA<UnimplementedError>());
+        expect(error.cause, isA<UnimplementedError>());
         expect(result.failed.single.stackTrace, isNotNull);
       },
     );
@@ -277,7 +488,7 @@ void main() {
       final services = UnifiedGameServices(
         providers: [a],
         stats: UnifiedStatTable.fromMap({
-          'kills': {'a': 'native_kills'},
+          'kills': {'a': 'a-kills'},
         }),
       );
 
@@ -286,7 +497,7 @@ void main() {
 
       final stat = (await services.getStats()).single;
       expect(stat.key, 'kills');
-      expect(stat.nativeKeys['a'], 'native_kills');
+      expect(stat.nativeKeys['a'], 'a-kills');
       expect(stat.providerId, 'a');
 
       expect((await services.listSaves()).single.providerId, 'a');
@@ -406,7 +617,7 @@ void main() {
       expect((await services.getAchievements(from: b)).single.providerId, 'b');
       expect((await services.getCurrentPlayer(from: b))?.providerId, 'b');
       final signIn = await services.signIn();
-      expect(signIn['b']!.value?.providerId, 'b');
+      expect(signIn['b']!.valueOrNull?.providerId, 'b');
     });
 
     test('reads can target a specific provider with from:', () async {
@@ -428,7 +639,7 @@ void main() {
       expect(a.calls, contains('signIn'));
       expect(b.calls, contains('signIn'));
       expect(result.allSucceeded, isTrue);
-      expect(result['a']!.value?.id, 'a');
+      expect(result['a']!.valueOrNull?.id, 'a');
     });
 
     test('provider<T>() finds a provider by type', () {

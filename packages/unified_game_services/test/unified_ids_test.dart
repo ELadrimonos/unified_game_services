@@ -132,9 +132,9 @@ void main() {
     });
   });
 
-  group('getUnifiedAchievements', () {
+  group('getAchievementOverview', () {
     test('merges providers by unified id without duplicates', () async {
-      final overview = await services.getUnifiedAchievements();
+      final overview = await services.getAchievementOverview();
       expect(overview.achievements.map((a) => a.id), [
         'first_win',
         'ACH_ONLY_STEAM',
@@ -152,7 +152,7 @@ void main() {
 
     test('a failing provider is reported, not thrown', () async {
       jolt.failRead = true;
-      final overview = await services.getUnifiedAchievements();
+      final overview = await services.getAchievementOverview();
       expect(overview.failed.single.providerId, 'gamejolt');
       expect(overview['first_win']!.providers, {'steam'});
     });
@@ -164,7 +164,7 @@ void main() {
       expect(result.failed, isEmpty);
       expect(jolt.unlocked, ['111']);
       expect(steam.unlocked, isEmpty);
-      final win = (await services.getUnifiedAchievements())['first_win']!;
+      final win = (await services.getAchievementOverview())['first_win']!;
       expect(win.isUnlockedEverywhere, isTrue);
     });
 
