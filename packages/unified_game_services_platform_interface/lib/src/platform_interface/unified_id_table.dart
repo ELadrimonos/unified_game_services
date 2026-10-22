@@ -1,27 +1,60 @@
 /// Mapping structures for unified keys to platform-specific native IDs.
+///
+/// A [UnifiedIdTable] translates one portable key (e.g. `'first_win'`) into the
+/// native id each provider uses. Tables are handed to the `UnifiedGameServices`
+/// facade, which registers each provider's slice through
+/// [UnifiedGameServicesPlatform.registerMappings].
+///
+/// @docImport 'platform_interface.dart';
 library;
 
 import 'dart:collection';
 
-/// Constants for official provider IDs.
+/// Constants for the well-known [UnifiedGameServicesPlatform.providerId]
+/// values.
+///
+/// These are the keys used inside a [ProviderIdMap]. Lookups compare against
+/// the exact id a provider reports, so a custom provider with its own id is
+/// addressed through the `custom` argument of [ProviderIdMap.new].
 abstract final class ProviderId {
+  /// The id of the Steam provider.
   static const String steam = 'steam';
+
+  /// The id of the Epic Online Services provider.
   static const String epic = 'epic';
+
+  /// The id of the Apple Game Center provider.
   static const String gameCenter = 'game_center';
+
+  /// A generic Google Play Games id.
+  ///
+  /// The built-in Google Play providers report [googlePlayRest] or
+  /// [googlePlayAndroid] instead, so entries keyed by this id are not applied
+  /// to them.
   static const String googlePlay = 'google_play';
+
+  /// The id of the Google Play Games REST provider.
   static const String googlePlayRest = 'google_play_rest';
+
+  /// The id of the Google Play Games on-device Android provider.
   static const String googlePlayAndroid = 'google_play_android';
+
+  /// The id of the GameJolt provider.
   static const String gameJolt = 'gamejolt';
+
+  /// The id of the PlayFab provider.
   static const String playFab = 'playfab';
+
+  /// The id of the Xbox (PC) provider.
   static const String xboxPc = 'xbox_pc';
 }
 
-/// Strongly-typed map helper for associating provider IDs with platform-specific IDs.
+/// An unmodifiable map from provider id to native id for one unified key.
 ///
-/// Implements [Map<String, String>] so it can be used directly inside
-/// [UnifiedAchievementTable], [UnifiedLeaderboardTable], or [UnifiedStatTable].
+/// A [Map] of `providerId -> nativeId` built from named arguments, so it can
+/// be used as a row of [UnifiedAchievementTable], [UnifiedLeaderboardTable] or
+/// [UnifiedStatTable]. Arguments left `null` are omitted from the map.
 ///
-/// Example:
 /// ```dart
 /// UnifiedAchievementTable({
 ///   'first_win': ProviderIdMap(
@@ -31,6 +64,12 @@ abstract final class ProviderId {
 /// })
 /// ```
 class ProviderIdMap extends MapView<String, String> {
+  /// Creates a map with one entry per non-`null` argument.
+  ///
+  /// Each named argument is keyed by its matching [ProviderId] constant.
+  /// [custom] adds entries for providers without a named argument (keyed by
+  /// their [UnifiedGameServicesPlatform.providerId]); on a key clash it
+  /// overrides the named arguments.
   ProviderIdMap({
     String? steam,
     String? epic,
@@ -58,12 +97,14 @@ class ProviderIdMap extends MapView<String, String> {
        );
 }
 
-/// Base class for mapping a unified key (e.g. `'first_win'`) to platform-specific
-/// native IDs across providers (e.g. `'steam' => 'ACH_WIN_ONE_GAME'`).
+/// Base class for mapping a unified key to platform-specific native IDs.
+///
+/// A unified key such as `'first_win'` maps to the native id on each provider,
+/// e.g. `'steam' => 'ACH_WIN_ONE_GAME'`. Subclasses only fix what kind of id
+/// the table holds (achievement, leaderboard or stat).
 abstract class UnifiedIdTable {
   /// Maps a unified key to a map of `providerId` -> native ID.
   ///
-  /// Example:
   /// ```dart
   /// UnifiedAchievementTable({
   ///   'first_win': ProviderIdMap(
@@ -74,6 +115,9 @@ abstract class UnifiedIdTable {
   /// ```
   final Map<String, Map<String, String>> mappings;
 
+  /// Creates a table backed by [mappings].
+  ///
+  /// The map is not copied, so it should not be mutated afterwards.
   const UnifiedIdTable(this.mappings);
 
   /// The native ID of [unifiedId] on every provider, keyed by `providerId`.
@@ -82,7 +126,11 @@ abstract class UnifiedIdTable {
   Map<String, String> nativeIdsFor(String unifiedId) =>
       Map.unmodifiable(mappings[unifiedId] ?? const <String, String>{});
 
-  /// Extracts the native ID map for a specific [providerId].
+  /// Extracts the unified key -> native ID map for [providerId].
+  ///
+  /// This is the slice a provider receives through
+  /// [UnifiedGameServicesPlatform.registerMappings]. Unified keys with no entry
+  /// for [providerId] are omitted.
   Map<String, String> forProvider(String providerId) {
     final result = <String, String>{};
     for (final entry in mappings.entries) {
@@ -109,8 +157,10 @@ abstract class UnifiedIdTable {
 
 /// Table mapping unified achievement keys to platform-specific achievement IDs.
 class UnifiedAchievementTable extends UnifiedIdTable {
+  /// Creates a table from [mappings] of unified key -> `providerId` -> id.
   const UnifiedAchievementTable(super.mappings);
 
+  /// Creates a table from [map], equivalent to the default constructor.
   factory UnifiedAchievementTable.fromMap(
     Map<String, Map<String, String>> map,
   ) => UnifiedAchievementTable(map);
@@ -118,8 +168,10 @@ class UnifiedAchievementTable extends UnifiedIdTable {
 
 /// Table mapping unified leaderboard keys to platform-specific leaderboard IDs.
 class UnifiedLeaderboardTable extends UnifiedIdTable {
+  /// Creates a table from [mappings] of unified key -> `providerId` -> id.
   const UnifiedLeaderboardTable(super.mappings);
 
+  /// Creates a table from [map], equivalent to the default constructor.
   factory UnifiedLeaderboardTable.fromMap(
     Map<String, Map<String, String>> map,
   ) => UnifiedLeaderboardTable(map);
@@ -127,8 +179,10 @@ class UnifiedLeaderboardTable extends UnifiedIdTable {
 
 /// Table mapping unified stat keys to platform-specific stat IDs.
 class UnifiedStatTable extends UnifiedIdTable {
+  /// Creates a table from [mappings] of unified key -> `providerId` -> key.
   const UnifiedStatTable(super.mappings);
 
+  /// Creates a table from [map], equivalent to the default constructor.
   factory UnifiedStatTable.fromMap(Map<String, Map<String, String>> map) =>
       UnifiedStatTable(map);
 }

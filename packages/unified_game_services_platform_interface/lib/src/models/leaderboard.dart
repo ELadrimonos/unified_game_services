@@ -1,3 +1,7 @@
+/// @docImport '../platform_interface/platform_interface.dart';
+/// @docImport '../platform_interface/unified_id_table.dart';
+library;
+
 import '../internal/equality.dart';
 import 'enums.dart';
 import 'player_profile.dart';
@@ -10,17 +14,21 @@ class LeaderboardEntry {
   /// The player who owns this score.
   final PlayerProfile player;
 
-  /// Raw numeric score.
+  /// The raw numeric score.
   final int score;
 
   /// Provider-formatted score for display (e.g. "1:23.45", "1,500 pts").
   ///
-  /// Falls back to `score.toString()` when the provider gives no formatting.
+  /// `null` when the provider gives no formatting; [displayScore] then falls
+  /// back to the raw [score].
   final String? formattedScore;
 
   /// When the score was achieved, if known.
   final DateTime? achievedAt;
 
+  /// Creates a leaderboard row.
+  ///
+  /// [rank] is 1-based; [formattedScore] and [achievedAt] are optional.
   const LeaderboardEntry({
     required this.rank,
     required this.player,
@@ -71,8 +79,10 @@ class LeaderboardEntry {
 }
 
 /// A leaderboard and a page of its ranked entries.
+///
+/// Returned by [UnifiedGameServicesPlatform.getLeaderboard].
 class Leaderboard {
-  /// Unified identifier: the key from the `UnifiedLeaderboardTable` the board
+  /// Unified identifier: the key from the [UnifiedLeaderboardTable] the board
   /// was requested with, otherwise the native id itself. See [nativeIds] for
   /// the native ids.
   final String id;
@@ -89,10 +99,13 @@ class Leaderboard {
   /// The player set these [entries] were queried for.
   final LeaderboardCollection collection;
 
-  /// Ranked entries, ordered best-first.
+  /// Ranked entries, ordered best-first according to [order].
   final List<LeaderboardEntry> entries;
 
-  /// The signed-in player's own entry, if available and outside [entries].
+  /// The signed-in player's own entry, or `null` if the provider did not
+  /// return one.
+  ///
+  /// Meant to surface the player's rank when it falls outside [entries].
   final LeaderboardEntry? playerEntry;
 
   /// [UnifiedGameServicesPlatform.providerId] of the provider this came from.
@@ -104,7 +117,7 @@ class Leaderboard {
   /// The native id of this leaderboard on each provider, keyed by
   /// `providerId`.
   ///
-  /// Read-only. Holds the row of the `UnifiedLeaderboardTable` for [id], plus
+  /// Read-only. Holds the row of the [UnifiedLeaderboardTable] for [id], plus
   /// the native id the [providerId] provider itself used. Set by the
   /// `UnifiedGameServices` facade on reads; empty when the object was built by
   /// a provider or by hand.
@@ -114,6 +127,11 @@ class Leaderboard {
   /// when unknown.
   String? get nativeId => providerId == null ? null : nativeIds[providerId];
 
+  /// Creates a leaderboard page identified by [id].
+  ///
+  /// [entries] defaults to empty and [order], [timeScope] and [collection]
+  /// to [LeaderboardOrder.highToLow], [LeaderboardTimeScope.allTime] and
+  /// [LeaderboardCollection.global].
   const Leaderboard({
     required this.id,
     this.displayName,

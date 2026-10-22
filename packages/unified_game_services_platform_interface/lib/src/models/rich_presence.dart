@@ -1,7 +1,10 @@
+/// @docImport '../platform_interface/platform_interface.dart';
+library;
+
 /// The player's current activity, published to friends.
 ///
 /// Providers expose different subsets of these fields; only [state] is
-/// required.
+/// required. Published with [UnifiedGameServicesPlatform.setPresence].
 class RichPresence {
   /// Short, user-facing activity line (e.g. "Playing Ranked").
   final String state;
@@ -18,6 +21,9 @@ class RichPresence {
   /// Maximum party size, if applicable.
   final int? partyMax;
 
+  /// Creates a presence with the activity line [state].
+  ///
+  /// [details], [startedAt], [partySize] and [partyMax] are optional.
   const RichPresence({
     required this.state,
     this.details,

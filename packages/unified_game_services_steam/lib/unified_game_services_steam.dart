@@ -1,11 +1,15 @@
-/// Steam provider for `unified_game_services`, backed by the pure-Dart
-/// `steamworks` FFI bindings.
+/// A Steam provider for `unified_game_services`, backed by the Steamworks SDK
+/// through the pure-Dart `steamworks` FFI bindings.
 ///
-/// **Desktop only** (Windows/macOS/Linux). The real provider is `dart:ffi`, so
-/// on web this entry point exports an inert stub whose members throw
-/// [UnsupportedError] — importing the package never breaks a web build, but
-/// Steam cannot run there. On mobile (Android/iOS) the code compiles but the
-/// constructor throws [UnsupportedError] at runtime. See the README.
+/// Supports achievements, leaderboards, stats, cloud save, friends and rich
+/// presence on **desktop only** (Windows, macOS, Linux). The host ships the
+/// Steamworks runtime library and runs the Steam client; see `SteamProvider`
+/// for the requirements and behaviour.
+///
+/// On web this entry point exports an inert `SteamProvider` stub whose
+/// constructor throws [UnsupportedError], so importing the package never breaks
+/// a web build. On Android and iOS the code compiles but the constructor throws
+/// [UnsupportedError] at runtime.
 library;
 
 export 'src/steam_provider_web.dart'

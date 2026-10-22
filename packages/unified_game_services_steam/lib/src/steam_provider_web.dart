@@ -9,18 +9,21 @@ const String _kWebError =
     'available on web. Do not register it in a web build — the facade should '
     'only be given Steam on Windows/macOS/Linux. See the package README.';
 
-/// Web stub of [SteamProvider].
+/// The web stub of the desktop [SteamProvider].
 ///
-/// The real provider is `dart:ffi` (Steamworks) and cannot compile to JS, so
-/// the package entry point conditional-exports this stub on web
-/// (`if (dart.library.io)` selects the real one). It mirrors the public surface
-/// so consumer code that references [SteamProvider] still type-checks on web;
-/// every member throws [UnsupportedError] because Steam cannot run there.
+/// The real provider uses `dart:ffi` and cannot compile to JavaScript, so the
+/// package entry point exports this stub when `dart.library.io` is
+/// unavailable. It mirrors the constructor and most Steam-specific extras so
+/// code that references [SteamProvider] still type-checks on web.
+/// The constructor and every member throw [UnsupportedError] because Steam
+/// cannot run there. Register Steam only on Windows, macOS and Linux.
 class SteamProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'steam';
 
-  /// Whether Steam is supported on the current platform (always `false` on web).
+  /// Whether Steam is supported on the current platform.
+  ///
+  /// Always `false` on web.
   static bool get isSupported => false;
 
   /// Always throws [UnsupportedError] — Steam is desktop-only.
@@ -28,25 +31,29 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     throw UnsupportedError(_kWebError);
   }
 
-  /// Mirrors the real provider's `appId` field; unused on web.
+  /// The Steam application id; unused on web.
   final int? appId;
 
   /// Always throws [UnsupportedError] — Steam is desktop-only.
   @override
   Future<void> dispose() => throw UnsupportedError(_kWebError);
 
-  /// Always throws [UnsupportedError] — Steam is desktop-only.
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
   Future<void> clearAchievement(String achievementId) =>
       throw UnsupportedError(_kWebError);
 
-  /// Always throws [UnsupportedError] — Steam is desktop-only.
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
   Future<void> resetAllStats({bool includeAchievements = false}) =>
       throw UnsupportedError(_kWebError);
 
-  /// Always throws [UnsupportedError] — Steam is desktop-only.
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
   Future<SteamAuthTicket> getWebApiAuthTicket({String? identity}) =>
       throw UnsupportedError(_kWebError);
 
-  /// Always throws [UnsupportedError] — Steam is desktop-only.
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
   void cancelAuthTicket(int handle) => throw UnsupportedError(_kWebError);
 }

@@ -1,18 +1,26 @@
+/// @docImport '../platform_interface/platform_interface.dart';
+/// @docImport '../platform_interface/unified_id_table.dart';
+library;
+
 import '../internal/equality.dart';
 
 /// A single achievement and the signed-in player's progress on it.
 ///
 /// Achievements come in two shapes:
+///
 /// - **Standard**: unlocked in one step ([isIncremental] is `false`).
 /// - **Incremental**: unlocked by accumulating [currentSteps] up to
 ///   [totalSteps] (e.g. "win 50 matches"). Providers that model progress as a
 ///   percentage map it onto steps out of 100.
+///
+/// Instances are immutable; use [copyWith] to derive a modified copy.
 class Achievement {
-  /// Unified identifier: the key from the `UnifiedAchievementTable` when the
+  /// Unified identifier: the key from the [UnifiedAchievementTable] when the
   /// provider's native id is mapped there, otherwise the native id itself.
   ///
-  /// Stable across providers, so the same achievement read from Steam and
-  /// GameJolt compares equal by [id]. See [nativeIds] for the native ids.
+  /// Stable across providers when a table maps them to one key, so the same
+  /// achievement read from Steam and GameJolt shares an [id]. See [nativeIds]
+  /// for the native ids.
   final String id;
 
   /// Localized title.
@@ -27,16 +35,19 @@ class Achievement {
   /// When the achievement was unlocked, if known.
   final DateTime? unlockedAt;
 
-  /// Whether the achievement is hidden until unlocked.
+  /// Whether the achievement is hidden until unlocked, or `null` if the
+  /// provider does not say.
   final bool? isHidden;
 
   /// Icon URL for the current (locked/unlocked) state, if available.
   final String? iconUrl;
 
   /// Steps the player has completed (incremental achievements only).
+  ///
+  /// Always `0` for standard achievements.
   final int currentSteps;
 
-  /// Total steps required to unlock (0 for standard achievements).
+  /// Total steps required to unlock, or `0` for standard achievements.
   final int totalSteps;
 
   /// [UnifiedGameServicesPlatform.providerId] of the provider this came from.
@@ -48,7 +59,7 @@ class Achievement {
   /// The native id of this achievement on each provider, keyed by
   /// `providerId` (e.g. `{'steam': 'ACH_WIN_ONE_GAME', 'gamejolt': '123456'}`).
   ///
-  /// Read-only. Holds the row of the `UnifiedAchievementTable` for [id], plus
+  /// Read-only. Holds the row of the [UnifiedAchievementTable] for [id], plus
   /// the native id the [providerId] provider itself reported. Set by the
   /// `UnifiedGameServices` facade on reads; empty when the object was built by
   /// a provider or by hand.
@@ -58,6 +69,11 @@ class Achievement {
   /// when unknown.
   String? get nativeId => providerId == null ? null : nativeIds[providerId];
 
+  /// Creates an achievement identified by [id] and titled [title].
+  ///
+  /// All other fields are optional: [isUnlocked] defaults to `false`, and
+  /// [currentSteps] and [totalSteps] to `0` (a standard achievement). See the
+  /// field docs for [providerId] and [nativeIds].
   const Achievement({
     required this.id,
     required this.title,
@@ -75,7 +91,10 @@ class Achievement {
   /// Whether this achievement tracks step-based progress.
   bool get isIncremental => totalSteps > 0;
 
-  /// Progress in the range `0.0`–`1.0`. Unlocked achievements report `1.0`.
+  /// Progress in the range `0.0`–`1.0`.
+  ///
+  /// Unlocked achievements report `1.0`; standard achievements that are still
+  /// locked report `0.0`.
   double get progressPercentage {
     if (isUnlocked) return 1.0;
     if (totalSteps == 0) return 0.0;

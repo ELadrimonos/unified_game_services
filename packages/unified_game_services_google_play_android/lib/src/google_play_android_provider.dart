@@ -14,40 +14,59 @@ import 'playgames_bindings.dart' hide Exception, Leaderboard;
 /// Unlike the cross-platform REST provider, writes go through the on-device
 /// Play Games client, so achievement unlocks and score submissions fire the
 /// **native Play Services toasts/overlay**. Authentication is handled by the
-/// SDK via Play Services — there is no OAuth token to manage.
+/// SDK via Play Services: [signIn] shows the native sign-in UI when needed,
+/// and there is no OAuth token to manage.
 ///
-/// ## Host requirements (the engine/app embedding Dart on Android)
+/// ## Host requirements
+/// The engine or app embedding Dart on Android must provide:
 /// 1. A running ART VM with `package:jni` initialized against it (the host
 ///    hands the `JavaVM*`/`JNIEnv` to JNI on startup).
-/// 2. An `activityResolver` (passed to the constructor) that
-///    returns the current `Activity` jobject (from `ANativeActivity.clazz` or
-///    the engine's activity). It is invoked fresh before each native call so a
-///    volatile activity (e.g. Flutter's, which goes stale on rotation) is never
-///    cached; engine hosts with a stable activity pass `() => activity`.
-/// 3. The APK must bundle `com.google.android.gms:play-services-games-v2` and
-///    declare the Play Games app id `<meta-data>` in its manifest.
+/// 2. An `activityResolver`, passed to the constructor, that returns the
+///    current `Activity` jobject (from `ANativeActivity.clazz` or the engine's
+///    activity). It is invoked fresh before each native call, so a volatile
+///    activity (Flutter's goes stale on rotation) is never cached. Engine
+///    hosts with a stable activity can pass `() => activity`.
+/// 3. An APK that bundles `com.google.android.gms:play-services-games-v2` and
+///    declares the Play Games app id `<meta-data>` in its manifest.
 ///
-/// ## Status: writes + native UIs wired; async reads pending
-/// The toast-firing writes ([unlockAchievement], [incrementAchievement],
-/// [revealAchievement], [submitScore]) use the SDK's `*Immediate` variants and
-/// await their `Task`, so a rejected write (unknown id, signed out, offline)
-/// throws instead of being reported as a success. They are fully implemented,
-/// as are the native achievements/leaderboards screens
-/// ([showAchievementsUi], [showLeaderboardsUi]), which await a `Task<Intent>`
-/// through an `OnCompleteListener`. Reads that need a `Task<T>` payload mapped
-/// to unified models (sign-in state, current player, achievement / score
-/// lists) are **not yet implemented**. Until then the unified facade should
-/// serve reads from the REST provider
-/// (`unified_game_services_google_play_rest`); this provider's role is
-/// native-UX writes and screens.
-
+/// On Flutter, `unified_game_services_google_play_flutter` supplies the
+/// resolver for you.
+///
+/// ## Capabilities
+/// Advertises [GameCapability.achievements] and [GameCapability.leaderboards].
+/// Stats, cloud save, friends and presence are not advertised, for the same
+/// reasons as in the REST provider.
+///
+/// ## Implemented and pending operations
+/// Implemented: [isSignedIn], [signIn], and the writes [unlockAchievement],
+/// [incrementAchievement], [revealAchievement] and [submitScore]. The writes
+/// use the SDK's `*Immediate` variants and await their `Task`, so a rejected
+/// write (unknown id, signed out, offline) throws instead of being reported as
+/// a success. The native screens [showAchievementsUi] and [showLeaderboardsUi]
+/// are provider-specific extras.
+///
+/// Pending: reads that return a `Task<T>` payload mapped to unified models.
+/// [getAchievements], [getLeaderboard] and [getPlayerScore] throw
+/// [CapabilityNotSupportedException]; [getCurrentPlayer] and [signOut] are not
+/// overridden and throw [UnimplementedError]. Serve reads from
+/// `unified_game_services_google_play_rest` alongside this provider; the
+/// `unified_game_services_google_play` facade does not combine them itself.
 class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'google_play_android';
 
-  /// Whether Google Play Games Android native provider is supported on the current platform (Android).
+  /// Whether this provider is supported on the current platform.
+  ///
+  /// `true` only on Android.
   static bool get isSupported => Platform.isAndroid;
 
+  /// Creates the provider and initializes the Play Games SDK.
+  ///
+  /// [activityResolver] returns the host `Activity`; see the class
+  /// documentation for how it is called. It is also invoked once here to
+  /// initialize `PlayGamesSdk`.
+  ///
+  /// Throws [UnsupportedError] when not running on Android.
   GooglePlayAndroidProvider({
     required JObject Function() activityResolver,
     // ignore: prefer_initializing_formals
@@ -85,6 +104,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   // ─── Authentication ──────────────────────────────────────────────────────
 
+  /// Whether the Play Games SDK reports the player as authenticated.
+  ///
+  /// Queries the SDK, so it reflects the live Play Services state. Throws
+  /// [PlatformOperationException] if the query fails.
   @override
   Future<bool> isSignedIn() async {
     final client = PlayGames.getGamesSignInClient(
@@ -106,11 +129,15 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  /// Shows the native Play Games sign-in UI when needed and waits for the
+  /// outcome.
+  ///
+  /// Always returns `null` on success because the player profile is not loaded
+  /// yet. Throws [SignInFailedException] if sign-in fails or the player is not
+  /// authenticated afterwards.
   @override
   Future<PlayerProfile?> signIn() async {
-    // Shows the native Play Games sign-in UI when needed and waits for the
-    // outcome. The profile is not loaded yet (needs the PlayersClient Task
-    // mapped to a model), so this returns null on success.
+    // The profile needs the PlayersClient Task mapped to a model.
     final client = PlayGames.getGamesSignInClient(
       _activityResolver().as(Activity.type),
     );
@@ -148,6 +175,12 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   // ─── Achievements (writes fire native toasts) ──────────────────────────────
 
+  /// Unlocks the achievement with the SDK's `unlockImmediate`, firing the native
+  /// toast, and emits an [AchievementUnlockedEvent].
+  ///
+  /// Completes only once Play Games confirms the write. Throws
+  /// [NotSignedInException] when sign-in is required and
+  /// [PlatformOperationException] for other failures, such as offline use.
   @override
   Future<void> unlockAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
@@ -163,6 +196,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Increments the achievement with the SDK's `incrementImmediate`.
+  ///
+  /// Fails the same way as [unlockAchievement].
   @override
   Future<void> incrementAchievement(String achievementId, int steps) async {
     final id = resolveAchievementId(achievementId);
@@ -174,6 +210,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Reveals the achievement with the SDK's `revealImmediate`.
+  ///
+  /// Fails the same way as [unlockAchievement].
   @override
   Future<void> revealAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
@@ -183,8 +222,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
-  /// Provider-specific (not on the unified interface): set an incremental
-  /// achievement to at least [steps], never decreasing it.
+  /// Sets an incremental achievement to at least [steps], never decreasing it.
+  ///
+  /// Provider-specific: not part of the unified interface. Fails the same way
+  /// as [unlockAchievement].
   Future<void> setAchievementStepsAtLeast(
     String achievementId,
     int steps,
@@ -200,6 +241,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
+  /// Submits [score] with the SDK's `submitScoreImmediate` and emits a
+  /// [ScoreSubmittedEvent].
+  ///
+  /// Fails the same way as [unlockAchievement].
   @override
   Future<void> submitScore({
     required String leaderboardId,
@@ -229,9 +274,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   /// Opens the native Play Games **achievements** screen.
   ///
-  /// Provider-specific: other providers have no equivalent system UI. Throws
-  /// [PlatformOperationException] if the SDK cannot produce the intent (e.g.
-  /// the player is not signed in).
+  /// Provider-specific: not part of the unified interface, and other providers
+  /// have no equivalent system UI. Throws [NotSignedInException] when the
+  /// player is not signed in and [PlatformOperationException] if the SDK
+  /// cannot produce the screen.
   Future<void> showAchievementsUi() async {
     final client = PlayGames.getAchievementsClient(
       _activityResolver().as(Activity.type),
@@ -248,7 +294,8 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   /// Opens the native Play Games **leaderboards** screen: the list of all
   /// leaderboards, or a single one when [leaderboardId] is given.
   ///
-  /// Provider-specific; see [showAchievementsUi] for failure behavior.
+  /// Provider-specific: not part of the unified interface. Fails the same way
+  /// as [showAchievementsUi].
   Future<void> showLeaderboardsUi({String? leaderboardId}) async {
     final client = PlayGames.getLeaderboardsClient(
       _activityResolver().as(Activity.type),
@@ -352,10 +399,16 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Not implemented yet: always throws [CapabilityNotSupportedException].
+  ///
+  /// Read achievements through the REST provider instead.
   @override
   Future<List<Achievement>> getAchievements() async =>
       _readsUnsupported(GameCapability.achievements);
 
+  /// Not implemented yet: always throws [CapabilityNotSupportedException].
+  ///
+  /// Read leaderboards through the REST provider instead.
   @override
   Future<Leaderboard> getLeaderboard(
     String leaderboardId, {
@@ -364,6 +417,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     int maxResults = 25,
   }) async => _readsUnsupported(GameCapability.leaderboards);
 
+  /// Not implemented yet: always throws [CapabilityNotSupportedException].
+  ///
+  /// Read scores through the REST provider instead.
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
@@ -372,7 +428,9 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
-  /// Closes the events stream. (JNI client refs are released per call.)
+  /// Closes the events stream.
+  ///
+  /// JNI client references are released per call, so nothing else is held.
   @override
   Future<void> dispose() async {
     await _events.close();

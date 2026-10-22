@@ -1,3 +1,4 @@
+/// @docImport 'unified_id_table.dart';
 library;
 
 import 'dart:typed_data';

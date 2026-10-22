@@ -15,6 +15,8 @@ class NativeToken {
   /// re-issues access tokens silently instead).
   final String? refreshToken;
 
+  /// Creates a token holding [accessToken], with its optional [expiry] and
+  /// [refreshToken].
   const NativeToken({
     required this.accessToken,
     this.expiry,
@@ -41,8 +43,15 @@ abstract interface class NativeTokenProvider {
 ///
 /// On expiry or a `401` it simply re-asks the native provider for a fresh
 /// token; there is no Google token-endpoint refresh because the platform owns
-/// renewal.
+/// renewal. A token without an [NativeToken.expiry] is reused until the REST
+/// client forces a refresh after a `401`.
+///
+/// This is the REST-tier route for an Android host that brokers its own
+/// token. For the Play Games SDK itself (native sign-in and UI), use
+/// `unified_game_services_google_play_android` instead.
 class NativeSilentTokenStrategy implements AuthStrategy {
+  /// Creates a strategy that obtains tokens for [scopes] from the given
+  /// [NativeTokenProvider].
   NativeSilentTokenStrategy(
     this._native, {
     this.scopes = const ['https://www.googleapis.com/auth/games'],
@@ -58,6 +67,11 @@ class NativeSilentTokenStrategy implements AuthStrategy {
   @override
   bool get isAuthenticated => _token != null;
 
+  /// Returns the cached token, or asks the [NativeTokenProvider] for a new one.
+  ///
+  /// A new token is requested when none is held, the held one expires within
+  /// 60 seconds, or [forceRefresh] is `true`. Exceptions thrown by the provider
+  /// propagate unchanged.
   @override
   Future<String> getAccessToken({bool forceRefresh = false}) async {
     final current = _token;
@@ -74,6 +88,7 @@ class NativeSilentTokenStrategy implements AuthStrategy {
     return fresh.accessToken;
   }
 
+  /// Drops the cached token; the native account itself stays signed in.
   @override
   Future<void> signOut() async {
     _token = null;

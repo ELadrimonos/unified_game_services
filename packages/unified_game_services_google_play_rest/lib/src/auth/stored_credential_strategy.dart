@@ -8,13 +8,23 @@ import 'token_refresher.dart';
 /// hold credentials.
 ///
 /// Use it when a token was obtained elsewhere:
-/// - **refresh-token-driven**: pass a [refreshToken] (+ client id/secret); the
-///   strategy mints and renews access tokens against Google's token endpoint.
-/// - **access-token-only (brokered)**: pass just an [accessToken] (and
-///   optionally its [expiry]). With no refresh token there is nothing to renew,
-///   so an expired/`401` token surfaces as [NotSignedInException] for the host
-///   to re-broker.
+/// - **refresh-token-driven**: pass a `refreshToken` with the OAuth client id
+///   and secret; the strategy mints and renews access tokens against Google's
+///   token endpoint.
+/// - **access-token-only (brokered)**: pass just an `accessToken` (and
+///   optionally its `expiry`). With no refresh token there is nothing to
+///   renew, so a token rejected with a `401` surfaces as
+///   [NotSignedInException] for the host to re-broker.
+///
+/// Works on every platform, including web.
 class StoredCredentialStrategy implements AuthStrategy {
+  /// Creates a strategy from credentials the host already holds.
+  ///
+  /// At least one of [accessToken] and [refreshToken] is required (checked by
+  /// an assertion). A missing [expiry] is treated as already expired, so a
+  /// refresh token, when present, is used before the first request. The
+  /// [clientId] and [clientSecret] must belong to the OAuth client that issued
+  /// the refresh token. [httpClient] is used for token requests.
   StoredCredentialStrategy({
     String? accessToken,
     DateTime? expiry,
@@ -50,6 +60,13 @@ class StoredCredentialStrategy implements AuthStrategy {
   @override
   bool get isAuthenticated => _token != null || refreshToken != null;
 
+  /// Returns a valid access token.
+  ///
+  /// Renews it from the refresh token when the held token is expired or
+  /// [forceRefresh] is `true`, throwing [SignInFailedException] if Google
+  /// rejects the refresh. Without a refresh token, an access token of unknown
+  /// or elapsed expiry is returned as is, and [NotSignedInException] is thrown
+  /// only when [forceRefresh] is `true` or no token is held.
   @override
   Future<String> getAccessToken({bool forceRefresh = false}) async {
     final current = _token;
@@ -76,6 +93,10 @@ class StoredCredentialStrategy implements AuthStrategy {
     );
   }
 
+  /// Discards the cached access token.
+  ///
+  /// [refreshToken] is final, so the strategy can still mint a new token
+  /// afterwards.
   @override
   Future<void> signOut() async {
     _token = null;

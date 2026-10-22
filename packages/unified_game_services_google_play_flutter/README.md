@@ -72,7 +72,7 @@ the `com.google.android.gms.games.APP_ID` manifest meta-data).
 `jni_flutter` / `package:jni` (no web support) sit behind a `dart.library.io`
 conditional import, so this adapter compiles and runs on **Flutter web** (and
 desktop): off Android it takes the REST path and needs an `auth:`
-[`AuthStrategy`]. On web, broker a token (your own redirect-based OAuth or a
+`AuthStrategy`. On web, broker a token (your own redirect-based OAuth or a
 backend) and pass it via `StoredCredentialStrategy` — the interactive
 `LoopbackOAuthStrategy` is desktop/CLI only.
 

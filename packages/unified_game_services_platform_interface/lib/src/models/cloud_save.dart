@@ -1,13 +1,18 @@
+/// @docImport '../platform_interface/platform_interface.dart';
+library;
+
 import 'dart:typed_data';
 
 import '../internal/equality.dart';
 
 /// Metadata describing a cloud save slot without its payload.
 ///
-/// Returned by listing operations so callers can browse saves without
-/// downloading their (potentially large) contents.
+/// Returned by [UnifiedGameServicesPlatform.listSaves] so callers can browse
+/// saves without downloading their (potentially large) contents.
 class CloudSaveMetadata {
   /// Caller-defined slot name identifying the save (e.g. "profile", "slot1").
+  ///
+  /// This is the `slot` argument of [UnifiedGameServicesPlatform.saveData].
   final String slot;
 
   /// Size of the stored payload in bytes, if known.
@@ -25,6 +30,10 @@ class CloudSaveMetadata {
   /// was built by a provider or by hand.
   final String? providerId;
 
+  /// Creates metadata for the save in [slot].
+  ///
+  /// [sizeBytes], [modifiedAt] and [deviceName] are `null` when the provider
+  /// does not report them.
   const CloudSaveMetadata({
     required this.slot,
     this.sizeBytes,
@@ -74,8 +83,8 @@ class CloudSaveMetadata {
 
 /// A cloud save slot together with its payload.
 ///
-/// The payload is stored as a `List<int>`; use [bytes] to read it as a
-/// [Uint8List].
+/// Returned by [UnifiedGameServicesPlatform.loadData]. The payload is stored
+/// as a `List<int>`; use [bytes] to read it as a [Uint8List].
 class CloudSave {
   /// Metadata describing this save.
   final CloudSaveMetadata metadata;
@@ -83,16 +92,21 @@ class CloudSave {
   /// Raw save payload, one byte per element.
   final List<int> data;
 
+  /// Creates a save from its [metadata] and raw [data].
   const CloudSave({required this.metadata, required this.data});
 
-  /// Builds a save from raw [bytes].
+  /// Creates a save from its [metadata] and raw [bytes].
+  ///
+  /// The [bytes] are kept as [data] without copying.
   CloudSave.fromBytes({required this.metadata, required Uint8List bytes})
     : data = bytes;
 
-  /// Convenience accessor for the slot name.
+  /// The slot name, shorthand for [CloudSaveMetadata.slot] of [metadata].
   String get slot => metadata.slot;
 
   /// The payload as a [Uint8List].
+  ///
+  /// Copies [data] on every access; cache the result when reading repeatedly.
   Uint8List get bytes => Uint8List.fromList(data);
 
   /// Returns a copy with the given fields replaced.

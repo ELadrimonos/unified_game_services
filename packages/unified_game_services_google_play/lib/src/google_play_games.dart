@@ -7,33 +7,43 @@ import 'native_provider_web.dart'
     if (dart.library.io) 'native_provider_io.dart';
 
 /// Auto-selecting Google Play Games entry point: the **native** Play Games SDK
-/// provider on Android (native toasts/overlay, no OAuth), the **REST** provider
-/// everywhere else (desktop, CLI, server, **web**).
+/// provider on Android (native toasts and overlay, no OAuth), the **REST**
+/// provider everywhere else (desktop, CLI, server, **web**).
 ///
-/// A developer uses this and forgets platform compatibility. The selection is a
-/// compile-time-safe platform check: on web `package:jni` is excluded entirely
-/// (it has no web support), so only the REST path is built; on native the
-/// runtime `Platform.isAndroid` check picks native on Android, REST otherwise.
+/// The selection is made per platform. On web, `package:jni` is excluded from
+/// the build entirely (it has no web support), so only the REST path exists.
+/// On native platforms a runtime `Platform.isAndroid` check picks the native
+/// provider on Android and REST otherwise. Pass the input each side needs to
+/// [create]:
+/// - `activityResolver`: returns the Android `Activity` (a `jni` `JObject`),
+///   fetched fresh before each native call. Required on Android. It is typed
+///   `Object` so this API carries no `jni` types and stays web-compilable. On
+///   Flutter, prefer `unified_game_services_google_play_flutter`, which wires
+///   it for you.
+/// - `auth`: an [AuthStrategy] for the REST path. Required off Android.
 ///
-/// Provide the inputs each side needs:
-/// - [activityResolver]: returns the Android `Activity` (a `jni` `JObject`),
-///   fetched fresh before each native call (required for the native path). It
-///   is typed `Object` so this API carries no `jni` types and stays
-///   web-compilable. On Flutter, prefer
-///   `unified_game_services_google_play_flutter` which wires this for you.
-/// - [auth]: an [AuthStrategy] for the REST path (required off Android).
+/// The two tiers differ in capability. Both advertise achievements and
+/// leaderboards, but the native provider currently implements only the writes
+/// and sign-in, not reads; see `GooglePlayAndroidProvider`.
 abstract final class GooglePlayGames {
-  /// Whether Google Play Games is supported on the current platform (always `true`).
+  /// Whether Google Play Games is supported on the current platform.
+  ///
+  /// Always `true`: the REST tier covers every platform.
   static bool get isSupported => true;
 
-  /// Whether the current platform uses the native provider (always `false` on
-  /// web).
+  /// Whether [create] returns the native provider on the current platform.
+  ///
+  /// `true` only on Android; always `false` on web.
   static bool get usesNative => usesNativeProvider;
 
   /// Creates the provider appropriate for the current platform.
   ///
-  /// Throws [ArgumentError] when the input required for the selected platform
-  /// is missing.
+  /// Returns a `GooglePlayAndroidProvider` (`providerId` `google_play_android`)
+  /// on Android and a [GooglePlayGamesProvider] (`google_play_rest`)
+  /// elsewhere. The argument for the other tier is ignored.
+  ///
+  /// Throws [ArgumentError] when the argument required for the selected
+  /// platform is missing: [activityResolver] on Android, [auth] elsewhere.
   static UnifiedGameServicesPlatform create({
     Object Function()? activityResolver,
     AuthStrategy? auth,
@@ -42,15 +52,11 @@ abstract final class GooglePlayGames {
       if (activityResolver == null) {
         throw ArgumentError.notNull('activityResolver');
       }
-      return createNativeProvider(
-        activityResolver: activityResolver,
-      );
+      return createNativeProvider(activityResolver: activityResolver);
     }
     if (auth == null) {
       throw ArgumentError.notNull('auth');
     }
-    return GooglePlayGamesProvider(
-      auth: auth,
-    );
+    return GooglePlayGamesProvider(auth: auth);
   }
 }

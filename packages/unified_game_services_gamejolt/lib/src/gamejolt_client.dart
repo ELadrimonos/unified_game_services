@@ -4,15 +4,21 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
-/// Thin signed client for the GameJolt Game API v1.2.
+/// A thin signed client for the GameJolt Game API v1.2.
 ///
-/// Every request carries `game_id`, `format=json`, and a `signature` —
-/// `md5(fullRequestUrl + privateKey)` — appended last. Responses are wrapped in
-/// a `{"response": {"success": "true", ...}}` envelope; this client unwraps it
-/// and throws a [GameServiceException] when `success` is not `"true"`.
+/// Every request carries `game_id`, `format=json` and a `signature`, which is
+/// `md5(fullRequestUrl + privateKey)` appended last. Responses are wrapped in a
+/// `{"response": {"success": "true", ...}}` envelope; the client unwraps it and
+/// throws a [GameServiceException] when `success` is not `"true"`.
 ///
-/// An [http.Client] can be injected for testing.
+/// All requests are sent as GET, as the Game API expects. An [http.Client] can
+/// be injected for testing.
 class GameJoltClient {
+  /// Creates a client for the game identified by [gameId].
+  ///
+  /// [privateKey] signs requests and is never sent. [httpClient] defaults to a
+  /// new [http.Client]; the client owns it and closes it in [close]. [baseUrl]
+  /// overrides the API root, for example to target a test server.
   GameJoltClient({
     required this.gameId,
     required this.privateKey,
@@ -26,18 +32,22 @@ class GameJoltClient {
   /// The game's private key. Used only to compute signatures; never sent.
   final String privateKey;
 
-  /// API root, without trailing slash.
+  /// The API root, without a trailing slash.
   final String baseUrl;
 
   final http.Client _http;
 
-  /// Performs a signed GET against [endpoint] (e.g. `/users/`) with [params].
+  /// Performs a signed GET against [endpoint] (for example `/users/`) with
+  /// [params].
   ///
-  /// Null-valued params are dropped. Returns the unwrapped `response` object.
+  /// Parameters with a `null` value are dropped. Returns the unwrapped
+  /// `response` object. Throws [NetworkException] when the request fails or the
+  /// HTTP status is not 200, and [PlatformOperationException] when the body is
+  /// not a Game API envelope or, with [throwOnFailure], reports failure.
   ///
-  /// When [throwOnFailure] is `false`, a `success != "true"` envelope is
-  /// returned instead of throwing — useful for endpoints where failure is a
-  /// meaningful answer (e.g. `/sessions/check/`). Inspect `response['success']`.
+  /// When [throwOnFailure] is `false`, a `success` that is not `"true"` is
+  /// returned instead of throwing. This suits endpoints where failure is a
+  /// meaningful answer, such as `/sessions/check/`; test it with [isSuccess].
   Future<Map<String, dynamic>> get(
     String endpoint,
     Map<String, String?> params, {
@@ -53,8 +63,9 @@ class GameJoltClient {
     return _unwrap(res, endpoint, throwOnFailure: throwOnFailure);
   }
 
-  /// Builds the fully-signed [Uri] for [endpoint] + [params]. Exposed for
-  /// testing the signature.
+  /// Builds the fully signed [Uri] for [endpoint] and [params].
+  ///
+  /// Exposed so tests can check the signature.
   Uri signedUri(String endpoint, Map<String, String?> params) {
     final merged = <String, String>{
       'game_id': gameId,
@@ -99,10 +110,10 @@ class GameJoltClient {
     return response;
   }
 
-  /// Whether a `response` map reports success.
+  /// Whether the unwrapped [response] reports `success`.
   static bool isSuccess(Map<String, dynamic> response) =>
       response['success'] == 'true' || response['success'] == true;
 
-  /// Closes the underlying HTTP client.
+  /// Closes the underlying HTTP client, including one that was injected.
   void close() => _http.close();
 }

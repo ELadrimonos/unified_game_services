@@ -33,18 +33,73 @@ class _CbResult {
   final EOS_ContinuanceToken? continuanceToken;
 }
 
-/// Epic Online Services provider, backed by the EOS C SDK via dart:ffi.
+/// A provider for Epic Online Services (EOS), backed by the EOS C SDK through
+/// `dart:ffi`.
+///
+/// Advertises [GameCapability.achievements], [GameCapability.leaderboards],
+/// [GameCapability.stats], [GameCapability.friends], [GameCapability.presence]
+/// and [GameCapability.cloudSave].
+///
+/// **Availability.** Desktop only (Windows, macOS, Linux). The constructor
+/// throws [UnsupportedError] on Android and iOS. On web the package exports a
+/// stub with the same name whose constructor always throws [UnsupportedError].
+/// Check [isSupported] before registering the provider.
+///
+/// **Host requirements.** The EOS SDK is not redistributable and is not
+/// bundled. The host ships the runtime library for the platform
+/// (`EOSSDK-Win64-Shipping.dll`, `libEOSSDK-Mac-Shipping.dylib` or
+/// `libEOSSDK-Linux-Shipping.so`) where the loader can find it, or passes
+/// [libraryPath]. It also supplies [EpicCredentials] from the Developer Portal.
+/// The SDK loads lazily on the first operation; a missing library surfaces as
+/// a [SignInFailedException] from [signIn].
+///
+/// **Sign-in.** [signIn] picks the first method that applies:
+///
+/// 1. `EOS_LCT_Developer`, when both [devAuthHost] and [devAuthCredentialName]
+///    are set (the Developer Authentication Tool).
+/// 2. `EOS_LCT_ExchangeCode`, when an [exchangeCode] is available (the Epic
+///    Launcher).
+/// 3. An anonymous Device ID through Connect otherwise.
+///
+/// Methods 1 and 2 run Epic Account Services (Auth), then Connect, and need an
+/// Epic Account Services application configured in the Developer Portal with
+/// the client associated and the scopes granted; otherwise EOS fails with
+/// `EOS_InvalidRequest`. Friends, presence and cloud save require an Epic
+/// Account Services login and throw [CapabilityNotSupportedException] after an
+/// anonymous one.
+///
+/// **Gaps.** The EOS C SDK exposes no avatar, so `PlayerProfile.avatarUrl` is
+/// always `null`. EOS has no incremental or hidden achievements, so
+/// [incrementAchievement] and [revealAchievement] throw. [getPlayerScore]
+/// only searches the top 100 ranks.
+///
+/// EOS completes calls asynchronously inside `EOS_Platform_Tick`, which the
+/// provider pumps on a timer every [tickInterval]. Call [dispose] to stop the
+/// timer and shut the SDK down.
 class EpicProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'epic';
 
-  /// [launchArgs] — pass `main()`'s arguments to auto-extract the Epic
-  /// Launcher exchange code (`-AUTH_PASSWORD=...`); an explicit [exchangeCode]
-  /// takes precedence.
-  /// Whether Epic Online Services is supported on the current platform (Windows, macOS, Linux).
+  /// Whether Epic Online Services can run on the current platform.
+  ///
+  /// `true` on Windows, macOS and Linux, `false` elsewhere.
   static bool get isSupported =>
       Platform.isWindows || Platform.isLinux || Platform.isMacOS;
 
+  /// Creates an Epic Online Services provider.
+  ///
+  /// The EOS SDK is not loaded until the first operation. Throws
+  /// [UnsupportedError] when [isSupported] is `false`.
+  ///
+  /// [credentials] are the Developer Portal values. [exchangeCode] is the Epic
+  /// Launcher exchange code for `EOS_LCT_ExchangeCode` login. When it is
+  /// `null`, the code is read from the `-AUTH_PASSWORD=` argument in
+  /// [launchArgs] (pass the arguments of `main()`), if present; an explicit
+  /// [exchangeCode] takes precedence. [devAuthHost] and [devAuthCredentialName]
+  /// enable Developer Authentication Tool login. [libraryPath] overrides where
+  /// the EOS runtime library is loaded from, and [tickInterval] sets how often
+  /// `EOS_Platform_Tick` runs. [debugLogging] sets the static
+  /// [EpicProvider.debugLogging].
   EpicProvider({
     required this.credentials,
     String? exchangeCode,
@@ -68,38 +123,47 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     EpicProvider.debugLogging = debugLogging;
   }
 
-  /// When true, the provider emits verbose FFI/EOS traces via `print`. Off by
-  /// default. Static because the EOS completion callbacks are static
-  /// (`Pointer.fromFunction` requires top-level/static functions).
+  /// Whether the provider prints verbose FFI and EOS traces.
+  ///
+  /// Defaults to `false`. Static, so it applies to every [EpicProvider]: EOS
+  /// completion callbacks are static functions. Constructing a provider
+  /// overwrites it with that constructor's `debugLogging` argument.
   static bool debugLogging = false;
 
   static void _log(String message) {
     if (debugLogging) print(message);
   }
 
-  /// Epic Launcher exchange code for `EOS_LCT_ExchangeCode` login; extracted
-  /// from the constructor's `launchArgs` if not passed explicitly.
+  /// The Epic Launcher exchange code used for `EOS_LCT_ExchangeCode` login.
+  ///
+  /// Either the constructor's `exchangeCode` or the one extracted from its
+  /// `launchArgs`; `null` when neither yielded a code.
   final String? exchangeCode;
 
-  /// Epic Developer Authentication Tool endpoint, e.g. `localhost:6300`. When
-  /// set together with [devAuthCredentialName], [signIn] performs an
-  /// `EOS_LCT_Developer` Epic Account Services login (real account, no launcher
-  /// / packaging) — the recommended way to test EAS during development.
+  /// The Developer Authentication Tool endpoint as `host:port`, e.g.
+  /// `localhost:6300`.
+  ///
+  /// When set together with [devAuthCredentialName], [signIn] performs an
+  /// `EOS_LCT_Developer` Epic Account Services login with a real Epic account
+  /// and no launcher, which suits development.
   final String? devAuthHost;
 
   /// The credential name registered in the Developer Authentication Tool.
+  ///
+  /// Only used together with [devAuthHost].
   final String? devAuthCredentialName;
 
-  /// Dev Portal credentials (ProductId/SandboxId/DeploymentId/ClientId/
-  /// ClientSecret).
+  /// The Developer Portal settings used to create the EOS platform.
   final EpicCredentials credentials;
 
-  /// Explicit path to the EOS runtime library. When null, the platform
-  /// default (e.g. `libEOSSDK-Mac-Shipping.dylib`) is resolved from the
-  /// executable's directory.
+  /// The explicit path of the EOS runtime library.
+  ///
+  /// When `null`, the platform's default library name (for example
+  /// `libEOSSDK-Mac-Shipping.dylib`) is opened and left to the dynamic
+  /// loader's search path.
   final String? libraryPath;
 
-  /// How often `EOS_Platform_Tick` is pumped to drive async EOS completions.
+  /// The interval at which `EOS_Platform_Tick` runs to drive EOS completions.
   final Duration tickInterval;
 
   EosBindings? _eos;
@@ -537,6 +601,12 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   Stream<GameServiceEvent> get events => _events.stream;
 
   // --- lifecycle -------------------------------------------------------------
+  /// Opens the EOS runtime library.
+  ///
+  /// Uses [overridePath] when given; otherwise opens the platform's default
+  /// file name (`EOSSDK-Win64-Shipping.dll`, `libEOSSDK-Mac-Shipping.dylib` or
+  /// `libEOSSDK-Linux-Shipping.so`) and relies on the dynamic loader to find
+  /// it. Throws if the library cannot be opened.
   DynamicLibrary openEosLibrary({String? overridePath}) {
     if (overridePath != null) return DynamicLibrary.open(overridePath);
     final name = Platform.isWindows
@@ -712,6 +782,14 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- auth ------------------------------------------------------------------
+  /// Signs in with the method described on [EpicProvider] and emits a
+  /// [UserSignedInEvent].
+  ///
+  /// Initializes the EOS SDK on first use. The returned profile's `id` is the
+  /// Connect ProductUserId, and `extra` holds `epicAccountId` after an Epic
+  /// Account Services login or `isAnonymous: true` after a Device ID login.
+  /// Throws [SignInFailedException] when the SDK library cannot be loaded or
+  /// credentials are rejected, and [NetworkException] on timeout (30 seconds).
   @override
   Future<PlayerProfile?> signIn() async {
     _log('🔐 [EOS] signIn() called');
@@ -1077,6 +1155,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  /// Clears the local session state and emits a [UserSignedOutEvent].
+  ///
+  /// This does not call `EOS_Auth_Logout`; the SDK stays initialized until
+  /// [dispose].
   @override
   Future<void> signOut() async {
     _localUserId = null;
@@ -1113,6 +1195,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- achievements (write path) --------------------------------------------
+  /// Unlocks the achievement through `EOS_Achievements_UnlockAchievements`.
+  ///
+  /// [achievementId] is mapped through `resolveAchievementId` and must be the
+  /// achievement id from the Developer Portal.
   @override
   Future<void> unlockAchievement(String achievementId) async {
     final eos = _ensureInit();
@@ -1152,6 +1238,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  /// Always throws [PlatformOperationException]: EOS has no incremental
+  /// achievement API, so ingest the achievement's backing stat with
+  /// [incrementStat] instead.
   @override
   Future<void> incrementAchievement(String achievementId, int steps) async {
     throw const PlatformOperationException(
@@ -1159,6 +1248,8 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Always throws [PlatformOperationException]: EOS achievements have no
+  /// reveal operation.
   @override
   Future<void> revealAchievement(String achievementId) async {
     throw const PlatformOperationException(
@@ -1167,14 +1258,29 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- stats + leaderboards (write path) -------------------------------------
+  /// Ingests [value] for the stat [key] through `EOS_Stats_IngestStat`.
+  ///
+  /// EOS stats are ingest-only counters, so this adds [value] (truncated to an
+  /// integer) to the stat according to its Developer Portal aggregation rather
+  /// than replacing it. [key] is the raw EOS stat name; it is not mapped
+  /// through `resolveStatId`.
   @override
   Future<void> setStat(String key, num value) =>
       _ingest(key, value.toInt(), 'setStat');
 
+  /// Ingests [by] (truncated to an integer) for the stat [key].
+  ///
+  /// Behaves exactly like [setStat]; see there for the semantics.
   @override
   Future<void> incrementStat(String key, {num by = 1}) =>
       _ingest(key, by.toInt(), 'incrementStat');
 
+  /// Submits [score] by ingesting it into the stat that backs the leaderboard.
+  ///
+  /// EOS leaderboards aggregate a stat, so [leaderboardId] (mapped through
+  /// `resolveLeaderboardId`) must be that stat's name. Emits a
+  /// [ScoreSubmittedEvent]. Whether the score changes the board depends on the
+  /// leaderboard's aggregation (for example latest, min, max or sum).
   @override
   Future<void> submitScore({
     required String leaderboardId,
@@ -1228,6 +1334,11 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- read path -------------------------------------------------------------
+  /// Returns the achievement definitions merged with the signed-in player's
+  /// progress.
+  ///
+  /// Queries definitions and player achievements, then reads them from the SDK
+  /// cache.
   @override
   Future<List<Achievement>> getAchievements() async {
     final eos = _ensureInit();
@@ -1379,6 +1490,7 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     return results;
   }
 
+  /// Returns the signed-in player's stats, keyed by raw EOS stat name.
   @override
   Future<List<Stat>> getStats() async {
     final eos = _ensureInit();
@@ -1444,6 +1556,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     return results;
   }
 
+  /// Returns the stat named [key], or `null` when the player has none.
+  ///
+  /// Fetches every stat and filters, so it costs as much as [getStats]. [key]
+  /// is the raw EOS stat name and is not mapped through `resolveStatId`.
   @override
   Future<Stat?> getStat(String key) async {
     // Stats are addressed by their raw EOS stat name.
@@ -1453,6 +1569,11 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     return null;
   }
 
+  /// Returns up to [maxResults] ranked entries of the leaderboard.
+  ///
+  /// [timeScope] and [collection] are only echoed into the returned
+  /// [Leaderboard]; the query always fetches the board's global ranks as
+  /// configured in the Developer Portal.
   @override
   Future<Leaderboard> getLeaderboard(
     String leaderboardId, {
@@ -1547,6 +1668,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns the signed-in player's entry, or `null` when it is not found.
+  ///
+  /// Scans only the top 100 ranks, so a player ranked lower yields `null`.
+  /// [timeScope] is passed on to [getLeaderboard] and has the same limitation.
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
@@ -1568,6 +1693,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- friends ---------------------------------------------------------------
+  /// Returns the signed-in player's Epic friends.
+  ///
+  /// Throws [CapabilityNotSupportedException] after an anonymous Device ID
+  /// sign-in, which has no Epic social graph.
   @override
   Future<List<PlayerProfile>> getFriends() async {
     final eos = _ensureInit();
@@ -1660,6 +1789,12 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- presence --------------------------------------------------------------
+  /// Publishes the presence as online with EOS raw rich text.
+  ///
+  /// Only `state` and `details` are mapped, joined as `state — details`;
+  /// the party size and `startedAt` have no EOS equivalent and are ignored.
+  /// The text is truncated to 255 characters. Requires an Epic Account Services
+  /// login.
   @override
   Future<void> setPresence(RichPresence presence) {
     // Only state + details map cleanly to EOS rich text. party size/max and
@@ -1673,6 +1808,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Clears the rich text and sets the presence status to offline.
+  ///
+  /// Requires an Epic Account Services login.
   @override
   Future<void> clearPresence() => _applyPresence(
     richText: '',
@@ -1766,6 +1904,12 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   }
 
   // --- cloud save (player data storage) --------------------------------------
+  /// Writes [data] to the Player Data Storage file named [slot].
+  ///
+  /// Requires an Epic Account Services login and
+  /// [EpicCredentials.encryptionKey]; otherwise throws
+  /// [CapabilityNotSupportedException] or [PlatformOperationException]. EOS
+  /// allows one transfer per file name at a time.
   @override
   Future<void> saveData(String slot, Uint8List data) async {
     final eos = _ensureInit();
@@ -1816,6 +1960,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  /// Reads the Player Data Storage file named [slot], or `null` when absent.
+  ///
+  /// Has the same login and [EpicCredentials.encryptionKey] requirements as
+  /// [saveData].
   @override
   Future<CloudSave?> loadData(String slot) async {
     final eos = _ensureInit();
@@ -1876,6 +2024,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Lists the Player Data Storage files of the signed-in player.
+  ///
+  /// Requires an Epic Account Services login.
   @override
   Future<List<CloudSaveMetadata>> listSaves() async {
     final eos = _ensureInit();
@@ -1956,6 +2107,9 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     return results;
   }
 
+  /// Deletes the Player Data Storage file named [slot].
+  ///
+  /// Requires an Epic Account Services login.
   @override
   Future<void> deleteSave(String slot) async {
     final eos = _ensureInit();
@@ -2072,6 +2226,10 @@ class EpicProvider extends UnifiedGameServicesPlatform {
 
   DateTime _now() => DateTime.now();
 
+  /// Stops the tick timer, releases the EOS platform, shuts the SDK down and
+  /// closes [events].
+  ///
+  /// The provider cannot be used afterwards.
   @override
   Future<void> dispose() async {
     _pump?.cancel();

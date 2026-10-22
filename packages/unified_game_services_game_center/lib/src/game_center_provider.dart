@@ -8,13 +8,44 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 import 'gamekit_bindings.dart';
 
+/// A provider for Apple Game Center, backed by the GameKit framework through
+/// Objective-C FFI (`package:objective_c`).
+///
+/// Advertises [GameCapability.achievements] and [GameCapability.leaderboards].
+/// GameKit has no equivalent of stats or rich presence, and cloud save and
+/// friends are not implemented yet.
+///
+/// **Availability.** macOS and iOS only. The constructor throws
+/// [UnsupportedError] elsewhere. On web the package exports a stub with the
+/// same name whose constructor always throws [UnsupportedError]. Check
+/// [isSupported] before registering the provider.
+///
+/// **Host requirements.** GameKit needs a signed app bundle with the Game
+/// Center capability, and a main run loop that is being pumped, because GameKit
+/// delivers completions on it. Operations fail with a
+/// [PlatformOperationException] when no completion arrives within 30 seconds
+/// (60 seconds for [signIn]). GameKit loads lazily on the first operation.
+///
+/// **Sign-in.** [signIn] cannot present Apple's authentication UI from pure
+/// Dart. The player must already be signed in to Game Center at the OS level,
+/// or the host app must present the authentication view controller itself;
+/// otherwise [signIn] throws [SignInFailedException].
+///
+/// Leaderboard and achievement ids are the identifiers configured in App Store
+/// Connect, mapped through `resolveLeaderboardId` and `resolveAchievementId`.
 class GameCenterProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'game_center';
 
-  /// Whether Game Center is supported on the current platform (macOS, iOS).
+  /// Whether Game Center can run on the current platform.
+  ///
+  /// `true` on macOS and iOS, `false` elsewhere.
   static bool get isSupported => Platform.isMacOS || Platform.isIOS;
 
+  /// Creates a Game Center provider.
+  ///
+  /// GameKit is not loaded until the first operation. Throws
+  /// [UnsupportedError] when [isSupported] is `false`.
   GameCenterProvider() {
     if (!isSupported) {
       throw UnsupportedError(
@@ -84,12 +115,20 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     return GKLocalPlayer.getLocalPlayer();
   }
 
+  /// Whether GameKit reports the local player as authenticated.
   @override
   Future<bool> isSignedIn() async {
     _ensureLoaded();
     return _local.isAuthenticated;
   }
 
+  /// Authenticates the local player and emits a [UserSignedInEvent].
+  ///
+  /// Completes immediately when the player is already authenticated. The
+  /// returned profile's `id` is the `gamePlayerID`. Throws
+  /// [SignInFailedException] when GameKit needs to present its sign-in UI,
+  /// which this provider cannot do, or when the player cancels. A GameKit
+  /// error is mapped like any other (see [PlatformOperationException]).
   @override
   Future<PlayerProfile?> signIn() async {
     _ensureLoaded();
@@ -143,6 +182,9 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns the authenticated local player, or `null` when none is signed in.
+  ///
+  /// The profile carries only the `gamePlayerID` and the display name.
   @override
   Future<PlayerProfile?> getCurrentPlayer() async {
     _ensureLoaded();
@@ -162,6 +204,11 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
 
   // ─── Achievements ──────────────────────────────────────────────────────────
 
+  /// Returns the achievement descriptions merged with the player's progress.
+  ///
+  /// GameKit reports progress as a percentage, which is surfaced as
+  /// `currentSteps` out of a `totalSteps` of 100. The description shown is the
+  /// achieved or unachieved text according to the unlock state.
   @override
   Future<List<Achievement>> getAchievements() async {
     _requireSignedIn();
@@ -210,10 +257,21 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     return result;
   }
 
+  /// Reports the achievement at 100 percent, showing the system completion
+  /// banner, and emits an [AchievementUnlockedEvent].
+  ///
+  /// The event's achievement is a stub that carries only the id, using it as
+  /// the title.
   @override
   Future<void> unlockAchievement(String achievementId) =>
       _reportAchievement(resolveAchievementId(achievementId), 100.0);
 
+  /// Adds [steps] percentage points to the achievement's progress, capped at
+  /// 100.
+  ///
+  /// GameKit has no atomic increment, so this reads the current percentage and
+  /// then reports the sum. Reaching 100 unlocks the achievement and emits an
+  /// [AchievementUnlockedEvent].
   @override
   Future<void> incrementAchievement(String achievementId, int steps) async {
     // GameKit has no atomic increment; read the current percentage and add.
@@ -231,6 +289,7 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     await _reportAchievement(id, next);
   }
 
+  /// Reveals a hidden achievement by reporting 0 percent, without a banner.
   @override
   Future<void> revealAchievement(String achievementId) =>
       // Reporting 0% reveals a hidden achievement without completing it.
@@ -276,6 +335,10 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
 
   // ─── Leaderboards ──────────────────────────────────────────────────────────
 
+  /// Submits [score] to the leaderboard for the local player.
+  ///
+  /// Throws [PlatformOperationException] when no leaderboard has the id. The
+  /// emitted [ScoreSubmittedEvent] carries the unified [leaderboardId].
   @override
   Future<void> submitScore({
     required String leaderboardId,
@@ -301,6 +364,11 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns up to [maxResults] entries from rank 1 of the leaderboard.
+  ///
+  /// [timeScope] maps to GameKit's all-time, week and today scopes, and
+  /// [collection] to its global and friends-only scopes. The result also
+  /// carries the local player's own entry in `playerEntry`, when there is one.
   @override
   Future<Leaderboard> getLeaderboard(
     String leaderboardId, {
@@ -360,6 +428,10 @@ class GameCenterProvider extends UnifiedGameServicesPlatform {
     return _withGameKitTimeout(completer.future, 'getLeaderboard');
   }
 
+  /// Returns the local player's entry, or `null` when the player has no score.
+  ///
+  /// Uses the `playerEntry` GameKit returns with a one-entry query, so it works
+  /// regardless of the player's rank.
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {

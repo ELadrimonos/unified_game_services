@@ -2,25 +2,27 @@
 ///
 /// The provider packages are pure Dart and need the host to supply the Android
 /// `Activity` jobject. This adapter is the **only** package in the family that
-/// depends on Flutter: it resolves that activity from the running Flutter engine
-/// (via `jni_flutter`) so app developers get plug-and-play setup without
-/// touching `jni_flutter` / `PlatformDispatcher` themselves.
+/// depends on Flutter: it resolves that activity from the running Flutter
+/// engine (via `jni_flutter`), so app developers get plug-and-play setup
+/// without touching `jni_flutter` or `PlatformDispatcher` themselves.
 ///
 /// ```dart
 /// void main() {
 ///   GameServices.initialize(providers: [
-///     GooglePlayGamesFlutter.create(
-///       achievementIds: {'firstWin': 'CgkI...'},
-///       leaderboardIds: {'highScores': 'CgkI...'},
-///     ),
+///     GooglePlayGamesFlutter.create(auth: myRestAuthStrategy),
 ///   ]);
 ///   runApp(const MyApp());
 /// }
 /// ```
 ///
-/// On Android it wires the native Play Games provider; elsewhere — including
-/// **web** — it falls back to the REST provider, which requires an
-/// [AuthStrategy] (`auth`).
+/// On Android [GooglePlayGamesFlutter.create] returns the native Play Games
+/// provider and ignores `auth`. Elsewhere, including **web**, it returns the
+/// REST provider, which requires an [AuthStrategy]. Unified achievement and
+/// leaderboard ids are mapped through `GameServices.initialize`, not here.
+///
+/// This package re-exports the whole `unified_game_services_google_play` API.
+///
+/// @docImport 'package:unified_game_services_google_play_rest/unified_game_services_google_play_rest.dart';
 library;
 
 import 'package:unified_game_services_google_play/unified_game_services_google_play.dart';
@@ -36,29 +38,33 @@ import 'src/activity_resolver_web.dart'
 // the facade types, concrete providers, and REST auth strategies.
 export 'package:unified_game_services_google_play/unified_game_services_google_play.dart';
 
-/// Flutter entry point for the Google Play Games family, mirroring the core
-/// [GooglePlayGames] factory — it just auto-resolves the Android `Activity` so
-/// app developers never pass an `activityResolver`. Hand the result to
-/// `GameServices.initialize(providers: [...])`.
+/// Flutter entry point for the Google Play Games family.
+///
+/// Mirrors the [GooglePlayGames] factory, but resolves the Android `Activity`
+/// from the Flutter engine so callers never pass an `activityResolver`. Hand
+/// the result to `GameServices.initialize(providers: [...])`.
 abstract final class GooglePlayGamesFlutter {
-  /// Whether Google Play Games is supported on the current platform (always `true`).
+  /// Whether Google Play Games is supported on the current platform.
+  ///
+  /// Always `true`: the REST tier covers every platform.
   static bool get isSupported => true;
 
-  /// Builds the platform-appropriate Google Play Games provider, auto-resolving
-  /// the Android `Activity` on Android.
+  /// Builds the platform-appropriate Google Play Games provider.
   ///
-  /// Off Android the REST provider is used and [auth] is required (an
-  /// [ArgumentError] is thrown otherwise, matching [GooglePlayGames.create]).
-  static UnifiedGameServicesPlatform create({
-    AuthStrategy? auth,
-  }) {
+  /// On Android this returns the native provider, with the `Activity` resolved
+  /// fresh from the running Flutter engine before each native call (it must be
+  /// used on the platform thread while the app is foregrounded) and [auth]
+  /// ignored. Elsewhere, including web, it returns the REST provider and [auth]
+  /// is required.
+  ///
+  /// Throws [ArgumentError] if [auth] is missing off Android, matching
+  /// [GooglePlayGames.create].
+  static UnifiedGameServicesPlatform create({AuthStrategy? auth}) {
     if (GooglePlayGames.usesNative) {
       return GooglePlayGames.create(
         activityResolver: flutterActivityResolver(),
       );
     }
-    return GooglePlayGames.create(
-      auth: auth,
-    );
+    return GooglePlayGames.create(auth: auth);
   }
 }

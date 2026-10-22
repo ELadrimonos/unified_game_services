@@ -3,19 +3,24 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
-/// Thin client for the PlayFab Client API.
+/// A thin client for the PlayFab Client API.
 ///
 /// PlayFab is keyed by a public `titleId`; every request goes to
 /// `https://{titleId}.playfabapi.com` as a JSON POST. Authenticated calls carry
-/// the player's session ticket in the `X-Authorization` header — obtained from a
-/// `LoginWith*` call and stored on the client by [setSessionTicket].
+/// the player's session ticket in the `X-Authorization` header. The ticket
+/// comes from a `LoginWith*` call and is stored with [setSessionTicket].
 ///
 /// Responses are wrapped in a `{"code": 200, "status": "OK", "data": {...}}`
-/// envelope; this client unwraps `data` and throws a [GameServiceException] when
+/// envelope; the client unwraps `data` and throws a [GameServiceException] when
 /// the HTTP status or envelope reports an error.
 ///
 /// An [http.Client] can be injected for testing.
 class PlayFabClient {
+  /// Creates a client for the title identified by [titleId].
+  ///
+  /// [httpClient] defaults to a new [http.Client]; the client owns it and
+  /// closes it in [close]. [baseUrl] defaults to
+  /// `https://{titleId}.playfabapi.com`.
   PlayFabClient({
     required this.titleId,
     http.Client? httpClient,
@@ -23,28 +28,33 @@ class PlayFabClient {
   }) : _http = httpClient ?? http.Client(),
        baseUrl = baseUrl ?? 'https://$titleId.playfabapi.com';
 
-  /// The game's public Title ID (from the PlayFab Game Manager).
+  /// The game's public Title ID, from the PlayFab Game Manager.
   final String titleId;
 
-  /// API root, without trailing slash.
+  /// The API root, without a trailing slash.
   final String baseUrl;
 
   final http.Client _http;
 
   String? _sessionTicket;
 
-  /// Whether a session ticket has been stored (i.e. the player is logged in).
+  /// Whether a session ticket has been stored, meaning the player is logged
+  /// in.
   bool get hasSession => _sessionTicket != null;
 
-  /// Stores (or clears, with `null`) the session ticket sent as
-  /// `X-Authorization` on authenticated requests.
+  /// Stores [ticket], or clears it when `null`.
+  ///
+  /// The ticket is sent as `X-Authorization` on authenticated requests.
   void setSessionTicket(String? ticket) => _sessionTicket = ticket;
 
-  /// POSTs [body] to [endpoint] (e.g. `/Client/GetPlayerStatistics`).
+  /// POSTs [body] as JSON to [endpoint], for example
+  /// `/Client/GetPlayerStatistics`.
   ///
-  /// When [authenticated] is `true` the stored session ticket is attached;
-  /// calling without a ticket throws [NotSignedInException]. Returns the
-  /// unwrapped `data` object.
+  /// When [authenticated] is `true`, the stored session ticket is attached and
+  /// a missing ticket throws [NotSignedInException]. Returns the unwrapped
+  /// `data` object. Throws [NetworkException] when the request fails, and
+  /// [PlatformOperationException] when the HTTP status is not 200 (using
+  /// PlayFab's `errorMessage` when present) or the body has no `data` object.
   Future<Map<String, dynamic>> post(
     String endpoint,
     Map<String, dynamic> body, {
@@ -94,6 +104,6 @@ class PlayFabClient {
     return (map['data'] as Map).cast<String, dynamic>();
   }
 
-  /// Closes the underlying HTTP client.
+  /// Closes the underlying HTTP client, including one that was injected.
   void close() => _http.close();
 }

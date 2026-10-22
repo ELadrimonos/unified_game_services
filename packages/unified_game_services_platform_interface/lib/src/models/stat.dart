@@ -1,11 +1,20 @@
+/// @docImport '../platform_interface/platform_interface.dart';
+/// @docImport '../platform_interface/unified_id_table.dart';
+library;
+
 import '../internal/equality.dart';
 
 /// A numeric player statistic (e.g. `kills`, `distance_travelled`).
 ///
 /// Values are stored as [num] to cover both integer and floating-point stats.
+///
+/// Returned by [UnifiedGameServicesPlatform.getStats] and
+/// [UnifiedGameServicesPlatform.getStat].
 class Stat {
-  /// Unified key: the key from the `UnifiedStatTable` the stat was requested
-  /// with, otherwise the native key itself. See [nativeKeys] for the native keys.
+  /// Unified key: the key from the [UnifiedStatTable] the stat was requested
+  /// with, otherwise the native key itself.
+  ///
+  /// See [nativeKeys] for the native keys.
   final String key;
 
   /// Current value.
@@ -22,7 +31,7 @@ class Stat {
 
   /// The native key of this stat on each provider, keyed by `providerId`.
   ///
-  /// Read-only. Holds the row of the `UnifiedStatTable` for [key], plus the
+  /// Read-only. Holds the row of the [UnifiedStatTable] for [key], plus the
   /// native key the [providerId] provider itself used. Set by the
   /// `UnifiedGameServices` facade on reads; empty when the object was built by
   /// a provider or by hand.
@@ -32,6 +41,7 @@ class Stat {
   /// when unknown.
   String? get nativeKey => providerId == null ? null : nativeKeys[providerId];
 
+  /// Creates a stat with the given [key] and [value].
   const Stat({
     required this.key,
     required this.value,

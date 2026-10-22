@@ -17,12 +17,15 @@ class PkcePair {
   /// The S256 code challenge (sent on the authorization request).
   final String challenge;
 
+  /// Creates a pair from an existing [verifier] and its [challenge].
+  ///
+  /// Prefer [PkcePair.generate], which derives a consistent pair.
   const PkcePair({required this.verifier, required this.challenge});
 
   /// The challenge method, always `S256`.
   static const String method = 'S256';
 
-  /// Generates a fresh pair using [random] (defaults to [Random.secure]).
+  /// Generates a fresh pair using [random], or [Random.secure] when omitted.
   factory PkcePair.generate([Random? random]) {
     final rng = random ?? Random.secure();
     // 32 random bytes → 43-char base64url verifier (within the 43–128 range).

@@ -6,6 +6,8 @@
 /// one or more provider packages instead of this package directly; provider
 /// authors extend [UnifiedGameServicesPlatform] and override the operations
 /// their service supports.
+///
+/// @docImport 'src/platform_interface/platform_interface.dart';
 library;
 
 export 'src/models/models.dart';

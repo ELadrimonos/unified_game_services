@@ -7,33 +7,44 @@ import 'package:unified_game_services_platform_interface/unified_game_services_p
 
 import 'playfab_client.dart';
 
-/// PlayFab provider, backed by the PlayFab Client API over REST.
+/// A provider for PlayFab, backed by the PlayFab Client API over REST.
 ///
-/// PlayFab is Microsoft's cross-platform backend-as-a-service. It is *not* Xbox
-/// Live: a PlayFab title ships on any platform (mobile, PC, console, web) and is
-/// reachable from any Dart runtime, so unlike native Xbox Live it fits the
-/// pure-Dart constraint. (Xbox Live's GDK title-scoped services remain
-/// deferred — see CLAUDE.md.)
+/// PlayFab is Microsoft's cross-platform backend service. It is not Xbox Live:
+/// a PlayFab title can ship on any platform and is reachable from any Dart
+/// runtime, including web.
 ///
-/// Auth uses `LoginWithCustomID`: the app supplies a stable, app-chosen
-/// [customId] for the player and PlayFab returns a session ticket. The title is
-/// identified by its public [titleId] (no secret key — that is the server API).
+/// Advertises [GameCapability.leaderboards] and [GameCapability.stats] (both
+/// backed by PlayFab player statistics), [GameCapability.cloudSave] (PlayFab
+/// user data) and [GameCapability.friends]. PlayFab has no first-class
+/// achievements API, so [GameCapability.achievements] is not advertised and the
+/// achievement operations keep the base behaviour of throwing
+/// [UnimplementedError]. Rich presence is not supported either.
 ///
-/// Supported capabilities: leaderboards and stats (both PlayFab *player
-/// statistics*), cloud save (PlayFab *user data*) and friends. PlayFab has no
-/// first-class achievements API — achievements are conventionally built on
-/// statistics app-side — so [GameCapability.achievements] is deliberately not
-/// advertised and the achievement operations are left throwing
-/// `UnimplementedError`. Rich presence and multiplayer are likewise omitted.
+/// **Authentication.** [signIn] calls `LoginWithCustomID`: the app supplies a
+/// stable, app-chosen custom id for the player and PlayFab returns a session
+/// ticket. The title is identified by its public Title ID, with no secret key
+/// (that belongs to the server API). Every other operation needs [signIn] to
+/// have succeeded first and throws [NotSignedInException] otherwise.
+///
+/// **Availability.** Pure Dart over HTTP, so it works on every platform.
+/// Network failures surface as [NetworkException] and PlayFab error responses
+/// as [PlatformOperationException].
 class PlayFabProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'playfab';
 
-  /// Whether PlayFab is supported on the current platform (always `true`).
+  /// Whether PlayFab can run on the current platform.
+  ///
+  /// Always `true`: the provider only needs HTTP.
   static bool get isSupported => true;
 
-  /// Creates a provider for the given [titleId], signing in via
-  /// `LoginWithCustomID` with the app-chosen [customId].
+  /// Creates a provider for the title with the given [titleId].
+  ///
+  /// [signIn] logs in with `LoginWithCustomID` using [customId]. When
+  /// [createAccount] is `true`, PlayFab creates the account for an unknown
+  /// [customId]. [displayName] is applied after every sign-in. [httpClient] and
+  /// [baseUrl] are passed to the underlying [PlayFabClient]; the client closes
+  /// [httpClient] in [dispose].
   PlayFabProvider({
     required String titleId,
     required this.customId,
@@ -48,9 +59,11 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
          baseUrl: baseUrl,
        );
 
-  /// Creates a provider around an existing [PlayFabClient] (useful for tests).
+  /// Creates a provider around an existing [PlayFabClient], typically one built
+  /// on a mock HTTP client in tests.
   ///
-  /// The named argument is `client` (Dart drops the leading underscore).
+  /// [dispose] closes [client]. The other parameters are as in the default
+  /// constructor.
   PlayFabProvider.withClient({
     required PlayFabClient client,
     required this.customId,
@@ -60,10 +73,14 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   }) : _client = client,
        _createAccount = createAccount;
 
-  /// The app-chosen stable identifier for this player (`LoginWithCustomID`).
+  /// The app-chosen, stable identifier of this player, used for
+  /// `LoginWithCustomID`.
   final String customId;
 
-  /// Optional display name to set on the title account at first sign-in.
+  /// The display name to set on the title account during [signIn], or `null`
+  /// to leave it unchanged.
+  ///
+  /// It is applied on every sign-in, not only the first.
   final String? displayName;
 
   final bool _createAccount;
@@ -86,9 +103,17 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   // ─── Authentication ──────────────────────────────────────────────────────
 
+  /// Whether a session ticket is held, meaning [signIn] succeeded and
+  /// [signOut] has not been called since.
   @override
   Future<bool> isSignedIn() async => _client.hasSession;
 
+  /// Logs in with `LoginWithCustomID`, applies [displayName] if set, loads the
+  /// account and emits a [UserSignedInEvent].
+  ///
+  /// The profile's `id` is the PlayFab id, and `extra` holds the raw account
+  /// info. Throws [SignInFailedException] when the login fails or returns no
+  /// session ticket.
   @override
   Future<PlayerProfile?> signIn() async {
     final Map<String, dynamic> data;
@@ -124,6 +149,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     return profile;
   }
 
+  /// Discards the session ticket locally.
+  ///
+  /// The ticket is not invalidated on the server.
   @override
   Future<void> signOut() async {
     // PlayFab client sessions are stateless tickets; just drop local state.
@@ -131,6 +159,10 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     _playFabId = null;
   }
 
+  /// Loads the account info of the signed-in player.
+  ///
+  /// Unlike most providers this queries the server each time. Throws
+  /// [NotSignedInException] before [signIn].
   @override
   Future<PlayerProfile?> getCurrentPlayer() async {
     final data = await _client.post('/Client/GetAccountInfo', const {});
@@ -156,6 +188,12 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   // unified `leaderboardId` maps to a statistic name. submitScore writes the
   // statistic; getLeaderboard reads its ranked view.
 
+  /// Writes [score] to the player statistic that backs the leaderboard.
+  ///
+  /// [leaderboardId] is mapped through `resolveLeaderboardId` and must be the
+  /// statistic name. The new value replaces the previous one according to the
+  /// statistic's aggregation method in PlayFab. The emitted
+  /// [ScoreSubmittedEvent] carries the resolved name.
   @override
   Future<void> submitScore({
     required String leaderboardId,
@@ -176,6 +214,12 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns up to [maxResults] entries of the statistic's leaderboard, from
+  /// the top.
+  ///
+  /// Ranks are 1-based. [timeScope] and [collection] are only echoed into the
+  /// returned [Leaderboard]; the query always returns the global board. PlayFab
+  /// versioned statistics are not selectable.
   @override
   Future<Leaderboard> getLeaderboard(
     String leaderboardId, {
@@ -197,6 +241,11 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Returns the player's entry, or `null` when the board has no entries.
+  ///
+  /// Queries the one-entry window around the player. [timeScope] is ignored.
+  /// If the window does not contain the player, the first returned entry is
+  /// used instead.
   @override
   Future<LeaderboardEntry?> getPlayerScore(
     String leaderboardId, {
@@ -238,6 +287,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   // ─── Stats (player statistics) ─────────────────────────────────────────────
 
+  /// Returns the player's statistics.
+  ///
+  /// Keys are PlayFab statistic names.
   @override
   Future<List<Stat>> getStats() async {
     final data = await _client.post('/Client/GetPlayerStatistics', const {});
@@ -253,6 +305,10 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
         .toList();
   }
 
+  /// Returns the statistic [key], or `null` when the player has no value.
+  ///
+  /// Fetches every statistic and filters. [key] is not mapped through
+  /// `resolveStatId`.
   @override
   Future<Stat?> getStat(String key) async {
     final stats = await getStats();
@@ -262,6 +318,11 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     return null;
   }
 
+  /// Writes the statistic [key] and emits a [StatUpdatedEvent].
+  ///
+  /// PlayFab receives [value] truncated to an integer; the event carries the
+  /// original [value]. The stored result follows the statistic's aggregation
+  /// method in PlayFab. [key] is not mapped through `resolveStatId`.
   @override
   Future<void> setStat(String key, num value) async {
     await _client.post('/Client/UpdatePlayerStatistics', {
@@ -277,6 +338,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     );
   }
 
+  /// Reads the statistic, treating a missing one as zero, then writes the sum.
+  ///
+  /// The read-modify-write is not atomic.
   @override
   Future<void> incrementStat(String key, {num by = 1}) async {
     // PlayFab statistics are absolute; read-modify-write to increment.
@@ -289,6 +353,8 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   // PlayFab user data is a key→string store; binary payloads are base64-encoded
   // (following the GameJolt data-store convention).
 
+  /// Stores [data] base64-encoded in the player's user data under the key
+  /// [slot].
   @override
   Future<void> saveData(String slot, Uint8List data) async {
     await _client.post('/Client/UpdateUserData', {
@@ -296,6 +362,10 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     });
   }
 
+  /// Reads the user-data key [slot], or returns `null` when it is absent.
+  ///
+  /// Values not written by [saveData] and not valid base64 are returned as
+  /// their UTF-8 bytes.
   @override
   Future<CloudSave?> loadData(String slot) async {
     final data = await _client.post('/Client/GetUserData', {
@@ -322,6 +392,9 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  /// Lists the keys of the player's user data.
+  ///
+  /// Only the slot is set; sizes are not fetched.
   @override
   Future<List<CloudSaveMetadata>> listSaves() async {
     final data = await _client.post('/Client/GetUserData', const {});
@@ -330,6 +403,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
     return record.keys.map((k) => CloudSaveMetadata(slot: k)).toList();
   }
 
+  /// Removes the user-data key [slot].
   @override
   Future<void> deleteSave(String slot) async {
     await _client.post('/Client/UpdateUserData', {
@@ -339,6 +413,10 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   // ─── Friends ─────────────────────────────────────────────────────────────
 
+  /// Returns the player's PlayFab friends.
+  ///
+  /// Profiles carry the friend's PlayFab id and title display name, with the
+  /// raw friend record in `extra`.
   @override
   Future<List<PlayerProfile>> getFriends() async {
     final data = await _client.post('/Client/GetFriendsList', const {});
@@ -357,7 +435,7 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
-  /// Closes the HTTP client and events stream.
+  /// Closes the HTTP client and closes [events].
   @override
   Future<void> dispose() async {
     _client.close();

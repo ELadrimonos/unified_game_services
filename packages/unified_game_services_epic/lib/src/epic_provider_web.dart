@@ -7,21 +7,27 @@ const String _kWebError =
     'available on web. Do not register it in a web build — the facade should '
     'only be given Epic on Windows/macOS/Linux. See the package README.';
 
-/// Web stub of [EpicProvider].
+/// The web stub of `EpicProvider`.
 ///
-/// The real provider is `dart:ffi` (EOS C SDK) and cannot compile to JS, so the
-/// package entry point conditional-exports this stub on web
-/// (`if (dart.library.io)` selects the real one). It mirrors the public
-/// constructor so consumer code that references [EpicProvider]
-/// still type-checks on web; construction throws [UnsupportedError] because EOS
-/// cannot run there.
+/// The real provider uses `dart:ffi` and cannot compile to JavaScript, so the
+/// package entry point exports this stub when `dart.library.io` is unavailable.
+/// It mirrors the public constructor so code that references `EpicProvider`
+/// still type-checks on web, but construction always throws
+/// [UnsupportedError] because EOS cannot run there. Register Epic only on
+/// Windows, macOS and Linux.
 class EpicProvider extends UnifiedGameServicesPlatform {
   @override
   String get providerId => 'epic';
 
-  /// Whether Epic Online Services is supported on the current platform (always `false` on web).
+  /// Whether Epic Online Services is supported on the current platform.
+  ///
+  /// Always `false` on web.
   static bool get isSupported => false;
 
+  /// Always throws [UnsupportedError].
+  ///
+  /// The parameters mirror the desktop `EpicProvider` constructor and are
+  /// otherwise unused.
   EpicProvider({
     required this.credentials,
     this.exchangeCode,
@@ -35,17 +41,29 @@ class EpicProvider extends UnifiedGameServicesPlatform {
     throw UnsupportedError(_kWebError);
   }
 
+  /// The Developer Portal settings; unused on web.
   final EpicCredentials credentials;
+
+  /// The Epic Launcher exchange code; unused on web.
   final String? exchangeCode;
+
+  /// The Developer Authentication Tool endpoint; unused on web.
   final String? devAuthHost;
+
+  /// The Developer Authentication Tool credential name; unused on web.
   final String? devAuthCredentialName;
+
+  /// The EOS runtime library path; unused on web.
   final String? libraryPath;
+
+  /// The `EOS_Platform_Tick` interval; unused on web.
   final Duration tickInterval;
 
-  /// Matches the real static toggle so referencing `EpicProvider.debugLogging`
-  /// still resolves on web.
+  /// Mirrors the desktop static toggle so references to
+  /// `EpicProvider.debugLogging` still resolve on web; it has no effect.
   static bool debugLogging = false;
 
+  /// Always throws [UnsupportedError].
   @override
   Future<void> dispose() => throw UnsupportedError(_kWebError);
 }

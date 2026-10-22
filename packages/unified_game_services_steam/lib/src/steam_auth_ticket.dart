@@ -1,31 +1,36 @@
 import 'dart:typed_data';
 
-/// A Steam **Web API** auth ticket produced by
-/// `SteamProvider.getWebApiAuthTicket`.
+/// A Steam Web API auth ticket returned by `SteamProvider.getWebApiAuthTicket`.
 ///
-/// Provider-specific extra — **not** part of the unified
+/// This is a Steam-specific extra and is **not** part of the unified
 /// `UnifiedGameServicesPlatform` contract.
 ///
-/// Flow for linking a Steam account to your own backend account:
-/// 1. Client calls `getWebApiAuthTicket()` and gets a [SteamAuthTicket].
-/// 2. Client sends [hex] to your server.
-/// 3. Server calls the Steam Web API
-///    `ISteamUserAuth/AuthenticateUserTicket` (with your publisher Web API
-///    key + app id). Steam returns the verified `steamid` (steamID64).
-/// 4. Server stores that verified steamID64 on the user row — the link is
-///    now trusted (the client cannot spoof it).
+/// To link a Steam account to an account on your own backend:
+///
+/// 1. The client calls `getWebApiAuthTicket` and receives a [SteamAuthTicket].
+/// 2. The client sends [hex] to the server.
+/// 3. The server calls the Steam Web API
+///    `ISteamUserAuth/AuthenticateUserTicket` with the publisher Web API key
+///    and the app id. Steam returns the verified steamID64.
+/// 4. The server stores that steamID64 on the user. The link can be trusted
+///    because the client cannot forge it.
 class SteamAuthTicket {
+  /// Creates a ticket from its Steam [handle] and raw [bytes].
   const SteamAuthTicket({required this.handle, required this.bytes});
 
-  /// Steam ticket handle (`HAuthTicket`). Pass to
-  /// `SteamProvider.cancelAuthTicket` to release it when done.
+  /// The Steam ticket handle (`HAuthTicket`).
+  ///
+  /// Pass it to `SteamProvider.cancelAuthTicket` to release the ticket once
+  /// the backend has consumed it.
   final int handle;
 
-  /// Raw ticket bytes (`cubTicket` long).
+  /// The raw ticket bytes.
   final Uint8List bytes;
 
-  /// Lowercase hex encoding of [bytes] — the value to send to your backend
-  /// as the `ticket` parameter of `AuthenticateUserTicket`.
+  /// The lowercase hex encoding of [bytes].
+  ///
+  /// This is the value to send to the backend as the `ticket` parameter of
+  /// `AuthenticateUserTicket`.
   String get hex {
     final sb = StringBuffer();
     for (final b in bytes) {

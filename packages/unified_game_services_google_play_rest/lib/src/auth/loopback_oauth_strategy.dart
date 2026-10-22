@@ -32,8 +32,21 @@ const String gamesScope = 'https://www.googleapis.com/auth/games';
 /// browser.
 ///
 /// Requires an OAuth client of type **Desktop app** in the Google Cloud
-/// Console (desktop clients permit the loopback redirect).
+/// Console (desktop clients permit the loopback redirect). Tokens are held in
+/// memory only; they are not persisted across process restarts.
+///
+/// Not available on web: [getAccessToken] throws an [UnsupportedError] when
+/// interactive sign-in is needed, because a browser cannot host the loopback
+/// server. Use `StoredCredentialStrategy` there.
 class LoopbackOAuthStrategy implements AuthStrategy {
+  /// Creates a strategy for the OAuth client identified by [clientId].
+  ///
+  /// [clientSecret] is sent on token requests when the client has one (Google
+  /// issues a non-confidential secret for Desktop clients). [scopes] defaults
+  /// to [gamesScope]. [launchUrl] replaces [defaultLauncher] for presenting the
+  /// consent URL, [httpClient] is used for token requests, and
+  /// [authorizationEndpoint] overrides Google's consent endpoint. [random]
+  /// seeds PKCE generation and exists for deterministic tests.
   LoopbackOAuthStrategy({
     required this.clientId,
     String? clientSecret,
@@ -51,13 +64,15 @@ class LoopbackOAuthStrategy implements AuthStrategy {
          httpClient: httpClient,
        );
 
-  /// Desktop OAuth client id.
+  /// The client id of the **Desktop app** OAuth client.
   final String clientId;
 
   /// Scopes to request. Defaults to [gamesScope].
   final List<String> scopes;
 
-  /// Google's authorization endpoint.
+  /// The authorization endpoint the consent URL is built on.
+  ///
+  /// Defaults to Google's.
   final String authorizationEndpoint;
 
   final UrlLauncher _launch;
@@ -69,6 +84,13 @@ class LoopbackOAuthStrategy implements AuthStrategy {
   @override
   bool get isAuthenticated => _token != null;
 
+  /// Returns a valid access token.
+  ///
+  /// Reuses the cached token while it is unexpired. Otherwise renews it with
+  /// the refresh token when one is held, and falls back to the interactive
+  /// consent flow when there is none or Google rejects it. The interactive
+  /// flow may throw [SignInFailedException] if consent is denied or the token
+  /// exchange fails.
   @override
   Future<String> getAccessToken({bool forceRefresh = false}) async {
     final current = _token;
@@ -95,6 +117,7 @@ class LoopbackOAuthStrategy implements AuthStrategy {
     return _token!.accessToken;
   }
 
+  /// Discards the in-memory tokens without revoking them at Google.
   @override
   Future<void> signOut() async {
     _token = null;

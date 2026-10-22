@@ -15,23 +15,31 @@ class TokenResponse {
   /// Absolute time after which [accessToken] must be refreshed.
   final DateTime expiry;
 
+  /// Creates a token response expiring at [expiry].
   const TokenResponse({
     required this.accessToken,
     required this.expiry,
     this.refreshToken,
   });
 
-  /// Whether the token is at or past [expiry] (with a small safety margin
-  /// applied by the caller).
+  /// Whether the token is within [leeway] of [expiry], or already past it.
   bool isExpired({Duration leeway = const Duration(seconds: 60)}) =>
       DateTime.now().isAfter(expiry.subtract(leeway));
 }
 
 /// Talks to Google's OAuth 2.0 token endpoint to mint and refresh tokens.
 ///
-/// Shared by every [AuthStrategy] that exchanges an authorization code or a
-/// refresh token. Pure transport — it holds no token state of its own.
+/// Shared by every `AuthStrategy` that exchanges an authorization code or a
+/// refresh token. Pure transport: it holds no token state of its own.
+///
+/// Failures map onto the `GameServiceException` hierarchy: a transport error
+/// becomes [NetworkException], a non-JSON reply [PlatformOperationException]
+/// and a rejected request [SignInFailedException].
 class TokenRefresher {
+  /// Creates a refresher for the OAuth client [clientId].
+  ///
+  /// [clientSecret] is sent when non-null. [httpClient] defaults to a new
+  /// client, and [tokenEndpoint] to Google's.
   TokenRefresher({
     required this.clientId,
     this.clientSecret,
@@ -46,7 +54,7 @@ class TokenRefresher {
   /// is not truly secret; PKCE protects the exchange.
   final String? clientSecret;
 
-  /// Google's token endpoint.
+  /// The token endpoint requests are posted to.
   final String tokenEndpoint;
 
   final http.Client _http;

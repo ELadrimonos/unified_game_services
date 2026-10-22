@@ -15,7 +15,17 @@ import 'auth/auth_strategy.dart';
 /// [GameServiceException] hierarchy.
 ///
 /// An [http.Client] can be injected for testing.
+///
+/// Failure mapping: an unobtainable token becomes [SignInFailedException]
+/// (unless the strategy already threw a [GameServiceException]), a transport
+/// error [NetworkException], a persistent `401` [NotSignedInException], and any
+/// other non-2xx status or malformed body [PlatformOperationException] (its
+/// `code` is the HTTP status).
 class GamesRestClient {
+  /// Creates a client that authorizes requests through [auth].
+  ///
+  /// [httpClient] defaults to a new [http.Client], which [close] then
+  /// closes. [baseUrl] overrides the API root, e.g. for a test server.
   GamesRestClient({
     required AuthStrategy auth,
     http.Client? httpClient,
@@ -23,7 +33,7 @@ class GamesRestClient {
   }) : _auth = auth, // ignore: prefer_initializing_formals
        _http = httpClient ?? http.Client();
 
-  /// API root, without a trailing slash.
+  /// The API root, without a trailing slash.
   final String baseUrl;
 
   final AuthStrategy _auth;

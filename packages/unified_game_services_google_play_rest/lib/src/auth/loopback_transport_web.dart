@@ -5,8 +5,11 @@ import 'dart:async';
 ///
 /// The loopback authorization-code flow needs a localhost HTTP server, which a
 /// browser can't host, so it is unavailable on the web. The rest of the package
-/// (REST client + [StoredCredentialStrategy] / [NativeSilentTokenStrategy])
-/// still works on web — this stub only keeps the package compilable there.
+/// (the REST client, `StoredCredentialStrategy` and
+/// `NativeSilentTokenStrategy`) still works on web; this stub only keeps the
+/// package compilable there.
+///
+/// Always throws an [UnsupportedError].
 Future<({String code, String redirectUri})> captureAuthorizationCode({
   required Uri Function(String redirectUri) authUrlFor,
   required FutureOr<void> Function(Uri url) launch,

@@ -1,3 +1,6 @@
+/// @docImport 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
+library;
+
 /// How the provider obtains an OAuth 2.0 access token for the Games REST API.
 ///
 /// The provider never performs OAuth mechanics itself — it holds an

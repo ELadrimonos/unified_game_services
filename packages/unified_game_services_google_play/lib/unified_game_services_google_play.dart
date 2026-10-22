@@ -1,13 +1,17 @@
 /// Auto-selecting Google Play Games provider for `unified_game_services`:
-/// native Play Games SDK on Android, REST elsewhere (incl. **web**). Pure Dart,
-/// no Flutter.
+/// native Play Games SDK on Android, REST elsewhere (including **web**). Pure
+/// Dart, no Flutter.
 ///
-/// See [GooglePlayGames]. Concrete provider types and auth strategies are
-/// re-exported so `provider<GooglePlayGamesProvider>()` /
-/// `provider<GooglePlayAndroidProvider>()` and the REST auth strategies stay
-/// reachable. The native `GooglePlayAndroidProvider` export is
-/// `dart.library.io`-gated — it depends on `package:jni` (FFI, no web), so on
-/// web only the REST API surface is exported.
+/// [GooglePlayGames.create] returns the provider for the current platform. The
+/// concrete provider types and the REST auth strategies are re-exported, so
+/// `GameServices.provider<GooglePlayGamesProvider>()` and
+/// `GameServices.provider<GooglePlayAndroidProvider>()` stay reachable.
+///
+/// The native `GooglePlayAndroidProvider` export is gated on `dart.library.io`
+/// because it depends on `package:jni` (FFI, no web support). On web only the
+/// REST API surface is exported.
+///
+/// @docImport 'src/google_play_games.dart';
 library;
 
 export 'package:unified_game_services_google_play_rest/unified_game_services_google_play_rest.dart';
