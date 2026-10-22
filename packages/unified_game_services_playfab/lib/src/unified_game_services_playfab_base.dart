@@ -307,13 +307,14 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
 
   /// Returns the statistic [key], or `null` when the player has no value.
   ///
-  /// Fetches every statistic and filters. [key] is not mapped through
-  /// `resolveStatId`.
+  /// Fetches every statistic and filters. [key] is mapped through
+  /// `resolveStatId` to the PlayFab statistic name.
   @override
   Future<Stat?> getStat(String key) async {
+    final name = resolveStatId(key);
     final stats = await getStats();
     for (final s in stats) {
-      if (s.key == key) return s;
+      if (s.key == name) return s;
     }
     return null;
   }
@@ -322,17 +323,19 @@ class PlayFabProvider extends UnifiedGameServicesPlatform {
   ///
   /// PlayFab receives [value] truncated to an integer; the event carries the
   /// original [value]. The stored result follows the statistic's aggregation
-  /// method in PlayFab. [key] is not mapped through `resolveStatId`.
+  /// method in PlayFab. [key] is mapped through `resolveStatId`; the event
+  /// carries the resolved name.
   @override
   Future<void> setStat(String key, num value) async {
+    final name = resolveStatId(key);
     await _client.post('/Client/UpdatePlayerStatistics', {
       'Statistics': [
-        {'StatisticName': key, 'Value': value.toInt()},
+        {'StatisticName': name, 'Value': value.toInt()},
       ],
     });
     _emit(
       StatUpdatedEvent(
-        stat: Stat(key: key, value: value),
+        stat: Stat(key: name, value: value),
         timestamp: DateTime.now(),
       ),
     );

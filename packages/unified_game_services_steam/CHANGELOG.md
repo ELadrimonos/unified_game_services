@@ -2,6 +2,8 @@
 
 ## 0.2.0
 
+- Fix: `getStat`, `setStat` and `incrementStat` now map the key through `resolveStatId`, so `UnifiedStatTable` mappings apply; `StatUpdatedEvent` carries the resolved id.
+- Fix: the web stub now declares `getSteamId64` (throws `UnsupportedError`), matching the native `SteamProvider` API.
 - **Breaking:** removed `SteamProvider.registerWith(...)`; construct the provider (`SteamProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
 - Implements the new `providerId` contract of `unified_game_services_platform_interface` 0.2.0; version aligned with the workspace.
 

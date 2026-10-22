@@ -368,16 +368,17 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// Returns the stat [key] as a 32-bit integer, or `null` when Steam does
   /// not know it as an integer stat.
   ///
-  /// Float stats are not supported. [key] is not mapped through
-  /// `resolveStatId`.
+  /// Float stats are not supported. [key] is mapped through `resolveStatId`
+  /// and must resolve to the stat API name from Steamworks.
   @override
   Future<Stat?> getStat(String key) async {
+    final id = resolveStatId(key);
     final stats = _ensureInit().steamUserStats;
-    return _withUtf8(key, (keyPtr) {
+    return _withUtf8(id, (keyPtr) {
       final pData = calloc<Int>();
       try {
         if (!stats.getStatInt32(keyPtr, pData)) return null;
-        return Stat(key: key, value: pData.value);
+        return Stat(key: id, value: pData.value);
       } finally {
         calloc.free(pData);
       }
@@ -388,21 +389,23 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// [StatUpdatedEvent].
   ///
   /// Steam receives [value] truncated to an integer; the event carries the
-  /// original [value]. Throws [PlatformOperationException] when `StoreStats`
-  /// fails.
+  /// original [value]. [key] is mapped through `resolveStatId`; the event
+  /// carries the resolved id. Throws [PlatformOperationException] when
+  /// `StoreStats` fails.
   @override
   Future<void> setStat(String key, num value) async {
+    final id = resolveStatId(key);
     final stats = _ensureInit().steamUserStats;
-    _withUtf8(key, (keyPtr) {
+    _withUtf8(id, (keyPtr) {
       stats.setStatInt32(keyPtr, value.toInt());
       return null;
     });
     if (!stats.storeStats()) {
-      throw PlatformOperationException('Failed to store stat "$key".');
+      throw PlatformOperationException('Failed to store stat "$id".');
     }
     _emit(
       StatUpdatedEvent(
-        stat: Stat(key: key, value: value),
+        stat: Stat(key: id, value: value),
         timestamp: DateTime.now(),
       ),
     );

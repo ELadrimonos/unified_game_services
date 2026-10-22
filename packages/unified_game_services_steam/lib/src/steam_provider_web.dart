@@ -13,7 +13,7 @@ const String _kWebError =
 ///
 /// The real provider uses `dart:ffi` and cannot compile to JavaScript, so the
 /// package entry point exports this stub when `dart.library.io` is
-/// unavailable. It mirrors the constructor and most Steam-specific extras so
+/// unavailable. It mirrors the constructor and the Steam-specific extras so
 /// code that references [SteamProvider] still type-checks on web.
 /// The constructor and every member throw [UnsupportedError] because Steam
 /// cannot run there. Register Steam only on Windows, macOS and Linux.
@@ -47,6 +47,10 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// interface.
   Future<void> resetAllStats({bool includeAchievements = false}) =>
       throw UnsupportedError(_kWebError);
+
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
+  int getSteamId64() => throw UnsupportedError(_kWebError);
 
   /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
   /// interface.

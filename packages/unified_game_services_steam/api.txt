@@ -15,6 +15,7 @@ package:unified_game_services_steam/unified_game_services_steam.dart:
     cancelAuthTicket (method: void Function(int))
     clearAchievement (method: Future<void> Function(String))
     dispose (method: Future<void> Function())
+    getSteamId64 (method: int Function())
     getWebApiAuthTicket (method: Future<SteamAuthTicket> Function({String? identity}))
     resetAllStats (method: Future<void> Function({bool includeAchievements}))
   SteamRestartRequiredException (class extends SignInFailedException):

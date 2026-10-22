@@ -1262,18 +1262,18 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   ///
   /// EOS stats are ingest-only counters, so this adds [value] (truncated to an
   /// integer) to the stat according to its Developer Portal aggregation rather
-  /// than replacing it. [key] is the raw EOS stat name; it is not mapped
-  /// through `resolveStatId`.
+  /// than replacing it. [key] is mapped through `resolveStatId` and must
+  /// resolve to the EOS stat name.
   @override
   Future<void> setStat(String key, num value) =>
-      _ingest(key, value.toInt(), 'setStat');
+      _ingest(resolveStatId(key), value.toInt(), 'setStat');
 
   /// Ingests [by] (truncated to an integer) for the stat [key].
   ///
   /// Behaves exactly like [setStat]; see there for the semantics.
   @override
   Future<void> incrementStat(String key, {num by = 1}) =>
-      _ingest(key, by.toInt(), 'incrementStat');
+      _ingest(resolveStatId(key), by.toInt(), 'incrementStat');
 
   /// Submits [score] by ingesting it into the stat that backs the leaderboard.
   ///
@@ -1559,12 +1559,12 @@ class EpicProvider extends UnifiedGameServicesPlatform {
   /// Returns the stat named [key], or `null` when the player has none.
   ///
   /// Fetches every stat and filters, so it costs as much as [getStats]. [key]
-  /// is the raw EOS stat name and is not mapped through `resolveStatId`.
+  /// is mapped through `resolveStatId` to the EOS stat name.
   @override
   Future<Stat?> getStat(String key) async {
-    // Stats are addressed by their raw EOS stat name.
+    final name = resolveStatId(key);
     for (final stat in await getStats()) {
-      if (stat.key == key) return stat;
+      if (stat.key == name) return stat;
     }
     return null;
   }

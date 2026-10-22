@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- Fix: `ProviderIdMap(googlePlay: ...)` entries were never applied, because no provider reports `google_play`. `UnifiedIdTable.forProvider` / `reverseForProvider` now fall back to the `google_play` entry for `google_play_rest` and `google_play_android`; a tier-specific entry still wins.
 - **Breaking:** removed the global platform instance (`UnifiedGameServicesPlatform.instance`, `getInstance`, `tryGetInstance`) and `UnsupportedUnifiedGameServices`. The global now lives on the `UnifiedGameServices` facade.
 - **Breaking:** `UnifiedGameServicesPlatform.providerId` is now abstract: every
   provider must return a stable `snake_case` id (never `runtimeType`).

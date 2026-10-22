@@ -194,6 +194,30 @@ void main() {
       expect(stat['StatisticName'], 'kills');
       expect(stat['Value'], 15);
     });
+
+    test('stat ops resolve unified keys to native names', () async {
+      final m = mock({
+        '/Client/LoginWithCustomID': {'SessionTicket': 't', 'PlayFabId': 'PF1'},
+        '/Client/GetAccountInfo': {
+          'AccountInfo': {'PlayFabId': 'PF1'},
+        },
+        '/Client/GetPlayerStatistics': {
+          'Statistics': [
+            {'StatisticName': 'pf_kills', 'Value': 10},
+          ],
+        },
+        '/Client/UpdatePlayerStatistics': const {},
+      });
+      final p = await signedIn(m.client)
+        ..registerMappings(statIds: {'kills': 'pf_kills'});
+
+      expect((await p.getStat('kills'))?.value, 10);
+      await p.incrementStat('kills', by: 5);
+
+      final stat = (m.calls.last.body['Statistics'] as List).first as Map;
+      expect(stat['StatisticName'], 'pf_kills');
+      expect(stat['Value'], 15);
+    });
   });
 
   group('cloud save', () {

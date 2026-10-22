@@ -151,4 +151,36 @@ void main() {
       expect(_FakeProviderA().providerId, 'fake_a');
     });
   });
+
+  group('UnifiedIdTable', () {
+    final table = UnifiedAchievementTable({
+      'first_win': ProviderIdMap(googlePlay: 'CgkShared'),
+      'boss': ProviderIdMap(
+        googlePlay: 'CgkShared2',
+        googlePlayRest: 'CgkRest',
+      ),
+    });
+
+    test('googlePlay entries apply to both Google Play tiers', () {
+      for (final id in [
+        ProviderId.googlePlayRest,
+        ProviderId.googlePlayAndroid,
+      ]) {
+        expect(table.forProvider(id)['first_win'], 'CgkShared');
+        expect(table.reverseForProvider(id)['CgkShared'], 'first_win');
+      }
+    });
+
+    test('a tier-specific entry overrides googlePlay', () {
+      expect(table.forProvider(ProviderId.googlePlayRest)['boss'], 'CgkRest');
+      expect(
+        table.forProvider(ProviderId.googlePlayAndroid)['boss'],
+        'CgkShared2',
+      );
+    });
+
+    test('googlePlay entries do not leak to other providers', () {
+      expect(table.forProvider(ProviderId.steam), isEmpty);
+    });
+  });
 }

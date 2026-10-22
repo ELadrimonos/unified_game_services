@@ -26,12 +26,19 @@ abstract final class ProviderId {
   /// The id of the Apple Game Center provider.
   static const String gameCenter = 'game_center';
 
-  /// A generic Google Play Games id.
+  /// A key shared by both Google Play Games providers.
   ///
-  /// The built-in Google Play providers report [googlePlayRest] or
-  /// [googlePlayAndroid] instead, so entries keyed by this id are not applied
-  /// to them.
+  /// No provider reports this id. An entry under it applies to both
+  /// [googlePlayRest] and [googlePlayAndroid] (Play Console ids are the same
+  /// for either tier); an entry under the tier's own id takes precedence.
   static const String googlePlay = 'google_play';
+
+  /// The fallback key looked up for [providerId] when its row has no entry
+  /// of its own, or `null` if there is none.
+  static String? _fallbackFor(String providerId) => switch (providerId) {
+    googlePlayRest || googlePlayAndroid => googlePlay,
+    _ => null,
+  };
 
   /// The id of the Google Play Games REST provider.
   static const String googlePlayRest = 'google_play_rest';
@@ -130,11 +137,13 @@ abstract class UnifiedIdTable {
   ///
   /// This is the slice a provider receives through
   /// [UnifiedGameServicesPlatform.registerMappings]. Unified keys with no entry
-  /// for [providerId] are omitted.
+  /// for [providerId] are omitted. For the Google Play providers, an entry
+  /// under [ProviderId.googlePlay] is used when the row has none under the
+  /// provider's own id.
   Map<String, String> forProvider(String providerId) {
     final result = <String, String>{};
     for (final entry in mappings.entries) {
-      final nativeId = entry.value[providerId];
+      final nativeId = _nativeIdIn(entry.value, providerId);
       if (nativeId != null) {
         result[entry.key] = nativeId;
       }
@@ -148,10 +157,15 @@ abstract class UnifiedIdTable {
   Map<String, String> reverseForProvider(String providerId) {
     final result = <String, String>{};
     for (final entry in mappings.entries) {
-      final nativeId = entry.value[providerId];
+      final nativeId = _nativeIdIn(entry.value, providerId);
       if (nativeId != null) result.putIfAbsent(nativeId, () => entry.key);
     }
     return result;
+  }
+
+  static String? _nativeIdIn(Map<String, String> row, String providerId) {
+    final fallback = ProviderId._fallbackFor(providerId);
+    return row[providerId] ?? (fallback == null ? null : row[fallback]);
   }
 }
 
