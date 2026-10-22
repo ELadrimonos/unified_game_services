@@ -229,10 +229,15 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   Future<void> unlockAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
     final stats = _ensureInit().steamUserStats;
-    _withUtf8(id, (namePtr) {
-      stats.setAchievement(namePtr);
-      return null;
-    });
+    final set = _withUtf8(id, (namePtr) => stats.setAchievement(namePtr));
+    if (!set) {
+      // Steam rejects unknown, archived (Achievement Sets) or DLC-gated
+      // achievements, and calls made before user stats are received.
+      throw PlatformOperationException(
+        'Steam rejected unlocking achievement "$id" (unknown, archived, '
+        'not owned, or stats not ready).',
+      );
+    }
     if (!stats.storeStats()) {
       throw PlatformOperationException('Failed to store achievement "$id".');
     }
