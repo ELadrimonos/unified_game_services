@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- Writes (`unlockAchievement`, `incrementAchievement`, `revealAchievement`, `setAchievementStepsAtLeast`, `submitScore`) now use the SDK's `*Immediate` variants and await their `Task`, so failures (unknown id, signed out, offline) throw `NotSignedInException`/`PlatformOperationException` instead of silently succeeding. Behavior change: no offline queueing.
 - Bindings regenerated with jnigen 1.0.1 (config moved from `jnigen.yaml` to `tool/jnigen.dart`); the existing provider API is unchanged.
 - Added provider-specific `showAchievementsUi()` and `showLeaderboardsUi({leaderboardId})`, opening the native Play Games screens.
 - **Breaking:** removed `GooglePlayAndroidProvider.registerWith(...)`; construct the provider (`GooglePlayAndroidProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.

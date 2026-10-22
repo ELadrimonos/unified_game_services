@@ -29,8 +29,10 @@ import 'playgames_bindings.dart' hide Exception, Leaderboard;
 ///
 /// ## Status: writes + native UIs wired; async reads pending
 /// The toast-firing writes ([unlockAchievement], [incrementAchievement],
-/// [revealAchievement], [submitScore]) are plain void SDK calls and are fully
-/// implemented, as are the native achievements/leaderboards screens
+/// [revealAchievement], [submitScore]) use the SDK's `*Immediate` variants and
+/// await their `Task`, so a rejected write (unknown id, signed out, offline)
+/// throws instead of being reported as a success. They are fully implemented,
+/// as are the native achievements/leaderboards screens
 /// ([showAchievementsUi], [showLeaderboardsUi]), which await a `Task<Intent>`
 /// through an `OnCompleteListener`. Reads that need a `Task<T>` payload mapped
 /// to unified models (sign-in state, current player, achievement / score
@@ -149,7 +151,10 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
   Future<void> unlockAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
-    _withAchievements((c) => _withJString(id, c.unlock));
+    await _awaitWrite(
+      _withAchievements((c) => _withJString(id, c.unlockImmediate)),
+      'unlock achievement "$id"',
+    );
     _emit(
       AchievementUnlockedEvent(
         achievement: Achievement(id: id, title: id, isUnlocked: true),
@@ -161,20 +166,21 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   @override
   Future<void> incrementAchievement(String achievementId, int steps) async {
     final id = resolveAchievementId(achievementId);
-    _withAchievements((c) {
-      final js = id.toJString();
-      try {
-        c.increment(js, steps);
-      } finally {
-        js.release();
-      }
-    });
+    await _awaitWrite(
+      _withAchievements(
+        (c) => _withJString(id, (js) => c.incrementImmediate(js, steps)),
+      ),
+      'increment achievement "$id"',
+    );
   }
 
   @override
   Future<void> revealAchievement(String achievementId) async {
     final id = resolveAchievementId(achievementId);
-    _withAchievements((c) => _withJString(id, c.reveal));
+    await _awaitWrite(
+      _withAchievements((c) => _withJString(id, c.revealImmediate)),
+      'reveal achievement "$id"',
+    );
   }
 
   /// Provider-specific (not on the unified interface): set an incremental
@@ -184,14 +190,12 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     int steps,
   ) async {
     final id = resolveAchievementId(achievementId);
-    _withAchievements((c) {
-      final js = id.toJString();
-      try {
-        c.setSteps(js, steps);
-      } finally {
-        js.release();
-      }
-    });
+    await _awaitWrite(
+      _withAchievements(
+        (c) => _withJString(id, (js) => c.setStepsImmediate(js, steps)),
+      ),
+      'set steps of achievement "$id"',
+    );
   }
 
   // ─── Leaderboards ──────────────────────────────────────────────────────────
@@ -205,11 +209,13 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
     final client = PlayGames.getLeaderboardsClient(
       _activityResolver().as(Activity.type),
     );
+    final Task<JObject?> task;
     try {
-      _withJString(id, (js) => client.submitScore(js, score));
+      task = _withJString(id, (js) => client.submitScoreImmediate(js, score));
     } finally {
       client.release();
     }
+    await _awaitWrite(task, 'submit score to "$id"');
     _emit(
       ScoreSubmittedEvent(
         leaderboardId: id,
@@ -375,24 +381,44 @@ class GooglePlayAndroidProvider extends UnifiedGameServicesPlatform {
   // ─── Helpers ───────────────────────────────────────────────────────────────
 
   /// Runs [body] with a fresh `AchievementsClient`, releasing it afterwards.
-  void _withAchievements(void Function(AchievementsClient client) body) {
+  T _withAchievements<T>(T Function(AchievementsClient client) body) {
     final client = PlayGames.getAchievementsClient(
       _activityResolver().as(Activity.type),
     );
     try {
-      body(client);
+      return body(client);
     } finally {
       client.release();
     }
   }
 
   /// Calls [body] with a temporary [JString] built from [value], releasing it.
-  void _withJString(String value, void Function(JString) body) {
+  T _withJString<T>(String value, T Function(JString) body) {
     final js = value.toJString();
     try {
-      body(js);
+      return body(js);
     } finally {
       js.release();
+    }
+  }
+
+  /// Awaits the `Task` of an `*Immediate` write and maps a failure to a
+  /// [GameServiceException], so the facade reports it per provider.
+  ///
+  /// Unlike the queued, fire-and-forget `unlock`/`submitScore`, `*Immediate`
+  /// calls complete only once Play Games confirmed the write, so they fail
+  /// offline instead of queueing.
+  Future<void> _awaitWrite(Task<JObject?> task, String what) async {
+    try {
+      (await _awaitTask(task))?.release();
+    } on _TaskFailure catch (e) {
+      if (e.isSignInRequired) {
+        throw NotSignedInException('Sign in to Play Games to $what', e.error);
+      }
+      throw PlatformOperationException(
+        'Play Games failed to $what',
+        cause: e.error,
+      );
     }
   }
 
