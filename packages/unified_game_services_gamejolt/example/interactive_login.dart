@@ -68,6 +68,7 @@ What do you want to test?
   5) Cloud save round-trip
   6) List friends
   7) Session: open / check / close
+  8) My score and rank on a leaderboard
   0) Quit''');
     stdout.write('> ');
     final choice = stdin.readLineSync()?.trim();
@@ -128,6 +129,15 @@ What do you want to test?
           stdout.writeln('Session open: ${await provider.isSessionOpen()}');
           await provider.closeSession();
           stdout.writeln('Session closed.');
+        case '8':
+          final table = _prompt('Leaderboard (table) id');
+          final entry = await provider.getPlayerScore(table);
+          stdout.writeln(
+            entry == null
+                ? 'No score on $table.'
+                : '#${entry.rank} ${entry.player.displayName}: '
+                      '${entry.displayScore}',
+          );
         case '0':
         case null:
           return;
