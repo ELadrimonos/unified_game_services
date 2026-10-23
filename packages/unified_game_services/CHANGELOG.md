@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Fix: drop the `documentation` pubspec URL (`docs.gameservices.aprimo.dev`
+  returns 404); pub.dev now links to the generated API docs.
+
 ## 0.2.0
 
 Core API stabilization and multi-provider enhancements.
