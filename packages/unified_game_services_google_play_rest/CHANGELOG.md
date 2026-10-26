@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Added a new example for display on pub.dev.
+- Updated the `http` dependency to `^1.6.0`.
+
 ## 0.2.0
 
 - **Breaking:** removed `GooglePlayGamesProvider.registerWith(...)`; construct the provider (`GooglePlayGamesProvider(...)`) and pass it to `GameServices.initialize(providers: [...])`.
