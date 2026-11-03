@@ -930,6 +930,11 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// app id being played), `lobbyId`, and `richPresence` (the raw key/value
   /// map behind [PlayerProfile.presence]);
   /// keys are omitted when Steam has no value.
+  ///
+  /// Rich presence is scoped to the calling app: Steam only delivers a
+  /// friend's rich presence while they play the same app id as this process
+  /// (`FriendRichPresenceUpdate` reports our own app id). A friend in another
+  /// game therefore has `presence == null`, but `gameId` still says which game.
   PlayerProfile _buildProfile(
     sw.SteamClient client,
     int steamId, {

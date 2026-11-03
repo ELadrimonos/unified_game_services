@@ -3,6 +3,7 @@
 ## Unreleased
 
 - `getCurrentPlayer`, `signIn` and `getFriends` return richer profiles: the 184x184 avatar as PNG (`avatarBytes`), `Level N` as `title`, `presence` mapped from Steam rich presence, and `extra` with `steamId`, `personaState`, `steamLevel`, `nickname`, `gameId`, `lobbyId` and the raw `richPresence` map.
+- Limitation: Steam only exposes a friend's rich presence while they play the same app id as your game; friends in other games get `presence == null` (use `extra['gameId']` and `getGameName`).
 - `getFriends` requests friends' rich presence and waits up to 5 s for avatars Steam is still loading.
 - `events` emits `FriendPresenceChangedEvent` when a friend comes online or offline, changes status, game, name, avatar or rich presence.
 - Add `SteamProvider.getGameName(appId)` (Steam-specific): resolves an app id to its store name through the public Store API, cached.
