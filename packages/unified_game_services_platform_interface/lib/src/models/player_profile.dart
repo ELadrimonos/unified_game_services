@@ -4,6 +4,8 @@
 /// @docImport '../platform_interface/platform_interface.dart';
 library;
 
+import 'dart:typed_data';
+
 import '../internal/equality.dart';
 
 /// A player as represented by a game service provider.
@@ -24,6 +26,13 @@ class PlayerProfile {
 
   /// URL of the player's avatar, if the provider exposes one.
   final String? avatarUrl;
+
+  /// Encoded image bytes of the player's avatar (PNG, JPEG...), if the
+  /// provider exposes the image itself rather than a URL.
+  ///
+  /// Providers fill [avatarUrl], [avatarBytes], both or neither; render
+  /// whichever is non-null (for example with `Image.memory`).
+  final Uint8List? avatarBytes;
 
   /// Whether the player is currently online, or `null` if unknown.
   final bool? isOnline;
@@ -56,6 +65,7 @@ class PlayerProfile {
     required this.id,
     required this.displayName,
     this.avatarUrl,
+    this.avatarBytes,
     this.isOnline,
     this.title,
     this.isFriend,
@@ -71,6 +81,7 @@ class PlayerProfile {
     String? id,
     String? displayName,
     String? avatarUrl,
+    Uint8List? avatarBytes,
     bool? isOnline,
     String? title,
     bool? isFriend,
@@ -80,6 +91,7 @@ class PlayerProfile {
     id: id ?? this.id,
     displayName: displayName ?? this.displayName,
     avatarUrl: avatarUrl ?? this.avatarUrl,
+    avatarBytes: avatarBytes ?? this.avatarBytes,
     isOnline: isOnline ?? this.isOnline,
     title: title ?? this.title,
     isFriend: isFriend ?? this.isFriend,
@@ -94,6 +106,7 @@ class PlayerProfile {
           other.id == id &&
           other.displayName == displayName &&
           other.avatarUrl == avatarUrl &&
+          listEquals(other.avatarBytes, avatarBytes) &&
           other.isOnline == isOnline &&
           other.title == title &&
           other.isFriend == isFriend &&
@@ -105,6 +118,7 @@ class PlayerProfile {
     id,
     displayName,
     avatarUrl,
+    avatarBytes == null ? null : listHash(avatarBytes!),
     isOnline,
     title,
     isFriend,
@@ -115,6 +129,7 @@ class PlayerProfile {
   @override
   String toString() =>
       'PlayerProfile(id: $id, displayName: $displayName, '
-      'avatarUrl: $avatarUrl, isOnline: $isOnline, title: $title, '
+      'avatarUrl: $avatarUrl, avatarBytes: ${avatarBytes == null ? null : '${avatarBytes!.length} bytes'}, '
+      'isOnline: $isOnline, title: $title, '
       'isFriend: $isFriend, extra: $extra, providerId: $providerId)';
 }

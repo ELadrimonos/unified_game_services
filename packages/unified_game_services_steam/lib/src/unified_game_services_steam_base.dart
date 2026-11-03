@@ -9,6 +9,7 @@ import 'package:meta/meta.dart' show visibleForTesting;
 import 'package:steamworks/steamworks.dart' as sw;
 import 'package:unified_game_services_platform_interface/unified_game_services_platform_interface.dart';
 
+import 'avatar_png.dart';
 import 'steam_auth_ticket.dart';
 import 'steam_exceptions.dart';
 
@@ -237,8 +238,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
 
   PlayerProfile _currentProfile(sw.SteamClient client) {
     final id = client.steamUser.getSteamId();
-    final name = client.steamFriends.getPersonaName().toDartString();
-    return PlayerProfile(id: id.toString(), displayName: name, isOnline: true);
+    return _buildProfile(client, id, self: true);
   }
 
   // ─── Achievements ──────────────────────────────────────────────────────────
@@ -741,14 +741,45 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     final client = _ensureInit();
     final friends = client.steamFriends;
     final count = friends.getFriendCount(_friendFlagImmediate);
-    final result = <PlayerProfile>[];
-    for (var i = 0; i < count; i++) {
-      final id = friends.getFriendByIndex(i, _friendFlagImmediate);
-      result.add(_profileForId(client, id, isFriend: true));
-    }
-    return result;
+    final ids = [
+      for (var i = 0; i < count; i++)
+        friends.getFriendByIndex(i, _friendFlagImmediate),
+    ];
+    await _awaitAvatars(client, ids);
+    return [for (final id in ids) _buildProfile(client, id, isFriend: true)];
   }
 
+  /// Steam hands out avatar handles lazily: `-1` means "still loading".
+  static const int _avatarLoading = -1;
+
+  /// Asks Steam to load the avatars that are not ready yet and waits (up to
+  /// two seconds) for the `AvatarImageLoaded` callbacks.
+  Future<void> _awaitAvatars(sw.SteamClient client, List<int> ids) async {
+    final friends = client.steamFriends;
+    final pending = {
+      for (final id in ids)
+        if (friends.getLargeFriendAvatar(id) == _avatarLoading) id,
+    };
+    if (pending.isEmpty) return;
+    final done = Completer<void>();
+    late final sw.Callback<sw.AvatarImageLoaded> cb;
+    cb = client.registerCallback<sw.AvatarImageLoaded>(
+      cb: (ptr) {
+        pending.remove(ptr.steamId);
+        if (pending.isEmpty && !done.isCompleted) done.complete();
+      },
+    );
+    for (final id in pending.toList()) {
+      // Returns false when the data is already cached.
+      if (!friends.requestUserInformation(id, false)) pending.remove(id);
+    }
+    if (pending.isEmpty) done.complete();
+    await done.future.timeout(const Duration(seconds: 2), onTimeout: () {});
+    unregisterAfterDispatch(() => client.unregisterCallback(callback: cb));
+  }
+
+  /// Cheap profile (name and online state only) for bulk lookups such as
+  /// leaderboard entries and lobby members; [_buildProfile] is the full one.
   PlayerProfile _profileForId(
     sw.SteamClient client,
     int steamId, {
@@ -764,6 +795,116 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       isOnline: online,
       isFriend: isFriend,
     );
+  }
+
+  /// Builds a profile from everything the Steamworks friends API exposes.
+  ///
+  /// [PlayerProfile.avatarBytes] is the 184x184 avatar as PNG, or `null` when
+  /// the user has none or Steam has not loaded it yet. [PlayerProfile.title]
+  /// is `Level N`. [PlayerProfile.extra] carries `steamId`, `personaState`
+  /// (an [sw.EPersonaState] name), `steamLevel`, `nickname`, `gameId` (the
+  /// app id being played), `lobbyId`, and `richPresence` (key/value map);
+  /// keys are omitted when Steam has no value.
+  PlayerProfile _buildProfile(
+    sw.SteamClient client,
+    int steamId, {
+    bool? isFriend,
+    bool self = false,
+  }) {
+    final friends = client.steamFriends;
+    final name = self
+        ? friends.getPersonaName().toDartString()
+        : friends.getFriendPersonaName(steamId).toDartString();
+    final state = self
+        ? friends.getPersonaState()
+        : friends.getFriendPersonaState(steamId);
+    final level = friends.getFriendSteamLevel(steamId);
+    final nickname = friends.getPlayerNickname(steamId);
+    final nick = nickname == nullptr ? '' : nickname.toDartString();
+    final richPresence = _richPresenceOf(friends, steamId);
+    final game = _gamePlayedBy(friends, steamId);
+    return PlayerProfile(
+      id: steamId.toString(),
+      displayName: name.isEmpty ? steamId.toString() : name,
+      avatarBytes: _avatarPng(client, steamId),
+      isOnline: self ? true : state != sw.EPersonaState.offline,
+      title: level > 0 ? 'Level $level' : null,
+      isFriend: isFriend,
+      extra: {
+        'steamId': steamId,
+        'personaState': state.name,
+        if (level > 0) 'steamLevel': level,
+        if (nick.isNotEmpty) 'nickname': nick,
+        ...?game,
+        if (richPresence.isNotEmpty) 'richPresence': richPresence,
+      },
+    );
+  }
+
+  Uint8List? _avatarPng(sw.SteamClient client, int steamId) {
+    final handle = client.steamFriends.getLargeFriendAvatar(steamId);
+    if (handle <= 0) return null;
+    final utils = client.steamUtils;
+    final pWidth = calloc<UnsignedInt>();
+    final pHeight = calloc<UnsignedInt>();
+    try {
+      if (!utils.getImageSize(handle, pWidth, pHeight)) return null;
+      final width = pWidth.value;
+      final height = pHeight.value;
+      final size = width * height * 4;
+      if (size == 0) return null;
+      final buffer = calloc<UnsignedChar>(size);
+      try {
+        if (!utils.getImageRGBA(handle, buffer, size)) return null;
+        return encodeRgbaPng(
+          Uint8List.fromList(buffer.cast<Uint8>().asTypedList(size)),
+          width,
+          height,
+        );
+      } finally {
+        calloc.free(buffer);
+      }
+    } finally {
+      calloc.free(pWidth);
+      calloc.free(pHeight);
+    }
+  }
+
+  Map<String, String> _richPresenceOf(
+    Pointer<sw.ISteamFriends> friends,
+    int id,
+  ) {
+    final result = <String, String>{};
+    final count = friends.getFriendRichPresenceKeyCount(id);
+    for (var i = 0; i < count; i++) {
+      final key = friends.getFriendRichPresenceKeyByIndex(id, i).toDartString();
+      if (key.isEmpty) continue;
+      final value = _withUtf8(
+        key,
+        (keyPtr) => friends.getFriendRichPresence(id, keyPtr).toDartString(),
+      );
+      result[key] = value;
+    }
+    return result;
+  }
+
+  /// `gameId` / `lobbyId` entries when the user is in a game, else `null`.
+  Map<String, Object>? _gamePlayedBy(
+    Pointer<sw.ISteamFriends> friends,
+    int id,
+  ) {
+    final info = calloc<sw.FriendGameInfo>();
+    try {
+      if (!friends.getFriendGamePlayed(id, info)) return null;
+      return {
+        // CGameID keeps the app id in its low 24 bits.
+        'gameId': info.ref.gameId & 0xFFFFFF,
+        if (info.ref.steamIdLobby != 0)
+          'lobbyId': info.ref.steamIdLobby.toString(),
+      };
+    } finally {
+      calloc.free(info);
+    }
   }
 
   // ─── Lobbies (ISteamMatchmaking) ───────────────────────────────────────────

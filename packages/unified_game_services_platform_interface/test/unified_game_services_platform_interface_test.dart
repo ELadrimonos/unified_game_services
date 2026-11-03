@@ -39,6 +39,19 @@ void main() {
       expect(a, isNot(c));
     });
 
+    test('PlayerProfile compares avatarBytes by content', () {
+      PlayerProfile profile(List<int> bytes) => PlayerProfile(
+        id: 'p1',
+        displayName: 'Ada',
+        avatarBytes: Uint8List.fromList(bytes),
+      );
+      expect(profile([1, 2]), profile([1, 2]));
+      expect(profile([1, 2]).hashCode, profile([1, 2]).hashCode);
+      expect(profile([1, 2]), isNot(profile([1, 3])));
+      expect(profile([1, 2]).copyWith(displayName: 'G').avatarBytes, [1, 2]);
+      expect(profile([1, 2]).toString(), contains('2 bytes'));
+    });
+
     test('PlayerProfile.copyWith replaces only the given fields', () {
       const p = PlayerProfile(id: 'p1', displayName: 'Ada', isOnline: true);
       final q = p.copyWith(providerId: 'steam', displayName: 'Grace');
