@@ -4,6 +4,7 @@ import 'package:unified_game_services/unified_game_services.dart';
 import 'app_state.dart';
 import 'env.dart';
 import 'screens/config_screen.dart';
+import 'screens/profile_screen.dart';
 import 'services/registry.dart';
 
 void main() {
@@ -480,6 +481,16 @@ class _ActionsColumn extends StatelessWidget {
           ]),
           _Section('Friends', [
             _btn('Read (primary)', enabled ? app.fetchFriends : null),
+            _btn(
+              'Profile & friends',
+              app.hasActiveProviders
+                  ? () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => ProfileScreen(app: app),
+                      ),
+                    )
+                  : null,
+            ),
           ]),
           const SizedBox(height: 16),
           Text('Activity', style: Theme.of(context).textTheme.titleLarge),
@@ -549,7 +560,9 @@ class _PlayerCard extends StatelessWidget {
     final p = app.currentPlayer;
     return Card(
       child: ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.person)),
+        leading: p == null
+            ? const CircleAvatar(child: Icon(Icons.person))
+            : PlayerAvatar(player: p),
         title: Text(p?.displayName ?? 'Not signed in'),
         subtitle: Text(p == null ? '—' : 'id: ${p.id}'),
       ),

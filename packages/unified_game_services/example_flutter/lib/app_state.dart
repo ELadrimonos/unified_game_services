@@ -25,6 +25,7 @@ class AppState extends ChangeNotifier {
   AppConfig config = AppConfig();
   ProviderBuild? build;
   PlayerProfile? currentPlayer;
+  List<PlayerProfile> friends = const [];
   bool busy = false;
 
   final List<LogEntry> log = [];
@@ -48,6 +49,7 @@ class AppState extends ChangeNotifier {
     _eventsSub?.cancel();
     build = buildProviders(config, env);
     currentPlayer = null;
+    friends = const [];
     final f = facade;
     if (f != null) {
       _eventsSub = f.events.listen(
@@ -131,8 +133,17 @@ class AppState extends ChangeNotifier {
         }
       });
 
+  /// Reloads the current player and the friends list for the profile screen.
+  Future<void> loadSocial() => _run('getCurrentPlayer + getFriends', (f) async {
+    currentPlayer = await f.getCurrentPlayer() ?? currentPlayer;
+    if (f.primary.supports(GameCapability.friends)) {
+      friends = await f.getFriends();
+    }
+  });
+
   Future<void> fetchFriends() => _run('getFriends from primary', (f) async {
     final list = await f.getFriends();
+    friends = list;
     _push('  → ${list.length} friend(s) from ${_primaryName()}');
     for (final p in list.take(10)) {
       _push('     ${p.displayName}');
