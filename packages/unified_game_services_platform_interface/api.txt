@@ -53,6 +53,12 @@ package:unified_game_services_platform_interface/unified_game_services_platform_
     == (method: bool Function(Object))
     copyWith (method: CloudSaveMetadata Function({String? deviceName, DateTime? modifiedAt, String? providerId, int? sizeBytes, String? slot}))
     toString (method: String Function())
+  FriendPresenceChangedEvent (class extends GameServiceEvent):
+    new (const constructor: FriendPresenceChangedEvent Function({required PlayerProfile player, required DateTime timestamp}))
+    hashCode (getter: int)
+    player (getter: PlayerProfile)
+    == (method: bool Function(Object))
+    toString (method: String Function())
   GameCapability (enum):
     achievements (enum constant: GameCapability)
     cloudSave (enum constant: GameCapability)
@@ -66,7 +72,7 @@ package:unified_game_services_platform_interface/unified_game_services_platform_
     presence (enum constant: GameCapability)
     stats (enum constant: GameCapability)
     values (static const getter: List<GameCapability>)
-  GameServiceEvent (class extends Object, sealed (immediate subtypes: AchievementUnlockedEvent, InvitationReceivedEvent, JoinRequestedEvent, LobbyEvent, PresenceChangedEvent, ScoreSubmittedEvent, StatUpdatedEvent, UserSignedInEvent, UserSignedOutEvent)):
+  GameServiceEvent (class extends Object, sealed (immediate subtypes: AchievementUnlockedEvent, FriendPresenceChangedEvent, InvitationReceivedEvent, JoinRequestedEvent, LobbyEvent, PresenceChangedEvent, ScoreSubmittedEvent, StatUpdatedEvent, UserSignedInEvent, UserSignedOutEvent)):
     timestamp (getter: DateTime)
   GameServiceException (class extends Object implements Exception):
     new (const constructor: GameServiceException Function(String, {Object? cause, String? code}))

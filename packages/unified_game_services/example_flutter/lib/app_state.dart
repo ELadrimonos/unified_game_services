@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:unified_game_services/unified_game_services.dart';
+import 'package:unified_game_services_steam/unified_game_services_steam.dart';
 
 import 'config/provider_config.dart';
 import 'env.dart';
@@ -27,7 +28,9 @@ class AppState extends ChangeNotifier {
   ProviderBuild? build;
   PlayerProfile? currentPlayer;
   List<PlayerProfile> friends = const [];
-  final SteamGameNames gameNames = SteamGameNames();
+  late final SteamGameNames gameNames = SteamGameNames(
+    (appId) async => facade?.provider<SteamProvider>()?.getGameName(appId),
+  );
   bool busy = false;
 
   final List<LogEntry> log = [];
@@ -54,10 +57,10 @@ class AppState extends ChangeNotifier {
     friends = const [];
     final f = facade;
     if (f != null) {
-      _eventsSub = f.events.listen(
-        (e) => _push(_describeEvent(e), kind: 'event'),
-        onError: (Object e) => _push('event error: $e', ok: false),
-      );
+      _eventsSub = f.events.listen((e) {
+        if (e is FriendPresenceChangedEvent) _applyFriendUpdate(e.player);
+        _push(_describeEvent(e), kind: 'event');
+      }, onError: (Object e) => _push('event error: $e', ok: false));
     }
     _push(
       'Assembled facade: ${build!.active.length} active provider(s) on '
@@ -144,6 +147,17 @@ class AppState extends ChangeNotifier {
     _resolveGameNames();
   });
 
+  /// Replaces (or adds) [updated] in [friends] so the UI follows live changes.
+  void _applyFriendUpdate(PlayerProfile updated) {
+    final i = friends.indexWhere((p) => p.id == updated.id);
+    friends = [
+      for (var j = 0; j < friends.length; j++)
+        if (j == i) updated else friends[j],
+      if (i < 0) updated,
+    ];
+    _resolveGameNames();
+  }
+
   /// Looks up the names of the games being played, then repaints.
   Future<void> _resolveGameNames() async {
     final ids = [
@@ -221,6 +235,8 @@ class AppState extends ChangeNotifier {
   String _describeEvent(GameServiceEvent e) => switch (e) {
     UserSignedInEvent(:final player) => '🔔 signed in: ${player.displayName}',
     UserSignedOutEvent() => '🔔 signed out',
+    FriendPresenceChangedEvent(:final player) =>
+      '🔔 friend ${player.displayName}: ${player.presence?.state ?? (player.isOnline == true ? 'online' : 'offline')}',
     ScoreSubmittedEvent(:final leaderboardId, :final score) =>
       '🔔 score $score → $leaderboardId',
     AchievementUnlockedEvent(:final achievement) =>

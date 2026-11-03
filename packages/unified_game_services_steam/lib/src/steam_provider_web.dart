@@ -60,4 +60,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
   /// interface.
   void cancelAuthTicket(int handle) => throw UnsupportedError(_kWebError);
+
+  /// Always throws [UnsupportedError]; Steam-specific, not part of the unified
+  /// interface.
+  Future<String?> getGameName(int appId) => throw UnsupportedError(_kWebError);
 }

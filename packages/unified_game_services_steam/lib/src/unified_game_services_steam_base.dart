@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
-import 'dart:io' show Platform;
+import 'dart:io' show HttpClient, Platform;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart';
@@ -155,6 +155,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       (_) => client.runFrame(),
     );
     _registerLobbyCallbacks(client);
+    _registerFriendCallbacks(client);
     return client;
   }
 
@@ -179,6 +180,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     }
     _watched.clear();
     _lobbyCallbacks.clear();
+    _friendCallbacks.clear();
+    _friendSnapshots.clear();
     if (_client != null) {
       sw.SteamApi.shutdown();
       _client = null;
@@ -746,7 +749,73 @@ class SteamProvider extends UnifiedGameServicesPlatform {
         friends.getFriendByIndex(i, _friendFlagImmediate),
     ];
     await _awaitAvatars(client, ids);
-    return [for (final id in ids) _buildProfile(client, id, isFriend: true)];
+    final profiles = [
+      for (final id in ids) _buildProfile(client, id, isFriend: true),
+    ];
+    for (var i = 0; i < ids.length; i++) {
+      _friendSnapshots[ids[i]] = profiles[i];
+    }
+    return profiles;
+  }
+
+  // ─── Friend presence stream ────────────────────────────────────────────────
+
+  /// Persona changes worth reporting: name, status, online/offline, game,
+  /// avatar, nickname, level and rich presence.
+  static const int _friendChangeMask =
+      1 | 2 | 4 | 8 | 16 | 64 | 4096 | 8192 | 16384;
+  static const int _changeComeOnline = 4;
+  static const int _changeGamePlayed = 16;
+  static const int _changeAvatar = 64;
+
+  /// Last profile emitted or returned for each friend, by Steam id. Used to
+  /// skip events that change nothing visible and to reuse the avatar PNG.
+  final Map<int, PlayerProfile> _friendSnapshots = {};
+  final List<sw.Callback<dynamic>> _friendCallbacks = [];
+
+  void _registerFriendCallbacks(sw.SteamClient client) {
+    if (_friendCallbacks.isNotEmpty) return;
+    _friendCallbacks.addAll([
+      client.registerCallback<sw.PersonaStateChange>(
+        cb: (ptr) {
+          final flags = ptr.ref.changeFlags;
+          if (flags & _friendChangeMask == 0) return;
+          _onFriendChanged(client, ptr.ref.steamId, flags);
+        },
+      ),
+      client.registerCallback<sw.FriendRichPresenceUpdate>(
+        cb: (ptr) => _onFriendChanged(client, ptr.ref.steamIdFriend, 0),
+      ),
+    ]);
+  }
+
+  void _onFriendChanged(sw.SteamClient client, int steamId, int flags) {
+    if (!_events.hasListener) return;
+    final friends = client.steamFriends;
+    if (steamId == client.steamUser.getSteamId() ||
+        friends.getFriendRelationship(steamId) !=
+            sw.EFriendRelationship.friend) {
+      return;
+    }
+    // A friend that just came online or started a game publishes rich
+    // presence a moment later; ask for it so a second update follows.
+    if (flags & (_changeComeOnline | _changeGamePlayed) != 0) {
+      friends.requestFriendRichPresence(steamId);
+    }
+    final previous = _friendSnapshots[steamId];
+    final profile = _buildProfile(
+      client,
+      steamId,
+      isFriend: true,
+      // Encoding the PNG is the expensive part: only redo it when Steam says
+      // the avatar changed or we never had one.
+      reuseAvatarOf: flags & _changeAvatar != 0 ? null : previous,
+    );
+    if (profile == previous) return;
+    _friendSnapshots[steamId] = profile;
+    _emit(
+      FriendPresenceChangedEvent(player: profile, timestamp: DateTime.now()),
+    );
   }
 
   /// Steam hands out avatar handles lazily: `-1` means "still loading".
@@ -783,6 +852,56 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     }
   }
 
+  // ─── Game names (Steam-specific, NOT part of the unified interface) ─────────
+
+  final Map<int, Future<String?>> _gameNames = {};
+
+  /// Returns the store name of the Steam app [appId] (for example the
+  /// `extra['gameId']` of a friend's profile), or `null` when it cannot be
+  /// resolved.
+  ///
+  /// Steamworks only exposes app ids, so this asks the public Store API
+  /// (`store.steampowered.com/api/appdetails`, no key needed) over HTTPS.
+  /// Results are cached per provider; a network failure is not cached, so a
+  /// later call retries. Steam-specific: not part of the unified interface,
+  /// reach it with `GameServices.provider<SteamProvider>()`.
+  Future<String?> getGameName(int appId) {
+    final cached = _gameNames[appId];
+    if (cached != null) return cached;
+    final lookup = _fetchGameName(appId);
+    _gameNames[appId] = lookup;
+    lookup.then((name) {
+      if (name == null) _gameNames.remove(appId);
+    });
+    return lookup;
+  }
+
+  Future<String?> _fetchGameName(int appId) async {
+    final http = HttpClient()..connectionTimeout = const Duration(seconds: 8);
+    try {
+      final request = await http.getUrl(
+        Uri.https('store.steampowered.com', '/api/appdetails', {
+          'appids': '$appId',
+          'filters': 'basic',
+        }),
+      );
+      final response = await request.close().timeout(
+        const Duration(seconds: 8),
+      );
+      if (response.statusCode != 200) return null;
+      final body = jsonDecode(await response.transform(utf8.decoder).join());
+      final entry = (body as Map<String, dynamic>)['$appId'];
+      if (entry is Map<String, dynamic> && entry['success'] == true) {
+        return (entry['data'] as Map<String, dynamic>)['name'] as String?;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    } finally {
+      http.close();
+    }
+  }
+
   /// Cheap profile (name and online state only) for bulk lookups such as
   /// leaderboard entries and lobby members; [_buildProfile] is the full one.
   PlayerProfile _profileForId(
@@ -816,6 +935,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     int steamId, {
     bool? isFriend,
     bool self = false,
+    PlayerProfile? reuseAvatarOf,
   }) {
     final friends = client.steamFriends;
     final name = self
@@ -832,7 +952,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
     return PlayerProfile(
       id: steamId.toString(),
       displayName: name.isEmpty ? steamId.toString() : name,
-      avatarBytes: _avatarPng(client, steamId),
+      avatarBytes: reuseAvatarOf?.avatarBytes ?? _avatarPng(client, steamId),
+      providerId: providerId,
       isOnline: self ? true : state != sw.EPersonaState.offline,
       presence: _presenceFrom(richPresence),
       title: level > 0 ? 'Level $level' : null,

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add `PlayerProfile.avatarBytes` (encoded image bytes, web-safe `Uint8List?`) next to `avatarUrl`, and `PlayerProfile.presence` (`RichPresence?`).
+- Add `FriendPresenceChangedEvent`: a snapshot of a friend whose online state, activity, name or avatar changed.
+- **Breaking for exhaustive switches:** `FriendPresenceChangedEvent` is a new `GameServiceEvent` subtype, so a `switch` over `GameServiceEvent` without a wildcard must add a case.
+
 ## 0.2.0
 
 - Add `UnifiedGameServicesPlatform.mappedStatIds`: the native stat ids registered for a provider, for SDKs that cannot enumerate stats.

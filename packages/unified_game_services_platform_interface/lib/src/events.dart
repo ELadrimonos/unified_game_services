@@ -21,6 +21,7 @@ import 'models/stat.dart';
 ///   ScoreSubmittedEvent(:final score) => 'score $score',
 ///   StatUpdatedEvent(:final stat) => '${stat.key}=${stat.value}',
 ///   PresenceChangedEvent(:final presence) => presence?.state ?? 'cleared',
+///   FriendPresenceChangedEvent(:final player) => player.displayName,
 ///   InvitationReceivedEvent(:final senderId) => 'invite from $senderId',
 /// };
 /// ```
@@ -177,6 +178,38 @@ class PresenceChangedEvent extends GameServiceEvent {
   @override
   String toString() =>
       'PresenceChangedEvent(presence: $presence, timestamp: $timestamp)';
+}
+
+/// Emitted when a friend's online state, activity, name or avatar changes.
+///
+/// [player] is a fresh snapshot of the friend, so compare it with the profile
+/// you already hold to see what changed (for example
+/// [PlayerProfile.isOnline] or [PlayerProfile.presence]). The local player's
+/// own presence is reported by [PresenceChangedEvent] instead. Gated by
+/// [GameCapability.friends] and [GameCapability.presence].
+class FriendPresenceChangedEvent extends GameServiceEvent {
+  /// The friend after the change.
+  final PlayerProfile player;
+
+  /// Creates an event for a change of [player] at [timestamp].
+  const FriendPresenceChangedEvent({
+    required this.player,
+    required super.timestamp,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FriendPresenceChangedEvent &&
+          other.player == player &&
+          other.timestamp == timestamp;
+
+  @override
+  int get hashCode => Object.hash(player, timestamp);
+
+  @override
+  String toString() =>
+      'FriendPresenceChangedEvent(player: $player, timestamp: $timestamp)';
 }
 
 /// Emitted when a game invitation is received.

@@ -67,6 +67,22 @@ void main() {
       );
     });
 
+    test('FriendPresenceChangedEvent compares by player and timestamp', () {
+      final at = DateTime(2026);
+      FriendPresenceChangedEvent event(bool online) =>
+          FriendPresenceChangedEvent(
+            player: PlayerProfile(
+              id: '2',
+              displayName: 'Ana',
+              isOnline: online,
+            ),
+            timestamp: at,
+          );
+      expect(event(true), event(true));
+      expect(event(true).hashCode, event(true).hashCode);
+      expect(event(true), isNot(event(false)));
+    });
+
     test('PlayerProfile.copyWith replaces only the given fields', () {
       const p = PlayerProfile(id: 'p1', displayName: 'Ada', isOnline: true);
       final q = p.copyWith(providerId: 'steam', displayName: 'Grace');
@@ -160,6 +176,7 @@ void main() {
         ScoreSubmittedEvent() => 'score',
         StatUpdatedEvent() => 'stat',
         PresenceChangedEvent() => 'presence',
+        FriendPresenceChangedEvent() => 'friend',
         InvitationReceivedEvent() => 'invite',
         JoinRequestedEvent() => 'join',
         LobbyEvent() => 'lobby',

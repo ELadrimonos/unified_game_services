@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `getCurrentPlayer`, `signIn` and `getFriends` return richer profiles: the 184x184 avatar as PNG (`avatarBytes`), `Level N` as `title`, `presence` mapped from Steam rich presence, and `extra` with `steamId`, `personaState`, `steamLevel`, `nickname`, `gameId`, `lobbyId` and the raw `richPresence` map.
+- `getFriends` requests friends' rich presence and waits up to 5 s for avatars Steam is still loading.
+- `events` emits `FriendPresenceChangedEvent` when a friend comes online or offline, changes status, game, name, avatar or rich presence.
+- Add `SteamProvider.getGameName(appId)` (Steam-specific): resolves an app id to its store name through the public Store API, cached.
+- Docs: `SteamProvider(appId: ...)` relaunches the app through Steam when it was not started by Steam. For local development leave `appId` null and use `steam_appid.txt`.
+
 ## 0.2.0
 
 - `getPlayerScore()` returns the signed-in player's entry and global rank (one-entry `globalAroundUser` window); it used to throw `CapabilityNotSupportedException`.
