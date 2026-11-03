@@ -10,6 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Resolves Steam app ids to game names through the public Store API.
+  http: ^1.6.0
+
   # The app-facing facade. Re-exports the whole platform_interface (models,
   # events, capabilities, exceptions) so this is the only interface import.
   unified_game_services:

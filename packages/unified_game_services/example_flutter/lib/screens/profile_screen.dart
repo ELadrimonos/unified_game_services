@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:unified_game_services/unified_game_services.dart';
 
 import '../app_state.dart';
+import '../services/steam_game_names.dart';
 
 /// Shows the signed-in player and their friends: avatar, level, online state
 /// and rich presence, as far as the primary provider exposes them.
@@ -71,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       )
                     else
-                      _ProfileHeader(player: me),
+                      _ProfileHeader(player: me, names: app.gameNames),
                     const SizedBox(height: 24),
                     Text(
                       'Friends (${friends.length}, $online online)',
@@ -81,7 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (friends.isEmpty)
                       const Text('No friends loaded.')
                     else
-                      for (final f in friends) _FriendTile(player: f),
+                      for (final f in friends)
+                        _FriendTile(player: f, names: app.gameNames),
                   ],
                 ),
               ),
@@ -152,6 +154,15 @@ class PlayerAvatar extends StatelessWidget {
   }
 }
 
+/// `Playing <game>` for the game in `extra['gameId']`, if any. Falls back to a
+/// generic "In game" until the name is resolved; never shows the raw app id.
+String? _playing(PlayerProfile p, SteamGameNames names) {
+  final id = p.extra['gameId'];
+  if (id is! int) return null;
+  final name = names[id];
+  return name == null ? 'In game' : 'Playing $name';
+}
+
 /// One-line activity text: rich presence, else the persona state, else
 /// online/offline.
 String _statusLine(PlayerProfile p) {
@@ -166,16 +177,17 @@ String _statusLine(PlayerProfile p) {
 }
 
 /// Extra badges: Steam level, game being played, party size.
-List<String> _badges(PlayerProfile p) => [
+List<String> _badges(PlayerProfile p, SteamGameNames names) => [
   ?p.title,
-  if (p.extra['gameId'] case final int game) 'In game: app $game',
+  ?_playing(p, names),
   if (p.presence?.partySize case final int size)
     'Party $size${p.presence?.partyMax == null ? '' : '/${p.presence!.partyMax}'}',
 ];
 
 class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({required this.player});
+  const _ProfileHeader({required this.player, required this.names});
   final PlayerProfile player;
+  final SteamGameNames names;
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +212,7 @@ class _ProfileHeader extends StatelessWidget {
                   Wrap(
                     spacing: 8,
                     children: [
-                      for (final b in _badges(player))
+                      for (final b in _badges(player, names))
                         Chip(
                           label: Text(b),
                           visualDensity: VisualDensity.compact,
@@ -224,13 +236,14 @@ class _ProfileHeader extends StatelessWidget {
 }
 
 class _FriendTile extends StatelessWidget {
-  const _FriendTile({required this.player});
+  const _FriendTile({required this.player, required this.names});
   final PlayerProfile player;
+  final SteamGameNames names;
 
   @override
   Widget build(BuildContext context) {
     final offline = player.isOnline != true;
-    final badges = _badges(player);
+    final badges = _badges(player, names);
     return Opacity(
       opacity: offline ? 0.55 : 1,
       child: ListTile(

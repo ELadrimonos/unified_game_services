@@ -752,30 +752,35 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// Steam hands out avatar handles lazily: `-1` means "still loading".
   static const int _avatarLoading = -1;
 
-  /// Asks Steam to load the avatars that are not ready yet and waits (up to
-  /// two seconds) for the `AvatarImageLoaded` callbacks.
+  /// Asks Steam for the friends' rich presence and the avatars that are not
+  /// loaded yet, then polls (up to five seconds) until Steam has them.
+  ///
+  /// Both arrive asynchronously through the callback pump, so the first read
+  /// right after sign-in would otherwise come back empty.
   Future<void> _awaitAvatars(sw.SteamClient client, List<int> ids) async {
     final friends = client.steamFriends;
     final pending = {
       for (final id in ids)
         if (friends.getLargeFriendAvatar(id) == _avatarLoading) id,
     };
-    if (pending.isEmpty) return;
-    final done = Completer<void>();
-    late final sw.Callback<sw.AvatarImageLoaded> cb;
-    cb = client.registerCallback<sw.AvatarImageLoaded>(
-      cb: (ptr) {
-        pending.remove(ptr.steamId);
-        if (pending.isEmpty && !done.isCompleted) done.complete();
-      },
-    );
-    for (final id in pending.toList()) {
-      // Returns false when the data is already cached.
-      if (!friends.requestUserInformation(id, false)) pending.remove(id);
+    for (final id in ids) {
+      if (friends.getFriendPersonaState(id) != sw.EPersonaState.offline) {
+        friends.requestFriendRichPresence(id);
+      }
     }
-    if (pending.isEmpty) done.complete();
-    await done.future.timeout(const Duration(seconds: 2), onTimeout: () {});
-    unregisterAfterDispatch(() => client.unregisterCallback(callback: cb));
+    for (final id in pending) {
+      friends.requestUserInformation(id, false);
+    }
+    // Let the rich presence responses land even if every avatar is cached.
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (pending.isNotEmpty && DateTime.now().isBefore(deadline)) {
+      pending.removeWhere(
+        (id) => friends.getLargeFriendAvatar(id) != _avatarLoading,
+      );
+      if (pending.isEmpty) break;
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
   }
 
   /// Cheap profile (name and online state only) for bulk lookups such as

@@ -7,6 +7,7 @@ import 'package:unified_game_services/unified_game_services.dart';
 import 'config/provider_config.dart';
 import 'env.dart';
 import 'services/registry.dart';
+import 'services/steam_game_names.dart';
 
 /// One log line in the activity feed, with a success/failure flavor for the UI.
 class LogEntry {
@@ -26,6 +27,7 @@ class AppState extends ChangeNotifier {
   ProviderBuild? build;
   PlayerProfile? currentPlayer;
   List<PlayerProfile> friends = const [];
+  final SteamGameNames gameNames = SteamGameNames();
   bool busy = false;
 
   final List<LogEntry> log = [];
@@ -139,7 +141,18 @@ class AppState extends ChangeNotifier {
     if (f.primary.supports(GameCapability.friends)) {
       friends = await f.getFriends();
     }
+    _resolveGameNames();
   });
+
+  /// Looks up the names of the games being played, then repaints.
+  Future<void> _resolveGameNames() async {
+    final ids = [
+      for (final p in [?currentPlayer, ...friends])
+        if (p.extra['gameId'] case final int id) id,
+    ];
+    await gameNames.resolve(ids);
+    notifyListeners();
+  }
 
   Future<void> fetchFriends() => _run('getFriends from primary', (f) async {
     final list = await f.getFriends();
