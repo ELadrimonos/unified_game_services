@@ -320,7 +320,7 @@ package:unified_game_services/unified_game_services.dart:
   PlatformOperationException (class extends GameServiceException):
     new (const constructor: PlatformOperationException Function(String, {Object? cause, String? code}))
   PlayerProfile (class extends Object):
-    new (const constructor: PlayerProfile Function({Uint8List? avatarBytes, String? avatarUrl, required String displayName, Map<String, dynamic> extra, required String id, bool? isFriend, bool? isOnline, String? providerId, String? title}))
+    new (const constructor: PlayerProfile Function({Uint8List? avatarBytes, String? avatarUrl, required String displayName, Map<String, dynamic> extra, required String id, bool? isFriend, bool? isOnline, RichPresence? presence, String? providerId, String? title}))
     avatarBytes (getter: Uint8List?)
     avatarUrl (getter: String?)
     displayName (getter: String)
@@ -329,10 +329,11 @@ package:unified_game_services/unified_game_services.dart:
     id (getter: String)
     isFriend (getter: bool?)
     isOnline (getter: bool?)
+    presence (getter: RichPresence?)
     providerId (getter: String?)
     title (getter: String?)
     == (method: bool Function(Object))
-    copyWith (method: PlayerProfile Function({Uint8List? avatarBytes, String? avatarUrl, String? displayName, Map<String, dynamic>? extra, String? id, bool? isFriend, bool? isOnline, String? providerId, String? title}))
+    copyWith (method: PlayerProfile Function({Uint8List? avatarBytes, String? avatarUrl, String? displayName, Map<String, dynamic>? extra, String? id, bool? isFriend, bool? isOnline, RichPresence? presence, String? providerId, String? title}))
     toString (method: String Function())
   PresenceChangedEvent (class extends GameServiceEvent):
     new (const constructor: PresenceChangedEvent Function({RichPresence? presence, required DateTime timestamp}))

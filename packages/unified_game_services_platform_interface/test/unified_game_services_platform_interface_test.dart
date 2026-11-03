@@ -52,6 +52,21 @@ void main() {
       expect(profile([1, 2]).toString(), contains('2 bytes'));
     });
 
+    test('PlayerProfile compares presence', () {
+      PlayerProfile profile(String state) => PlayerProfile(
+        id: 'p1',
+        displayName: 'Ada',
+        presence: RichPresence(state: state),
+      );
+      expect(profile('Lobby'), profile('Lobby'));
+      expect(profile('Lobby').hashCode, profile('Lobby').hashCode);
+      expect(profile('Lobby'), isNot(profile('In match')));
+      expect(
+        profile('Lobby').copyWith(isOnline: true).presence?.state,
+        'Lobby',
+      );
+    });
+
     test('PlayerProfile.copyWith replaces only the given fields', () {
       const p = PlayerProfile(id: 'p1', displayName: 'Ada', isOnline: true);
       final q = p.copyWith(providerId: 'steam', displayName: 'Grace');

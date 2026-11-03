@@ -7,6 +7,7 @@ library;
 import 'dart:typed_data';
 
 import '../internal/equality.dart';
+import 'rich_presence.dart';
 
 /// A player as represented by a game service provider.
 ///
@@ -36,6 +37,11 @@ class PlayerProfile {
 
   /// Whether the player is currently online, or `null` if unknown.
   final bool? isOnline;
+
+  /// What the player is currently doing, if the provider exposes it.
+  ///
+  /// `null` when unknown or when the player has no activity published.
+  final RichPresence? presence;
 
   /// Provider title/rank/level label (e.g. "Level 42"), if any.
   final String? title;
@@ -67,6 +73,7 @@ class PlayerProfile {
     this.avatarUrl,
     this.avatarBytes,
     this.isOnline,
+    this.presence,
     this.title,
     this.isFriend,
     this.extra = const {},
@@ -83,6 +90,7 @@ class PlayerProfile {
     String? avatarUrl,
     Uint8List? avatarBytes,
     bool? isOnline,
+    RichPresence? presence,
     String? title,
     bool? isFriend,
     Map<String, dynamic>? extra,
@@ -93,6 +101,7 @@ class PlayerProfile {
     avatarUrl: avatarUrl ?? this.avatarUrl,
     avatarBytes: avatarBytes ?? this.avatarBytes,
     isOnline: isOnline ?? this.isOnline,
+    presence: presence ?? this.presence,
     title: title ?? this.title,
     isFriend: isFriend ?? this.isFriend,
     extra: extra ?? this.extra,
@@ -108,6 +117,7 @@ class PlayerProfile {
           other.avatarUrl == avatarUrl &&
           listEquals(other.avatarBytes, avatarBytes) &&
           other.isOnline == isOnline &&
+          other.presence == presence &&
           other.title == title &&
           other.isFriend == isFriend &&
           mapEquals(other.extra, extra) &&
@@ -120,6 +130,7 @@ class PlayerProfile {
     avatarUrl,
     avatarBytes == null ? null : listHash(avatarBytes!),
     isOnline,
+    presence,
     title,
     isFriend,
     mapHash(extra),
@@ -130,6 +141,6 @@ class PlayerProfile {
   String toString() =>
       'PlayerProfile(id: $id, displayName: $displayName, '
       'avatarUrl: $avatarUrl, avatarBytes: ${avatarBytes == null ? null : '${avatarBytes!.length} bytes'}, '
-      'isOnline: $isOnline, title: $title, '
+      'isOnline: $isOnline, presence: $presence, title: $title, '
       'isFriend: $isFriend, extra: $extra, providerId: $providerId)';
 }

@@ -803,7 +803,8 @@ class SteamProvider extends UnifiedGameServicesPlatform {
   /// the user has none or Steam has not loaded it yet. [PlayerProfile.title]
   /// is `Level N`. [PlayerProfile.extra] carries `steamId`, `personaState`
   /// (an [sw.EPersonaState] name), `steamLevel`, `nickname`, `gameId` (the
-  /// app id being played), `lobbyId`, and `richPresence` (key/value map);
+  /// app id being played), `lobbyId`, and `richPresence` (the raw key/value
+  /// map behind [PlayerProfile.presence]);
   /// keys are omitted when Steam has no value.
   PlayerProfile _buildProfile(
     sw.SteamClient client,
@@ -828,6 +829,7 @@ class SteamProvider extends UnifiedGameServicesPlatform {
       displayName: name.isEmpty ? steamId.toString() : name,
       avatarBytes: _avatarPng(client, steamId),
       isOnline: self ? true : state != sw.EPersonaState.offline,
+      presence: _presenceFrom(richPresence),
       title: level > 0 ? 'Level $level' : null,
       isFriend: isFriend,
       extra: {
@@ -838,6 +840,24 @@ class SteamProvider extends UnifiedGameServicesPlatform {
         ...?game,
         if (richPresence.isNotEmpty) 'richPresence': richPresence,
       },
+    );
+  }
+
+  /// Maps Steam's rich presence keys to the unified [RichPresence].
+  ///
+  /// `state` is `status` (what [setPresence] writes) or else the localized
+  /// `steam_display` line; `joinToken` is `connect`; the party comes from
+  /// `steam_player_group` / `steam_player_group_size`. Returns `null` when
+  /// there is no display line. The raw keys stay in `extra['richPresence']`.
+  RichPresence? _presenceFrom(Map<String, String> rp) {
+    final state = rp['status'] ?? rp['steam_display'];
+    if (state == null || state.isEmpty) return null;
+    return RichPresence(
+      state: state,
+      details: rp['details'],
+      partyId: rp['steam_player_group'],
+      partySize: int.tryParse(rp['steam_player_group_size'] ?? ''),
+      joinToken: rp['connect'],
     );
   }
 
