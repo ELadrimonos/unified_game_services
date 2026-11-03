@@ -357,7 +357,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Dev only: bundles the Steamworks lib from the steam package when present.\n# The lib is not redistributable and is git-ignored, so it is never committed.\nLIB=\"$SRCROOT/../../../unified_game_services_steam/libsteam_api.dylib\"\nDEST=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\"\nif [ -f \"$LIB\" ]; then\n  mkdir -p \"$DEST\"\n  cp -f \"$LIB\" \"$DEST/libsteam_api.dylib\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" \"$DEST/libsteam_api.dylib\"\nelse\n  echo \"note: libsteam_api.dylib not found, Steam will be unavailable\"\nfi\n";
+			shellScript = "# Dev only: bundles the Steamworks lib from the steam package when present.\n# The lib is not redistributable and is git-ignored, so it is never committed.\nLIB=\"$SRCROOT/../../../unified_game_services_steam/libsteam_api.dylib\"\nDEST=\"$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\"\nif [ -f \"$LIB\" ]; then\n  mkdir -p \"$DEST\"\n  cp -f \"$LIB\" \"$DEST/libsteam_api.dylib\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" \"$DEST/libsteam_api.dylib\"\nelse\n  echo \"note: libsteam_api.dylib not found, Steam will be unavailable\"\nfi\n# Dev app id override: with it, leave the demo App ID empty so Steam does not\n# relaunch the app through the store (RestartAppIfNecessary).\nAPPID=\"$SRCROOT/../../../unified_game_services_steam/steam_appid.txt\"\nif [ -f \"$APPID\" ]; then\n  cp -f \"$APPID\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/steam_appid.txt\"\n  codesign --force --sign \"${EXPANDED_CODE_SIGN_IDENTITY:--}\" \"$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/steam_appid.txt\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
