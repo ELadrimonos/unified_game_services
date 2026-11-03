@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Docs: add `unified-game-services-migrate-from-games-services` skill with a
+  step-by-step migration guide, callsite translation matrix, and architecture
+  reference for moving from `games_services` to `unified_game_services`.
+
 ## 0.2.1
 
 - Fix: drop the `documentation` pubspec URL (`docs.gameservices.aprimo.dev`

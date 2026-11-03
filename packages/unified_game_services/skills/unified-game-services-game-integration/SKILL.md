@@ -1,7 +1,7 @@
 ---
 name: unified-game-services-game-integration
 description: >-
-  Use when integrating unified_game_services 0.2.0 into a game's architecture:
+  Use when integrating unified_game_services 0.2.2 into a game's architecture:
   where to initialize, when to sign in, calling achievements/scores/stats from
   gameplay, handling MultiProviderOperationResult failures, offline play,
   retries, events, provider-specific extras, shutdown/dispose, or testing game

@@ -1,7 +1,7 @@
 ---
 name: unified-game-services-provider-behaviors
 description: >-
-  Use when a unified_game_services 0.2.0 facade call behaves differently per
+  Use when a unified_game_services 0.2.2 facade call behaves differently per
   provider (Steam, Epic, Game Center, Google Play REST/Android, GameJolt,
   PlayFab): a write that adds instead of replacing, a call that throws or does
   nothing on one store, sign-in/sign-out/isSignedIn meaning different things,

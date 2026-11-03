@@ -2,7 +2,7 @@
 name: unified-game-services-cross-store-progression
 description: >-
   Use when designing achievements, stats or leaderboards for a game that ships on
-  several stores with unified_game_services 0.2.0, defining UnifiedAchievementTable,
+  several stores with unified_game_services 0.2.2, defining UnifiedAchievementTable,
   UnifiedStatTable or UnifiedLeaderboardTable / ProviderIdMap, adding incremental
   or progress achievements, choosing score units, or debugging ids, stats or
   scores that behave differently per store.

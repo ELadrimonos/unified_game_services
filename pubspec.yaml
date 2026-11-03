@@ -37,6 +37,10 @@ melos:
       linkToCommits: true
       # Print a prefilled GitHub "new release" URL per bumped package.
       releaseUrl: true
+      # Keep doc version references in step with the bumped pubspecs, inside
+      # the version commit.
+      hooks:
+        preCommit: dart run tool/sync_doc_versions.dart && git add -u packages README.md
       # Per-package git tags (`<package-name>-v<version>`) are created by
       # default (--git-tag-version). No extra key needed.
 
@@ -47,6 +51,13 @@ melos:
         pubspec, including internal cross-package dependency constraints.
         Pass `-- --check` to fail (CI) instead of writing.
       run: dart run tool/sync_version.dart
+
+    docs:versions:
+      description: >
+        Rewrite version references in READMEs and skills (`pkg: ^x.y.z`,
+        `pkg x.y.z`) to each package's current pubspec version. Run after
+        bumping versions. Pass `-- --check` to fail (CI) instead of writing.
+      run: dart run tool/sync_doc_versions.dart
 
     analyze:
       description: Run dart analyze in all packages.

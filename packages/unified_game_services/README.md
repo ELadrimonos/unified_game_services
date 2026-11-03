@@ -22,7 +22,7 @@ Upgrading from 0.1? See [`MIGRATION.md`](MIGRATION.md).
 
 ```yaml
 dependencies:
-  unified_game_services: ^0.2.0
+  unified_game_services: ^0.2.2
   # plus the provider(s) you need:
   unified_game_services_steam: ^0.2.0
   unified_game_services_gamejolt: ^0.2.0
@@ -127,8 +127,9 @@ filter by platform:
 
 ```dart
 final steamOnly = (await services.getFriends()).where((p) => p.providerId == 'steam');
-``` Custom providers must override
-`providerId`.
+```
+
+Custom providers must override `providerId`.
 
 ### Multi-provider results
 
@@ -375,6 +376,9 @@ This package ships best-practice skills for building a game on top of it:
 - [`unified-game-services-per-store-builds`](skills/unified-game-services-per-store-builds/SKILL.md)
   — per-store entry points, web vs native, tree-shaking, native runtimes,
   assets, credentials and the release CI matrix.
+- [`unified-game-services-migrate-from-games-services`](skills/unified-game-services-migrate-from-games-services/SKILL.md)
+  — step-by-step migration guide and API translation matrix for moving from
+  `games_services` to `unified_game_services`.
 
 In a consumer project with this dependency resolved, install package skills with
 `dart run skills@ get`.

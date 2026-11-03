@@ -1,7 +1,7 @@
 ---
 name: unified-game-services-per-store-builds
 description: >-
-  Use when a game built on unified_game_services 0.2.0 ships to several stores
+  Use when a game built on unified_game_services 0.2.2 ships to several stores
   or platforms (Steam, Epic, Game Center, Google Play, web, mobile) and needs
   separate entry points, per-store native libraries, store-specific assets or
   credentials, web vs native separation, tree-shaking of FFI providers, Flutter

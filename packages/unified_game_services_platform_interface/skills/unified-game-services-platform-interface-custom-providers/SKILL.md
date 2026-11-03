@@ -119,7 +119,7 @@ class CustomProvider extends UnifiedGameServicesPlatform {
 - If implementing lobbies, preserve `LobbyKind` using the reserved
   `lobbyKindDataKey` (`ugs_kind`) and strip that metadata from user-visible data.
 
-In the **consumer app**, depend on `unified_game_services: ^0.2.0` and the custom
+In the **consumer app**, depend on `unified_game_services: ^0.2.2` and the custom
 provider package. After implementing achievements, wire its IDs as follows
 (`provider.providerId` must be `custom_backend`):
 

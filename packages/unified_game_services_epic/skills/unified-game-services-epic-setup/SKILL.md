@@ -13,7 +13,7 @@ These instructions are self-contained; no package-relative resources are needed.
 ## 1. Confirm the host and runtime
 
 - Require Dart `^3.12.0`. Add `unified_game_services_epic: ^0.2.0` and
-  `unified_game_services: ^0.2.0` to the host's dependencies for facade use.
+  `unified_game_services: ^0.2.2` to the host's dependencies for facade use.
   Add `unified_game_services_platform_interface: ^0.2.0` if importing its models.
 - Target Windows, macOS or Linux. Check `EpicProvider.isSupported` before
   construction. Web imports are safe but construction throws `UnsupportedError`;

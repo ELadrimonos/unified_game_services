@@ -63,7 +63,7 @@ account. Do not present its entitlement/FFI handshake checks as proof of success
 
 ## Wire the 0.2.0 API
 
-Add `unified_game_services: ^0.2.0` and
+Add `unified_game_services: ^0.2.2` and
 `unified_game_services_game_center: ^0.2.0` to the app's dependencies. Create
 `GameCenterProvider()` with **no mapping arguments**. ID tables belong on the
 facade; do not use old `achievementIds`, `leaderboardIds`, or `registerWith` APIs.
