@@ -17,7 +17,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.app.hasActiveProviders) widget.app.loadSocial();
+    // loadSocial notifies listeners, which is not allowed during build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.app.hasActiveProviders) widget.app.loadSocial();
+    });
   }
 
   @override
