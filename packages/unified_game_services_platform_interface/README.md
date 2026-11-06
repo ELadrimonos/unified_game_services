@@ -28,7 +28,7 @@ Pure Dart, no Flutter dependency.
 
 ```yaml
 dependencies:
-  unified_game_services_platform_interface: ^0.2.0
+  unified_game_services_platform_interface: ^0.2.1
 ```
 
 ## Writing a provider

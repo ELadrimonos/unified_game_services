@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 - `getCurrentPlayer`, `signIn` and `getFriends` return richer profiles: the 184x184 avatar as PNG (`avatarBytes`), `Level N` as `title`, `presence` mapped from Steam rich presence, and `extra` with `steamId`, `personaState`, `steamLevel`, `nickname`, `gameId`, `lobbyId` and the raw `richPresence` map.
 - Limitation: Steam only exposes a friend's rich presence while they play the same app id as your game; friends in other games get `presence == null` (use `extra['gameId']` and `getGameName`).

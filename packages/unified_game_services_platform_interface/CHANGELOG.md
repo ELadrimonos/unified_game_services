@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 - Add `PlayerProfile.avatarBytes` (encoded image bytes, web-safe `Uint8List?`) next to `avatarUrl`, and `PlayerProfile.presence` (`RichPresence?`).
 - Add `FriendPresenceChangedEvent`: a snapshot of a friend whose online state, activity, name or avatar changed.

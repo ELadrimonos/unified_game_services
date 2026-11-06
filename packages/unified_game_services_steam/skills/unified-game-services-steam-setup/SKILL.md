@@ -43,7 +43,7 @@ In the consumer's `pubspec.yaml`, align the facade and provider:
 ```yaml
 dependencies:
   unified_game_services: ^0.2.2
-  unified_game_services_steam: ^0.2.0
+  unified_game_services_steam: ^0.2.1
 ```
 
 From the consumer directory containing `.dart_tool/package_config.json`, run:
